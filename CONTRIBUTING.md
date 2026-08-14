@@ -67,6 +67,29 @@ chore(backend): add prisma seed script
 
 Drop the `[FR-ID]` tag when a commit genuinely has no requirement behind it — tooling setup, dependency bumps, config. Don't invent a tenuous link just to satisfy the format.
 
+### When to write a body
+
+Conventional Commits allows an optional body after the subject, separated by a blank line:
+
+```
+<type>(<surface>): <description> [<FR-ID>]
+
+Body explaining why, wrapped at around 72 characters.
+```
+
+Most commits don't need one. If the subject and the diff together tell the whole story, stop at the subject.
+
+Write a body when the **why** isn't visible in the diff:
+
+- A decision or trade-off you'd otherwise have to explain in review
+- A workaround, and what it works around
+- Something that looks wrong but is deliberate
+- A reason that lives outside the code — a requirement, a tool's behaviour, an external constraint
+
+_"Fix login redirect"_ needs no body. _"Anchor the stalled-engagement timer to start time"_ does — nothing in the diff explains that no end time is collected anywhere in the posting flow.
+
+In GitHub Desktop, the field below **Summary** is the body.
+
 ---
 
 ## Pull requests and merging
