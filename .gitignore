@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# environment / secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# build output
+dist/
+build/
+web-build/
+
+# Expo
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
