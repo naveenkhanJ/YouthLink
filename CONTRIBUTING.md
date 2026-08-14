@@ -102,6 +102,19 @@ In GitHub Desktop, the field below **Summary** is the body.
 
 **`develop → main` happens at sprint boundaries**, once the team has confirmed the increment demos correctly. Treat it as a deliberate step rather than a routine merge.
 
+### Writing the pull request
+
+**Title: same format as a commit subject** — `<type>(<surface>): <description>`. GitHub puts the PR title into the merge commit, so a good one keeps `develop`'s history readable. The auto-filled branch name does not.
+
+**Description: three things, briefly.**
+
+- **What and why** — one or two sentences. Link the FR IDs it implements.
+- **How to check it** — the command to run, the screen to open, the endpoint to hit.
+- **Anything to watch** — a deliberate trade-off, something that looks odd but isn't, a follow-up you've left for later.
+
+If a PR needs more explanation than that, it's probably too big — consider splitting it.
+
+
 ---
 
 ## Commit attribution
