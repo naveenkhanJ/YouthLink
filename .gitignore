@@ -26,3 +26,7 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# symlinked aliases
+backend/.claude/
+backend/.windsurf/

@@ -42,6 +42,8 @@ Two segments earn their place. **`surface`** means two people can build the back
 
 Your name is always included rather than only when ambiguous — one unconditional rule is easier to follow than a conditional one.
 
+**Repo-wide changes use `shared`.** Documentation, `.gitignore`, CI config and anything else at the repository root isn't specific to one surface. Tag it `shared` rather than inventing a new value — that applies to the commit's surface segment too, so `docs(shared): …`.
+
 > **Watch the one asymmetry:** branches use `feature/…`, commits use `feat(…)`. They're different conventions that happen to sit next to each other — Conventional Commits specifies `feat`, and the branch prefix reads better in full.
 
 ---
@@ -65,15 +67,53 @@ chore(backend): add prisma seed script
 
 Drop the `[FR-ID]` tag when a commit genuinely has no requirement behind it — tooling setup, dependency bumps, config. Don't invent a tenuous link just to satisfy the format.
 
+### When to write a body
+
+Conventional Commits allows an optional body after the subject, separated by a blank line:
+
+```
+<type>(<surface>): <description> [<FR-ID>]
+
+Body explaining why, wrapped at around 72 characters.
+```
+
+Most commits don't need one. If the subject and the diff together tell the whole story, stop at the subject.
+
+Write a body when the **why** isn't visible in the diff:
+
+- A decision or trade-off you'd otherwise have to explain in review
+- A workaround, and what it works around
+- Something that looks wrong but is deliberate
+- A reason that lives outside the code — a requirement, a tool's behaviour, an external constraint
+
+_"Fix login redirect"_ needs no body. _"Anchor the stalled-engagement timer to start time"_ does — nothing in the diff explains that no end time is collected anywhere in the posting flow.
+
+In GitHub Desktop, the field below **Summary** is the body.
+
 ---
 
 ## Pull requests and merging
 
 **Every feature branch goes to `develop` through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
 
+**Check the base branch before you click Create.** GitHub shows `base: … ← compare: your-branch` at the top of the PR page. The repository default is `main`, so that dropdown pre-selects `main` — change it to `develop`. A feature branch merged into `main` breaks the sprint-boundary rule below, and it's an easy click to miss.
+
 **Use regular merge commits. Never squash.** Squashing collapses a branch's commits into one, which erases the individual per-author history along the way. That history is the record of who actually built what, and it can't be reconstructed afterwards. This applies at both levels: `feature → develop` and `develop → main`.
 
 **`develop → main` happens at sprint boundaries**, once the team has confirmed the increment demos correctly. Treat it as a deliberate step rather than a routine merge.
+
+### Writing the pull request
+
+**Title: same format as a commit subject** — `<type>(<surface>): <description>`. GitHub puts the PR title into the merge commit, so a good one keeps `develop`'s history readable. The auto-filled branch name does not.
+
+**Description: three things, briefly.**
+
+- **What and why** — one or two sentences. Link the FR IDs it implements.
+- **How to check it** — the command to run, the screen to open, the endpoint to hit.
+- **Anything to watch** — a deliberate trade-off, something that looks odd but isn't, a follow-up you've left for later.
+
+If a PR needs more explanation than that, it's probably too big — consider splitting it.
+
 
 ---
 
