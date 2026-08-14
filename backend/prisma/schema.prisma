@@ -1,7 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// YouthLink — database schema
+//
+// Implements docs/database-schema.md. Every field traces to a requirement in
+// docs/requirements.md; see the design document for the reasoning behind each
+// table, and for what is deliberately NOT modelled.
+//
+// Note: three PARTIAL unique indexes (User.phone, User.email, User.nicEncrypted)
+// cannot be expressed in Prisma schema syntax and live as raw SQL in the initial
+// migration. Do not "fix" them by adding @unique here — that would be wrong.
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +15,683 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// 1. Identity & Access
+// ---------------------------------------------------------------------------
+
+model User {
+  id                           String        @id @default(uuid())
+  role                         ActorRole
+  phone                        String
+  phoneVerifiedAt              DateTime?
+  passwordHash                 String
+  failedLoginAttempts          Int           @default(0)
+  lockedUntil                  DateTime?
+  email                        String?
+  emailVerifiedAt              DateTime?
+  nicEncrypted                 String
+  nicLast4                     String        @db.VarChar(4)
+  legalName                    String        @db.VarChar(100)
+  birthdate                    DateTime      @db.Date
+  postingAsType                PostingAsType?
+  businessName                 String?       @db.VarChar(100)
+  businessBio                  String?       @db.VarChar(300)
+  bio                          String?       @db.VarChar(300)
+  bioPromptShownAt             DateTime?
+  endorsementSuggestionShownAt DateTime?
+  notifyUrgentOptIn            Boolean       @default(false)
+  notifyNewGigOptOut           Boolean       @default(false)
+  tosAcceptedAt                DateTime?
+  accountStatus                AccountStatus @default(PENDING_SIGNUP)
+  signupExpiresAt              DateTime?
+  endorsementCode              String?       @unique @db.VarChar(6)
+  firstRatingReceivedAt        DateTime?
+  autoHiddenAt                 DateTime?
+  suspendedAt                  DateTime?
+  suspensionReason             String?
+  deletedAt                    DateTime?
+  createdAt                    DateTime      @default(now())
+  updatedAt                    DateTime      @updatedAt
+
+  gigPostings            GigPosting[]
+  applications           Application[]
+  engagementsAsWorker    Engagement[]                  @relation("EngagementWorker")
+  engagementsAsEmployer  Engagement[]                  @relation("EngagementEmployer")
+  engagementsCancelled   Engagement[]                  @relation("EngagementCancelledBy")
+  engagementsEnded       Engagement[]                  @relation("EngagementEndedBy")
+  cancellationRequests   CancellationRequest[]
+  ratingsGiven           Rating[]                      @relation("RatingRater")
+  ratingsReceived        Rating[]                      @relation("RatingRatee")
+  completionRecords      CompletionRecord[]
+  endorsementsGiven      Endorsement[]                 @relation("EndorsementEndorser")
+  endorsementsReceived   Endorsement[]                 @relation("EndorsementWorker")
+  reportsFiled           Report[]                      @relation("ReportReporter")
+  reportsAgainst         Report[]                      @relation("ReportTargetUser")
+  disputesRaised         DisputeCase[]                 @relation("DisputeRaisedBy")
+  disputesResponded      DisputeCase[]                 @relation("DisputeRespondent")
+  disputeEvidence        DisputeEvidence[]
+  clarificationsAsked    DisputeClarificationRequest[]
+  warnings               Warning[]
+  savedGigs              SavedGig[]
+  notifications          Notification[]
+  otpCodes               OtpCode[]
+  emailTokens            EmailVerificationToken[]
+
+  @@index([accountStatus])
+  @@index([deletedAt])
+}
+
+model OtpCode {
+  id             String        @id @default(uuid())
+  phone          String
+  userId         String?
+  adminAccountId String?
+  code           String        @db.VarChar(6)
+  purpose        OtpPurpose
+  expiresAt      DateTime
+  consumedAt     DateTime?
+  createdAt      DateTime      @default(now())
+
+  user         User?         @relation(fields: [userId], references: [id])
+  adminAccount AdminAccount? @relation(fields: [adminAccountId], references: [id])
+
+  @@index([phone])
+  @@index([userId])
+}
+
+model EmailVerificationToken {
+  id         String             @id @default(uuid())
+  userId     String
+  email      String
+  token      String             @unique
+  purpose    EmailTokenPurpose
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime           @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model AdminAccount {
+  id                       String    @id @default(uuid())
+  phone                    String    @unique
+  passwordHash             String
+  failedLoginAttempts      Int       @default(0)
+  lockedUntil              DateTime?
+  role                     AdminRole
+  promotedByAdminAccountId String?
+  createdAt                DateTime  @default(now())
+
+  promotedBy   AdminAccount?  @relation("AdminPromotion", fields: [promotedByAdminAccountId], references: [id])
+  promoted     AdminAccount[] @relation("AdminPromotion")
+
+  otpCodes            OtpCode[]
+  ratingsRemoved      Rating[]
+  disputesModerated   DisputeCase[]                 @relation("DisputeModerator")
+  disputesRuled       DisputeCase[]                 @relation("DisputeAdmin")
+  clarificationsMade  DisputeClarificationRequest[]
+  warningsIssued      Warning[]
+  auditLog            AuditLogEntry[]
+  notifications       Notification[]
+}
+
+// ---------------------------------------------------------------------------
+// 2. Gig Posting & Discovery
+// ---------------------------------------------------------------------------
+
+model GigPosting {
+  id                     String          @id @default(uuid())
+  employerId             String
+  title                  String          @db.VarChar(80)
+  description            String          @db.VarChar(1000)
+  category               GigCategory
+  arrangementType        ArrangementType
+  payKind                PayKind
+  payAmount              Decimal?        @db.Decimal(12, 2)
+  payRateUnit            PayRateUnit?
+  postedAsType           PostingAsType
+  postedBusinessName     String?         @db.VarChar(100)
+  postedBusinessBio      String?         @db.VarChar(300)
+  locationAddress        String
+  locationLat            Float
+  locationLng            Float
+  locationAreaLabel      String
+  workersNeeded          Int             @default(1)
+  filledCount            Int             @default(0)
+  startAt                DateTime
+  schedule               String?         @db.VarChar(200)
+  isUrgent               Boolean         @default(false)
+  status                 GigStatus       @default(OPEN)
+  noApplicantNudgeSentAt DateTime?
+  autoHiddenAt           DateTime?
+  withdrawnAt            DateTime?
+  expiresAt              DateTime?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  employer               User                    @relation(fields: [employerId], references: [id])
+  applications           Application[]
+  engagements            Engagement[]
+  savedBy                SavedGig[]
+  materialChangeRequests MaterialChangeRequest[]
+  reports                Report[]                @relation("ReportTargetGigPosting")
+
+  @@index([status, category, arrangementType])
+  @@index([locationLat, locationLng])
+  @@index([startAt])
+  @@index([employerId])
+}
+
+model SavedGig {
+  id           String   @id @default(uuid())
+  userId       String
+  gigPostingId String
+  savedAt      DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  gigPosting GigPosting @relation(fields: [gigPostingId], references: [id])
+
+  @@unique([userId, gigPostingId])
+}
+
+model MaterialChangeRequest {
+  id            String               @id @default(uuid())
+  gigPostingId  String
+  engagementId  String
+  changeSummary Json
+  proposedAt    DateTime             @default(now())
+  deadline      DateTime
+  status        MaterialChangeStatus @default(PENDING)
+  respondedAt   DateTime?
+
+  gigPosting GigPosting @relation(fields: [gigPostingId], references: [id])
+  engagement Engagement @relation(fields: [engagementId], references: [id])
+
+  @@index([engagementId])
+}
+
+// ---------------------------------------------------------------------------
+// 3. Application & Engagement
+// ---------------------------------------------------------------------------
+
+model Application {
+  id           String            @id @default(uuid())
+  gigPostingId String
+  workerId     String
+  note         String?           @db.VarChar(300)
+  status       ApplicationStatus @default(PENDING)
+  appliedAt    DateTime          @default(now())
+  decidedAt    DateTime?
+  withdrawnAt  DateTime?
+
+  gigPosting GigPosting  @relation(fields: [gigPostingId], references: [id])
+  worker     User        @relation(fields: [workerId], references: [id])
+  engagement Engagement?
+
+  @@index([gigPostingId, status])
+  @@index([workerId])
+}
+
+model Engagement {
+  id                    String             @id @default(uuid())
+  applicationId         String             @unique
+  gigPostingId          String
+  workerId              String
+  employerId            String
+  status                EngagementStatus   @default(ACTIVE)
+  contactRevealedAt     DateTime           @default(now())
+  arrivalCode           String?            @db.VarChar(6)
+  arrivalStatus         CheckpointStatus   @default(PENDING)
+  arrivalConfirmedAt    DateTime?
+  completionCode        String?            @db.VarChar(6)
+  completionStatus      CheckpointStatus   @default(PENDING)
+  completionConfirmedAt DateTime?
+  paymentCode           String?            @db.VarChar(6)
+  paymentStatus         CheckpointStatus?
+  paymentConfirmedAt    DateTime?
+  startedAt             DateTime?
+  ratingOpenedAt        DateTime?
+  ratingEnforced        Boolean            @default(true)
+  cancelledAt           DateTime?
+  cancelledByUserId     String?
+  cancellationReason    CancellationReason?
+  isLateCancellation    Boolean?
+  endedAt               DateTime?
+  endedByUserId         String?
+  endIssueFlag          Boolean?
+  stalledPromptSentAt   DateTime?
+  stalledFlaggedAt      DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  application            Application             @relation(fields: [applicationId], references: [id])
+  gigPosting             GigPosting              @relation(fields: [gigPostingId], references: [id])
+  worker                 User                    @relation("EngagementWorker", fields: [workerId], references: [id])
+  employer               User                    @relation("EngagementEmployer", fields: [employerId], references: [id])
+  cancelledBy            User?                   @relation("EngagementCancelledBy", fields: [cancelledByUserId], references: [id])
+  endedBy                User?                   @relation("EngagementEndedBy", fields: [endedByUserId], references: [id])
+  materialChangeRequests MaterialChangeRequest[]
+  cancellationRequests   CancellationRequest[]
+  ratings                Rating[]
+  completionRecords      CompletionRecord[]
+  disputeCases           DisputeCase[]
+  reports                Report[]                @relation("ReportTargetEngagement")
+
+  @@index([workerId, status])
+  @@index([employerId, status])
+  @@index([gigPostingId])
+}
+
+model CancellationRequest {
+  id                 String                    @id @default(uuid())
+  engagementId       String
+  requestedByUserId  String
+  reason             CancellationReason
+  isUrgentEngagement Boolean
+  deadline           DateTime?
+  status             CancellationRequestStatus @default(PENDING)
+  requestedAt        DateTime                  @default(now())
+  respondedAt        DateTime?
+
+  engagement  Engagement @relation(fields: [engagementId], references: [id])
+  requestedBy User       @relation(fields: [requestedByUserId], references: [id])
+
+  @@index([engagementId])
+}
+
+// ---------------------------------------------------------------------------
+// 4. Ratings & Reputation
+// ---------------------------------------------------------------------------
+
+model Rating {
+  id                      String    @id @default(uuid())
+  engagementId            String
+  raterId                 String
+  rateeId                 String
+  score                   Int
+  submittedAt             DateTime  @default(now())
+  revealedAt              DateTime?
+  publicResponse          String?
+  removedAt               DateTime?
+  removedByAdminAccountId String?
+  removalReason           String?
+
+  engagement Engagement    @relation(fields: [engagementId], references: [id])
+  rater      User          @relation("RatingRater", fields: [raterId], references: [id])
+  ratee      User          @relation("RatingRatee", fields: [rateeId], references: [id])
+  removedBy  AdminAccount? @relation(fields: [removedByAdminAccountId], references: [id])
+
+  @@unique([engagementId, raterId])
+  @@index([rateeId, revealedAt])
+}
+
+model CompletionRecord {
+  id           String            @id @default(uuid())
+  userId       String
+  engagementId String
+  outcome      CompletionOutcome
+  weight       Decimal           @default(1.0) @db.Decimal(4, 2)
+  recordedAt   DateTime          @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  engagement Engagement @relation(fields: [engagementId], references: [id])
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// 5. Community Endorsement
+// ---------------------------------------------------------------------------
+
+model Endorsement {
+  id         String                 @id @default(uuid())
+  endorserId String
+  workerId   String
+  reason     String?                @db.VarChar(300)
+  entryPoint EndorsementEntryPoint
+  createdAt  DateTime               @default(now())
+  revokedAt  DateTime?
+
+  endorser User @relation("EndorsementEndorser", fields: [endorserId], references: [id])
+  worker   User @relation("EndorsementWorker", fields: [workerId], references: [id])
+
+  @@index([workerId, revokedAt])
+  @@index([endorserId, revokedAt])
+}
+
+// ---------------------------------------------------------------------------
+// 6. Disputes & Moderation
+// ---------------------------------------------------------------------------
+
+model Report {
+  id                 String       @id @default(uuid())
+  reporterId         String
+  targetUserId       String?
+  targetGigPostingId String?
+  targetEngagementId String?
+  reason             ReportReason
+  detail             String?
+  status             ReportStatus @default(QUEUED)
+  createdAt          DateTime     @default(now())
+
+  reporter         User         @relation("ReportReporter", fields: [reporterId], references: [id])
+  targetUser       User?        @relation("ReportTargetUser", fields: [targetUserId], references: [id])
+  targetGigPosting GigPosting?  @relation("ReportTargetGigPosting", fields: [targetGigPostingId], references: [id])
+  targetEngagement Engagement?  @relation("ReportTargetEngagement", fields: [targetEngagementId], references: [id])
+  disputeCase      DisputeCase?
+
+  @@index([targetUserId])
+  @@index([targetGigPostingId])
+}
+
+model DisputeCase {
+  id                 String             @id @default(uuid())
+  engagementId       String?
+  reportId           String?            @unique
+  triggerType        DisputeTriggerType
+  raisedByUserId     String?
+  respondentUserId   String?
+  respondentDeadline DateTime?
+  status             DisputeStatus      @default(AWAITING_RESPONSE)
+  moderatorAccountId String?
+  adminAccountId     String?
+  resolution         DisputeResolution?
+  resolutionNotes    String?
+  resolvedAt         DateTime?
+  createdAt          DateTime           @default(now())
+
+  engagement     Engagement?   @relation(fields: [engagementId], references: [id])
+  report         Report?       @relation(fields: [reportId], references: [id])
+  raisedBy       User?         @relation("DisputeRaisedBy", fields: [raisedByUserId], references: [id])
+  respondent     User?         @relation("DisputeRespondent", fields: [respondentUserId], references: [id])
+  moderator      AdminAccount? @relation("DisputeModerator", fields: [moderatorAccountId], references: [id])
+  admin          AdminAccount? @relation("DisputeAdmin", fields: [adminAccountId], references: [id])
+
+  evidence       DisputeEvidence[]
+  clarifications DisputeClarificationRequest[]
+  warnings       Warning[]
+
+  @@index([status])
+  @@index([engagementId])
+}
+
+model DisputeEvidence {
+  id                String   @id @default(uuid())
+  disputeCaseId     String
+  submittedByUserId String
+  imageUrl          String
+  uploadedAt        DateTime @default(now())
+
+  disputeCase DisputeCase @relation(fields: [disputeCaseId], references: [id])
+  submittedBy User        @relation(fields: [submittedByUserId], references: [id])
+
+  @@index([disputeCaseId])
+}
+
+model DisputeClarificationRequest {
+  id                       String    @id @default(uuid())
+  disputeCaseId            String
+  requestedByAdminAccountId String
+  requestedFromUserId      String
+  question                 String
+  deadline                 DateTime
+  response                 String?
+  respondedAt              DateTime?
+  createdAt                DateTime  @default(now())
+
+  disputeCase   DisputeCase  @relation(fields: [disputeCaseId], references: [id])
+  requestedBy   AdminAccount @relation(fields: [requestedByAdminAccountId], references: [id])
+  requestedFrom User         @relation(fields: [requestedFromUserId], references: [id])
+
+  @@index([disputeCaseId])
+}
+
+model Warning {
+  id                     String   @id @default(uuid())
+  userId                 String
+  disputeCaseId          String?
+  issuedByAdminAccountId String
+  reason                 String
+  issuedAt               DateTime @default(now())
+
+  user        User         @relation(fields: [userId], references: [id])
+  disputeCase DisputeCase? @relation(fields: [disputeCaseId], references: [id])
+  issuedBy    AdminAccount @relation(fields: [issuedByAdminAccountId], references: [id])
+
+  @@index([userId, issuedAt])
+}
+
+// ---------------------------------------------------------------------------
+// 7. Admin Operations
+// ---------------------------------------------------------------------------
+
+model AuditLogEntry {
+  id             String   @id @default(uuid())
+  adminAccountId String
+  action         String
+  targetType     String
+  targetId       String?
+  details        Json?
+  createdAt      DateTime @default(now())
+
+  adminAccount AdminAccount @relation(fields: [adminAccountId], references: [id])
+
+  @@index([adminAccountId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// 8. Notifications
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id              String           @id @default(uuid())
+  userId          String?
+  adminAccountId  String?
+  type            NotificationType
+  payload         Json
+  createdAt       DateTime         @default(now())
+  readAt          DateTime?
+  pushSentAt      DateTime?
+  batchedDigestId String?
+
+  user          User?          @relation(fields: [userId], references: [id])
+  adminAccount  AdminAccount?  @relation(fields: [adminAccountId], references: [id])
+  batchedDigest Notification?  @relation("NotificationDigest", fields: [batchedDigestId], references: [id])
+  batchedItems  Notification[] @relation("NotificationDigest")
+
+  @@index([userId, readAt])
+  @@index([adminAccountId, readAt])
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum ActorRole {
+  YOUTH_JOB_SEEKER
+  EMPLOYER
+  COMMUNITY_ENDORSER
+}
+
+enum PostingAsType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+enum AccountStatus {
+  PENDING_SIGNUP
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum AdminRole {
+  ADMIN
+  MODERATOR
+}
+
+enum OtpPurpose {
+  SIGNUP
+  LOGIN
+  PASSWORD_RESET
+  PHONE_CHANGE
+  ADMIN_LOGIN
+}
+
+enum EmailTokenPurpose {
+  SIGNUP
+  EMAIL_CHANGE
+  PASSWORD_RESET
+}
+
+enum GigCategory {
+  RETAIL
+  DELIVERY
+  EVENT_SETUP
+  MOVING
+  FOOD_SERVICE
+  TUTORING
+  CLEANING
+}
+
+enum ArrangementType {
+  GIG
+  PART_TIME
+  INTERNSHIP
+}
+
+enum PayKind {
+  FIXED_TOTAL
+  RATE
+  UNPAID
+  STIPEND
+  PAID
+}
+
+enum PayRateUnit {
+  DAY
+  WEEK
+  MONTH
+}
+
+enum GigStatus {
+  OPEN
+  FILLED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum MaterialChangeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED_ROUTED_TO_CANCELLATION
+}
+
+enum CancellationRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  AUTO_RESOLVED_NO_RESPONSE
+  IMMEDIATE
+}
+
+enum ApplicationStatus {
+  PENDING
+  SELECTED
+  DECLINED
+  WITHDRAWN
+  NOT_SELECTED
+}
+
+enum EngagementStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ENDED
+  DISPUTED
+}
+
+enum CheckpointStatus {
+  PENDING
+  CONFIRMED
+  UNABLE_TO_CONFIRM
+}
+
+enum CancellationReason {
+  SCHEDULE_CONFLICT
+  DETAILS_NO_LONGER_SUITABLE
+  FOUND_OTHER_WORK
+  PERSONAL_EMERGENCY
+  OTHER
+}
+
+enum CompletionOutcome {
+  COMPLETED
+  LATE_CANCELLATION
+  EARLY_CANCELLATION
+  NO_SHOW_RELIABLE_CREDIT
+  NO_SHOW_UNRELIABLE_MARK
+}
+
+enum EndorsementEntryPoint {
+  CODE
+  PHONE_SEARCH
+}
+
+enum ReportReason {
+  FRAUD_SCAM
+  INAPPROPRIATE_CONTENT
+  SAFETY_CONCERN
+  HARASSMENT
+  OTHER
+}
+
+enum ReportStatus {
+  QUEUED
+  REVIEWED
+}
+
+enum DisputeTriggerType {
+  UNABLE_TO_CONFIRM
+  END_ENGAGEMENT_ISSUE
+  STALLED_AUTO_FLAG
+  REPORT
+}
+
+enum DisputeStatus {
+  AWAITING_RESPONSE
+  UNDER_REVIEW
+  ESCALATED
+  RESOLVED
+}
+
+enum DisputeResolution {
+  RULED_FOR_RAISER
+  RULED_FOR_OTHER
+  INCONCLUSIVE
+  WARNING_ONLY
+  NO_SHOW_CONFIRMED
+}
+
+enum NotificationType {
+  URGENT_GIG
+  NEW_GIG
+  URGENT_DIGEST
+  APPLICATION_RECEIVED
+  APPLICATION_SELECTED
+  APPLICATION_DECLINED
+  APPLICATION_NOT_SELECTED
+  MATERIAL_CHANGE
+  CANCELLATION_REQUEST
+  END_ENGAGEMENT
+  STALLED_ENGAGEMENT_PROMPT
+  NEW_DISPUTE_CASE
+  CLARIFICATION_REQUEST
+  ENDORSEMENT_RECEIVED
+  ENDORSEMENT_PAYOFF
+  NO_APPLICANT_NUDGE
 }
