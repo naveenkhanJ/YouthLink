@@ -42,6 +42,8 @@ Two segments earn their place. **`surface`** means two people can build the back
 
 Your name is always included rather than only when ambiguous — one unconditional rule is easier to follow than a conditional one.
 
+**Repo-wide changes use `shared`.** Documentation, `.gitignore`, CI config and anything else at the repository root isn't specific to one surface. Tag it `shared` rather than inventing a new value — that applies to the commit's surface segment too, so `docs(shared): …`.
+
 > **Watch the one asymmetry:** branches use `feature/…`, commits use `feat(…)`. They're different conventions that happen to sit next to each other — Conventional Commits specifies `feat`, and the branch prefix reads better in full.
 
 ---
@@ -70,6 +72,8 @@ Drop the `[FR-ID]` tag when a commit genuinely has no requirement behind it — 
 ## Pull requests and merging
 
 **Every feature branch goes to `develop` through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
+
+**Check the base branch before you click Create.** GitHub shows `base: … ← compare: your-branch` at the top of the PR page. The repository default is `main`, so that dropdown pre-selects `main` — change it to `develop`. A feature branch merged into `main` breaks the sprint-boundary rule below, and it's an easy click to miss.
 
 **Use regular merge commits. Never squash.** Squashing collapses a branch's commits into one, which erases the individual per-author history along the way. That history is the record of who actually built what, and it can't be reconstructed afterwards. This applies at both levels: `feature → develop` and `develop → main`.
 
