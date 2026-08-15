@@ -45,7 +45,7 @@ Everything is collected in one sitting (`FR-ACC-01`). There is no partial-save.
 | Field                | Rule                                                                                                                |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Role                 | One of the three consumer actors, chosen at signup                                                                  |
-| Phone number         | Verified by a 6-digit OTP, valid 5 minutes (`FR-ACC-08`)                                                            |
+| Phone number         | Verified by a 6-digit OTP delivered through Firebase Phone Authentication (`FR-ACC-08`)                             |
 | Password             | Hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`)                   |
 | Email                | **Optional.** If given, verified once by a confirmation link. Registration isn't blocked if the link goes unclicked |
 | NIC number           | Required. Stored as entered, **never verified** and never parsed — including for age (`FR-ACC-04`)                  |
@@ -63,7 +63,7 @@ The NIC is collected but never checked against anything. Accordingly, **no badge
 
 ### Logging in
 
-Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP. Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
+Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP (delivered through Firebase Phone Authentication). Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
 
 Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock.
 
