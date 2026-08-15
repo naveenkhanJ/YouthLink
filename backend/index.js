@@ -1,21 +1,12 @@
-require("dotenv/config");
-const express = require("express");
-const cors = require("cors");
+/**
+ * Server bootstrap. Starts the HTTP listener and nothing else.
+ *
+ * The application itself lives in src/app.js — keep this file trivial so that
+ * "how does the app get built" has exactly one answer.
+ */
+const app = require("./src/app");
+const config = require("./src/config");
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-// Health check — confirms the server is up and env vars loaded.
-app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    database: process.env.DATABASE_URL ? "configured" : "missing DATABASE_URL",
-  });
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
+app.listen(config.port, () => {
+  console.log(`API listening on http://localhost:${config.port}`);
 });
