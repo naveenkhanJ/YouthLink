@@ -57,7 +57,11 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 
 **`backend/` is CommonJS.** `require` and `module.exports`, never `import`.
 
-**Mobile is Android-only for Sprints 1–2**, and Firebase's native modules mean Expo Go cannot run the app — a development build is required.
+**Both `backend/src/` and `mobile/src/` are organised by module, not by layer.** Four people build four modules simultaneously; layer-first would put all of them in the same three directories on every pull request. Your work goes in `backend/src/modules/<epic>/` and `mobile/src/screens/<module>/`. Each surface has a `src/README.md` explaining its structure.
+
+**Mobile navigation is React Navigation, and you add screens through your module's manifest** — `src/screens/<module>/<module>.screens.js`. `RootNavigator.js` collects every manifest automatically and should not be edited. Screen names are global, so prefix them with the module: `AccountRegister`, not `Register`.
+
+**Mobile is Android-only for Sprints 1–2.** Firebase and the navigation packages are native modules, so Expo Go cannot run the app — a development build is required, started with `npx expo start --dev-client`.
 
 ---
 
