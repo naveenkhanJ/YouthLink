@@ -2,7 +2,7 @@
 
 How we branch, commit, review, and decide something is finished. Read this before your first pull request.
 
-**Related documents:** [`README.md`](README.md) covers stack and local setup · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against.
+**Related documents:** [`README.md`](README.md) covers stack, repository layout and local setup · [`backend/src/README.md`](backend/src/README.md) and [`mobile/src/README.md`](mobile/src/README.md) explain how each surface is organised — read yours before your first commit · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against.
 
 ---
 
