@@ -30,3 +30,11 @@ Thumbs.db
 # symlinked aliases
 backend/.claude/
 backend/.windsurf/
+
+# per-developer working notes — not shared, not part of the deliverable
+.worklog/
+
+# Firebase Admin service-account credentials — a real credential, never commit
+serviceAccountKey.json
+firebase-adminsdk-*.json
+*firebase-adminsdk*.json

@@ -28,6 +28,8 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 
 **Acceptance criteria are the specification.** Check your work against the documented Given/When/Then, explicitly, not against your own sense of finished. That is clause 1 of the Definition of Done.
 
+**Each developer keeps a `.worklog/progress.md`** — per-developer working state, since chat sessions lose context and Jira/git don't hold everything (what's actually verified, decisions made mid-implementation, where to pick up). It's git-ignored, so it isn't visible in this repo history and isn't shared between us. Read your own at the start of a session; update it at the end.
+
 ---
 
 ## Non-negotiable
