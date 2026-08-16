@@ -153,12 +153,48 @@ async function getApplicantPool({ gigPostingId, employerId }) {
 }
 
 /**
+ * FR-APPLY-09 — resolves every application still Pending on a posting that
+ * has just stopped accepting applications, however it stopped: Filled
+ * (handled below, in select()), Expired (FR-POST-13), or Withdrawn
+ * (FR-POST-12). Amended 2026-08-27: this used to be inline in select() and
+ * fired on Filled only, leaving expiry and withdrawal with no effect on
+ * Pending applications at all.
+ *
+ * This module owns the resolution rule (FR-APPLY-09 is an FR-APPLY story)
+ * but not the expiry/withdrawal events that trigger it — those are
+ * Lahiru's FR-POST endpoints/jobs, so this is exported for them to call.
+ * Pass `tx` when calling from inside an existing transaction (select()
+ * does); omit it to run standalone against the plain client.
+ */
+async function resolvePendingApplications({ gigPostingId, tx = prisma }) {
+  const stillPending = await tx.application.findMany({
+    where: { gigPostingId, status: "PENDING" },
+    select: { id: true, workerId: true },
+  });
+  if (stillPending.length === 0) return;
+
+  await tx.application.updateMany({
+    where: { id: { in: stillPending.map((a) => a.id) } },
+    data: { status: "NOT_SELECTED", decidedAt: new Date() },
+  });
+
+  await tx.notification.createMany({
+    data: stillPending.map((a) => ({
+      userId: a.workerId,
+      type: "APPLICATION_NOT_SELECTED",
+      payload: { applicationId: a.id, gigPostingId },
+    })),
+  });
+}
+
+/**
  * FR-APPLY-06 — Selection and Engagement creation.
  * FR-APPLY-07 — contact reveal happens as a side effect of creating the
  * Engagement, not as a separate step: `contactRevealedAt` defaults to
  * now() in the schema.
  * FR-APPLY-09 — if this selection fills the last slot, every applicant
- * still Pending is auto-notified as not-selected in the same transaction.
+ * still Pending is resolved via resolvePendingApplications() above, in
+ * the same transaction.
  */
 async function select({ applicationId, employerId }) {
   return prisma.$transaction(async (tx) => {
@@ -210,25 +246,7 @@ async function select({ applicationId, employerId }) {
     });
 
     if (nowFilled) {
-      const stillPending = await tx.application.findMany({
-        where: { gigPostingId: application.gigPostingId, status: "PENDING" },
-        select: { id: true, workerId: true },
-      });
-
-      if (stillPending.length > 0) {
-        await tx.application.updateMany({
-          where: { id: { in: stillPending.map((a) => a.id) } },
-          data: { status: "NOT_SELECTED", decidedAt: new Date() },
-        });
-
-        await tx.notification.createMany({
-          data: stillPending.map((a) => ({
-            userId: a.workerId,
-            type: "APPLICATION_NOT_SELECTED",
-            payload: { applicationId: a.id, gigPostingId: application.gigPostingId },
-          })),
-        });
-      }
+      await resolvePendingApplications({ gigPostingId: application.gigPostingId, tx });
     }
 
     return engagement;
@@ -271,17 +289,31 @@ async function decline({ applicationId, employerId }) {
 }
 
 /**
- * A worker's own applications. Not its own FR, but the plumbing FR-APPLY-01
- * (show "already applied" / withdraw state) and FR-APPLY-07 (the worker's
- * side of contact reveal — the employer's phone and the precise address,
- * both readable straight off `engagement` once it exists) both need.
+ * FR-APPLY-12 — a worker's own application list. Added 2026-08-27; this
+ * used to be untracked plumbing for FR-APPLY-01/07 and is now a real story
+ * with its own acceptance criteria: posting expiry alongside any Pending
+ * application, fill status on multi-slot postings, and Pending
+ * applications ordered by soonest expiry.
+ *
+ * `expiresAt` sorting/display only means something once FR-POST-13's
+ * expiry logic actually sets it — until Lahiru's side does, every posting
+ * has expiresAt = null and Pending applications simply sort last (treated
+ * as "not yet known to expire soon"), which is the safe default.
  */
 async function getMyApplications({ workerId }) {
-  return prisma.application.findMany({
+  const applications = await prisma.application.findMany({
     where: { workerId },
-    orderBy: { appliedAt: "desc" },
     include: {
-      gigPosting: { select: { id: true, title: true, status: true } },
+      gigPosting: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          expiresAt: true,
+          workersNeeded: true,
+          filledCount: true,
+        },
+      },
       engagement: {
         select: {
           id: true,
@@ -292,6 +324,26 @@ async function getMyApplications({ workerId }) {
       },
     },
   });
+
+  // Pending first, soonest posting-expiry first (no known expiry sorts
+  // last); everything else follows, most recently decided first.
+  applications.sort((a, b) => {
+    const aPending = a.status === "PENDING";
+    const bPending = b.status === "PENDING";
+    if (aPending !== bPending) return aPending ? -1 : 1;
+
+    if (aPending) {
+      const aExpiry = a.gigPosting.expiresAt ? new Date(a.gigPosting.expiresAt).getTime() : Infinity;
+      const bExpiry = b.gigPosting.expiresAt ? new Date(b.gigPosting.expiresAt).getTime() : Infinity;
+      return aExpiry - bExpiry;
+    }
+
+    const aDate = new Date(a.decidedAt ?? a.appliedAt).getTime();
+    const bDate = new Date(b.decidedAt ?? b.appliedAt).getTime();
+    return bDate - aDate;
+  });
+
+  return applications;
 }
 
 /**
@@ -325,5 +377,6 @@ export default {
   select,
   decline,
   getMyApplications,
+  resolvePendingApplications,
   notifyPendingApplicantsOfMaterialChange,
 };
