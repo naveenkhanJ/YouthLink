@@ -1,21 +1,35 @@
 /**
  * Temporary launch screen.
- *
- * Exists so the app runs before any real screen is built — react-navigation
- * throws if a navigator has no screens at all. Replace the initial route in
- * RootNavigator once a real entry screen exists, then delete this file.
  */
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
-export default function HomeScreen() {
+const TEST_LINKS = [
+  { label: "Explore Gigs (FR-DISC)", route: "DiscoveryBrowse" },
+  { label: "Log in", route: "AccountLogin" },
+  { label: "Create account", route: "AccountRegister" },
+];
+
+export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>YouthLink</Text>
       <Text style={styles.subtitle}>
-        Navigation is wired up. Add your screens in{"\n"}
-        src/screens/&lt;module&gt;/&lt;module&gt;.screens.js
+        Navigation is wired up. Explore gigs or test features below:
       </Text>
+
+      <View style={styles.links}>
+        {TEST_LINKS.map(({ label, route }) => (
+          <Pressable
+            key={route}
+            style={styles.linkButton}
+            onPress={() => navigation.navigate(route)}
+          >
+            <Text style={styles.linkLabel}>{label}</Text>
+          </Pressable>
+        ))}
+      </View>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -36,4 +50,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "#555",
   },
+  links: { marginTop: 32, width: "100%", gap: 12 },
+  linkButton: {
+    borderWidth: 1,
+    borderColor: "#5B4FE0",
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  linkLabel: { color: "#5B4FE0", fontWeight: "600" },
 });
