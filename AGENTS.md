@@ -26,6 +26,8 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 | [`docs/module-ownership.md`](docs/module-ownership.md) | Who owns which module, per-story tasks, and the cross-cutting authentication contract                                                                                                                                                                                    |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md)                   | Branching, commit format, pull requests, Definition of Done                                                                                                                                                                                                              |
 
+**This table is a map, not a substitute for the documents it points to.** Read the linked document in full before writing code against it — not this table's one-line summary, not what a schema column seems to imply, not what you read earlier in a long session. Re-read rather than recall; a document doesn't drift, your memory of it does. If the answer isn't written down anywhere, ask rather than fill the gap with something reasonable-sounding.
+
 **Acceptance criteria are the specification.** Check your work against the documented Given/When/Then, explicitly, not against your own sense of finished. That is clause 1 of the Definition of Done.
 
 **Each developer keeps a `.worklog/progress.md`** — per-developer working state, since chat sessions lose context and Jira/git don't hold everything (what's actually verified, decisions made mid-implementation, where to pick up). It's git-ignored, so it isn't visible in this repo history and isn't shared between us. Read your own at the start of a session; update it at the end.
