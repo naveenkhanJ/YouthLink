@@ -2,66 +2,126 @@
 
 How we branch, commit, review, and decide something is finished. Read this before your first pull request.
 
-**Related documents:** [`README.md`](README.md) covers stack and local setup · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every branch name and commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against.
+**Related documents:** [`README.md`](README.md) covers stack, repository layout and local setup · [`backend/src/README.md`](backend/src/README.md) and [`mobile/src/README.md`](mobile/src/README.md) explain how each surface is organised — read yours before your first commit · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against.
 
 ---
 
 ## Branching model
 
-Two long-lived branches.
+Two permanent branches.
 
 | Branch    | Purpose                                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `main`    | Updated **only at sprint boundaries**, after the team has verified the demo actually works. It should never show a broken state. |
 | `develop` | The active integration branch. All work branches off it and merges back into it.                                                 |
 
-Everything else is a short-lived branch off `develop`.
+Everything else branches off `develop` and merges back into it. Epic branches are long-lived too — see below — but unlike these two they don't last the whole project.
 
 **Never commit directly to `main` or `develop`.** Both are integration branches — work reaches them through a pull request, never through a local commit pushed straight up.
 
 ### Branch naming
 
 ```
-<type>/<surface>/<fr-id>-<short-description>-<yourname>
+<type>/<epic>-<yourname>                    # work on an epic
+<type>/shared-<area>-<yourname>             # work outside any epic
 ```
 
 ```
-feature/backend/fr-post-01-posting-endpoint-naveenkhan
-feature/mobile/fr-disc-01-radius-browse-lahiru
-fix/dashboard/fr-dash-03-case-queue-sort-afham
+feature/account-management-afham
+feature/gig-posting-lahiru
+feature/discovery-search-pawan
+feature/applying-selection-naveenkhan
+
+chore/shared-tooling-afham
+docs/shared-documentation-afham
 ```
 
-| Segment    | Values                                                               |
-| ---------- | -------------------------------------------------------------------- |
-| `type`     | `feature`, `fix`, `chore`, `refactor`, `docs`, `test`                |
-| `surface`  | `backend`, `mobile`, `dashboard`, `shared`                           |
-| `fr-id`    | The requirement this work implements, lowercased — e.g. `fr-post-01` |
-| `yourname` | **Always included**, not only when it would otherwise clash          |
+| Segment    | Values                                                                               |
+| ---------- | ------------------------------------------------------------------------------------ |
+| `type`     | `feature`, `fix`, `chore`, `refactor`, `docs`, `test` — spelled out, never shortened |
+| `epic`     | The epic your card belongs to, written out in full. See the table below              |
+| `area`     | **Only for `shared` branches.** The lasting area of work, not a single change        |
+| `yourname` | **Always included**, not only when it would otherwise clash                          |
 
-Two segments earn their place. **`surface`** means two people can build the backend and mobile halves of the same requirement in parallel without colliding. **`fr-id`** makes "where is FR-POST-01 implemented?" answerable with a single `git branch --all | grep fr-post-01` instead of archaeology.
+**The middle of a branch name names a lasting area of work, never a single change.** Every branch here is long-lived and gets reused, so a name that describes one change is spent the moment that change merges.
 
-Your name is always included rather than only when ambiguous — one unconditional rule is easier to follow than a conditional one.
+For epic work the epic name already does the job — `feature/account-management-afham` is complete on its own, and adding more is wrong: `feature/account-management-registration-afham` names one piece of an epic the branch will cover for the whole project.
 
-**Repo-wide changes use `shared`.** Documentation, `.gitignore`, CI config and anything else at the repository root isn't specific to one surface. Tag it `shared` rather than inventing a new value — that applies to the commit's surface segment too, so `docs(shared): …`.
+For work outside any epic, `shared` describes nothing by itself, so an area is required — but it must be an area you'll return to, not today's task:
 
-> **Watch the one asymmetry:** branches use `feature/…`, commits use `feat(…)`. They're different conventions that happen to sit next to each other — Conventional Commits specifies `feat`, and the branch prefix reads better in full.
+| Good — you'll come back to it     | Bad — spent after one merge             |
+| --------------------------------- | --------------------------------------- |
+| `docs/shared-documentation-afham` | `docs/shared-fix-readme-typo-afham`     |
+| `chore/shared-tooling-lahiru`     | `chore/shared-add-gitignore-lahiru`     |
+| `chore/shared-ci-pawan`           | `chore/shared-conventions-update-pawan` |
+
+If you can't name an area you'd plausibly revisit, the work probably belongs on an epic branch instead.
+
+**The thirteen epics**, matching the modules in [`docs/requirements.md`](docs/requirements.md):
+
+| Module       | Epic                            | Branch segment             |
+| ------------ | ------------------------------- | -------------------------- |
+| `FR-ACC`     | Account Management              | `account-management`       |
+| `FR-PROF`    | Profile & Trust Signals         | `profile-trust-signals`    |
+| `FR-POST`    | Gig Posting                     | `gig-posting`              |
+| `FR-DISC`    | Discovery & Search              | `discovery-search`         |
+| `FR-APPLY`   | Applying & Selection            | `applying-selection`       |
+| `FR-ENG`     | Engagement Lifecycle            | `engagement-lifecycle`     |
+| `FR-RATE`    | Ratings & Reputation            | `ratings-reputation`       |
+| `FR-ENDORSE` | Community Endorsement           | `community-endorsement`    |
+| `FR-DISPUTE` | Disputes & Reporting            | `disputes-reporting`       |
+| `FR-MOD`     | Moderator Functions             | `moderator-functions`      |
+| `FR-ADM`     | Admin Functions                 | `admin-functions`          |
+| `FR-DASH`    | Shared Dashboard Infrastructure | `dashboard-infrastructure` |
+| `FR-NOTIF`   | Notifications                   | `notifications`            |
+| —            | Anything outside an epic        | `shared-<area>`            |
+
+**One branch per epic, per developer — and it stays alive.** Sprint 1 gives you some of your epic's cards, Sprint 2 or 3 may give you more. You return to the same branch rather than creating a new one. Because slices are assigned so that no two people hold the same epic in a sprint, and because your name is in the branch anyway, collisions don't arise.
+
+This is a deliberate choice to keep the rule trivial: **the epic is written on your card, so there is never a judgement call about what to name a branch or which cards belong together.**
+
+**Three things follow from branches being long-lived.**
+
+**Do not delete the branch after a pull request merges.** GitHub offers a "Delete branch" button on the merged PR — don't press it. You will come back to this branch.
+
+**Pull `develop` into your branch regularly**, at least whenever someone else merges:
+
+```
+git checkout feature/account-management-afham
+git merge develop
+```
+
+A branch that lives for weeks drifts from `develop`, and the longer you leave it the more painful the eventual merge. Merging `develop` in early and often keeps each one small.
+
+**Open several pull requests from the same branch over time.** A branch is not one pull request. When a coherent chunk of your epic is finished and working, open a PR, get it reviewed, merge it, and carry on committing to the same branch. This matters: the Definition of Done requires work to be merged into `develop`, so a card cannot be Done while it sits unmerged. Merging a few times per sprint is what lets cards close as you finish them instead of all at once at the end.
+
+**A `feature/` branch holds fixes to its own epic too.** Don't open `fix/account-management-afham` alongside it — the type reflects what the branch is for, not what every commit does. Use `fix/` only for a correction outside your own epic work — a bug in someone else's epic goes on `fix/<their-epic>-<yourname>`, which your name keeps distinct from their branch, and a repo-wide fix goes on `fix/shared-<area>-<yourname>`.
+
+> **Watch the one asymmetry:** branches spell the type out — `feature/…` — while commits use the Conventional Commits abbreviation, `feat(…)`. Two conventions sitting next to each other, deliberately kept as they read best in each place.
 
 ---
 
 ## Commit messages
 
-[Conventional Commits](https://www.conventionalcommits.org/), with the requirement ID appended:
+[Conventional Commits](https://www.conventionalcommits.org/), with the requirement IDs appended:
 
 ```
-<type>(<surface>): <description> [<FR-ID>]
+<type>(<surface>): <description> [<FR-ID>, <FR-ID>]
 ```
 
 ```
 feat(backend): add posting creation endpoint [FR-POST-01]
+feat(backend): add NIC storage and duplicate checks [FR-ACC-04, FR-ACC-05]
 fix(mobile): correct radius auto-expansion step size [FR-DISC-01]
 refactor(shared): extract OTP validation helper [FR-ACC-08]
 chore(backend): add prisma seed script
 ```
+
+**`surface` lives here, not in the branch name.** Branches are named by epic; the commit's scope segment is what tells you which surface a change touched when you scan `git log`. Values: `backend`, `mobile`, `dashboard`, `shared`.
+
+**List every requirement the commit touches**, comma-separated. Several requirements are validation rules living inside another requirement's flow — the age gate, NIC handling, duplicate prevention and ToS acceptance all sit inside registration — so one commit legitimately closes several cards.
+
+**The commit message is where traceability lives.** `git log --grep "FR-ACC-03"` searches commit messages, not branch names, so this is the layer that answers "where is this implemented?" It is the one part of the convention that must not be skipped.
 
 **Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `chore`, `revert`.
 
@@ -94,7 +154,9 @@ In GitHub Desktop, the field below **Summary** is the body.
 
 ## Pull requests and merging
 
-**Every feature branch goes to `develop` through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
+**Work reaches `develop` only through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
+
+**A branch produces several pull requests over its life**, not one. Because epic branches stay alive across sprints, you open a PR each time a coherent chunk is finished and working, then keep committing to the same branch afterwards.
 
 **Check the base branch before you click Create.** GitHub shows `base: … ← compare: your-branch` at the top of the PR page. The repository default is `main`, so that dropdown pre-selects `main` — change it to `develop`. A feature branch merged into `main` breaks the sprint-boundary rule below, and it's an easy click to miss.
 
@@ -113,7 +175,6 @@ In GitHub Desktop, the field below **Summary** is the body.
 - **Anything to watch** — a deliberate trade-off, something that looks odd but isn't, a follow-up you've left for later.
 
 If a PR needs more explanation than that, it's probably too big — consider splitting it.
-
 
 ---
 
@@ -178,14 +239,19 @@ Points estimate relative effort and uncertainty, not hours. Current per-story es
 ## Quick reference
 
 ```bash
-# start work
+# first time on your epic — create the branch
 git checkout develop && git pull
-git checkout -b feature/backend/fr-post-01-posting-endpoint-yourname
+git checkout -b feature/gig-posting-yourname
+
+# every time after that — the branch already exists, just go back to it
+git checkout feature/gig-posting-yourname
+git merge develop                 # stay current with everyone else's merges
 
 # commit
 git commit -m "feat(backend): add posting creation endpoint [FR-POST-01]"
 
 # open a PR into develop, get one review, merge with a merge commit (not squash)
+# DO NOT delete the branch after merging — you will come back to it
 
 # check your commits are attributed to you
 git shortlog -sn develop

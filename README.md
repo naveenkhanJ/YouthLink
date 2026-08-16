@@ -38,31 +38,50 @@ Read these before writing code. They're short, and most of the mechanisms here a
 
 ## Repository layout
 
-The branch-name convention uses a `surface` segment — `backend`, `mobile`, `dashboard`, `shared` — and the intended top-level layout mirrors it, so a branch name tells you where its code lives:
-
 ```
 YouthLink/
-├── backend/        Node.js + Express API, Prisma schema and migrations
-├── mobile/         React Native (Expo) — the consumer app
-├── dashboard/      React + Vite — internal Admin/Moderator tooling
-├── shared/         Code used by more than one surface
-├── docs/           Requirements, schema, product overview, ownership
+├── backend/                Node.js + Express API (CommonJS)
+│   ├── prisma/             schema.prisma and migrations
+│   ├── index.js            Server bootstrap — starts the listener, nothing else
+│   └── src/
+│       ├── app.js          Express assembly and route mounting
+│       ├── config/         Environment variables, read here and nowhere else
+│       ├── lib/            Shared infrastructure — the Prisma client
+│       ├── middleware/     Auth, error handling, 404
+│       ├── modules/        One folder per epic — account, posting, discovery,
+│       │                   application, notification. Your work lives here
+│       └── utils/          AppError, asyncHandler
+├── mobile/                 React Native via Expo — the consumer app
+│   └── src/
+│       ├── api/            One file per backend module, plus client.js
+│       ├── components/     Shared UI
+│       ├── config/         API base URL, Firebase config
+│       ├── navigation/     RootNavigator — collects every module's screens
+│       ├── screens/        One folder per module
+│       └── utils/
+├── dashboard/              React + Vite — internal Admin/Moderator tooling
+│   └── src/                api, components, lib, pages (Sprint 3/4)
+├── shared/                 Code used by more than one surface — currently empty
+├── docs/                   Requirements, schema, product overview, ownership
+├── AGENTS.md               Context for AI coding agents
 ├── README.md
 └── CONTRIBUTING.md
 ```
 
+**Both `backend/src/` and `mobile/src/` are organised by module, not by layer.** The obvious structure would be `routes/`, `controllers/`, `services/` with every module mixed together inside each — but four people build four modules simultaneously, so that puts all four of us in the same three directories on every pull request. Module-first means each person works almost entirely inside one folder.
+
+Each surface has a `src/README.md` explaining its structure and the rules worth not learning the hard way. Read yours before your first commit.
+
 ---
 
 ## Getting started
-
-> **Project status:** scaffolding is in progress. Until the initial commit lands, the per-surface commands below won't run yet — the stack, layout, and schema are settled, the directories aren't there. Delete this note once setup is complete.
 
 ### Prerequisites
 
 - Node.js and npm
 - A PostgreSQL instance you can connect to
 - Access to the team's Firebase project (Phone Auth + FCM)
-- The Expo tooling for whichever platform you're testing on
+- The Expo tooling, plus the team's Android **development build** — Expo Go cannot run this app
 
 ### First-time setup
 
@@ -81,15 +100,27 @@ cd backend
 npm install
 cp .env.example .env      # then fill in your local values
 npx prisma migrate dev    # applies the schema to your database
+npx prisma generate       # creates the Prisma client — it is git-ignored,
+                          # so it is never present in a fresh clone
 npm run dev
 ```
+
+Then check `http://localhost:3000/health` returns `{"status":"ok","database":"configured"}`.
 
 **Mobile**
 
 ```bash
 cd mobile
 npm install
-npx expo start
+npx expo start --dev-client
+```
+
+> **Expo Go will not run this app.** Firebase phone authentication and push notifications are native modules, as are the navigation packages, so a **development build** is required. Ask whoever produced the current APK for it rather than making your own.
+
+If `npm install` doesn't already bring in the navigation packages, install them with Expo so the versions match the SDK:
+
+```bash
+npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context
 ```
 
 **Dashboard**
