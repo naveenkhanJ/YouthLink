@@ -1,7 +1,7 @@
 /**
  * Express application assembly.
  *
- * Kept separate from index.js so the app can be required without starting a
+ * Kept separate from index.js so the app can be imported without starting a
  * server — useful for testing later, and it keeps the bootstrap file trivial.
  *
  * Order matters here and is the usual cause of confusing bugs:
@@ -10,11 +10,21 @@
  *   3. notFound  — only reached when nothing above matched
  *   4. errorHandler — must be LAST, and must take four arguments
  */
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
 
-const errorHandler = require("./middleware/errorHandler");
-const notFound = require("./middleware/notFound");
+import errorHandler from "./middleware/errorHandler.js";
+import notFound from "./middleware/notFound.js";
+
+import accountRoutes from "./modules/account/account.routes.js";
+import postingRoutes from "./modules/posting/posting.routes.js";
+import discoveryRoutes from "./modules/discovery/discovery.routes.js";
+import applicationRoutes from "./modules/application/application.routes.js";
+import notificationRoutes from "./modules/notification/notification.routes.js";
+import engagementRoutes from "./modules/engagement/engagement.routes.js";
+import ratingRoutes from "./modules/rating/rating.routes.js";
+import profileRoutes from "./modules/profile/profile.routes.js";
+import endorsementRoutes from "./modules/endorsement/endorsement.routes.js";
 
 const app = express();
 
@@ -36,28 +46,19 @@ app.get("/health", (req, res) => {
 // Module routers. One line per epic; the module owns everything below its path.
 // Add yours here when you create your module folder, then leave it alone.
 // ---------------------------------------------------------------------------
-app.use("/api/account", require("./modules/account/account.routes"));
-app.use("/api/postings", require("./modules/posting/posting.routes"));
-app.use("/api/discovery", require("./modules/discovery/discovery.routes"));
-app.use(
-  "/api/applications",
-  require("./modules/application/application.routes"),
-);
-app.use(
-  "/api/notifications",
-  require("./modules/notification/notification.routes"),
-);
+app.use("/api/account", accountRoutes);
+app.use("/api/postings", postingRoutes);
+app.use("/api/discovery", discoveryRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Sprint 2 epics — folders exist so nobody has to invent the layout later.
-app.use("/api/engagements", require("./modules/engagement/engagement.routes"));
-app.use("/api/ratings", require("./modules/rating/rating.routes"));
-app.use("/api/profiles", require("./modules/profile/profile.routes"));
-app.use(
-  "/api/endorsements",
-  require("./modules/endorsement/endorsement.routes"),
-);
+app.use("/api/engagements", engagementRoutes);
+app.use("/api/ratings", ratingRoutes);
+app.use("/api/profiles", profileRoutes);
+app.use("/api/endorsements", endorsementRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

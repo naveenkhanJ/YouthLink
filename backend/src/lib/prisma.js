@@ -6,7 +6,7 @@
  * the database runs out of connections under very little load.
  *
  * NOTE the import path. schema.prisma sets `output = "../generated/prisma"`,
- * so the client is at "../../generated/prisma/client" — the "client"
+ * so the client is at "../../generated/prisma/client.js" — the "client"
  * entrypoint, not the bare generated/prisma directory (Prisma 7's
  * prisma-client generator splits client/browser/enums/models into separate
  * entrypoints). The generated folder is git-ignored — if this import fails,
@@ -15,15 +15,21 @@
  * Prisma 7 requires an explicit driver adapter for SQL databases — there is
  * no built-in engine binary in this code path anymore. @prisma/adapter-pg
  * wraps the standard `pg` driver.
+ *
+ * Uses dynamic import() + top-level await rather than a static import so a
+ * missing generated client or adapter package can still be caught here and
+ * turned into a clear message — a static import's resolution failure happens
+ * before any of this module's own code runs, so a try/catch around it can
+ * never be reached.
  */
-const config = require("../config");
+import config from "../config/index.js";
 
 let PrismaClient, PrismaPg;
 try {
-  ({ PrismaClient } = require("../../generated/prisma/client"));
-  ({ PrismaPg } = require("@prisma/adapter-pg"));
+  ({ PrismaClient } = await import("../../generated/prisma/client.js"));
+  ({ PrismaPg } = await import("@prisma/adapter-pg"));
 } catch (err) {
-  if (err.code === "MODULE_NOT_FOUND") {
+  if (err.code === "ERR_MODULE_NOT_FOUND") {
     throw new Error(
       "The Prisma client or its driver adapter is missing.\n" +
         "Run this in the backend/ folder, then start the server again:\n\n" +
@@ -42,4 +48,4 @@ const prisma = new PrismaClient({
   log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
 });
 
-module.exports = prisma;
+export default prisma;

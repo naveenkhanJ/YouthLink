@@ -7,7 +7,7 @@
  * It should contain no business rules and no Prisma calls — those belong in
  * rating.service.js, so the rules stay testable and reusable.
  */
-// const AppError = require("../../utils/AppError");
-// const service = require("./rating.service");
+// import AppError from "../../utils/AppError.js";
+// import service from "./rating.service.js";
 
-module.exports = {};
+export default {};

@@ -6,7 +6,7 @@
  * and a missing variable then fails somewhere deep at request time instead of
  * at startup.
  */
-require("dotenv/config");
+import "dotenv/config";
 
 /**
  * Reads a required variable, failing fast at startup if it is missing.
@@ -34,7 +34,7 @@ function optional(name, fallback) {
   return process.env[name] || fallback;
 }
 
-module.exports = {
+export default {
   env: optional("NODE_ENV", "development"),
   port: Number(optional("PORT", "3000")),
   databaseUrl: required("DATABASE_URL"),
