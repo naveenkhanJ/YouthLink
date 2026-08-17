@@ -2,12 +2,12 @@
 // Business logic + data access for gig postings. Controllers should call
 // only this layer, never prisma directly, so rules stay in one place.
 
-const prisma = require('./prisma');
-const { computeIsUrgent } = require('./gigPosting.urgency');
+const prisma = require('../../lib/prisma');
+const { computeIsUrgent } = require('./posting.urgency');
 
 /**
  * Creates a new gig posting for the given employer.
- * Assumes `data` has already passed gigPosting.validators.js.
+ * Assumes `data` has already passed posting.validators.js.
  */
 async function createGigPosting(employerId, data) {
   const posting = await prisma.gigPosting.create({

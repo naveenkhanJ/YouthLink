@@ -1,21 +1,16 @@
 
 // gigPosting.routes.js
-//Mount in server.js with: app.use('/api/gig-postings', require('./gigPosting.routes'));
-// Assumes an `authMiddleware` upstream that sets req.user — swap the import
-// for your real auth middleware.
+// Mount in app.js with: app.use('/api/postings', require('./modules/posting/posting.routes'));
 
 const express = require('express');
-const { createGigPostingValidators } = require('./gigPosting.validators');
-const gigPostingController = require('./gigPosting.controller');
-// const authMiddleware = require('./authMiddleware'); // TODO: wire up real auth
+const { createGigPostingValidators } = require('./posting.validators');
+const postingController = require('./posting.controller');
 
 const router = express.Router();
 
-// router.use(authMiddleware); // uncomment once auth middleware exists
-
-router.post('/', createGigPostingValidators, gigPostingController.createGigPosting);
-router.get('/mine', gigPostingController.listMyGigPostings);
-router.get('/:id', gigPostingController.getGigPosting);
+router.post('/', createGigPostingValidators, postingController.createGigPosting);
+router.get('/mine', postingController.listMyGigPostings);
+router.get('/:id', postingController.getGigPosting);
 
 module.exports = router;
 

@@ -6,7 +6,16 @@
  */
 const app = require("./src/app");
 const config = require("./src/config");
+const prisma = require("./src/lib/prisma");
 
-app.listen(config.port, () => {
-  console.log(`API listening on http://localhost:${config.port}`);
+async function startServer() {
+  await prisma.ready;
+  app.listen(config.port, () => {
+    console.log(`API listening on http://localhost:${config.port}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
 });

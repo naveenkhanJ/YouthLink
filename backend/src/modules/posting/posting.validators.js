@@ -1,16 +1,24 @@
-// gigPosting.validators.js
+// posting.validators.js
 // Validation chain for POST /api/gig-postings.
-// Enum-valid-value lists are pulled from the generated Prisma client so they
-// always match schema.prisma — nothing here is hardcoded against a guess.
+// Keep this independent of @prisma/client so it works with the repo's custom
+// generated Prisma output and avoids the '.prisma/client/default' import error.
 
 const { body } = require('express-validator');
-const {
-  GigCategory,
-  ArrangementType,
-  PayKind,
-  PayRateUnit,
-  PostingAsType,
-} = require('@prisma/client');
+
+const ALLOWED_GIG_CATEGORIES = [
+  'RETAIL',
+  'DELIVERY',
+  'EVENT_SETUP',
+  'MOVING',
+  'FOOD_SERVICE',
+  'TUTORING',
+  'CLEANING',
+];
+
+const ALLOWED_ARRANGEMENT_TYPES = ['GIG', 'PART_TIME', 'INTERNSHIP'];
+const ALLOWED_PAY_KINDS = ['FIXED_TOTAL', 'RATE', 'UNPAID', 'STIPEND', 'PAID'];
+const ALLOWED_PAY_RATE_UNITS = ['DAY', 'WEEK', 'MONTH'];
+const ALLOWED_POSTING_AS_TYPES = ['INDIVIDUAL', 'BUSINESS'];
 
 const LIMITS = {
   TITLE_MAX: 80,
@@ -19,18 +27,12 @@ const LIMITS = {
   BUSINESS_BIO_MAX: 300,
   SCHEDULE_MAX: 200,
   WORKERS_MIN: 1,
-  WORKERS_MAX: 20, // FR-POST-06: workers needed range is 1-20
+  WORKERS_MAX: 20,
 };
 
-// FR-POST-05: postings must start at least this far in the future.
-const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000; // 2 hours
+const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
 const MIN_LEAD_TIME_LABEL = '2 hours';
-
-// TODO: confirm this is the actual member name in your PostingAsType enum.
 const BUSINESS_POSTING_TYPE = 'BUSINESS';
-
-// TODO: if any PayKind values (e.g. an "unpaid"/"negotiable" option) should NOT
-// require payAmount/payRateUnit, list them here. Left empty = amount+unit always required.
 const PAY_KINDS_WITHOUT_AMOUNT = [];
 
 const createGigPostingValidators = [
@@ -51,19 +53,19 @@ const createGigPostingValidators = [
   body('category')
     .notEmpty().withMessage('Category is required.')
     .bail()
-    .isIn(Object.values(GigCategory))
+    .isIn(ALLOWED_GIG_CATEGORIES)
     .withMessage('Category is not a recognized option.'),
 
   body('arrangementType')
     .notEmpty().withMessage('Arrangement type is required.')
     .bail()
-    .isIn(Object.values(ArrangementType))
+    .isIn(ALLOWED_ARRANGEMENT_TYPES)
     .withMessage('Arrangement type is not a recognized option.'),
 
   body('payKind')
     .notEmpty().withMessage('Pay type is required.')
     .bail()
-    .isIn(Object.values(PayKind))
+    .isIn(ALLOWED_PAY_KINDS)
     .withMessage('Pay type is not a recognized option.'),
 
   body('payAmount')
@@ -76,13 +78,13 @@ const createGigPostingValidators = [
     .if((value, { req }) => !PAY_KINDS_WITHOUT_AMOUNT.includes(req.body.payKind))
     .notEmpty().withMessage('Pay rate unit is required.')
     .bail()
-    .isIn(Object.values(PayRateUnit))
+    .isIn(ALLOWED_PAY_RATE_UNITS)
     .withMessage('Pay rate unit is not a recognized option.'),
 
   body('postedAsType')
     .notEmpty().withMessage('Posting-as type is required.')
     .bail()
-    .isIn(Object.values(PostingAsType))
+    .isIn(ALLOWED_POSTING_AS_TYPES)
     .withMessage('Posting-as type is not a recognized option.'),
 
   body('postedBusinessName')
