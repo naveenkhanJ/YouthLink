@@ -80,7 +80,10 @@ module.exports = {
   nicEncryptionKey,
   nicIvKey,
 
+  // Path to the downloaded Firebase Admin service-account JSON (FR-ACC-08) —
+  // see backend/src/lib/firebaseAdmin.js.
+  firebaseServiceAccountPath: required("FIREBASE_SERVICE_ACCOUNT_PATH"),
+
   // Add new variables here AND to .env.example. Never commit real values.
-  // Slice A will add: JWT_SECRET and the Firebase Admin service-account
-  // credentials.
+  // Slice A will add: JWT_SECRET.
 };
