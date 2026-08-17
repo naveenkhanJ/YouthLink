@@ -2,10 +2,10 @@
 // Thin HTTP layer: pull the validated input off req, call the service,
 // shape the response. No Prisma calls or business rules live here.
 
-const { validationResult } = require('express-validator');
-const gigPostingService = require('./posting.service');
+import { validationResult } from 'express-validator';
+import * as gigPostingService from './posting.service.js';
 
-async function createGigPosting(req, res) {
+export async function createGigPosting(req, res) {
   const result = validationResult(req);
   if (!result.isEmpty()) {
     // One error per field, keyed by field name, so the client can
@@ -33,7 +33,7 @@ async function createGigPosting(req, res) {
   }
 }
 
-async function getGigPosting(req, res) {
+export async function getGigPosting(req, res) {
   try {
     const posting = await gigPostingService.getGigPostingById(req.params.id);
     if (!posting) {
@@ -46,7 +46,7 @@ async function getGigPosting(req, res) {
   }
 }
 
-async function listMyGigPostings(req, res) {
+export async function listMyGigPostings(req, res) {
   const employerId = req.user?.id;
   if (!employerId) {
     return res.status(401).json({ status: 'error', message: 'Authentication required.' });
@@ -59,5 +59,3 @@ async function listMyGigPostings(req, res) {
     return res.status(500).json({ status: 'error', message: 'Could not fetch postings.' });
   }
 }
-
-module.exports = { createGigPosting, getGigPosting, listMyGigPostings };

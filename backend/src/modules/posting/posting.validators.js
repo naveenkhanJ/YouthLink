@@ -3,7 +3,7 @@
 // Keep this independent of @prisma/client so it works with the repo's custom
 // generated Prisma output and avoids the '.prisma/client/default' import error.
 
-const { body } = require('express-validator');
+import { body } from 'express-validator';
 
 const ALLOWED_GIG_CATEGORIES = [
   'RETAIL',
@@ -20,7 +20,7 @@ const ALLOWED_PAY_KINDS = ['FIXED_TOTAL', 'RATE', 'UNPAID', 'STIPEND', 'PAID'];
 const ALLOWED_PAY_RATE_UNITS = ['DAY', 'WEEK', 'MONTH'];
 const ALLOWED_POSTING_AS_TYPES = ['INDIVIDUAL', 'BUSINESS'];
 
-const LIMITS = {
+export const LIMITS = {
   TITLE_MAX: 80,
   DESCRIPTION_MAX: 1000,
   BUSINESS_NAME_MAX: 100,
@@ -30,12 +30,12 @@ const LIMITS = {
   WORKERS_MAX: 20,
 };
 
-const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
-const MIN_LEAD_TIME_LABEL = '2 hours';
-const BUSINESS_POSTING_TYPE = 'BUSINESS';
+export const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
+export const MIN_LEAD_TIME_LABEL = '2 hours';
+export const BUSINESS_POSTING_TYPE = 'BUSINESS';
 const PAY_KINDS_WITHOUT_AMOUNT = [];
 
-const createGigPostingValidators = [
+export const createGigPostingValidators = [
   body('title')
     .trim()
     .notEmpty().withMessage('Title is required.')
@@ -138,11 +138,3 @@ const createGigPostingValidators = [
     .isLength({ max: LIMITS.SCHEDULE_MAX })
     .withMessage(`Schedule must be ${LIMITS.SCHEDULE_MAX} characters or fewer.`),
 ];
-
-module.exports = {
-  createGigPostingValidators,
-  LIMITS,
-  BUSINESS_POSTING_TYPE,
-  MIN_LEAD_TIME_MS,
-  MIN_LEAD_TIME_LABEL,
-};

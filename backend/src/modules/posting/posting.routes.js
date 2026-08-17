@@ -1,10 +1,10 @@
 
 // gigPosting.routes.js
-// Mount in app.js with: app.use('/api/postings', require('./modules/posting/posting.routes'));
+// Mount in app.js with: app.use('/api/postings', postingRoutes);
 
-const express = require('express');
-const { createGigPostingValidators } = require('./posting.validators');
-const postingController = require('./posting.controller');
+import express from 'express';
+import { createGigPostingValidators } from './posting.validators.js';
+import * as postingController from './posting.controller.js';
 
 const router = express.Router();
 
@@ -12,5 +12,5 @@ router.post('/', createGigPostingValidators, postingController.createGigPosting)
 router.get('/mine', postingController.listMyGigPostings);
 router.get('/:id', postingController.getGigPosting);
 
-module.exports = router;
+export default router;
 

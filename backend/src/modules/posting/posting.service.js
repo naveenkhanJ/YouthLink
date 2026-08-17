@@ -2,14 +2,18 @@
 // Business logic + data access for gig postings. Controllers should call
 // only this layer, never prisma directly, so rules stay in one place.
 
-const prisma = require('../../lib/prisma');
-const { computeIsUrgent } = require('./posting.urgency');
+// gigPosting.service.js
+// Business logic + data access for gig postings. Controllers should call
+// only this layer, never prisma directly, so rules stay in one place.
+
+import prisma from '../../lib/prisma.js';
+import { computeIsUrgent } from './posting.urgency.js';
 
 /**
  * Creates a new gig posting for the given employer.
  * Assumes `data` has already passed posting.validators.js.
  */
-async function createGigPosting(employerId, data) {
+export async function createGigPosting(employerId, data) {
   const posting = await prisma.gigPosting.create({
     data: {
       employerId,
@@ -39,19 +43,13 @@ async function createGigPosting(employerId, data) {
   return posting;
 }
 
-async function getGigPostingById(id) {
+export async function getGigPostingById(id) {
   return prisma.gigPosting.findUnique({ where: { id } });
 }
 
-async function listGigPostingsByEmployer(employerId) {
+export async function listGigPostingsByEmployer(employerId) {
   return prisma.gigPosting.findMany({
     where: { employerId },
     orderBy: { createdAt: 'desc' },
   });
 }
-
-module.exports = {
-  createGigPosting,
-  getGigPostingById,
-  listGigPostingsByEmployer,
-};

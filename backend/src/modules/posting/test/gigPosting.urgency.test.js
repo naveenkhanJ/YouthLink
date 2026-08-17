@@ -1,6 +1,6 @@
 // gigPosting.urgency.test.js
 // Run with: npx jest gigPosting.urgency.test.js
-const { computeIsUrgent, URGENCY_WINDOW_MIN_MS, URGENCY_WINDOW_MAX_MS } = require('../posting.urgency');
+import { computeIsUrgent, URGENCY_WINDOW_MIN_MS, URGENCY_WINDOW_MAX_MS } from '../posting.urgency.js';
 
 const H = 60 * 60 * 1000;
 const NOW = Date.now();
