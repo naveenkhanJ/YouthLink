@@ -10,12 +10,23 @@
  * Throw AppError for expected failures; asyncHandler forwards it to the error
  * handler, which turns it into the right status code.
  */
-// import AppError from "../../utils/AppError.js";
-// import service from "./account.service.js";
+import service from "./account.service.js";
 
 export default {
-  // async create(req, res) {
-  //   const result = await service.create(req.body);
-  //   res.status(201).json(result);
-  // },
+  async register(req, res) {
+    const user = await service.register(req.body);
+    // Never return passwordHash or nicEncrypted — only the masked last 4
+    // digits (NFR-SEC-03) reach the client.
+    res.status(201).json({
+      id: user.id,
+      role: user.role,
+      phone: user.phone,
+      email: user.email,
+      legalName: user.legalName,
+      birthdate: user.birthdate,
+      nicLast4: user.nicLast4,
+      accountStatus: user.accountStatus,
+      createdAt: user.createdAt,
+    });
+  },
 };
