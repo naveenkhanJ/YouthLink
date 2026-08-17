@@ -45,7 +45,7 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 
 ## Things that will bite you
 
-**The Prisma client is not at `@prisma/client`.** `schema.prisma` sets `output = "../generated/prisma"`, so import from `backend/generated/prisma`. The folder is git-ignored — run `npx prisma generate` in `backend/` if it's missing. Use one shared client instance, not one per file.
+**The Prisma client is not at `@prisma/client`.** `schema.prisma` sets `output = "../generated/prisma"`, so import from `backend/generated/prisma/client`, not the bare `backend/generated/prisma` directory. The folder is git-ignored — run `npx prisma generate` in `backend/` if it's missing. Use one shared client instance, not one per file.
 
 **The database URL lives in `backend/prisma.config.ts`, not in `schema.prisma`.** Prisma 7 moved it. The datasource block having no `url` line is correct.
 
