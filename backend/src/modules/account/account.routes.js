@@ -14,5 +14,7 @@ import controller from "./account.controller.js";
 const router = express.Router();
 
 router.post("/register", asyncHandler(controller.register));
+router.post("/login/password", asyncHandler(controller.loginPassword));
+router.post("/login/otp", asyncHandler(controller.loginOtp));
 
 export default router;

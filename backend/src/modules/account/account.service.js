@@ -10,11 +10,28 @@
 import prisma from "../../lib/prisma.js";
 import AppError from "../../utils/AppError.js";
 import { encryptNic, getNicLast4 } from "./nicCrypto.js";
-import { hashPassword } from "./passwordHash.js";
+import { hashPassword, verifyPassword } from "./passwordHash.js";
 import { verifyFirebaseIdToken } from "./firebaseAuth.js";
+import { signToken } from "../../lib/jwt.js";
+import { isSuspended } from "../../lib/accountStatus.js";
 
 const MIN_AGE = 18;
 const VALID_ROLES = ["YOUTH_JOB_SEEKER", "EMPLOYER", "COMMUNITY_ENDORSER"];
+
+// FR-ACC-09 / NFR-SEC-02: 5 consecutive failed password attempts locks the
+// password path for 15 minutes. Only the password path — FR-ACC-07 deliberately
+// keeps OTP login independent so it stays available when password login doesn't.
+const LOCKOUT_THRESHOLD = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+
+// Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
+// compared against on an unregistered-phone login attempt so the response
+// takes roughly the same time as a real wrong-password attempt (which runs
+// a real bcrypt.compare). Without this, response latency alone would let a
+// caller enumerate registered phone numbers even though the error message
+// is identical either way — caught in self-review.
+const DUMMY_PASSWORD_HASH =
+  "$2b$12$M5aYuTGsgzTQZq0ATSNOBuhbJmRM7dgpCEhSo/Byd2XJedYLlRX3S";
 
 function calculateAge(birthdate) {
   const today = new Date();
@@ -218,4 +235,153 @@ async function register(input) {
   }
 }
 
-export default { register };
+/**
+ * FR-ACC-07 password login path. Kept deliberately independent of the OTP
+ * path below — a working password must log a user in even if SMS delivery
+ * is failing (FR-ACC-07 AC2).
+ *
+ * @param {object} input
+ * @param {string} input.phone
+ * @param {string} input.password
+ * @returns {Promise<{ token: string, user: object }>}
+ */
+async function loginWithPassword({ phone, password }) {
+  if (!phone || typeof phone !== "string") {
+    throw AppError.badRequest("Phone is required.", { phone: "Required" });
+  }
+  if (!password || typeof password !== "string") {
+    throw AppError.badRequest("Password is required.", { password: "Required" });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { phone, deletedAt: null },
+  });
+
+  // Same generic message whether the phone isn't registered or the password
+  // is wrong — telling the two apart would let a caller enumerate registered
+  // phone numbers.
+  const invalidCredentials = () =>
+    AppError.unauthorized("Incorrect phone number or password.");
+
+  if (!user) {
+    // Burn roughly the same time a real password check would take, so an
+    // unregistered phone isn't distinguishable from a wrong password by
+    // response latency alone.
+    await verifyPassword(password, DUMMY_PASSWORD_HASH);
+    throw invalidCredentials();
+  }
+
+  // A lockout window that has already elapsed is treated as cleared before
+  // evaluating this attempt, giving a fresh 5-attempt window rather than
+  // re-locking on the very next failure — NFR-SEC-02 says a lockout lasts
+  // 15 minutes, which only makes sense if attempts resume normally after.
+  let failedLoginAttempts = user.failedLoginAttempts;
+  let lockedUntil = user.lockedUntil;
+  if (lockedUntil && lockedUntil <= new Date()) {
+    failedLoginAttempts = 0;
+    lockedUntil = null;
+  }
+
+  if (lockedUntil && lockedUntil > new Date()) {
+    throw AppError.locked(
+      "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.",
+    );
+  }
+
+  const passwordCorrect = await verifyPassword(password, user.passwordHash);
+
+  if (!passwordCorrect) {
+    const attempts = failedLoginAttempts + 1;
+    const lockingNow = attempts >= LOCKOUT_THRESHOLD;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: lockingNow ? 0 : attempts,
+        lockedUntil: lockingNow
+          ? new Date(Date.now() + LOCKOUT_DURATION_MS)
+          : null,
+      },
+    });
+    if (lockingNow) {
+      throw AppError.locked(
+        "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.",
+      );
+    }
+    throw invalidCredentials();
+  }
+
+  // Correct password clears any prior failure count/lockout.
+  if (failedLoginAttempts !== 0 || user.lockedUntil) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { failedLoginAttempts: 0, lockedUntil: null },
+    });
+  }
+
+  // Suspension is revealed only after the password is proven correct — doing
+  // it earlier would let a caller learn account status without knowing the
+  // password.
+  if (isSuspended(user)) {
+    throw AppError.forbidden("This account has been suspended.");
+  }
+
+  return { token: signToken({ sub: user.id }), user };
+}
+
+/**
+ * FR-ACC-07 OTP login path, via Firebase Phone Authentication — same
+ * server-side ID-token verification as registration (FR-ACC-08 AC3). Lets a
+ * user log in without their password (FR-ACC-07 AC1), fully unaffected by
+ * an active password lockout (product-overview.md: "the OTP path is
+ * unaffected by that lock") — nothing in this function even reads
+ * lockedUntil.
+ *
+ * Also clears any active password lockout on success — not required to
+ * make this path work (requireAuth.js no longer enforces lockedUntil at
+ * all, and this function never checked it), but proving phone ownership
+ * via a fresh Firebase OTP is reasonable grounds to lift the password
+ * lockout too, so the user isn't left waiting out the remaining 15
+ * minutes on the password path after already proving who they are a
+ * different way. Same as what a correct password does in
+ * loginWithPassword above.
+ *
+ * @param {object} input
+ * @param {string} input.idToken - Firebase ID token from client-side phone verification.
+ * @returns {Promise<{ token: string, user: object }>}
+ */
+async function loginWithOtp({ idToken }) {
+  if (!idToken || typeof idToken !== "string") {
+    throw AppError.badRequest("idToken is required.", { idToken: "Required" });
+  }
+
+  let phoneNumber;
+  try {
+    ({ phoneNumber } = await verifyFirebaseIdToken(idToken));
+  } catch (err) {
+    console.error("verifyFirebaseIdToken failed during OTP login:", err);
+    throw AppError.unauthorized(
+      "Phone verification failed or has expired. Verify your phone again.",
+    );
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { phone: phoneNumber, deletedAt: null },
+  });
+  if (!user) {
+    throw AppError.unauthorized("No account found for this phone number.");
+  }
+  if (isSuspended(user)) {
+    throw AppError.forbidden("This account has been suspended.");
+  }
+
+  if (user.failedLoginAttempts !== 0 || user.lockedUntil) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { failedLoginAttempts: 0, lockedUntil: null },
+    });
+  }
+
+  return { token: signToken({ sub: user.id }), user };
+}
+
+export default { register, loginWithPassword, loginWithOtp };

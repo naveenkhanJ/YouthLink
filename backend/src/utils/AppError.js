@@ -34,6 +34,9 @@ class AppError extends Error {
   static conflict(message, fields) {
     return new AppError(409, message, fields);
   }
+  static locked(message = "Temporarily locked. Try again later.") {
+    return new AppError(423, message);
+  }
 }
 
 export default AppError;

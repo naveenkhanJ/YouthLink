@@ -51,6 +51,24 @@ Reasoning: [`database-schema.md`](database-schema.md), under the `User` indexes.
 is no session table.** Reasoning: [`database-schema.md`](database-schema.md),
 under Design Decisions.
 
+**The password-lockout window (`lockedUntil`, FR-ACC-09/NFR-SEC-02) is enforced
+only at the `/login/password` endpoint — never by the shared `requireAuth`
+middleware.** An earlier draft of the cross-cutting auth contract in
+[`module-ownership.md`](module-ownership.md) listed `lockedUntil` alongside
+`accountStatus`/`suspendedAt` as something checked on every request, and the
+middleware was briefly built that way. That was wrong: NFR-REL-02 (the
+requirement the "check on every request" rule actually exists for) only concerns
+suspension, and product-overview.md is explicit that "the OTP path is unaffected
+by that lock." Enforcing `lockedUntil` globally meant a caller with **no
+credentials at all** could fail someone's password 5 times and knock out that
+user's already-authenticated sessions on every device — multiple simultaneous
+logins are an explicit product decision (product-overview.md) — until they
+specifically logged back in via OTP. Caught 2026-08-18, during self-review of
+the first login implementation. Fixed before it reached `develop`. Reasoning and
+the corrected contract: `requireAuth.js`'s own doc comment and
+[`module-ownership.md`](module-ownership.md)'s cross-cutting authentication
+section.
+
 ## Code organisation
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer** —
