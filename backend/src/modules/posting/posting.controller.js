@@ -10,12 +10,22 @@
  * Throw AppError for expected failures; asyncHandler forwards it to the error
  * handler, which turns it into the right status code.
  */
-// const AppError = require("../../utils/AppError");
-// const service = require("./posting.service");
+const service = require("./posting.service");
 
 module.exports = {
-  // async create(req, res) {
-  //   const result = await service.create(req.body);
-  //   res.status(201).json(result);
-  // },
+  async create(req, res) {
+    const employerId = req.user?.id || req.body.employerId;
+    const result = await service.createPosting(req.body, employerId);
+    res.status(201).json(result);
+  },
+
+  async getById(req, res) {
+    const result = await service.getPostingById(req.params.id);
+    res.json(result);
+  },
+
+  async list(req, res) {
+    const result = await service.listPostings(req.query);
+    res.json(result);
+  },
 };

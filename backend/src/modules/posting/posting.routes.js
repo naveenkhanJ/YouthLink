@@ -13,8 +13,8 @@ const controller = require("./posting.controller");
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+router.get("/", asyncHandler(controller.list));
+router.post("/", asyncHandler(controller.create));
+router.get("/:id", asyncHandler(controller.getById));
 
 module.exports = router;
