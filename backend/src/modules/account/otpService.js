@@ -14,8 +14,8 @@
  * consumedAt to mean "no longer valid," whether by verification or by
  * being superseded.
  */
-const crypto = require("crypto");
-const prisma = require("../../lib/prisma");
+import crypto from "crypto";
+import prisma from "../../lib/prisma.js";
 
 const SUPPORTED_PURPOSES = ["PASSWORD_RESET", "PHONE_CHANGE", "ADMIN_LOGIN"];
 const CODE_LENGTH = 6;
@@ -106,4 +106,4 @@ async function verifyOtp({ phone, code, purpose }) {
   return result.count > 0;
 }
 
-module.exports = { generateOtp, verifyOtp };
+export { generateOtp, verifyOtp };

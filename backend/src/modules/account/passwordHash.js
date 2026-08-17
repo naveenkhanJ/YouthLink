@@ -13,7 +13,7 @@
  * native `bcrypt` package: pure JavaScript, no node-gyp/native build step
  * across four different dev machines.
  */
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 12;
 
@@ -34,4 +34,4 @@ async function verifyPassword(password, hash) {
   return bcrypt.compare(password, hash);
 }
 
-module.exports = { hashPassword, verifyPassword };
+export { hashPassword, verifyPassword };

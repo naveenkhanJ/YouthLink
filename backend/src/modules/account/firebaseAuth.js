@@ -9,19 +9,25 @@
  * (FR-ACC-08's third acceptance criterion). This module never generates or
  * checks an OTP itself — that's Firebase's job for these two paths. See
  * otpService.js for the three purposes the system generates its own codes for.
+ *
+ * Uses firebase-admin's modular API (getAuth from "firebase-admin/auth"),
+ * not the older admin.auth() style — see the note in lib/firebaseAdmin.js.
  */
-const admin = require("../../lib/firebaseAdmin");
+import { getAuth } from "firebase-admin/auth";
+import app from "../../lib/firebaseAdmin.js";
+
+const auth = getAuth(app);
 
 /**
  * @param {string} idToken - The Firebase ID token from the client.
  * @returns {Promise<{ phoneNumber: string, uid: string }>}
  */
 async function verifyFirebaseIdToken(idToken) {
-  const decoded = await admin.auth().verifyIdToken(idToken);
+  const decoded = await auth.verifyIdToken(idToken);
   if (!decoded.phone_number) {
     throw new Error("Firebase ID token has no verified phone number");
   }
   return { phoneNumber: decoded.phone_number, uid: decoded.uid };
 }
 
-module.exports = { verifyFirebaseIdToken };
+export { verifyFirebaseIdToken };

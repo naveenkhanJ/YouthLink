@@ -16,8 +16,8 @@
  * This deliberately leaks equality between identical NICs; that is exactly
  * the trade-off the uniqueness check needs, the same one a blind index makes.
  */
-const crypto = require("crypto");
-const config = require("../../config");
+import crypto from "crypto";
+import config from "../../config/index.js";
 
 const ALGORITHM = "aes-256-cbc";
 const IV_HEX_PATTERN = /^[0-9a-f]{32}$/i; // 16 bytes
@@ -112,4 +112,4 @@ function getNicLast4(nic) {
   return normalized.slice(-4);
 }
 
-module.exports = { normalizeNic, encryptNic, decryptNic, getNicLast4 };
+export { normalizeNic, encryptNic, decryptNic, getNicLast4 };
