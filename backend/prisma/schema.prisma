@@ -9,7 +9,7 @@
 // migration. Do not "fix" them by adding @unique here — that would be wrong.
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
