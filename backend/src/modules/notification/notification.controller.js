@@ -10,10 +10,10 @@
  * Throw AppError for expected failures; asyncHandler forwards it to the error
  * handler, which turns it into the right status code.
  */
-// const AppError = require("../../utils/AppError");
-// const service = require("./notification.service");
+// import AppError from "../../utils/AppError.js";
+// import service from "./notification.service.js";
 
-module.exports = {
+export default {
   // async create(req, res) {
   //   const result = await service.create(req.body);
   //   res.status(201).json(result);
