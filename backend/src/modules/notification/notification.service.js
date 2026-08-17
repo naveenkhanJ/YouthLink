@@ -7,7 +7,7 @@
  * enforced. Import the shared Prisma client from ../../lib/prisma — never
  * construct your own.
  */
-// const prisma = require("../../lib/prisma");
-// const AppError = require("../../utils/AppError");
+// import prisma from "../../lib/prisma.js";
+// import AppError from "../../utils/AppError.js";
 
-module.exports = {};
+export default {};
