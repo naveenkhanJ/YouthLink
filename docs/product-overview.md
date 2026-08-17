@@ -93,7 +93,9 @@ All of the above lives on **one Settings screen** (`FR-ACC-18`), together with n
 
 ### Abandoned signups
 
-Phone uniqueness only finalises once a complete account exists. A signup that verifies a phone number then stops expires after 24 hours, releasing that number (`FR-ACC-06`). Without this, an abandoned attempt would lock a real person's number forever.
+Registration is a single atomic submission (`FR-ACC-01`): the phone is verified through Firebase on the device, then every field is submitted together and one complete account is created. **Because nothing is persisted before that, there is no such thing as a half-finished signup holding a phone number hostage.**
+
+This was not always the design. Signup was originally staged, with phone verification persisted first — which is why `FR-ACC-06`, `PENDING_SIGNUP` and the partial index on phone still exist. See [`decisions.md`](decisions.md).
 
 ### Deleting an account
 
