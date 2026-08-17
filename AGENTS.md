@@ -12,7 +12,7 @@ Context for any AI coding agent working in this repository. Written to be tool-n
 
 **Write clear, conventional, well-commented code over clever code**, and state your reasoning when a real choice was made. Code nobody can defend is worse than no code.
 
-Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React Native via Expo, Android only for now), `dashboard/` (React + Vite). JavaScript throughout, not TypeScript. PostgreSQL via Prisma.
+Three surfaces: `backend/` (Node.js + Express, **ES modules**), `mobile/` (React Native via Expo, Android only for now), `dashboard/` (React + Vite). JavaScript throughout, not TypeScript. PostgreSQL via Prisma.
 
 ---
 
@@ -45,7 +45,7 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 
 ## Things that will bite you
 
-**The Prisma client is not at `@prisma/client`.** `schema.prisma` sets `output = "../generated/prisma"`, so import from `backend/generated/prisma`. The folder is git-ignored — run `npx prisma generate` in `backend/` if it's missing. Use one shared client instance, not one per file.
+**The Prisma client is not at `@prisma/client`.** `schema.prisma` sets `output = "../generated/prisma"`, so import from `backend/generated/prisma/client`, not the bare `backend/generated/prisma` directory. The folder is git-ignored — run `npx prisma generate` in `backend/` if it's missing. Use one shared client instance, not one per file.
 
 **The database URL lives in `backend/prisma.config.ts`, not in `schema.prisma`.** Prisma 7 moved it. The datasource block having no `url` line is correct.
 
@@ -57,7 +57,7 @@ Three surfaces: `backend/` (Node.js + Express, **CommonJS**), `mobile/` (React N
 
 **Authentication is stateless JWT with a live per-request status check** — no session table. Every request re-reads `accountStatus`, `suspendedAt` and `lockedUntil`, which is what delivers NFR-REL-02's "a suspension takes effect on the very next request." One shared middleware, owned by the Account Management epic. Don't write a second one.
 
-**`backend/` is CommonJS.** `require` and `module.exports`, never `import`.
+**`backend/` is ES modules (ESM), not CommonJS** — `import`/`export`, never `require`/`module.exports`. Converted 2026-08-17: CommonJS was never a deliberate choice, just `npm init`'s default that ended up written into this file as though it were a rule. `mobile/` and `dashboard/` were ESM already, and Prisma 7 is ESM-first — the mismatch caused a real, hours-long problem (a Prisma generator misconfiguration nobody caught until code actually queried the database). Three things that catch people out under ESM: **relative imports need the file extension** — `./foo.js`, never bare `./foo` — the single most common failure, and it breaks the whole import chain at once; `__dirname`/`__filename` don't exist; JSON imports need import attributes.
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer.** Four people build four modules simultaneously; layer-first would put all of them in the same three directories on every pull request. Your work goes in `backend/src/modules/<epic>/` and `mobile/src/screens/<module>/`. Each surface has a `src/README.md` explaining its structure.
 

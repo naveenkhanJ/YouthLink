@@ -7,7 +7,7 @@
  * It should contain no business rules and no Prisma calls — those belong in
  * endorsement.service.js, so the rules stay testable and reusable.
  */
-// const AppError = require("../../utils/AppError");
-// const service = require("./endorsement.service");
+// import AppError from "../../utils/AppError.js";
+// import service from "./endorsement.service.js";
 
-module.exports = {};
+export default {};

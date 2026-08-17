@@ -19,7 +19,7 @@
  * There is deliberately no Session or RefreshToken table; see the Design
  * Decisions section of docs/database-schema.md.
  */
-const AppError = require("../utils/AppError");
+import AppError from "../utils/AppError.js";
 
 function requireAuth(req, res, next) {
   return next(
@@ -29,4 +29,4 @@ function requireAuth(req, res, next) {
   );
 }
 
-module.exports = requireAuth;
+export default requireAuth;
