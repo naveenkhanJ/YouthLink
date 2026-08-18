@@ -18,6 +18,18 @@ import { isSuspended } from "../../lib/accountStatus.js";
 const MIN_AGE = 18;
 const VALID_ROLES = ["YOUTH_JOB_SEEKER", "EMPLOYER", "COMMUNITY_ENDORSER"];
 
+// Registration never needs this — the phone comes straight from a
+// Firebase-verified ID token, always clean E.164. Password login is the
+// one place a phone number is hand-typed (or pasted from Contacts) into a
+// text field, so "+94 77 123 4567" needs to match the "+94771234567"
+// stored from registration. Strips whitespace/dashes/parens only — not a
+// full phone-parsing library, since the actual failure this fixes is
+// formatting noise around an otherwise-correct number, not arbitrary
+// input correction.
+function normalizePhoneForLookup(phone) {
+  return phone.replace(/[\s\-()]/g, "");
+}
+
 // FR-ACC-09 / NFR-SEC-02: 5 consecutive failed password attempts locks the
 // password path for 15 minutes. Only the password path — FR-ACC-07 deliberately
 // keeps OTP login independent so it stays available when password login doesn't.
@@ -250,11 +262,13 @@ async function loginWithPassword({ phone, password }) {
     throw AppError.badRequest("Phone is required.", { phone: "Required" });
   }
   if (!password || typeof password !== "string") {
-    throw AppError.badRequest("Password is required.", { password: "Required" });
+    throw AppError.badRequest("Password is required.", {
+      password: "Required",
+    });
   }
 
   const user = await prisma.user.findFirst({
-    where: { phone, deletedAt: null },
+    where: { phone: normalizePhoneForLookup(phone), deletedAt: null },
   });
 
   // Same generic message whether the phone isn't registered or the password
