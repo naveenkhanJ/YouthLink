@@ -7,9 +7,13 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "lk.youthlink.app",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "package": "lk.youthlink.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -19,6 +23,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "dynamic"
+          }
+        }
+      ]
+    ]
   }
 }
