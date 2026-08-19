@@ -45,7 +45,6 @@ yarn-error.*
 # same treatment as FIREBASE_WEB_API_KEY on the backend: not hardcoded/
 # committed even though not literally secret. Each developer downloads
 # their own copy from the Firebase Console (same project, same values for
-# everyone) — see .worklog/progress.md's Firebase setup entry for exactly
-# where from.
+# everyone) — see the root README's "Running the mobile app" section.
 google-services.json
 GoogleService-Info.plist
