@@ -1,20 +1,16 @@
-/**
- * Gig Posting routes — mounted at /api/postings by src/app.js.
- *
- * Epic: FR-POST  ·  Owner: Lahiru
- * Requirements: see docs/requirements.md, module FR-POST
- *
- * Keep this file thin. It maps URLs to controller functions and applies
- * middleware; it contains no logic of its own.
- */
-const express = require("express");
-const asyncHandler = require("../../utils/asyncHandler");
-const controller = require("./posting.controller");
+
+// gigPosting.routes.js
+// Mount in app.js with: app.use('/api/postings', postingRoutes);
+
+import express from 'express';
+import { createGigPostingValidators } from './posting.validators.js';
+import * as postingController from './posting.controller.js';
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+router.post('/', createGigPostingValidators, postingController.createGigPosting);
+router.get('/mine', postingController.listMyGigPostings);
+router.get('/:id', postingController.getGigPosting);
 
-module.exports = router;
+export default router;
+
