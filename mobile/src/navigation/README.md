@@ -11,7 +11,7 @@ npx expo install @react-navigation/native @react-navigation/native-stack react-n
 
 Use `npx expo install`, not `npm install` — it resolves versions compatible with Expo SDK 57. Until this runs, the app will not start.
 
-> **`react-native-screens` and `react-native-safe-area-context` contain native code.** Anyone using the shared development build needs a build made _after_ these were installed. Install them before producing the APK, not after, or everyone needs a new one.
+> **`react-native-screens` and `react-native-safe-area-context` contain native code.** Whoever's dev-client build you're using — your own or one someone shared with you — needs to have been built _after_ these were installed, same as for any other native dependency (Firebase included). See the root README's "Running the mobile app" section for building your own; a rebuild is only needed when a native dependency changes, not for ordinary JS/UI work.
 
 ## How to add a screen
 
