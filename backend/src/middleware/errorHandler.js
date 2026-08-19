@@ -5,7 +5,7 @@
  * `next` even though it is unused, or Express treats this as normal middleware
  * and errors fall through unhandled.
  */
-const AppError = require("../utils/AppError");
+import AppError from "../utils/AppError.js";
 
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
@@ -28,4 +28,4 @@ function errorHandler(err, req, res, next) {
   return res.status(500).json({ error: "Something went wrong" });
 }
 
-module.exports = errorHandler;
+export default errorHandler;

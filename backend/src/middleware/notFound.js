@@ -8,4 +8,4 @@ function notFound(req, res) {
     .json({ error: `No route for ${req.method} ${req.originalUrl}` });
 }
 
-module.exports = notFound;
+export default notFound;

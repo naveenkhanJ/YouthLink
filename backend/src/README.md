@@ -30,13 +30,15 @@ The reason for the third column: acceptance criteria are enforced in the service
 
 ## Adding a new module
 
-Copy the three files from an existing module, then add one line to `app.js`:
+Copy the three files from an existing module, then add two lines to `app.js` — an import at the top with the others, and a mount below:
 
 ```js
-app.use("/api/<yours>", require("./modules/<yours>/<yours>.routes"));
+import yourRoutes from "./modules/<yours>/<yours>.routes.js";
+// ...
+app.use("/api/<yours>", yourRoutes);
 ```
 
-That line in `app.js` is the only shared file you touch.
+Those two lines in `app.js` are the only shared file you touch.
 
 ## Rules worth not learning the hard way
 

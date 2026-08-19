@@ -40,7 +40,7 @@ Read these before writing code. They're short, and most of the mechanisms here a
 
 ```
 YouthLink/
-├── backend/                Node.js + Express API (CommonJS)
+├── backend/                Node.js + Express API (ES modules)
 │   ├── prisma/             schema.prisma and migrations
 │   ├── index.js            Server bootstrap — starts the listener, nothing else
 │   └── src/
