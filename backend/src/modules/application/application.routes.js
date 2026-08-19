@@ -9,12 +9,20 @@
  */
 import express from "express";
 import asyncHandler from "../../utils/asyncHandler.js";
+import requireAuth from "../../middleware/requireAuth.js";
 import controller from "./application.controller.js";
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+// Every route below needs a known, authenticated user — worker identity for
+// apply/withdraw, employer identity for the pool/select/decline actions.
+router.use(requireAuth);
+
+router.post("/", asyncHandler(controller.apply));
+router.get("/", asyncHandler(controller.getPool));
+router.get("/mine", asyncHandler(controller.getMine));
+router.post("/:id/withdraw", asyncHandler(controller.withdraw));
+router.post("/:id/select", asyncHandler(controller.select));
+router.post("/:id/decline", asyncHandler(controller.decline));
 
 export default router;
