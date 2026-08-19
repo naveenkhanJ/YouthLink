@@ -46,3 +46,20 @@ export async function request(path, options = {}) {
 
   return data;
 }
+
+/**
+ * Splits a request() error into form-level and field-level messages for a
+ * screen to render. Shared here (not per-screen) because `.fields` is a
+ * general part of the API error shape every module's forms will hit, not
+ * an Account-specific concern — the first screen using it shouldn't leave
+ * every later screen to hand-roll the same split.
+ *
+ * @param {Error} err - An error thrown by request(), with optional `.fields`.
+ * @returns {{ formError: string | null, fieldErrors: object }}
+ */
+export function parseApiError(err) {
+  return {
+    formError: err.fields ? null : err.message,
+    fieldErrors: err.fields || {},
+  };
+}

@@ -17,4 +17,12 @@
  *     { name: "AccountExample", component: ExampleScreen, options: { title: "Example" } },
  *   ];
  */
-export default [];
+import LoginScreen from "./LoginScreen";
+
+export default [
+  {
+    name: "AccountLogin",
+    component: LoginScreen,
+    options: { title: "Log in" },
+  },
+];

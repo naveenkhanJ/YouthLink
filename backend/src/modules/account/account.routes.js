@@ -13,8 +13,8 @@ import controller from "./account.controller.js";
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+router.post("/register", asyncHandler(controller.register));
+router.post("/login/password", asyncHandler(controller.loginPassword));
+router.post("/login/otp", asyncHandler(controller.loginOtp));
 
 export default router;
