@@ -48,4 +48,4 @@ Those two lines in `app.js` are the only shared file you touch.
 
 **Wrap async handlers in `asyncHandler`.** Otherwise a rejected promise can hang the request instead of returning an error.
 
-**Don't write your own auth check.** `middleware/requireAuth.js` is owned by the Account Management epic and is coming — see the cross-cutting authentication section in `docs/module-ownership.md`.
+**Don't write your own auth check.** `middleware/requireAuth.js` is owned by the Account Management epic. As of 2026-08-19 it's built and working (validates the JWT, attaches `req.user`, re-reads `accountStatus`/`suspendedAt` live on every request) on `feature/account-management-afham`, but not yet merged into `develop` — check whether it's landed before assuming it's importable. See the cross-cutting authentication section in `docs/module-ownership.md` for exactly what it does and doesn't check.

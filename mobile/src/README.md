@@ -4,11 +4,13 @@
 src/
   api/         One file per backend module, plus client.js
   components/  Shared UI used by more than one screen
-  config/      API base URL, Firebase config
+  config/      API base URL — Firebase has no JS-side config here, see below
   navigation/  RootNavigator — you should never need to edit it
   screens/     One folder per module. Your screens live here
   utils/       Small helpers
 ```
+
+**Firebase is native modules (`@react-native-firebase/*`), not the JS SDK** — phone auth needs it, since the JS SDK's phone auth relies on a browser reCAPTCHA that doesn't exist in React Native. It auto-initializes from `mobile/google-services.json`/`GoogleService-Info.plist` (git-ignored, see the root README's "Running the mobile app" section for how to get them) — there's no JS-side config object to set up in `src/config/`.
 
 **Screens go under `src/screens/<your-module>/`.** Same reasoning as the backend: four people working in parallel should rarely touch the same file.
 

@@ -26,24 +26,37 @@ Point totals are close but not identical across slices, because the underlying m
 
 ### Owners
 
-| Sprint | Slice | Module                                            | Stories | Points | Owner          |
-| ------ | ----- | ------------------------------------------------- | ------- | ------ | -------------- |
-| 1      | A     | Account Management                                | 8       | 17     | **Afham**      |
-| 1      | B     | Gig Posting                                       | 8       | 18     | **Lahiru**     |
-| 1      | C     | Discovery & Search + core Notifications           | 7       | 15     | **Pawan**      |
-| 1      | D     | Applying & Selection                              | 10      | 20     | **Naveenkhan** |
-| 2      | A     | Engagement Lifecycle                              | 5       | 13     | _TBD_          |
-| 2      | B     | Ratings & Reputation                              | 5       | 9      | _TBD_          |
-| 2      | C     | Profile & Trust Signals + remaining Notifications | 5       | 9      | _TBD_          |
-| 2      | D     | Community Endorsement                             | 5       | 10     | _TBD_          |
+| Sprint | Slice | Module                                  | Stories | Points | Owner          |
+| ------ | ----- | ---------------------------------------- | ------- | ------ | -------------- |
+| 1–2    | A     | Account Management                      | 8       | 17     | **Afham**      |
+| 1–2    | B     | Gig Posting                             | 8       | 18     | **Lahiru**     |
+| 1–2    | C     | Discovery & Search + core Notifications | 7       | 15     | **Pawan**      |
+| 1–2    | D     | Applying & Selection                    | 10      | 20     | **Naveenkhan** |
 
-**Sprint 1 owners are confirmed. Sprint 2 is not yet assigned** — update this table and the per-slice headings once the team decides.
+**Sprint 2 (19–22 August) is not a new set of epics — it's these same four
+slices, same owners, continuing.** Decided by the team with the client
+present: Sprint 1 (14–18 August) ended without completing its scope (two
+setup days lost, three infrastructure interruptions), so its own 33
+stories carry into Sprint 2 rather than starting the four epics originally
+planned for it. No new stories were added. Full detail lives in the SPM
+project's own Scrum Events Log, outside this repo; the short version is in
+[`decisions.md`](decisions.md). The four epics originally scheduled for
+Sprint 2 — Engagement Lifecycle, Ratings & Reputation, Profile & Trust
+Signals, Community Endorsement — are deferred, not owned by anyone yet;
+see the deferred-scope section below.
 
 Use the same short name as your branch-name segment, so ownership and git history line up: `afham`, `lahiru`, `pawan`, `naveenkhan` (see [`CONTRIBUTING.md`](../CONTRIBUTING.md)).
 
 ### What these slices do and don't cover
 
-The eight slices below schedule **53 of the 129 functional requirements**. The remaining 76 are real, specified requirements — they simply aren't scheduled into these two sprints. They cover disputes and reporting, Moderator and Admin functions, the shared dashboard, and the lower-priority remainder of each module, and they're elaborated closer to the sprint that picks them up rather than up front.
+The four slices above schedule the same functional requirements originally
+planned for Sprint 1 alone — carrying the work into Sprint 2 didn't add
+scope, it recovered lost time. The four epics originally planned for
+Sprint 2 (below) are real, specified requirements that are now deferred
+along with everything else not yet scheduled — disputes and reporting,
+Moderator and Admin functions, the shared dashboard, and the
+lower-priority remainder of each module. They're elaborated closer to
+whichever sprint actually picks them up.
 
 So: if a requirement isn't listed here, it hasn't been dropped. Check [`requirements.md`](requirements.md) — everything is specified there regardless of when it's scheduled.
 
@@ -53,19 +66,25 @@ So: if a requirement isn't listed here, it hasn't been dropped. Check [`requirem
 
 **Every slice's endpoints are protected by shared middleware built in Sprint 1 Slice A. Do not write your own auth check.**
 
-The system uses **stateless JWTs** — there is no `Session` or `RefreshToken` table, a deliberate simplification recorded in [`database-schema.md`](database-schema.md) under Design Decisions. The middleware validates the token and re-reads `accountStatus`, `suspendedAt` and `lockedUntil` from the database on **every** request, which is what delivers NFR-REL-02's "a suspension takes effect on the account's very next request" without a session store.
+The system uses **stateless JWTs** — there is no `Session` or `RefreshToken` table, a deliberate simplification recorded in [`database-schema.md`](database-schema.md) under Design Decisions. The middleware validates the token and re-reads `accountStatus` and `suspendedAt` from the database on **every** request, which is what delivers NFR-REL-02's "a suspension takes effect on the account's very next request" without a session store.
+
+**`lockedUntil` is checked only at the password-login endpoint, not by this middleware.** Corrected 2026-08-18 — NFR-SEC-02 locks "the password-login path" specifically, and product-overview.md is explicit that the OTP login path — and, by the same logic, an already-authenticated session — is unaffected by that lock. An earlier draft of this contract listed `lockedUntil` alongside `accountStatus`/`suspendedAt` as something the middleware enforces on every request, and `requireAuth.js` was briefly built that way; that was wrong and caused a real bug (see [`decisions.md`](decisions.md)) — it let a caller with no credentials at all knock out a legitimate user's sessions on every device just by failing their password 5 times, since multiple simultaneous logins are allowed. Don't reintroduce a `lockedUntil` check into this middleware.
 
 Phone verification at signup and OTP login goes through **Firebase Phone Authentication**; the backend trusts a phone number only after validating the Firebase ID token server-side. The system's own `OtpCode` mechanism covers password reset, phone change, and dashboard admin login (see FR-ACC-08).
 
-Slice A publishes the middleware and its import path. Until then, build your endpoints assuming an authenticated `req.user` will be provided.
+Slice A has built the middleware (see `backend/src/README.md`'s auth note for its current merge status) — build your endpoints assuming an authenticated `req.user` will be provided.
 
 ---
 
-## Sprint 1 — the core loop: post → discover → apply → select
+## Sprint 1–2 — the core loop: post → discover → apply → select
 
 Together these four slices make the first increment demoable end to end: an Employer posts a gig, a Youth Job-Seeker discovers it, applies, and gets selected.
 
-**33 stories, 70 points.**
+**33 stories, 70 points. This is the whole of Sprint 2's scope too** —
+Sprint 2 continues this same set of stories under the same owners rather
+than starting new epics; see the Owners section above for why. Nothing
+below describes two different sets of work, just one that took two
+sprints.
 
 ### Slice A — Account Management
 
@@ -138,11 +157,18 @@ The apply flow, the three-tier applicant sort, Employer selection, bidirectional
 
 ---
 
-## Sprint 2 — extending the loop through to completion
+## Deferred scope — extending the loop through to completion
+
+**Not what Sprint 2 is doing — see the Owners section above.** This
+section was the original plan for Sprint 2 before the team decided to
+carry Sprint 1's own scope forward instead. It's kept in full, not
+deleted, because this work still needs doing eventually and the
+breakdown below remains valid whenever a future sprint picks it up —
+treat everything below as unscheduled, not as current assignments.
 
 These four extend the loop past selection to a completed, rated engagement — including the endorsement mechanism that differentiates the product.
 
-**20 stories, 41 points.**
+**20 stories, 41 points. Deferred — no owner, no sprint assigned.**
 
 ### Slice A — Engagement Lifecycle
 
@@ -202,24 +228,32 @@ The Community Verifier/Endorser role, both endorsement entry points (shareable c
 
 ---
 
-## How the slices relate across sprints
+## How the deferred slices relate to Sprint 1–2's
 
-**There is exactly one hard technical dependency.** Sprint 2's **Engagement Lifecycle** (Slice A) is built directly on the Engagement record that Sprint 1's **Applying & Selection** (Slice D) creates — the Employer's Select action is what spawns it. Whoever builds Apply in Sprint 1 carries the most context into Engagement in Sprint 2, so that pairing is a sensible default, but it isn't mandatory.
+*(This section describes the deferred scope above, not the current sprint
+— relevant again once that scope is actually picked up. There is nothing
+to plan here for Sprint 1–2 itself: same four owners, same four slices,
+no relationship to work out.)*
 
-Beyond that, the couplings are weaker and don't map one Sprint 1 slice onto one Sprint 2 slice:
+**There is exactly one hard technical dependency.** The deferred **Engagement Lifecycle** (Slice A) is built directly on the Engagement record that **Applying & Selection** (Slice D, Sprint 1–2) creates — the Employer's Select action is what spawns it. Whoever builds Apply carries the most context into Engagement, so that pairing will be a sensible default when Engagement is eventually scheduled, but it isn't mandatory.
 
-- **Ratings** (Sprint 2 B) depends on engagement completion — Sprint 2's own Slice A, not anything from Sprint 1.
-- **Profile & Trust Signals** (Sprint 2 C) reads from both Account data (Sprint 1 A) and Rating data (Sprint 2 B).
-- **Community Endorsement** (Sprint 2 D) touches Account signup (Sprint 1 A) and the applicant-pool sort built in Apply (Sprint 1 D).
+Beyond that, the couplings are weaker and don't map one Sprint 1–2 slice onto one deferred slice:
 
-**Practical guidance:** pick Sprint 1 slices freely. For Sprint 2, the only pairing worth protecting is Engagement (A) following Apply (D); everything else can be chosen independently.
+- **Ratings** (deferred B) depends on engagement completion — the deferred Slice A, not anything from Sprint 1–2.
+- **Profile & Trust Signals** (deferred C) reads from both Account data (Sprint 1–2 A) and Rating data (deferred B).
+- **Community Endorsement** (deferred D) touches Account signup (Sprint 1–2 A) and the applicant-pool sort built in Apply (Sprint 1–2 D).
+
+**Practical guidance for whenever this scope is picked up:** the only pairing worth protecting is Engagement (A) following whoever built Apply; everything else can be chosen independently.
 
 ## Choosing a slice
 
+*(Sprint 1–2's four slices already have owners — this is for whenever the
+deferred scope above gets picked up.)*
+
 Rough character of each, if you're deciding on interest rather than continuity:
 
-- **Heaviest on state machines:** Applying & Selection (S1 D), Engagement Lifecycle (S2 A).
-- **Heaviest on forms and validation:** Account Management (S1 A), Gig Posting (S1 B).
-- **Heaviest on queries and algorithms:** Discovery & Search (S1 C) — geospatial radius queries and sort order.
-- **Heaviest on timing/lifecycle logic:** Ratings & Reputation (S2 B) — the double-blind reveal has more edge cases than its point count suggests.
-- **Mostly additive, least rework of Sprint 1 code:** Community Endorsement (S2 D) — the three-tier applicant sort that gives an endorsement its effect is already built in Sprint 1 Slice D, so this slice mainly adds its own flows on top. Profile & Trust Signals (S2 C) is similar in shape: largely display logic over data other slices produce.
+- **Heaviest on state machines:** Applying & Selection (Sprint 1–2 D), Engagement Lifecycle (deferred A).
+- **Heaviest on forms and validation:** Account Management (Sprint 1–2 A), Gig Posting (Sprint 1–2 B).
+- **Heaviest on queries and algorithms:** Discovery & Search (Sprint 1–2 C) — geospatial radius queries and sort order.
+- **Heaviest on timing/lifecycle logic:** Ratings & Reputation (deferred B) — the double-blind reveal has more edge cases than its point count suggests.
+- **Mostly additive, least rework of existing code:** Community Endorsement (deferred D) — the three-tier applicant sort that gives an endorsement its effect is already built in Applying & Selection, so this slice mainly adds its own flows on top. Profile & Trust Signals (deferred C) is similar in shape: largely display logic over data other slices produce.

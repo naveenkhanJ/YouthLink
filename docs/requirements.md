@@ -86,6 +86,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a self-declared birthdate indicates the user is under 18, when they attempt to submit, then registration is declined outright.
 - Given the ToS/Privacy Policy checkbox is unchecked, when the user attempts to submit, then registration is blocked.
 - Given the user provides an email, when they do not click the confirmation link, then the email remains unverified but registration is not blocked by this alone.
+- Given all fields are submitted together with a verified Firebase ID token, when the request succeeds, then exactly one `User` row is created with `accountStatus = ACTIVE` — registration is a single atomic submission, not a staged one.
 
 #### FR-ACC-02 — Employer posting-as type
 
@@ -149,6 +150,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a phone number is OTP-verified but the account is not completed, when 24 hours pass, then the phone number is released from the uniqueness constraint (FR-ACC-05) and available for reuse.
+
+> **Amended 2026-08-17 — superseded in practice.** This requirement assumed a staged signup in which phone verification was persisted before the remaining fields were submitted, leaving a `PENDING_SIGNUP` row that could hold a phone number hostage. That assumption came from the scope decision behind it, written when the backend generated and verified the OTP itself.
+>
+> Since FR-ACC-08 was amended on 2026-08-15, phone verification happens client-side through Firebase and registration is a single atomic submission (FR-ACC-01). **No row exists before the account is complete, so there is nothing to expire and no phone number is ever locked by an abandoned attempt.** This requirement therefore has no trigger under the current design.
+>
+> Retained rather than deleted, because it becomes live again if signup is ever split into stages. The supporting fields and index are retained for the same reason — see [`database-schema.md`](database-schema.md) and [`decisions.md`](decisions.md).
 
 #### FR-ACC-07 — Login
 

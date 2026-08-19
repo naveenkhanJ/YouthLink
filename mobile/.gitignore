@@ -39,3 +39,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Firebase client config (FR-ACC-08). Not a technical secret — Google's own
+# guidance is that these are safe to commit — but kept out of git anyway,
+# same treatment as FIREBASE_WEB_API_KEY on the backend: not hardcoded/
+# committed even though not literally secret. Each developer downloads
+# their own copy from the Firebase Console (same project, same values for
+# everyone) — see the root README's "Running the mobile app" section.
+google-services.json
+GoogleService-Info.plist
