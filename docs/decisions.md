@@ -51,6 +51,29 @@ Reasoning: [`database-schema.md`](database-schema.md), under the `User` indexes.
 is no session table.** Reasoning: [`database-schema.md`](database-schema.md),
 under Design Decisions.
 
+**The password-lockout window (`lockedUntil`, FR-ACC-09/NFR-SEC-02) is enforced
+only at the `/login/password` endpoint — never by the shared `requireAuth`
+middleware.** An earlier draft of the cross-cutting auth contract in
+[`module-ownership.md`](module-ownership.md) listed `lockedUntil` alongside
+`accountStatus`/`suspendedAt` as something checked on every request, and the
+middleware was briefly built that way. That was wrong: NFR-REL-02 (the
+requirement the "check on every request" rule actually exists for) only concerns
+suspension, and product-overview.md is explicit that "the OTP path is unaffected
+by that lock." Enforcing `lockedUntil` globally meant a caller with **no
+credentials at all** could fail someone's password 5 times and knock out that
+user's already-authenticated sessions on every device — multiple simultaneous
+logins are an explicit product decision (product-overview.md) — until they
+specifically logged back in via OTP. Caught 2026-08-18, during self-review of
+the first login implementation, and fixed on `feature/account-management-afham`
+before that branch's login work was ever proposed for merge — the bug never
+shipped to `develop`. **As of this entry, that fix is still only on that
+branch, not yet in `develop`** — check whether it's landed before trusting
+`requireAuth.js`'s current file content on whatever branch you're reading;
+until it has, the file still carries the old, wrong doc comment this entry
+just described. Full reasoning and the corrected contract:
+[`module-ownership.md`](module-ownership.md)'s cross-cutting authentication
+section.
+
 ## Code organisation
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer** —
@@ -63,3 +86,22 @@ no top-level `routes/`, `controllers/` or `services/`. Reasoning:
 **Mobile navigation is React Navigation, not `expo-router`**, with per-module
 screen manifests instead of a shared navigator file. Reasoning:
 [`../mobile/src/navigation/README.md`](../mobile/src/navigation/README.md).
+
+## Sprint planning
+
+**Sprint 2 (19–22 August) continues Sprint 1's own four slices under the
+same owners, rather than starting the four epics originally scheduled for
+it.** Decided by the whole team with the client present. Sprint 1
+(14–18 August) ended without completing its 33-story scope — two setup
+days were lost and three infrastructure interruptions ate most of the
+rest, leaving 3 of 33 stories Done (Lahiru's Gig Posting cards; 2 of
+those 3 without frontend, kept as Done by a separate deliberate team
+decision). No new stories were added for Sprint 2. The four epics
+originally planned for Sprint 2 — Engagement Lifecycle, Ratings &
+Reputation, Profile & Trust Signals, Community Endorsement — are
+deferred, not dropped; see [`module-ownership.md`](module-ownership.md)'s
+deferred-scope section, which is kept in full for whenever a future
+sprint picks it up. Full detail — the specific infrastructure
+interruptions, the Lahiru Gig Posting Done-without-frontend call — is in
+the SPM project's own Scrum Events Log, outside this repo; this entry is
+the short version so the reasoning has at least one record inside it.
