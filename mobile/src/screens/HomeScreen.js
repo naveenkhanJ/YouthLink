@@ -6,6 +6,7 @@ import { StatusBar } from "expo-status-bar";
 
 const TEST_LINKS = [
   { label: "Explore Gigs (FR-DISC)", route: "DiscoveryBrowse" },
+  { label: "Notification preferences (FR-NOTIF)", route: "NotificationPreferences" },
   { label: "Log in", route: "AccountLogin" },
   { label: "Create account", route: "AccountRegister" },
 ];
