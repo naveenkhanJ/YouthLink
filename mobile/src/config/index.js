@@ -7,7 +7,10 @@
  */
 export const API_BASE_URL = "http://10.0.2.2:3000";
 
-// Firebase config is added by whoever wires up phone authentication first
-// (FR-ACC-08, Account Management epic). It is not a secret — Firebase web
-// config is public by design — but it still belongs here rather than inline.
-export const FIREBASE_CONFIG = null;
+// No FIREBASE_CONFIG export here (FR-ACC-08) — @react-native-firebase's
+// native modules auto-initialize from the native config files
+// (google-services.json / GoogleService-Info.plist, see mobile/.gitignore),
+// not a JS-side config object. That's a different integration path than the
+// Firebase JS SDK, which is what this placeholder originally assumed;
+// phone auth specifically needs the native modules — see
+// .worklog/progress.md's Firebase setup entry for why.
