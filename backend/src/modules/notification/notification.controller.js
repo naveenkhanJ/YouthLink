@@ -1,21 +1,35 @@
 /**
- * Notifications controllers — the HTTP layer.
+ * Notifications controllers — HTTP layer.
  *
  * Epic: FR-NOTIF  ·  Owner: Pawan
- *
- * A controller reads the request, calls the service, and shapes the response.
- * It should contain no business rules and no Prisma calls — those belong in
- * notification.service.js, so the rules stay testable and reusable.
- *
- * Throw AppError for expected failures; asyncHandler forwards it to the error
- * handler, which turns it into the right status code.
  */
-// const AppError = require("../../utils/AppError");
-// const service = require("./notification.service");
+import service from "./notification.service.js";
 
-module.exports = {
-  // async create(req, res) {
-  //   const result = await service.create(req.body);
-  //   res.status(201).json(result);
-  // },
+export default {
+  // GET /api/notifications/preferences — FR-NOTIF-03 (job-seekers only)
+  async getPreferences(req, res) {
+    res.json(await service.getPreferences({ user: req.user }));
+  },
+
+  // PATCH /api/notifications/preferences — FR-NOTIF-03 (job-seekers only)
+  async updatePreferences(req, res) {
+    const { notifyUrgentOptIn, notifyNewGigOptOut } = req.body ?? {};
+    res.json(await service.updatePreferences({ user: req.user, notifyUrgentOptIn, notifyNewGigOptOut }));
+  },
+
+  // GET /api/notifications — the history, newest first (FR-NOTIF-08)
+  async getNotifications(req, res) {
+    res.json({ notifications: await service.getNotifications({ userId: req.user.id }) });
+  },
+
+  // GET /api/notifications/unread-count — for the tab bar's dot
+  async countUnread(req, res) {
+    res.json(await service.countUnread({ userId: req.user.id }));
+  },
+
+  // PATCH /api/notifications/:id/read
+  async markAsRead(req, res) {
+    await service.markAsRead({ notificationId: req.params.id, userId: req.user.id });
+    res.json({ status: "ok" });
+  },
 };
