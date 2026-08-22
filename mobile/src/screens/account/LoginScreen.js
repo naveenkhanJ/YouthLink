@@ -1,12 +1,10 @@
 /**
  * Login screen — password path (FR-ACC-07) — Afham.
  *
- * Password path only for now. The OTP path needs Firebase's native modules
- * actually built into a dev client first — packages and config plugins are
- * installed (see .worklog/progress.md's Firebase setup entry), but the
- * real Firebase project's google-services.json/GoogleService-Info.plist
- * aren't in place yet, so no native build has happened. That's separate
- * work, not a UI gap on this screen.
+ * Password path only for now — the OTP path still needs exercising against
+ * a real phone number to build and test (Firebase test phone numbers are
+ * now set up; see .worklog/progress.md), a separate, small addition once
+ * that happens, not a gap in this screen's own scope.
  *
  * No post-login destination screen exists yet (no other module has a
  * screen built), so a successful login shows an inline confirmation rather
@@ -17,6 +15,7 @@ import { useState } from "react";
 import {
   View,
   Text,
+  Pressable,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -29,7 +28,7 @@ import { colors, spacing, typography } from "./theme";
 import Button from "./components/Button";
 import TextField from "./components/TextField";
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
@@ -104,6 +103,13 @@ export default function LoginScreen() {
           disabled={!canSubmit}
         />
 
+        <Pressable
+          style={styles.linkContainer}
+          onPress={() => navigation.navigate("AccountRegister")}
+        >
+          <Text style={styles.link}>Don't have an account? Create one</Text>
+        </Pressable>
+
         <StatusBar style="dark" />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -135,5 +141,14 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     color: colors.danger,
     marginBottom: spacing.lg,
+  },
+  linkContainer: {
+    marginTop: spacing.lg,
+    alignItems: "center",
+  },
+  link: {
+    fontSize: typography.caption.fontSize,
+    fontWeight: typography.caption.fontWeight,
+    color: colors.primary,
   },
 });
