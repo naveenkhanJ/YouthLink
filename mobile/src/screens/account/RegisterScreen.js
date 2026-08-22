@@ -17,15 +17,8 @@
  * ./hooks/usePhoneVerification.js, shared with LoginScreen.js's OTP mode.
  */
 import { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { register } from "../../api/account";
 import { parseApiError } from "../../api/client";
@@ -34,6 +27,7 @@ import Button from "./components/Button";
 import TextField from "./components/TextField";
 import RoleOption from "./components/RoleOption";
 import Checkbox from "./components/Checkbox";
+import Link from "./components/Link";
 import usePhoneVerification from "./hooks/usePhoneVerification";
 
 const ROLES = [
@@ -141,141 +135,136 @@ export default function RegisterScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={styles.flex}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid
+      extraScrollHeight={120}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.title}>Create your account</Text>
+      <Text style={styles.title}>Create your account</Text>
 
-        {!idToken ? (
-          <>
-            <Text style={styles.stepBody}>
-              Verify your phone number to get started.
-            </Text>
+      {!idToken ? (
+        <>
+          <Text style={styles.stepBody}>
+            Verify your phone number to get started.
+          </Text>
 
-            {phoneError ? <Text style={styles.formError}>{phoneError}</Text> : null}
+          {phoneError ? <Text style={styles.formError}>{phoneError}</Text> : null}
 
-            <TextField
-              label="Phone number"
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="+94771234567"
-              keyboardType="phone-pad"
-            />
+          <TextField
+            label="Phone number"
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="+94771234567"
+            keyboardType="phone-pad"
+          />
 
-            {!confirmationResult ? (
-              <Button
-                title="Send code"
-                onPress={handleSendCode}
-                loading={sendingCode}
-                disabled={!phone.trim()}
-              />
-            ) : (
-              <>
-                <TextField
-                  label="Verification code"
-                  value={code}
-                  onChangeText={setCode}
-                  placeholder="123456"
-                  keyboardType="number-pad"
-                />
-                <Button
-                  title="Verify"
-                  onPress={handleConfirmCode}
-                  loading={confirmingCode}
-                  disabled={!code.trim()}
-                />
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-
-            <Text style={styles.sectionLabel}>I am a...</Text>
-            {ROLES.map((option) => (
-              <RoleOption
-                key={option.value}
-                title={option.title}
-                description={option.description}
-                selected={role === option.value}
-                onPress={() => setRole(option.value)}
-              />
-            ))}
-
-            <TextField
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              secureTextEntry
-              error={fieldErrors.password}
-            />
-            <TextField
-              label="Email (optional)"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              keyboardType="email-address"
-              error={fieldErrors.email}
-            />
-            <TextField
-              label="NIC"
-              value={nic}
-              onChangeText={setNic}
-              placeholder="NIC number"
-              error={fieldErrors.nic}
-            />
-            <TextField
-              label="Birthdate"
-              value={birthdate}
-              onChangeText={setBirthdate}
-              placeholder="YYYY-MM-DD"
-              keyboardType="numbers-and-punctuation"
-              error={fieldErrors.birthdate}
-            />
-            <TextField
-              label="Legal name"
-              value={legalName}
-              onChangeText={setLegalName}
-              placeholder="Full legal name"
-              autoCapitalize="words"
-              error={fieldErrors.legalName}
-            />
-
-            <Checkbox
-              checked={tosAccepted}
-              onToggle={() => {
-                setTosAccepted((prev) => !prev);
-                setTosError(false);
-              }}
-              label="I accept the Terms of Service and Privacy Policy"
-              error={tosError || fieldErrors.tosAccepted}
-            />
-
+          {!confirmationResult ? (
             <Button
-              title="Create account"
-              onPress={handleSubmitRegistration}
-              loading={submitting}
-              disabled={!canSubmit}
+              title="Send code"
+              onPress={handleSendCode}
+              loading={sendingCode}
+              disabled={!phone.trim()}
             />
-          </>
-        )}
+          ) : (
+            <>
+              <TextField
+                label="Verification code"
+                value={code}
+                onChangeText={setCode}
+                placeholder="123456"
+                keyboardType="number-pad"
+              />
+              <Button
+                title="Verify"
+                onPress={handleConfirmCode}
+                loading={confirmingCode}
+                disabled={!code.trim()}
+              />
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
-        <Pressable
-          style={styles.linkContainer}
-          onPress={() => navigation.navigate("AccountLogin")}
-        >
-          <Text style={styles.link}>Already have an account? Log in</Text>
-        </Pressable>
+          <Text style={styles.sectionLabel}>I am a...</Text>
+          {ROLES.map((option) => (
+            <RoleOption
+              key={option.value}
+              title={option.title}
+              description={option.description}
+              selected={role === option.value}
+              onPress={() => setRole(option.value)}
+            />
+          ))}
 
-        <StatusBar style="dark" />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <TextField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+            error={fieldErrors.password}
+          />
+          <TextField
+            label="Email (optional)"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            error={fieldErrors.email}
+          />
+          <TextField
+            label="NIC"
+            value={nic}
+            onChangeText={setNic}
+            placeholder="NIC number"
+            error={fieldErrors.nic}
+          />
+          <TextField
+            label="Birthdate"
+            value={birthdate}
+            onChangeText={setBirthdate}
+            placeholder="YYYY-MM-DD"
+            keyboardType="numbers-and-punctuation"
+            error={fieldErrors.birthdate}
+          />
+          <TextField
+            label="Legal name"
+            value={legalName}
+            onChangeText={setLegalName}
+            placeholder="Full legal name"
+            autoCapitalize="words"
+            error={fieldErrors.legalName}
+          />
+
+          <Checkbox
+            checked={tosAccepted}
+            onToggle={() => {
+              setTosAccepted((prev) => !prev);
+              setTosError(false);
+            }}
+            label="I accept the Terms of Service and Privacy Policy"
+            error={tosError || fieldErrors.tosAccepted}
+          />
+
+          <Button
+            title="Create account"
+            onPress={handleSubmitRegistration}
+            loading={submitting}
+            disabled={!canSubmit}
+          />
+        </>
+      )}
+
+      <Link onPress={() => navigation.navigate("AccountLogin")}>
+        Already have an account? Log in
+      </Link>
+
+      <StatusBar style="dark" />
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -322,14 +311,5 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     color: colors.danger,
     marginBottom: spacing.lg,
-  },
-  linkContainer: {
-    marginTop: spacing.lg,
-    alignItems: "center",
-  },
-  link: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: typography.caption.fontWeight,
-    color: colors.primary,
   },
 });

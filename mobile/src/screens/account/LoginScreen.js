@@ -14,21 +14,15 @@
  * a bigger, not-yet-decided app-wide question, not something to invent here.
  */
 import { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { loginPassword, loginOtp } from "../../api/account";
 import { setAuthToken, parseApiError } from "../../api/client";
 import { colors, spacing, radius, typography } from "./theme";
 import Button from "./components/Button";
 import TextField from "./components/TextField";
+import Link from "./components/Link";
 import usePhoneVerification from "./hooks/usePhoneVerification";
 
 export default function LoginScreen({ navigation }) {
@@ -88,7 +82,7 @@ export default function LoginScreen({ navigation }) {
 
   if (loggedInUser) {
     return (
-      <View style={styles.container}>
+      <View style={styles.successContainer}>
         <Text style={styles.title}>Welcome back, {loggedInUser.legalName}</Text>
         <Text style={styles.body}>Logged in successfully.</Text>
         <StatusBar style="dark" />
@@ -97,112 +91,107 @@ export default function LoginScreen({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={styles.flex}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      contentContainerStyle={styles.formContainer}
+      keyboardShouldPersistTaps="handled"
+      enableOnAndroid
+      extraScrollHeight={120}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.title}>Log in</Text>
+      <Text style={styles.title}>Log in</Text>
 
-        <View style={styles.modeToggle}>
-          <Pressable
-            style={[styles.modeOption, mode === "password" && styles.modeOptionActive]}
-            onPress={() => setMode("password")}
-          >
-            <Text style={[styles.modeLabel, mode === "password" && styles.modeLabelActive]}>
-              Password
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.modeOption, mode === "otp" && styles.modeOptionActive]}
-            onPress={() => setMode("otp")}
-          >
-            <Text style={[styles.modeLabel, mode === "otp" && styles.modeLabelActive]}>
-              OTP
-            </Text>
-          </Pressable>
-        </View>
-
-        {mode === "password" ? (
-          <>
-            {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-
-            <TextField
-              label="Phone number"
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="+94771234567"
-              keyboardType="phone-pad"
-              error={fieldErrors.phone}
-            />
-            <TextField
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              secureTextEntry
-              error={fieldErrors.password}
-            />
-
-            <Button
-              title="Log in"
-              onPress={handleSubmit}
-              loading={loading}
-              disabled={!canSubmit}
-            />
-          </>
-        ) : (
-          <>
-            {otpError ? <Text style={styles.formError}>{otpError}</Text> : null}
-
-            <TextField
-              label="Phone number"
-              value={otpPhone}
-              onChangeText={setOtpPhone}
-              placeholder="+94771234567"
-              keyboardType="phone-pad"
-            />
-
-            {!confirmationResult ? (
-              <Button
-                title="Send code"
-                onPress={handleSendCode}
-                loading={sendingCode}
-                disabled={!otpPhone.trim()}
-              />
-            ) : (
-              <>
-                <TextField
-                  label="Verification code"
-                  value={code}
-                  onChangeText={setCode}
-                  placeholder="123456"
-                  keyboardType="number-pad"
-                />
-                <Button
-                  title="Log in"
-                  onPress={handleConfirmCode}
-                  loading={confirmingCode}
-                  disabled={!code.trim()}
-                />
-              </>
-            )}
-          </>
-        )}
-
+      <View style={styles.modeToggle}>
         <Pressable
-          style={styles.linkContainer}
-          onPress={() => navigation.navigate("AccountRegister")}
+          style={[styles.modeOption, mode === "password" && styles.modeOptionActive]}
+          onPress={() => setMode("password")}
         >
-          <Text style={styles.link}>Don't have an account? Create one</Text>
+          <Text style={[styles.modeLabel, mode === "password" && styles.modeLabelActive]}>
+            Password
+          </Text>
         </Pressable>
+        <Pressable
+          style={[styles.modeOption, mode === "otp" && styles.modeOptionActive]}
+          onPress={() => setMode("otp")}
+        >
+          <Text style={[styles.modeLabel, mode === "otp" && styles.modeLabelActive]}>
+            OTP
+          </Text>
+        </Pressable>
+      </View>
 
-        <StatusBar style="dark" />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      {mode === "password" ? (
+        <>
+          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
+
+          <TextField
+            label="Phone number"
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="+94771234567"
+            keyboardType="phone-pad"
+            error={fieldErrors.phone}
+          />
+          <TextField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            secureTextEntry
+            error={fieldErrors.password}
+          />
+
+          <Button
+            title="Log in"
+            onPress={handleSubmit}
+            loading={loading}
+            disabled={!canSubmit}
+          />
+        </>
+      ) : (
+        <>
+          {otpError ? <Text style={styles.formError}>{otpError}</Text> : null}
+
+          <TextField
+            label="Phone number"
+            value={otpPhone}
+            onChangeText={setOtpPhone}
+            placeholder="+94771234567"
+            keyboardType="phone-pad"
+          />
+
+          {!confirmationResult ? (
+            <Button
+              title="Send code"
+              onPress={handleSendCode}
+              loading={sendingCode}
+              disabled={!otpPhone.trim()}
+            />
+          ) : (
+            <>
+              <TextField
+                label="Verification code"
+                value={code}
+                onChangeText={setCode}
+                placeholder="123456"
+                keyboardType="number-pad"
+              />
+              <Button
+                title="Log in"
+                onPress={handleConfirmCode}
+                loading={confirmingCode}
+                disabled={!code.trim()}
+              />
+            </>
+          )}
+        </>
+      )}
+
+      <Link onPress={() => navigation.navigate("AccountRegister")}>
+        Don't have an account? Create one
+      </Link>
+
+      <StatusBar style="dark" />
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -211,10 +200,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
   },
-  container: {
-    flexGrow: 1,
+  successContainer: {
+    flex: 1,
     justifyContent: "center",
     paddingHorizontal: spacing.xl,
+    backgroundColor: colors.surface,
+  },
+  // Top-anchored, not centered — the Password/OTP toggle below changes how
+  // much content the screen renders (a mode switch, or the code field
+  // appearing after "Send code"), and centering the whole scroll content
+  // made the entire screen visibly jump every time that height changed.
+  // Matches RegisterScreen.js's scrollContainer for the same reason.
+  formContainer: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xxl,
     backgroundColor: colors.surface,
   },
   title: {
@@ -256,14 +257,5 @@ const styles = StyleSheet.create({
     fontSize: typography.caption.fontSize,
     color: colors.danger,
     marginBottom: spacing.lg,
-  },
-  linkContainer: {
-    marginTop: spacing.lg,
-    alignItems: "center",
-  },
-  link: {
-    fontSize: typography.caption.fontSize,
-    fontWeight: typography.caption.fontWeight,
-    color: colors.primary,
   },
 });
