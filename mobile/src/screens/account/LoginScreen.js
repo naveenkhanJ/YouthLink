@@ -1,10 +1,12 @@
 /**
- * Login screen — password path (FR-ACC-07) — Afham.
+ * Login screen — both paths (FR-ACC-07) — Afham.
  *
- * Password path only for now — the OTP path still needs exercising against
- * a real phone number to build and test (Firebase test phone numbers are
- * now set up; see .worklog/progress.md), a separate, small addition once
- * that happens, not a gap in this screen's own scope.
+ * Two fully independent paths, per FR-ACC-07: password, or Firebase phone
+ * OTP via ./hooks/usePhoneVerification.js (shared with RegisterScreen.js,
+ * which uses the same flow for signup) — its resulting ID token is handed
+ * to the backend's separate POST /login/otp instead of /register.
+ * Switching the mode toggle below does not share state between the two
+ * paths, so partially-entered data in one mode never leaks into the other.
  *
  * No post-login destination screen exists yet (no other module has a
  * screen built), so a successful login shows an inline confirmation rather
@@ -22,19 +24,23 @@ import {
   ScrollView,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { loginPassword } from "../../api/account";
+import { loginPassword, loginOtp } from "../../api/account";
 import { setAuthToken, parseApiError } from "../../api/client";
-import { colors, spacing, typography } from "./theme";
+import { colors, spacing, radius, typography } from "./theme";
 import Button from "./components/Button";
 import TextField from "./components/TextField";
+import usePhoneVerification from "./hooks/usePhoneVerification";
 
 export default function LoginScreen({ navigation }) {
+  const [mode, setMode] = useState("password"); // "password" | "otp"
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  // Password path.
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const canSubmit = phone.trim().length > 0 && password.length > 0;
 
@@ -54,6 +60,30 @@ export default function LoginScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // OTP path — independent phone/error state from the password path above,
+  // deliberately (via its own usePhoneVerification instance), so switching
+  // modes never carries stale input or errors from one into the other.
+  const {
+    phone: otpPhone,
+    setPhone: setOtpPhone,
+    confirmationResult,
+    code,
+    setCode,
+    error: otpError,
+    sendingCode,
+    confirmingCode,
+    sendCode: handleSendCode,
+    confirmCode,
+  } = usePhoneVerification();
+
+  async function handleConfirmCode() {
+    await confirmCode(async (idToken) => {
+      const { token, user } = await loginOtp({ idToken });
+      setAuthToken(token);
+      setLoggedInUser(user);
+    });
   }
 
   if (loggedInUser) {
@@ -77,31 +107,91 @@ export default function LoginScreen({ navigation }) {
       >
         <Text style={styles.title}>Log in</Text>
 
-        {formError ? <Text style={styles.formError}>{formError}</Text> : null}
+        <View style={styles.modeToggle}>
+          <Pressable
+            style={[styles.modeOption, mode === "password" && styles.modeOptionActive]}
+            onPress={() => setMode("password")}
+          >
+            <Text style={[styles.modeLabel, mode === "password" && styles.modeLabelActive]}>
+              Password
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.modeOption, mode === "otp" && styles.modeOptionActive]}
+            onPress={() => setMode("otp")}
+          >
+            <Text style={[styles.modeLabel, mode === "otp" && styles.modeLabelActive]}>
+              OTP
+            </Text>
+          </Pressable>
+        </View>
 
-        <TextField
-          label="Phone number"
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="+94771234567"
-          keyboardType="phone-pad"
-          error={fieldErrors.phone}
-        />
-        <TextField
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Password"
-          secureTextEntry
-          error={fieldErrors.password}
-        />
+        {mode === "password" ? (
+          <>
+            {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
-        <Button
-          title="Log in"
-          onPress={handleSubmit}
-          loading={loading}
-          disabled={!canSubmit}
-        />
+            <TextField
+              label="Phone number"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="+94771234567"
+              keyboardType="phone-pad"
+              error={fieldErrors.phone}
+            />
+            <TextField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry
+              error={fieldErrors.password}
+            />
+
+            <Button
+              title="Log in"
+              onPress={handleSubmit}
+              loading={loading}
+              disabled={!canSubmit}
+            />
+          </>
+        ) : (
+          <>
+            {otpError ? <Text style={styles.formError}>{otpError}</Text> : null}
+
+            <TextField
+              label="Phone number"
+              value={otpPhone}
+              onChangeText={setOtpPhone}
+              placeholder="+94771234567"
+              keyboardType="phone-pad"
+            />
+
+            {!confirmationResult ? (
+              <Button
+                title="Send code"
+                onPress={handleSendCode}
+                loading={sendingCode}
+                disabled={!otpPhone.trim()}
+              />
+            ) : (
+              <>
+                <TextField
+                  label="Verification code"
+                  value={code}
+                  onChangeText={setCode}
+                  placeholder="123456"
+                  keyboardType="number-pad"
+                />
+                <Button
+                  title="Log in"
+                  onPress={handleConfirmCode}
+                  loading={confirmingCode}
+                  disabled={!code.trim()}
+                />
+              </>
+            )}
+          </>
+        )}
 
         <Pressable
           style={styles.linkContainer}
@@ -132,6 +222,31 @@ const styles = StyleSheet.create({
     fontWeight: typography.title.fontWeight,
     color: colors.textPrimary,
     marginBottom: spacing.xl,
+  },
+  modeToggle: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: spacing.xs,
+    marginBottom: spacing.xl,
+  },
+  modeOption: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.sm,
+    alignItems: "center",
+  },
+  modeOptionActive: {
+    backgroundColor: colors.primary,
+  },
+  modeLabel: {
+    fontSize: typography.caption.fontSize,
+    fontWeight: typography.caption.fontWeight,
+    color: colors.textSecondary,
+  },
+  modeLabelActive: {
+    color: colors.surface,
   },
   body: {
     fontSize: typography.body.fontSize,

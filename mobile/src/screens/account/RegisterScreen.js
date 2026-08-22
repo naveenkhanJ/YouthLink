@@ -9,13 +9,12 @@
  * the form fields required to submit don't even render until step one
  * succeeds.
  *
- * Firebase API calls (signInWithPhoneNumber, ConfirmationResult#confirm,
- * getIdToken) are the modular @react-native-firebase/auth API, verified
- * directly against this project's installed package version (26.2.0) —
- * see node_modules/@react-native-firebase/auth/dist/typescript/lib/index.d.ts.
- * No app verifier / reCAPTCHA setup needed here: that's what the native
- * module (vs. the Firebase JS SDK) buys us, per mobile's Firebase setup
- * notes.
+ * The phone-verification step itself (signInWithPhoneNumber,
+ * ConfirmationResult#confirm, getIdToken — the modular
+ * @react-native-firebase/auth API, verified directly against this
+ * project's installed package version (26.2.0), no app verifier/reCAPTCHA
+ * needed thanks to the native module) lives in
+ * ./hooks/usePhoneVerification.js, shared with LoginScreen.js's OTP mode.
  */
 import { useState } from "react";
 import {
@@ -28,7 +27,6 @@ import {
   ScrollView,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { getAuth, signInWithPhoneNumber, getIdToken } from "@react-native-firebase/auth";
 import { register } from "../../api/account";
 import { parseApiError } from "../../api/client";
 import { colors, spacing, typography } from "./theme";
@@ -36,6 +34,7 @@ import Button from "./components/Button";
 import TextField from "./components/TextField";
 import RoleOption from "./components/RoleOption";
 import Checkbox from "./components/Checkbox";
+import usePhoneVerification from "./hooks/usePhoneVerification";
 
 const ROLES = [
   {
@@ -57,12 +56,18 @@ const ROLES = [
 
 export default function RegisterScreen({ navigation }) {
   // Step 1 — phone verification.
-  const [phone, setPhone] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
-  const [code, setCode] = useState("");
-  const [phoneError, setPhoneError] = useState(null);
-  const [sendingCode, setSendingCode] = useState(false);
-  const [confirmingCode, setConfirmingCode] = useState(false);
+  const {
+    phone,
+    setPhone,
+    confirmationResult,
+    code,
+    setCode,
+    error: phoneError,
+    sendingCode,
+    confirmingCode,
+    sendCode: handleSendCode,
+    confirmCode,
+  } = usePhoneVerification();
   const [idToken, setIdToken] = useState(null);
 
   // Step 2 — the rest of the form, only reachable once idToken is set.
@@ -79,43 +84,8 @@ export default function RegisterScreen({ navigation }) {
   const [submitting, setSubmitting] = useState(false);
   const [registeredUser, setRegisteredUser] = useState(null);
 
-  async function handleSendCode() {
-    setPhoneError(null);
-    if (!phone.trim()) {
-      setPhoneError("Phone number is required.");
-      return;
-    }
-    setSendingCode(true);
-    try {
-      const result = await signInWithPhoneNumber(getAuth(), phone.trim());
-      setConfirmationResult(result);
-    } catch (err) {
-      setPhoneError(err.message || "Could not send a verification code.");
-    } finally {
-      setSendingCode(false);
-    }
-  }
-
   async function handleConfirmCode() {
-    setPhoneError(null);
-    if (!code.trim()) {
-      setPhoneError("Enter the code you received.");
-      return;
-    }
-    setConfirmingCode(true);
-    try {
-      const userCredential = await confirmationResult.confirm(code.trim());
-      if (!userCredential) {
-        setPhoneError("That code didn't work. Try again.");
-        return;
-      }
-      const token = await getIdToken(userCredential.user);
-      setIdToken(token);
-    } catch (err) {
-      setPhoneError(err.message || "That code didn't work. Try again.");
-    } finally {
-      setConfirmingCode(false);
-    }
+    await confirmCode(async (token) => setIdToken(token));
   }
 
   const canSubmit =
