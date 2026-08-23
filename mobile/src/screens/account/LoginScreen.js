@@ -23,27 +23,32 @@ import { colors, spacing, radius, typography } from "./theme";
 import Button from "./components/Button";
 import TextField from "./components/TextField";
 import Link from "./components/Link";
+import PhoneField from "./components/PhoneField";
+import PhoneVerificationStep from "./components/PhoneVerificationStep";
 import usePhoneVerification from "./hooks/usePhoneVerification";
+import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
 export default function LoginScreen({ navigation }) {
   const [mode, setMode] = useState("password"); // "password" | "otp"
   const [loggedInUser, setLoggedInUser] = useState(null);
 
-  // Password path.
+  // Password path. `phone` is the 9-digit local part only — PhoneField
+  // enforces that shape, same as usePhoneVerification's OTP path — the
+  // full E.164 string is only assembled right before the API call.
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = phone.trim().length > 0 && password.length > 0;
+  const canSubmit = phone.length === LOCAL_DIGITS && password.length > 0;
 
   async function handleSubmit() {
     setFieldErrors({});
     setFormError(null);
     setLoading(true);
     try {
-      const { token, user } = await loginPassword({ phone, password });
+      const { token, user } = await loginPassword({ phone: `${COUNTRY_CODE}${phone}`, password });
       setAuthToken(token);
       setPassword("");
       setLoggedInUser(user);
@@ -56,24 +61,13 @@ export default function LoginScreen({ navigation }) {
     }
   }
 
-  // OTP path — independent phone/error state from the password path above,
-  // deliberately (via its own usePhoneVerification instance), so switching
-  // modes never carries stale input or errors from one into the other.
-  const {
-    phone: otpPhone,
-    setPhone: setOtpPhone,
-    confirmationResult,
-    code,
-    setCode,
-    error: otpError,
-    sendingCode,
-    confirmingCode,
-    sendCode: handleSendCode,
-    confirmCode,
-  } = usePhoneVerification();
+  // OTP path — its own usePhoneVerification instance, deliberately
+  // independent of the password path above, so switching modes never
+  // carries stale input or errors from one into the other.
+  const otpVerification = usePhoneVerification();
 
   async function handleConfirmCode() {
-    await confirmCode(async (idToken) => {
+    await otpVerification.confirmCode(async (idToken) => {
       const { token, user } = await loginOtp({ idToken });
       setAuthToken(token);
       setLoggedInUser(user);
@@ -123,14 +117,7 @@ export default function LoginScreen({ navigation }) {
         <>
           {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
-          <TextField
-            label="Phone number"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="+94771234567"
-            keyboardType="phone-pad"
-            error={fieldErrors.phone}
-          />
+          <PhoneField value={phone} onChangeText={setPhone} error={fieldErrors.phone} />
           <TextField
             label="Password"
             value={password}
@@ -148,42 +135,11 @@ export default function LoginScreen({ navigation }) {
           />
         </>
       ) : (
-        <>
-          {otpError ? <Text style={styles.formError}>{otpError}</Text> : null}
-
-          <TextField
-            label="Phone number"
-            value={otpPhone}
-            onChangeText={setOtpPhone}
-            placeholder="+94771234567"
-            keyboardType="phone-pad"
-          />
-
-          {!confirmationResult ? (
-            <Button
-              title="Send code"
-              onPress={handleSendCode}
-              loading={sendingCode}
-              disabled={!otpPhone.trim()}
-            />
-          ) : (
-            <>
-              <TextField
-                label="Verification code"
-                value={code}
-                onChangeText={setCode}
-                placeholder="123456"
-                keyboardType="number-pad"
-              />
-              <Button
-                title="Log in"
-                onPress={handleConfirmCode}
-                loading={confirmingCode}
-                disabled={!code.trim()}
-              />
-            </>
-          )}
-        </>
+        <PhoneVerificationStep
+          verification={otpVerification}
+          onConfirm={handleConfirmCode}
+          confirmLabel="Log in"
+        />
       )}
 
       <Link onPress={() => navigation.navigate("AccountRegister")}>

@@ -28,6 +28,7 @@ import TextField from "./components/TextField";
 import RoleOption from "./components/RoleOption";
 import Checkbox from "./components/Checkbox";
 import Link from "./components/Link";
+import PhoneVerificationStep from "./components/PhoneVerificationStep";
 import usePhoneVerification from "./hooks/usePhoneVerification";
 
 const ROLES = [
@@ -50,18 +51,7 @@ const ROLES = [
 
 export default function RegisterScreen({ navigation }) {
   // Step 1 — phone verification.
-  const {
-    phone,
-    setPhone,
-    confirmationResult,
-    code,
-    setCode,
-    error: phoneError,
-    sendingCode,
-    confirmingCode,
-    sendCode: handleSendCode,
-    confirmCode,
-  } = usePhoneVerification();
+  const verification = usePhoneVerification();
   const [idToken, setIdToken] = useState(null);
 
   // Step 2 — the rest of the form, only reachable once idToken is set.
@@ -79,7 +69,7 @@ export default function RegisterScreen({ navigation }) {
   const [registeredUser, setRegisteredUser] = useState(null);
 
   async function handleConfirmCode() {
-    await confirmCode(async (token) => setIdToken(token));
+    await verification.confirmCode(async (token) => setIdToken(token));
   }
 
   const canSubmit =
@@ -149,41 +139,11 @@ export default function RegisterScreen({ navigation }) {
           <Text style={styles.stepBody}>
             Verify your phone number to get started.
           </Text>
-
-          {phoneError ? <Text style={styles.formError}>{phoneError}</Text> : null}
-
-          <TextField
-            label="Phone number"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="+94771234567"
-            keyboardType="phone-pad"
+          <PhoneVerificationStep
+            verification={verification}
+            onConfirm={handleConfirmCode}
+            confirmLabel="Verify"
           />
-
-          {!confirmationResult ? (
-            <Button
-              title="Send code"
-              onPress={handleSendCode}
-              loading={sendingCode}
-              disabled={!phone.trim()}
-            />
-          ) : (
-            <>
-              <TextField
-                label="Verification code"
-                value={code}
-                onChangeText={setCode}
-                placeholder="123456"
-                keyboardType="number-pad"
-              />
-              <Button
-                title="Verify"
-                onPress={handleConfirmCode}
-                loading={confirmingCode}
-                disabled={!code.trim()}
-              />
-            </>
-          )}
         </>
       ) : (
         <>

@@ -17,6 +17,7 @@ import { colors, spacing, radius, typography } from "../theme";
  * @param {string} [placeholder]
  * @param {string} [keyboardType] - React Native TextInput keyboardType.
  * @param {string} [autoCapitalize]
+ * @param {number} [maxLength]
  */
 export default function TextField({
   label,
@@ -27,6 +28,7 @@ export default function TextField({
   placeholder,
   keyboardType = "default",
   autoCapitalize = "none",
+  maxLength,
 }) {
   const [focused, setFocused] = useState(false);
 
@@ -48,6 +50,7 @@ export default function TextField({
         placeholderTextColor={colors.textPlaceholder}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
+        maxLength={maxLength}
       />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
