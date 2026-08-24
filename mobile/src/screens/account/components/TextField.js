@@ -3,10 +3,16 @@
  * Management module only. The border/fill/error treatment here is
  * extrapolated, not observed in the source prototypes (which had no form
  * fields) — see .worklog/progress.md's design-system section.
+ *
+ * Fields with `secureTextEntry` get a visibility toggle for free — an
+ * EyeIcon (see ./EyeIcon.js), not a text label. Found missing in the
+ * 2026-08-23 UI/UX audit — a password typo was previously undetectable
+ * until the next login failed.
  */
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme";
+import EyeIcon from "./EyeIcon";
 
 /**
  * @param {string} label
@@ -31,27 +37,44 @@ export default function TextField({
   maxLength,
 }) {
   const [focused, setFocused] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
+      <View
         style={[
-          styles.input,
+          styles.inputRow,
           focused && styles.inputFocused,
           error && styles.inputError,
         ]}
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        secureTextEntry={secureTextEntry}
-        placeholder={placeholder}
-        placeholderTextColor={colors.textPlaceholder}
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize}
-        maxLength={maxLength}
-      />
+      >
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={onChangeText}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          secureTextEntry={secureTextEntry && !revealed}
+          placeholder={placeholder}
+          placeholderTextColor={colors.textPlaceholder}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
+          maxLength={maxLength}
+          accessibilityLabel={label}
+        />
+        {secureTextEntry ? (
+          <Pressable
+            onPress={() => setRevealed((prev) => !prev)}
+            style={styles.toggleButton}
+            hitSlop={spacing.sm}
+            accessibilityRole="button"
+            accessibilityLabel={revealed ? "Hide password" : "Show password"}
+          >
+            <EyeIcon revealed={revealed} />
+          </Pressable>
+        ) : null}
+      </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
@@ -67,15 +90,21 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
-  input: {
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
     minHeight: 54,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
+    backgroundColor: colors.surface,
+  },
+  input: {
+    flex: 1,
     fontSize: typography.body.fontSize,
     color: colors.textPrimary,
-    backgroundColor: colors.surface,
+    paddingVertical: spacing.sm,
   },
   inputFocused: {
     borderColor: colors.primary,
@@ -83,6 +112,9 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: colors.danger,
+  },
+  toggleButton: {
+    marginLeft: spacing.sm,
   },
   errorText: {
     marginTop: spacing.xs,

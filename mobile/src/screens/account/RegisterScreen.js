@@ -16,8 +16,8 @@
  * needed thanks to the native module) lives in
  * ./hooks/usePhoneVerification.js, shared with LoginScreen.js's OTP mode.
  */
-import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { register } from "../../api/account";
@@ -30,6 +30,12 @@ import Checkbox from "./components/Checkbox";
 import Link from "./components/Link";
 import PhoneVerificationStep from "./components/PhoneVerificationStep";
 import usePhoneVerification from "./hooks/usePhoneVerification";
+
+// Mirrors backend/src/modules/account/account.service.js's EMAIL_FORMAT —
+// duplicated, not shared, since mobile/ and backend/ are separate deployable
+// apps with no shared module between them. This is a client-side pre-check
+// only; the server check is the authoritative one.
+const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ROLES = [
   {
@@ -57,6 +63,7 @@ export default function RegisterScreen({ navigation }) {
   // Step 2 — the rest of the form, only reachable once idToken is set.
   const [role, setRole] = useState(null);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [nic, setNic] = useState("");
   const [birthdate, setBirthdate] = useState("");
@@ -72,22 +79,73 @@ export default function RegisterScreen({ navigation }) {
     await verification.confirmCode(async (token) => setIdToken(token));
   }
 
+  // FR-ACC-01 is silent on this — found by hitting it live during testing
+  // (KEYCODE_BACK silently discarded a fully-filled step-2 form). Only
+  // warns once there's something to lose: a phone number typed in step 1,
+  // or step 2 reached at all. Never warns after a successful registration,
+  // where navigating away (via "Go to log in") is the intended exit.
+  useEffect(() => {
+    const hasUnsavedInput =
+      !registeredUser && (idToken || verification.phone.length > 0);
+    if (!hasUnsavedInput) {
+      return undefined;
+    }
+
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      e.preventDefault();
+      Alert.alert(
+        "Discard registration?",
+        "The details you've entered will be lost.",
+        [
+          { text: "Stay", style: "cancel" },
+          {
+            text: "Discard",
+            style: "destructive",
+            onPress: () => navigation.dispatch(e.data.action),
+          },
+        ],
+      );
+    });
+
+    return unsubscribe;
+  }, [navigation, registeredUser, idToken, verification.phone]);
+
   const canSubmit =
-    role && password.length > 0 && nic.trim().length > 0 &&
-    birthdate.trim().length > 0 && legalName.trim().length > 0;
+    role && password.length > 0 && confirmPassword.length > 0 &&
+    nic.trim().length > 0 && birthdate.trim().length > 0 &&
+    legalName.trim().length > 0;
 
   async function handleSubmitRegistration() {
     setFieldErrors({});
     setFormError(null);
+
+    // Client-side pre-checks the backend can't express as a single field
+    // error (a mismatch spans two fields) or doesn't check at all today
+    // (email format) — caught here, before the network round-trip, same
+    // spirit as the phone-digit-count check gating "Send code" already
+    // does. The backend's own validateFields() is still the authoritative
+    // check for everything else. Computed alongside the ToS check (not
+    // before it, with its own early return) so a submit with both problems
+    // highlights both at once instead of only revealing the ToS checkbox
+    // on a second attempt.
+    const preErrors = {};
+    if (password !== confirmPassword) {
+      preErrors.confirmPassword = "Passwords do not match";
+    }
+    if (email.trim() && !EMAIL_FORMAT.test(email.trim())) {
+      preErrors.email = "Must be a valid email address";
+    }
+
     // FR-ACC-19: blocked with the checkbox highlighted, checked here before
     // ever calling the API — the backend enforces this too, as the real,
     // final guard, but the acceptance criterion describes an in-the-moment
     // UI response to the submit attempt itself.
-    if (!tosAccepted) {
-      setTosError(true);
+    setTosError(!tosAccepted);
+
+    if (Object.keys(preErrors).length > 0 || !tosAccepted) {
+      setFieldErrors(preErrors);
       return;
     }
-    setTosError(false);
     setSubmitting(true);
     try {
       const user = await register({
@@ -169,6 +227,14 @@ export default function RegisterScreen({ navigation }) {
             error={fieldErrors.password}
           />
           <TextField
+            label="Confirm password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Re-enter password"
+            secureTextEntry
+            error={fieldErrors.confirmPassword}
+          />
+          <TextField
             label="Email (optional)"
             value={email}
             onChangeText={setEmail}
@@ -197,6 +263,7 @@ export default function RegisterScreen({ navigation }) {
             onChangeText={setLegalName}
             placeholder="Full legal name"
             autoCapitalize="words"
+            maxLength={100}
             error={fieldErrors.legalName}
           />
 
