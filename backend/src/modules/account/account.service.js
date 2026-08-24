@@ -96,10 +96,13 @@ function calculateAge(birthdate) {
  * prevention) — this is "was the request well-formed at all", not
  * business rules.
  */
+const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function validateFields({
   role,
   idToken,
   password,
+  email,
   nic,
   birthdate,
   legalName,
@@ -115,6 +118,10 @@ function validateFields({
   }
   if (!password || typeof password !== "string") {
     fields.password = "Required";
+  }
+  // email is optional (User.email is nullable) — only checked if provided.
+  if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email))) {
+    fields.email = "Must be a valid email address";
   }
   if (!nic || typeof nic !== "string" || nic.trim().length < 4) {
     // At least 4 chars so getNicLast4 never receives something too short
