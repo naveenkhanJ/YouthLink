@@ -4,7 +4,9 @@ Functional and non-functional requirements for YouthLink, a mobile platform conn
 
 ## About this document
 
-This is the normative requirements baseline the codebase is built against: **129 Functional Requirements** across 13 modules and **32 Non-Functional Requirements** across 7 categories, each with a stable ID and Given/When/Then acceptance criteria.
+This is the normative requirements baseline the codebase is built against: **131 Functional Requirements** across 13 modules and **32 Non-Functional Requirements** across 7 categories, each with a stable ID and Given/When/Then acceptance criteria.
+
+> **Count changed 2026-08-27, from 129 to 131.** Two requirements were added following the UEE user-research validation: FR-APPLY-12 (a worker's own application list) and FR-DISPUTE-07 (dispute case status visibility). Four existing requirements were amended in the same pass — FR-ENDORSE-04, FR-ENDORSE-11, FR-DISC-01 and, for reference only, no change to FR-POST-04. Each carries a dated amendment note beneath it explaining what changed and which research finding drove it. The Sprint 0 baseline of 129 is preserved in the frozen copy held in the SPM coursework project; this file is the live version.
 
 **Referencing requirements in your work.** Every requirement has a permanent ID (`FR-POST-01`, `NFR-SEC-03`). Use them in commit messages, per [`CONTRIBUTING.md`](../CONTRIBUTING.md) — list every requirement a commit touches:
 
@@ -561,18 +563,26 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given a posting has zero filled slots, when the Employer withdraws it, then it is removed from active browse/search results.
 - Given at least one slot has filled, when the Employer attempts Withdraw, then the system directs them to the cancellation flow (FR-ENG-05/06) instead.
+- Given a withdrawn posting had Pending applicants, when the withdrawal completes, then those applications are set to Not selected and the applicants are notified (FR-APPLY-09).
+
+> **Acceptance criterion added 2026-08-27.** The Withdraw action itself is unchanged. What was missing is what withdrawal does to people who had already applied: as originally written this requirement removed the posting from browse and said nothing about its applicants, leaving them Pending indefinitely. That is now covered by FR-APPLY-09's broadened trigger, and stated here so the consequence is visible from the action that causes it.
 
 #### FR-POST-13 — Posting expiry
 
 | Actor(s) | Priority |
 | -------- | -------- |
-| System   | Should   |
+| System   | Must     |
 
-**Requirement:** The system shall auto-expire and archive an open posting with zero filled slots after 30 days of no engagement.
+**Requirement:** The system shall auto-expire and archive any posting still Open, regardless of how many of its slots have filled. For a one-off **Gig**, expiry shall occur when the posting's start date/time passes, since work that has begun cannot be applied to. For a **Part-time job** or **Internship**, whose start date opens an ongoing arrangement rather than setting a deadline, expiry shall occur 30 days after posting. Expiring a partially-filled posting shall close only its unfilled slots; every Engagement already created from it is unaffected (FR-POST-18). Expiry resolves any remaining Pending applications (FR-APPLY-09).
 
 **Acceptance Criteria:**
 
-- Given a posting has zero filled slots, when 30 days pass since posting, then it auto-archives and drops out of active browse/search results.
+- Given a Gig posting is still Open, when its start date/time passes, then it auto-archives and drops out of active browse/search results.
+- Given a Part-time or Internship posting is still Open, when 30 days pass since posting, then it auto-archives and drops out of active browse/search results.
+- Given an expiring posting has at least one filled slot, when expiry occurs, then only the unfilled slots close and every existing Engagement continues unchanged.
+- Given an expiring posting has Pending applicants, when expiry occurs, then those applications are set to Not selected and the applicants are notified (FR-APPLY-09).
+
+> **Amended 2026-08-27, and raised from Should to Must.** Three defects were corrected together. **(1) The "zero filled slots" condition** meant a multi-slot posting that filled one slot and then stalled could never expire — it satisfied neither this rule nor FR-APPLY-09's Filled trigger nor FR-POST-12's Withdraw window, so its remaining applicants had no terminating event of any kind. **(2) The flat 30-day window** ignored the posting's own start time: FR-POST-05 requires a start only 2 hours out, so a Gig posted Monday for Tuesday stayed live and applicable-to for another month, well after the work had happened. Anchoring Gigs to start time follows the same reasoning and the same Gig-only scoping already used in FR-ENG-13. **(3) Expiry had no stated effect on Pending applications**, which is now handled by FR-APPLY-09's broadened trigger. **Priority raised** because this is no longer housekeeping — it is one of the three mechanisms guaranteeing an application reaches a definite outcome. See the project's reconciliation register, ref C1.
 
 #### FR-POST-14 — Slot-fill status display
 
@@ -645,11 +655,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ---------------- | -------- |
 | Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall let a Youth Job-Seeker browse gigs filtered by location radius, defaulting to 5km, auto-expanding in 5km increments up to a maximum of 50km if fewer than 5 results are returned.
+**Requirement:** The system shall let a Youth Job-Seeker browse gigs filtered by location radius, defaulting to 5km, auto-expanding in 5km increments up to a maximum of 50km if fewer than 5 results are returned. Each result in the browse list shall show the posting's pay figure and basis (FR-POST-04) on the result itself, not only inside the opened listing.
 
 **Acceptance Criteria:**
 
 - Given fewer than 5 postings exist within 5km, when the browse screen loads, then the radius auto-expands in 5km steps until either 5+ results appear or 50km is reached.
+- Given a browse result is rendered, when displayed, then its pay figure and basis are visible without opening the listing.
+
+> **Amended 2026-08-27.** The pay-on-result requirement was added following UEE Lab 04's finding that "legitimate job offers paying too little to be worth pursuing" was the single most-selected challenge among youth respondents (71%, n=14), ahead of every scam-related concern. Pay was already available for sorting (FR-DISC-05) but was not required to be visible while scanning results, which meant the most common reason for rejecting a listing could only be discovered by opening it. See the project's reconciliation register, ref C17.
 
 #### FR-DISC-02 — Manual location fallback
 
@@ -835,11 +848,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | -------- | -------- |
 | System   | Must     |
 
-**Requirement:** The system shall automatically notify any applicant still Pending once the posting reaches Filled status, without requiring an explicit Employer decline.
+**Requirement:** The system shall automatically resolve every application still Pending at the moment a posting stops accepting applications — whether it reached Filled (FR-POST-18), expired (FR-POST-13), or was withdrawn by the Employer (FR-POST-12) — by setting each to Not selected and notifying the applicant, without requiring an explicit Employer decline in any of those cases.
 
 **Acceptance Criteria:**
 
-- Given a posting reaches Filled status with Pending applicants remaining, when that status change occurs, then all remaining Pending applicants receive an automatic not-selected notification.
+- Given a posting reaches Filled status with Pending applicants remaining, when that status change occurs, then all remaining Pending applicants are set to Not selected and receive an automatic not-selected notification.
+- Given a posting expires with Pending applicants remaining, when expiry occurs, then all remaining Pending applicants are set to Not selected and notified.
+- Given an Employer withdraws a posting with Pending applicants remaining, when the withdrawal completes, then all remaining Pending applicants are set to Not selected and notified.
+- Given a posting closes by any of the three routes above, when an applicant next opens their application list (FR-APPLY-12), then no application on that posting is still shown as Pending.
+
+> **Amended 2026-08-27.** As originally written, this requirement fired on one trigger only — the posting reaching Filled — which made it the _only_ automatic resolution path in the system while leaving the other three ways a posting can end (expiry, withdrawal, and a partially-filled posting that stalls) with no effect on Pending applications at all. Since complete fill is the least likely outcome for the population the user research describes, the practical consequence was that most applications had no defined end, which is the exact harm FR-APPLY-12 exists to address. Broadened here from a Filled-specific rule to the general one: **a posting that stops accepting applications resolves its applicants, however it stopped.** See the project's reconciliation register, ref C1.
 
 #### FR-APPLY-10 — Pending-applicant notification on material change
 
@@ -864,6 +882,27 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a posting has received a large number of applications, when a new worker applies, then the application is accepted regardless of pool size.
+
+#### FR-APPLY-12 — Worker's own application list
+
+| Actor(s)         | Priority |
+| ---------------- | -------- |
+| Youth Job-Seeker | Must     |
+
+**Requirement:** The system shall provide a Youth Job-Seeker with a list of their own applications, showing for each one the posting it belongs to, the application's current state (Pending, Selected, Declined, Not selected, or Withdrawn), and — for any application still Pending — the date its parent posting expires (FR-POST-13), which is the latest point at which that application must reach a definite outcome. The list shall order Pending applications by soonest expiry. Multi-slot postings shall additionally show fill status (FR-POST-14), since that affects the worker's realistic chances.
+
+**Acceptance Criteria:**
+
+- Given a worker has submitted applications, when they open their application list, then every application they have submitted appears with its current state.
+- Given an application is Pending, when displayed, then its posting's expiry date is shown alongside it.
+- Given an application is Pending on a multi-slot posting, when displayed, then the posting's fill status is shown as well.
+- Given a posting closes for any reason — Filled, expired, or withdrawn — when the list is next rendered, then no application on that posting is still shown as Pending (FR-APPLY-09).
+- Given a worker has no applications, when they open the list, then an empty state is shown rather than a blank screen.
+- Given an application's state changes, when the worker next opens the list, then the current state is shown without the worker needing to revisit the original listing.
+
+> **Added 2026-08-27.** This requirement did not exist in the Sprint 0 baseline. FR-APPLY-01 through FR-APPLY-11 cover the Employer's applicant view, the apply action and withdrawal, but nowhere gave the worker a view of what they had applied to. UEE Lab 04's research identified this as the strongest single finding on the job-seeker side: P2 reported submitting over one hundred internship applications and receiving almost no responses, "not even rejections," and "application processes that take too long or never get a response" was among the challenges reported by the youth questionnaire segment. Lab 05 recorded the same point as its highest-priority change (C1), observing that the original flow terminated at "application sent" — precisely where the reported harm begins. **Deliberately narrower than Lab 05's recommendation**, which proposed Viewed and Shortlisted states in addition: neither has an employer action behind it in this system, so both would be inferred signals that mislead the worker rather than inform them. See the project's reconciliation register, ref C1.
+>
+> **This requirement's guarantee required fixing the lifecycle beneath it, not just wording it carefully.** The first draft claimed no application stays unresolved indefinitely. Checking that against the baseline showed it was false — and the reason turned out to be broader than a single edge case: FR-APPLY-09 was the only automatic resolution path in the system and fired on one trigger only (Filled), leaving expiry, withdrawal, and stalled partially-filled postings with no effect on Pending applications at all. Since complete fill is the least likely outcome for the population the research describes, most applications had no defined end. Rather than narrow this requirement to describe that gap, FR-APPLY-09, FR-POST-13 and FR-POST-12 were amended in the same pass so that **every** way a posting can close now resolves its applicants. The guarantee above is therefore true as written.
 
 ### 3.6 FR-ENG — Engagement Lifecycle
 
@@ -1169,11 +1208,16 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 | --------------------------- | -------- |
 | Community Verifier/Endorser | Must     |
 
-**Requirement:** The system shall accept a vouch as a single "I vouch for this person" action plus an optional reason, capped at 300 characters, live immediately upon submission with no Admin pre-review.
+**Requirement:** The system shall accept a vouch as a single "I vouch for this person" action, live immediately upon submission with no Admin pre-review. Before the Verifier commits, the system shall display a short, plain-language statement of what an endorsement does and does not mean. The vouch shall carry an optional set of attributes the Verifier selects from a fixed list — punctuality, honesty, reliability, a specific skill, and length of acquaintance — and an optional free-text reason capped at 300 characters, prompted as "How do you know this person?" rather than left as an unlabelled field.
 
 **Acceptance Criteria:**
 
 - Given a Verifier submits a vouch via either entry point (FR-ENDORSE-02 or FR-ENDORSE-03), when submitted, then it becomes visible immediately, with no pending-review state.
+- Given the Verifier reaches the vouch action, when the screen is presented, then the scope statement is visible before any commitment is made and cannot be dismissed out of view.
+- Given the Verifier selects no attributes and writes no reason, when submitted, then the vouch is still accepted — both fields are optional and neither blocks the single-action path.
+- Given the Verifier selects one or more attributes, when the endorsement is displayed, then only the selected attributes are shown, and no attribute the Verifier did not select is implied.
+
+> **Amended 2026-08-27.** As originally written, this requirement offered a single unlabelled free-text reason. UEE Lab 04's research measured that all seven community respondents named at least one hesitation about vouching, with taking on liability for someone else's actions and reputational risk each cited by 43% — the underlying concern being that an endorsement's scope is undefined, so the endorser cannot tell what they are committing to. The scope statement and the attribute list address that directly by letting the Verifier state what they can attest to rather than vouching for the person as a whole. The relationship prompt addresses a separate finding, from the employer side: P3 wanted endorsements that are "genuinely authentic," which requires the reader to see the basis of the endorsement rather than infer it. All three additions are deliberately kept on one screen and optional, preserving this requirement's original single-action principle — the same research identifies the Verifier segment as needing any action to be a single simple step. See the project's reconciliation register, refs C3, C8 and C14.
 
 #### FR-ENDORSE-05 — Eligibility window
 
@@ -1253,13 +1297,16 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 | --------------------------- | -------- |
 | Community Verifier/Endorser | Must     |
 
-**Requirement:** The system shall display a Verifier's track record as "N endorsed, M went on to build a good rating," where N is the count of the Verifier's currently-active (non-revoked) endorsements, and M is the count of those N whose endorsed worker currently has at least one completed rated Engagement and a current average rating of 4.0 or higher. This figure shall be live and recalculated, not a one-time snapshot.
+**Requirement:** The system shall display a Verifier's track record as "N endorsed, M went on to build a good rating," where N is the count of the Verifier's currently-active (non-revoked) endorsements, and M is the count of those N whose endorsed worker currently has at least one completed rated Engagement and a current average rating of 4.0 or higher. This figure shall be live and recalculated, not a one-time snapshot. **The track record shall be visible only to the Verifier themselves, on their own profile — never to Employers, workers, or any other user.**
 
 **Acceptance Criteria:**
 
 - Given a Verifier's endorsed worker's average rating later drops below 4.0, when recalculated, then that worker no longer counts toward M.
 - Given a freshly-endorsed worker has not yet earned a rating, when M is computed, then they do not count toward M yet.
 - Given a Verifier revokes an endorsement, when N recalculates, then that endorsement no longer counts toward N.
+- Given any user other than the Verifier views that Verifier's profile, or views an endorsement that Verifier gave, when rendered, then no N or M figure appears anywhere.
+
+> **Amended 2026-08-27.** As originally written, this requirement did not state where the track record is displayed, which left it open to being read as a public figure. It is now explicitly private to the Verifier. Reason: UEE Lab 04 measured reputational risk as one of the top three reasons community members hesitate to vouch (43%, n=7) — a publicly-visible score tying a Verifier's standing to how their endorsed workers later perform makes that exact risk concrete and permanent. Because the applicant-pool sort in FR-APPLY-04 only delivers value when endorsements are plentiful, a feature that suppresses willingness to endorse undermines the mechanic the platform's trust model rests on. Keeping the figure visible to the Verifier alone preserves its intended purpose — letting an endorser see their own impact — without turning it into a public liability. Note that FR-ENDORSE-10 is unchanged: the endorsing Verifier's real name still appears alongside an active endorsement, because the employer reading it needs to know who is vouching. What is now private is the Verifier's aggregate scorecard, not their identity. See the project's reconciliation register, ref A1.
 
 #### FR-ENDORSE-12 — Endorsement payoff notification
 
@@ -1385,6 +1432,23 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a report alleges a user is under 18 despite passing the age gate, when Admin confirms this, then the account is suspended rather than offered a correction option.
+
+#### FR-DISPUTE-07 — Case status visibility
+
+| Actor(s)                                  | Priority |
+| ----------------------------------------- | -------- |
+| Local Business/Employer, Youth Job-Seeker | Must     |
+
+**Requirement:** The system shall make a dispute case's current status visible to both parties throughout its life — from the moment it opens, through the response window (FR-DISPUTE-04) and review, to its recorded outcome — rather than leaving either party without visibility once they have submitted. The status shown shall reflect the case's real state and shall not imply a resolution timeframe the system does not enforce (NFR-OPS-03 is a stated operational expectation, not a mechanically enforced deadline).
+
+**Acceptance Criteria:**
+
+- Given a dispute has been opened, when either party views it, then the case's current stage is shown to both, not only to the party who raised it.
+- Given the non-raising party's 48-hour response window is open, when either party views the case, then the window and its remaining time are visible to both.
+- Given a case reaches an outcome, when either party views it, then the recorded outcome is visible to both.
+- Given a case is awaiting Moderator or Admin review, when either party views it, then the status reflects that it is under review without stating a guaranteed completion date.
+
+> **Added 2026-08-27.** The dispute pipeline already defined its outcomes (FR-MOD and FR-ADM), its evidence rules (FR-DISPUTE-04, -05) and a soft resolution target (NFR-OPS-03), but nothing made the case's state visible to the two people most affected by it. UEE Lab 05 raised this as change C10, evidenced by 42% of employer respondents (n=12) citing limited legal recourse as a hiring challenge — the value a platform-level process offers over the informal market is a result the informal market cannot produce, and a process whose progress is invisible does not deliver that. **Deliberately narrower than Lab 05's recommendation**, which also asked for defined outcomes and a stated review timeframe: outcomes already existed, and committing to a hard timeframe would contradict NFR-OPS-03's own framing of the 3–5 business day target as an expectation rather than an enforced constraint. See the project's reconciliation register, ref C10.
 
 ### 3.10 FR-MOD — Moderator Functions
 
