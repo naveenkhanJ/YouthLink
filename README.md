@@ -118,8 +118,7 @@ Then check `http://localhost:3000/health` returns `{"status":"ok","database":"co
 > before assuming this still applies. Until it does, if you need a working
 > server locally: copy `src/app.js` to `src/app.local.js`, remove the posting
 > import and its `app.use("/api/postings", ...)` line from that copy, then
-> copy `index.js` to `index.local.js` **and change its `import app from
-"./src/app.js"` to `"./src/app.local.js"`** — easy to miss, and if you
+> copy `index.js` to `index.local.js` **and change its `import app from "./src/app.js"` to `"./src/app.local.js"`** — easy to miss, and if you
 > don't, `index.local.js` still loads the original, still-broken `app.js`
 > and you're back to the same crash. Run `node index.local.js` instead of
 > `npm run dev`. Never commit either copy — already covered by the root
