@@ -352,6 +352,13 @@ model Endorsement {
   endorserId String
   workerId   String
   reason     String?                @db.VarChar(300)
+  // Optional, multi-select. What the endorser can specifically attest to
+  // (FR-ENDORSE-04, amended 2026-08-27). An empty array is valid and must stay
+  // valid — the requirement's single-action principle means a Verifier can vouch
+  // without selecting anything. Only selected values may ever be displayed:
+  // rendering the unselected ones would turn an optional field into a negative
+  // signal about the worker. See docs/database-schema.md under `Endorsement`.
+  attributes EndorsementAttribute[] @default([])
   entryPoint EndorsementEntryPoint
   createdAt  DateTime               @default(now())
   revokedAt  DateTime?
@@ -640,6 +647,17 @@ enum CompletionOutcome {
 enum EndorsementEntryPoint {
   CODE
   PHONE_SEARCH
+}
+
+// Added 2026-08-27 for FR-ENDORSE-04's amendment. A fixed list rather than free
+// text, because the value is in an employer comparing like with like across
+// endorsements — free text wouldn't be comparable and would duplicate `reason`.
+enum EndorsementAttribute {
+  PUNCTUALITY
+  HONESTY
+  RELIABILITY
+  SPECIFIC_SKILL
+  LENGTH_OF_ACQUAINTANCE
 }
 
 enum ReportReason {
