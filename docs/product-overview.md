@@ -175,9 +175,21 @@ Lifecycle:
 | **Open**      | Filled slots < workers needed; still accepting applications        |
 | **Filled**    | Every slot has a selected worker; no longer accepting applications |
 | **Withdrawn** | Employer closed it before any slot filled (`FR-POST-12`)           |
-| **Expired**   | 30 days elapsed with zero filled slots (`FR-POST-13`)              |
+| **Expired**   | Its closing date passed while still Open (`FR-POST-13`)            |
 
 Status is computed from the fill count, not set manually (`FR-POST-18`). If a filled slot's Engagement is later cancelled or ended early, **that one slot reopens** and the posting returns to Open for it — every other Engagement on the posting is untouched.
+
+### Every way a posting closes, and what it does to applicants
+
+Amended 2026-08-27, and worth understanding as one mechanism rather than four separate rules.
+
+**Every posting has a closing date** (`FR-POST-13`). For a one-off **Gig** it is the posting's own start date/time — work that has begun cannot be applied to. For a **Part-time job** or **Internship**, whose start date opens an ongoing arrangement rather than setting a deadline, it is 30 days after posting. Expiry applies **regardless of how many slots have filled**; a partially-filled posting that expires closes only its unfilled slots, leaving every existing Engagement running.
+
+**Whichever way a posting closes, its Pending applicants are resolved** (`FR-APPLY-09`) — set to Not selected and notified. That holds for all three routes: Filled, expired, and withdrawn.
+
+Together those two rules are what make `FR-APPLY-12`'s promise real: no application can sit Pending forever, because its posting must close and closing resolves it.
+
+**The bug this replaced is worth knowing, because the old shape is the intuitive one.** Previously `FR-APPLY-09` fired only on Filled, expiry required _zero_ filled slots, and Withdraw was unavailable once any slot filled. A multi-slot posting that filled one slot and stalled therefore matched none of the three and its remaining applicants waited indefinitely — and since complete fill is the least likely outcome, most applications had no defined end at all. Don't reintroduce the Filled-only trigger.
 
 **Admin-removed postings** (`FR-ADM-05`) also take the Withdrawn state. The requirements don't name a status for removal; this is an implementation choice, made so the dashboard keeps filtering on four states rather than five. What distinguishes an Admin removal from an employer's own withdrawal is the audit-log entry, not the posting row — see [`database-schema.md`](database-schema.md).
 
@@ -194,6 +206,8 @@ Fill status displays plainly throughout — "2 of 3 filled" (`FR-POST-14`).
 ## 5. Finding work
 
 **Radius browsing** (`FR-DISC-01`) starts at 5km and auto-expands in 5km steps up to 50km if fewer than 5 results come back. The expansion presents as one continuous loading operation, not a visible sequence of separate waits (`NFR-PERF-03`).
+
+**Pay is shown on every browse result** (`FR-DISC-01`, added 2026-08-27), not only inside the opened listing. Inadequate pay was the single most-selected challenge among youth respondents in the user research — 71%, ahead of every scam-related concern — so the most common reason for rejecting a listing was previously only discoverable by opening it. The figure and its basis both appear, since "5,000" means nothing without knowing whether that is per day or for the whole job.
 
 **Location permission can be denied**, so a manual area/city selector is required, not optional (`FR-DISC-02`).
 
@@ -241,9 +255,19 @@ An employer can select multiple applicants across one or more sessions, up to th
 
 Selection triggers **contact reveal** (`FR-APPLY-07`), which is bidirectional: both phone numbers become mutually visible, since both parties need to coordinate arrival and payment. The precise address becomes visible to that one selected worker alone. On a multi-slot posting, reveal happens per Engagement at each worker's own selection moment — not once for everyone.
 
-An employer may **decline** an applicant explicitly at any point, even with slots still open, which notifies them immediately (`FR-APPLY-08`). Any applicant still Pending when the posting reaches Filled gets an automatic not-selected notification (`FR-APPLY-09`). No reason or feedback is attached to a decline.
+An employer may **decline** an applicant explicitly at any point, even with slots still open, which notifies them immediately (`FR-APPLY-08`). Any applicant still Pending when the posting closes — Filled, expired, or withdrawn — is automatically set to Not selected and notified (`FR-APPLY-09`); see "Every way a posting closes" in §4. No reason or feedback is attached to a decline.
 
 If the employer makes a material change while applications are still Pending, those applicants are notified so they can withdraw if the new terms don't suit (`FR-APPLY-10`).
+
+### The worker's own application list
+
+Added 2026-08-27 (`FR-APPLY-12`). A job-seeker can see every application they have submitted, each with its current state — Pending, Selected, Declined, Not selected, or Withdrawn — and for anything still Pending, the date its posting expires, which is the latest point that application must reach an outcome. Multi-slot postings also show fill status (`FR-POST-14`), since that affects realistic chances.
+
+**Every application reaches a definite end.** That holds because a posting closing — by any route — now resolves its applicants (`FR-APPLY-09`), and because every posting has a closing date (`FR-POST-13`). See "Every way a posting closes" below for how those two combine; the guarantee depends on both, and reading this screen's design without them makes it look like an unbacked promise.
+
+This came directly from the user research, where the defining job-seeker experience was submitting applications at volume and receiving almost nothing back — not even rejections.
+
+Note what this deliberately does **not** include: there is no "viewed" or "shortlisted" state. Neither has an employer action behind it in this system, so both would be signals inferred from nothing — worse than silence, because they look like information.
 
 ### The Engagement is the unit of work
 
@@ -337,7 +361,13 @@ The entire justification for endorsement is that the endorser _personally knows_
 
 ### The vouch itself
 
-A single action — "I vouch for this person" — plus an optional reason capped at 300 characters (`FR-ENDORSE-04`). It goes **live immediately**, with no Admin pre-review; the reporting mechanism is the backstop if one is abused.
+A single action — "I vouch for this person" (`FR-ENDORSE-04`). It goes **live immediately**, with no Admin pre-review; the reporting mechanism is the backstop if one is abused.
+
+Two optional additions sit alongside it, both added 2026-08-27 and neither able to block the single-action path. The endorser may select **attributes** from a fixed list — punctuality, honesty, reliability, a specific skill, length of acquaintance — saying what specifically they can attest to rather than vouching for the person as a whole. And the free-text **reason**, still capped at 300 characters, is now prompted as "How do you know this person?" instead of being an unlabelled box.
+
+Before either, a short **scope statement** explains in plain language what an endorsement does and does not commit the endorser to. It cannot be scrolled out of view.
+
+All three exist for the same measured reason: every community respondent in the user research named at least one hesitation about vouching, with liability for someone else's actions and reputational risk each raised by 43%. An endorsement whose scope is undefined asks the endorser to accept an unbounded commitment. Letting them bound it themselves is what makes the ask reasonable — and only what they actually select is ever displayed, since showing unselected attributes would turn an optional field into a negative signal about the worker.
 
 **Revocable but not retroactive** (`FR-ENDORSE-07`): revoking stops future display but doesn't undo a hire that already happened while it was live.
 
@@ -351,7 +381,11 @@ A single action — "I vouch for this person" — plus an optional reason capped
 
 Displayed as "N endorsed, M went on to build a good rating" (`FR-ENDORSE-11`), where **N** is the endorser's currently-active, non-revoked endorsements and **M** is the subset whose worker now has at least one completed rated Engagement and a current average of **4.0 or higher**.
 
-This figure is **live and recalculated, never a stored snapshot.** If an endorsed worker's average later drops below 4.0, they drop out of M. A freshly-endorsed worker who hasn't earned a rating yet simply doesn't count toward M. A cached value would quietly become misleading, which defeats its purpose as a trust signal.
+This figure is **live and recalculated, never a stored snapshot.** If an endorsed worker's average later drops below 4.0, they drop out of M. A freshly-endorsed worker who hasn't earned a rating yet simply doesn't count toward M. A cached value would quietly become misleading, which defeats its purpose.
+
+**It is visible only to the endorser themselves** (amended 2026-08-27). No employer, worker, or other user ever sees it. This is a reversal of what the requirement previously left open, and the reason is worth understanding rather than treating as a privacy default: the user research measured reputational risk as one of the top three reasons community members hesitate to vouch at all. A public score tying an endorser's standing to how their endorsed workers later behave makes that risk concrete, permanent, and outside their control. Since the applicant-pool sort (`FR-APPLY-04`) only rewards endorsement when endorsements are plentiful, anything that discourages endorsing weakens the trust mechanic the whole platform rests on — the same reasoning that keeps disputes away from endorsers.
+
+What stays public is the endorser's **name** on each endorsement (`FR-ENDORSE-10`), because an employer needs to know who is vouching. What is now private is their aggregate scorecard. Those are different things, and only the second was ever a deterrent.
 
 ### Nudges
 
@@ -387,6 +421,14 @@ A discovered false birthdate is filed as an ordinary report and routed to Admin,
 Whichever party didn't raise the issue gets **48 hours** to respond and attach evidence (`FR-DISPUTE-04`). If they don't, review proceeds on whatever exists — the window gates progression, it doesn't block resolution.
 
 **Evidence** (`FR-DISPUTE-05`): up to 3 images, 5MB each, from either party. Entirely optional — a no-show has nothing to photograph — and its absence never blocks review.
+
+### Case status is visible to both parties throughout
+
+Added 2026-08-27 (`FR-DISPUTE-07`). From the moment a case opens, through the 48-hour response window and review, to its recorded outcome, **both** parties can see where it stands — not just whoever raised it. The response window's remaining time is visible to both, and the outcome is visible to both once recorded.
+
+The reasoning is what a platform-level process is actually for. In the informal market these disputes have no recourse at all — 42% of the employers surveyed named limited legal recourse as a hiring challenge. A process that produces a result is the thing YouthLink can offer that word-of-mouth hiring cannot, and a process whose progress is invisible doesn't deliver that, however well it works internally.
+
+What the status deliberately does **not** do is promise a completion date. `NFR-OPS-03`'s 3–5 business day target is a stated operational expectation given Phase 1's founding-team staffing, not something the system enforces — so a case under review says it is under review, not when it will finish.
 
 ### Stage 1 — Moderator triage
 
