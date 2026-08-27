@@ -18,11 +18,17 @@
  *   ];
  */
 import LoginScreen from "./LoginScreen";
+import RegisterScreen from "./RegisterScreen";
 
 export default [
   {
     name: "AccountLogin",
     component: LoginScreen,
     options: { title: "Log in" },
+  },
+  {
+    name: "AccountRegister",
+    component: RegisterScreen,
+    options: { title: "Create account" },
   },
 ];

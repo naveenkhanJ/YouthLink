@@ -18,8 +18,28 @@ export function loginPassword(payload) {
   });
 }
 
-// Registration screen hasn't been built yet (backend endpoint exists —
-// POST /api/account/register). Uncomment and finish when that screen lands.
-// export function register(payload) {
-//   return request("/api/account/register", { method: "POST", body: payload });
-// }
+/**
+ * FR-ACC-07 OTP login path. `payload.idToken` must be a Firebase ID token
+ * from a client-side phone verification already confirmed successfully —
+ * see LoginScreen.js.
+ * @param {{ idToken: string }} payload
+ * @returns {Promise<{ token: string, user: object }>}
+ */
+export function loginOtp(payload) {
+  return request("/api/account/login/otp", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+/**
+ * FR-ACC-01 registration. `payload.idToken` must be a Firebase ID token
+ * from a client-side phone verification already confirmed successfully —
+ * see RegisterScreen.js.
+ * @param {object} payload
+ * @returns {Promise<object>} The created (public-shape) User row — no
+ *   token; registration doesn't log the user in, unlike login.
+ */
+export function register(payload) {
+  return request("/api/account/register", { method: "POST", body: payload });
+}

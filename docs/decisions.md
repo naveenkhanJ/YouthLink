@@ -74,6 +74,29 @@ just described. Full reasoning and the corrected contract:
 [`module-ownership.md`](module-ownership.md)'s cross-cutting authentication
 section.
 
+**The password-lockout counter and lock state are read and written inside a
+database transaction holding a row lock (`SELECT ... FOR UPDATE`), not
+through Prisma's normal query methods alone.** This looks like an
+unexplained departure from the rest of the codebase's pure-Prisma style,
+and it is deliberate. An atomic single-statement update (Prisma's
+`increment` operator, a conditional `updateMany`) makes *one write* safe
+under concurrency, but not the *decision* that leads to it — "is this
+account currently locked?", decided from a value read moments earlier,
+can still go stale if a different, concurrent request changes the same
+row in between. Caught via a `/code-review` pass on an earlier fix, then
+confirmed live: a successful login's own lockout-clearing step could land
+in the same instant as a different request's 5th failed attempt and
+erase the lock that request had just set, bypassing the entire
+15-minute lockout (FR-ACC-09/NFR-SEC-02) for free. `FOR UPDATE` forces
+concurrent requests against the same account row to run one at a time
+for the decide-and-write step, closing the gap structurally. Prisma's
+query API has no equivalent to `FOR UPDATE`, which is why this drops to
+raw SQL — the same justification as the migration's hand-written partial
+indexes (see the `User` indexes note above): the abstraction genuinely
+can't express this, not a style choice. See
+`backend/src/modules/account/account.service.js`'s `loginWithPassword`
+and `clearLockout` for the actual implementation.
+
 ## Requirements changed by user research (2026-08-27)
 
 **Six requirements changed after the parallel UX module's user research was validated against this baseline.** Two added, four amended. Each carries a dated amendment note in [`requirements.md`](requirements.md) with the finding behind it; this entry records the ones whose reasoning is easy to mistake for an oversight.

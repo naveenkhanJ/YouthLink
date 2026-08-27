@@ -35,6 +35,9 @@ function normalizePhoneForLookup(phone) {
 // keeps OTP login independent so it stays available when password login doesn't.
 const LOCKOUT_THRESHOLD = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
+const LOCKED_MESSAGE =
+  "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.";
+const CLEARED_LOCKOUT = { failedLoginAttempts: 0, lockedUntil: null };
 
 // Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
 // compared against on an unregistered-phone login attempt so the response
@@ -44,6 +47,35 @@ const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 // is identical either way — caught in self-review.
 const DUMMY_PASSWORD_HASH =
   "$2b$12$M5aYuTGsgzTQZq0ATSNOBuhbJmRM7dgpCEhSo/Byd2XJedYLlRX3S";
+
+// Shared by loginWithOtp and (indirectly, see its own inline version)
+// loginWithPassword's success case. Runs inside its own row-locked
+// transaction rather than a plain conditional update — a conditional
+// update only guarantees ITS OWN write is atomic; it says nothing about
+// whether the "should I clear this?" decision is still accurate by the
+// time the write actually runs. Without the lock, this call could land
+// between a *different*, concurrent request's own read and write — e.g.
+// that request's 5th failed attempt, mid-flight, about to set a fresh
+// lockout — and this call would see "something's set, clear it" and wipe
+// out a lock that request was still in the middle of applying. Confirmed
+// live before this fix existed: a successful login and a concurrent
+// locking failure could land in the same instant, and the lock vanished.
+// `FOR UPDATE` forces any other request touching this same row to wait
+// until this transaction finishes, so nothing can change the row between
+// the read and the write here.
+async function clearLockout(userId) {
+  await prisma.$transaction(async (tx) => {
+    const [row] = await tx.$queryRaw`
+      SELECT "failedLoginAttempts", "lockedUntil"
+      FROM "User"
+      WHERE "id" = ${userId}
+      FOR UPDATE
+    `;
+    if (row.failedLoginAttempts !== 0 || row.lockedUntil) {
+      await tx.user.update({ where: { id: userId }, data: CLEARED_LOCKOUT });
+    }
+  });
+}
 
 function calculateAge(birthdate) {
   const today = new Date();
@@ -64,10 +96,13 @@ function calculateAge(birthdate) {
  * prevention) — this is "was the request well-formed at all", not
  * business rules.
  */
+const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function validateFields({
   role,
   idToken,
   password,
+  email,
   nic,
   birthdate,
   legalName,
@@ -83,6 +118,10 @@ function validateFields({
   }
   if (!password || typeof password !== "string") {
     fields.password = "Required";
+  }
+  // email is optional (User.email is nullable) — only checked if provided.
+  if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email))) {
+    fields.email = "Must be a valid email address";
   }
   if (!nic || typeof nic !== "string" || nic.trim().length < 4) {
     // At least 4 chars so getNicLast4 never receives something too short
@@ -285,51 +324,95 @@ async function loginWithPassword({ phone, password }) {
     throw invalidCredentials();
   }
 
-  // A lockout window that has already elapsed is treated as cleared before
-  // evaluating this attempt, giving a fresh 5-attempt window rather than
-  // re-locking on the very next failure — NFR-SEC-02 says a lockout lasts
-  // 15 minutes, which only makes sense if attempts resume normally after.
-  let failedLoginAttempts = user.failedLoginAttempts;
-  let lockedUntil = user.lockedUntil;
-  if (lockedUntil && lockedUntil <= new Date()) {
-    failedLoginAttempts = 0;
-    lockedUntil = null;
-  }
-
-  if (lockedUntil && lockedUntil > new Date()) {
-    throw AppError.locked(
-      "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.",
-    );
-  }
-
+  // Verified before any lockout decision, deliberately, even though the
+  // result is discarded when locked — this is what makes a locked account
+  // take the same time to reject as every other case. Checking the lock
+  // first and skipping this call for a locked account made a locked
+  // account answer faster than any other rejection, since it alone never
+  // paid bcrypt's cost — a real, exploitable timing side-channel: an
+  // attacker who already suspects a phone number is registered can lock it
+  // with 5 wrong passwords, then time a 6th request; a fast response
+  // confirms the account exists and is locked, something an unregistered
+  // phone could never produce, despite an identical error message either
+  // way. The same trade-off DUMMY_PASSWORD_HASH already makes for an
+  // unregistered phone above — pay bcrypt's cost to keep two different
+  // rejection reasons looking identical from the outside — applied here to
+  // a locked account instead of a nonexistent one. Run here, outside the row lock below, on purpose — bcrypt is slow
+  // by design, and holding a row lock across it would serialize every
+  // concurrent login attempt against the same account behind that delay,
+  // including the multiple-simultaneous-logins case this product
+  // explicitly supports.
   const passwordCorrect = await verifyPassword(password, user.passwordHash);
 
-  if (!passwordCorrect) {
-    const attempts = failedLoginAttempts + 1;
-    const lockingNow = attempts >= LOCKOUT_THRESHOLD;
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        failedLoginAttempts: lockingNow ? 0 : attempts,
-        lockedUntil: lockingNow
-          ? new Date(Date.now() + LOCKOUT_DURATION_MS)
-          : null,
-      },
-    });
-    if (lockingNow) {
-      throw AppError.locked(
-        "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.",
-      );
-    }
-    throw invalidCredentials();
-  }
+  // Every read and write of failedLoginAttempts/lockedUntil for this
+  // attempt happens inside one transaction that holds a row lock
+  // (`SELECT ... FOR UPDATE`) on this user for its whole duration. Two
+  // earlier fixes here — an atomic increment, a conditional updateMany —
+  // each made their own single write safe, but neither closed this: a
+  // *decision* made from a value read outside any lock (e.g. "is this
+  // account currently locked?") could still go stale if a different,
+  // concurrent request changed the row in between the read and the write.
+  // Confirmed live before this fix existed: a successful login here could
+  // land in the same instant as a concurrent request's 5th failed attempt,
+  // and this function's own success-path clear would wipe out the lock the
+  // other request had just set — a free bypass of a 15-minute lockout. The
+  // row lock forces concurrent requests against this same account to run
+  // one at a time for this whole decide-and-write step, closing the gap
+  // structurally rather than reasoning about every possible interleaving
+  // by hand. `FOR UPDATE` has no equivalent in Prisma's query API, which is
+  // why this one step drops to raw SQL — the same reasoning as the
+  // partial unique indexes in the initial migration: Prisma's abstraction
+  // genuinely can't express this, so raw SQL is the correct, minimal
+  // escape hatch, not a stylistic choice.
+  const outcome = await prisma.$transaction(async (tx) => {
+    const [row] = await tx.$queryRaw`
+      SELECT "failedLoginAttempts", "lockedUntil"
+      FROM "User"
+      WHERE "id" = ${user.id}
+      FOR UPDATE
+    `;
 
-  // Correct password clears any prior failure count/lockout.
-  if (failedLoginAttempts !== 0 || user.lockedUntil) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { failedLoginAttempts: 0, lockedUntil: null },
-    });
+    const now = new Date();
+    // A lockout window that has already elapsed is treated as cleared
+    // before evaluating this attempt, giving a fresh 5-attempt window
+    // rather than re-locking on the very next failure.
+    const lockExpired = row.lockedUntil && row.lockedUntil <= now;
+    const failedLoginAttempts = lockExpired ? 0 : row.failedLoginAttempts;
+    const currentlyLocked = row.lockedUntil && row.lockedUntil > now;
+
+    if (currentlyLocked) {
+      return "locked";
+    }
+
+    if (!passwordCorrect) {
+      const attempts = failedLoginAttempts + 1;
+      const lockingNow = attempts >= LOCKOUT_THRESHOLD;
+      // Still covered by the row lock acquired above — this write, and the
+      // read that decided it, run inside the same transaction, so nothing
+      // else can touch this row in between.
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: lockingNow ? 0 : attempts,
+          lockedUntil: lockingNow
+            ? new Date(now.getTime() + LOCKOUT_DURATION_MS)
+            : null,
+        },
+      });
+      return lockingNow ? "locked" : "invalid";
+    }
+
+    if (failedLoginAttempts !== 0 || row.lockedUntil) {
+      await tx.user.update({ where: { id: user.id }, data: CLEARED_LOCKOUT });
+    }
+    return "success";
+  });
+
+  if (outcome === "locked") {
+    throw AppError.locked(LOCKED_MESSAGE);
+  }
+  if (outcome === "invalid") {
+    throw invalidCredentials();
   }
 
   // Suspension is revealed only after the password is proven correct — doing
@@ -388,12 +471,7 @@ async function loginWithOtp({ idToken }) {
     throw AppError.forbidden("This account has been suspended.");
   }
 
-  if (user.failedLoginAttempts !== 0 || user.lockedUntil) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { failedLoginAttempts: 0, lockedUntil: null },
-    });
-  }
+  await clearLockout(user.id);
 
   return { token: signToken({ sub: user.id }), user };
 }
