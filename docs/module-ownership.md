@@ -232,6 +232,22 @@ The Community Verifier/Endorser role, both endorsement entry points (shareable c
 
 ---
 
+## Ownership audit — 2026-08-27 amendment batch
+
+**Fifteen requirements had no story in any slice**, found while writing the prototype screen specifications; three more were added by the batch itself. Recorded here so slice assignment inherits the full picture — **rows below are unpointed; estimate at slice assignment.**
+
+| Requirement | Belongs to | Note |
+|---|---|---|
+| FR-RATE-06 — rating disputes | Deferred Slice B | Public response, Admin removal path, `RatingRemovalRequest` |
+| FR-PROF-03 / FR-PROF-04 / FR-PROF-05 | Deferred Slice C | Bio + edit surface; note pre-fill; interaction-context-only rule |
+| FR-ENDORSE-06 through FR-ENDORSE-15 | Deferred Slice D | Coverage, revocation, uncapped, both notifications, named badge, track record, three nudges — nearly half the epic was invisible to its slice |
+| FR-ENG-14 — engagements list *(new)* | Deferred Slice A | The container every engagement screen hangs off |
+| FR-NOTIF-11 *(new)* | Deferred Slice B trigger · Slice C wiring | Rating notifications |
+| FR-NOTIF-12 *(new)* | Disputes (no slice yet) · Slice C wiring | Dispute-lifecycle notifications to parties |
+| NFR-USE-03 — Help/FAQ | **Shared: Afham** (shell, assembly) | Mechanism paragraphs authored by Slice A/D owners and the disputes owner at slice assignment; screens `HF.1–HF.4` in the prototype spec |
+
+**Navigation shells (`NAV.1–NAV.3` in the prototype spec)** are shared work alongside Help/FAQ — no epic owns the front door.
+
 ## Added scope — new requirements from the user-research validation (2026-08-27)
 
 Two requirements were added to the baseline after the parallel UX module's research was validated against it. Neither was part of Sprint 1–2's committed 33 stories, and neither belongs to a deferred slice above — they are new work, listed here so they are scheduled deliberately rather than discovered later.
