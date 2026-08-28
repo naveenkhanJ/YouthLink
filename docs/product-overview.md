@@ -46,9 +46,9 @@ Everything is collected in one sitting (`FR-ACC-01`). There is no partial-save.
 | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Role                 | One of the three consumer actors, chosen at signup                                                                  |
 | Phone number         | Verified by a 6-digit OTP delivered through Firebase Phone Authentication (`FR-ACC-08`)                             |
-| Password             | Hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`)                   |
+| Password             | 8–64 characters, any Unicode, no composition rules (amended 2026-08-27); hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`) |
 | Email                | **Optional.** If given, verified once by a confirmation link. Registration isn't blocked if the link goes unclicked |
-| NIC number           | Required. Stored as entered, **never verified** and never parsed — including for age (`FR-ACC-04`)                  |
+| NIC number           | Required. Format-validated (12 digits, or 9 + V/X), stored normalised, **never verified** and never parsed — including for age (`FR-ACC-04`, amended 2026-08-27) |
 | Birthdate            | Self-declared. Used solely for the 18+ gate                                                                         |
 | Full legal name      | Required, 100 characters. Not a username or handle                                                                  |
 | ToS / Privacy Policy | Single required checkbox, blocks registration until checked (`FR-ACC-19`)                                           |
@@ -89,7 +89,7 @@ Two details that are easy to implement wrongly:
 
 **If neither phone nor a verified email is reachable, self-service password reset is a genuine dead end.** This is a named limitation, not something quietly handled. Don't build an automated workaround.
 
-All of the above lives on **one Settings screen** (`FR-ACC-18`), together with notification preferences and account deletion — not scattered across separate places.
+All of the above lives on **one Settings screen** (`FR-ACC-18`), together with notification preferences, **logout** (added 2026-08-27 — client-side token discard; other devices unaffected), and account deletion — not scattered across separate places.
 
 ### Abandoned signups
 
@@ -299,11 +299,11 @@ This confirms payment _occurred_, not that the _amount_ was right — the stated
 
 Late cancellations weigh more heavily against the completion-rate stat than early ones (`FR-ENG-07`).
 
-Cancellation is scoped to one Engagement: it reopens that one slot and leaves every other Engagement untouched (`FR-ENG-08`).
+Cancellation is scoped to one Engagement: it reopens that one slot and leaves every other Engagement untouched (`FR-ENG-08`). The responding party is **notified when a request arrives** — their 48-hour window runs from a request they have actually been told about — and the requester is notified of the outcome (`FR-NOTIF-05`, amended 2026-08-27).
 
 ### Changing an engagement's terms
 
-**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation**; if they don't accept, that Engagement routes into the cancellation flow (`FR-ENG-09`).
+**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours** (fixed 2026-08-27); if they don't accept by the window's close, that Engagement routes into the cancellation flow (`FR-ENG-09`).
 
 **Minor** — title or description text only. No re-confirmation; nothing the worker committed to has changed.
 
@@ -329,7 +329,7 @@ Part-time and Internship engagements are excluded; they close through End Engage
 
 **Scale:** 1 to 5 whole stars. No half-stars, and no free-text review attached to the rating itself (`FR-RATE-01`).
 
-**Double-blind reveal** (`FR-RATE-02`): neither party sees the other's rating until both have submitted, or 14 days pass from the moment rating became eligible — whichever comes first. This removes the incentive to wait and retaliate after seeing a bad rating. The 14-day timer runs from eligibility, not from submission, so it still resolves when one party never submits at all.
+**Double-blind reveal** (`FR-RATE-02`): neither party sees the other's rating until both have submitted, or 14 days pass from the moment rating became eligible — whichever comes first. This removes the incentive to wait and retaliate after seeing a bad rating. The 14-day timer runs from eligibility, not from submission, so it still resolves when one party never submits at all. **Submission closes at reveal** (amended 2026-08-27) — once ratings are visible by either route, the non-submitter can no longer rate, or the retaliation incentive would return through the back door.
 
 **One independent rating pair per Engagement** (`FR-RATE-04`). A 3-slot gig produces three separate exchanges, each revealed on its own timeline.
 
@@ -337,7 +337,7 @@ Part-time and Internship engagements are excluded; they close through End Engage
 
 **Cancelled engagements** can still be rated, but rating is not enforced or prompted the same way (`FR-RATE-05`) — there's less to meaningfully assess when work never happened.
 
-**Disputing a rating** (`FR-RATE-06`) is deliberately lightweight and **entirely separate from the dispute pipeline in §9**. The rated party can attach a **public response** shown alongside the rating — self-service, no Admin involvement. Outright removal is reserved for clear policy violations (a rating on an engagement that never happened, for instance) and goes **directly to Admin**, never through Moderator triage. Ordinary disagreement with a negative-but-accurate rating is not grounds for removal.
+**Disputing a rating** (`FR-RATE-06`) is deliberately lightweight and **entirely separate from the dispute pipeline in §9**. The rated party can attach a **public response** shown alongside the rating — self-service, no Admin involvement. Outright removal is reserved for clear policy violations (a rating on an engagement that never happened, for instance) and goes **directly to Admin**, never through Moderator triage. Ordinary disagreement with a negative-but-accurate rating is not grounds for removal. A removed rating is **excluded from every aggregate** — averages, the applicant-pool tiers — or removal would be cosmetic (amended 2026-08-27); the removal *request* travels on its own minimal record straight to Admin, never through the `Report` pipeline.
 
 ---
 
@@ -375,7 +375,7 @@ All three exist for the same measured reason: every community respondent in the 
 
 **One endorsement covers every application** the worker makes while still zero-history (`FR-ENDORSE-06`). It is not per-gig.
 
-**Always displayed as a named badge** (`FR-ENDORSE-10`) with the endorser's real name attached. An anonymous vouch carries no social weight and would be meaningless.
+**Always displayed as a named badge** (`FR-ENDORSE-10`) — an anonymous vouch carries no social weight and would be meaningless. On detail surfaces every endorser's real name shows with their selected attributes; on a space-constrained applicant card the badge renders with a count, every name one tap away (amended 2026-08-27, reconciling the uncapped count).
 
 ### Endorser track record
 
@@ -408,6 +408,10 @@ A Report action is available on listings, profiles, and within an active engagem
 **Thresholds** (`FR-DISPUTE-02`): one report queues for Moderator review and hides nothing — a single report is far too easy a vector for taking down a rival's listing. **Three independent reports** (three distinct reporters) auto-hide the content pending review.
 
 A discovered false birthdate is filed as an ordinary report and routed to Admin, resulting in suspension — there's no correction path, because the person isn't eligible for the platform at all (`FR-DISPUTE-06`).
+
+**The parties are notified through the case's life** (`FR-NOTIF-12`, added 2026-08-27): the respondent when a case opens — their 48-hour window runs from a case they know exists — either party when clarification is asked of them, and both when the outcome is recorded. An auto-hidden posting's owner is told the review's **outcome**, restored or removed — deliberately not the moment the third report fired, which would reveal the threshold and, in small pools, the likely reporters.
+
+**On auto-hidden content the Moderator's actions are exactly: restore, warn, or escalate for removal** (`FR-MOD-04`, amended 2026-08-27) — removal itself stays Admin-only.
 
 ### The four ways a dispute case opens
 
@@ -476,13 +480,15 @@ Moderator **cannot** remove a posting, suspend an account, or issue a final ruli
 
 Admin/Moderator accounts are **entirely separate** from any consumer account for the same person (`FR-ADM-07`) — not a flag on a `User` row. This avoids edge cases like an Admin account applying to its own posting.
 
-**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard.
+**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard — into either role directly; there is no ladder, and only Admins grant.
+
+**A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin. Staff accounts have no demote, deactivate, or reset *flows* in this build; the sanctioned manual procedures live in [`decisions.md`](decisions.md)'s runbook.
 
 ### The dashboard
 
 All case _handling_ is web-dashboard-only. All case _creation_ stays on mobile (`FR-DASH-05`) — reporting, "unable to confirm", and "did something go wrong?" are ordinary user actions. There is no admin functionality in the mobile app at all.
 
-**Dashboard login requires password AND OTP together** (`FR-DASH-06`, `NFR-SEC-04`) — not the either-or choice mobile users get. One dashboard account carries access to every user's NIC and every dispute's evidence, which is a materially higher-value target.
+**Dashboard login requires password AND OTP together** (`FR-DASH-06`, `NFR-SEC-04`) — not the either-or choice mobile users get. One dashboard account carries access to every user's NIC and every dispute's evidence, which is a materially higher-value target. Five failed attempts lock it for 15 minutes, and staff sessions are terminable per request via `passwordChangedAt`/`deactivatedAt` (amended 2026-08-27) — without that, a compromised dashboard session would have outlived every countermeasure short of a global secret rotation.
 
 What both roles can see:
 
@@ -513,6 +519,10 @@ Every Admin **and Moderator** action is logged (`NFR-SEC-06`). The full log is v
 | New dispute case (`FR-NOTIF-06`)                                                              | Admin / Moderator | Always      |
 | Endorsement received (`FR-ENDORSE-09`); endorsement paid off (`FR-ENDORSE-12`, `FR-NOTIF-07`) | Worker; Endorser  | Always      |
 | No-applicant nudge (`FR-POST-17`)                                                             | Employer          | Always      |
+| Cancellation request; cancellation outcome (`FR-NOTIF-05`, amended)                           | Affected party    | Always      |
+| Rating window opens (enforced only); ratings reveal (`FR-NOTIF-11`)                           | Both parties      | Always      |
+| Case opened → respondent; clarification → asked party; outcome → both (`FR-NOTIF-12`)         | Parties           | Always      |
+| Auto-hidden content's review outcome (`FR-NOTIF-12`)                                          | Content owner     | Always      |
 
 **Urgent pushes are rate-limited to 5 per user per day** (`FR-NOTIF-01`). Beyond that, further matching urgent gigs are batched into a single digest. An unthrottled burst risks someone disabling notifications entirely, which loses the feature permanently rather than just for that day.
 
