@@ -74,6 +74,53 @@ just described. Full reasoning and the corrected contract:
 [`module-ownership.md`](module-ownership.md)'s cross-cutting authentication
 section.
 
+**The password-lockout counter and lock state are read and written inside a
+database transaction holding a row lock (`SELECT ... FOR UPDATE`), not
+through Prisma's normal query methods alone.** This looks like an
+unexplained departure from the rest of the codebase's pure-Prisma style,
+and it is deliberate. An atomic single-statement update (Prisma's
+`increment` operator, a conditional `updateMany`) makes *one write* safe
+under concurrency, but not the *decision* that leads to it — "is this
+account currently locked?", decided from a value read moments earlier,
+can still go stale if a different, concurrent request changes the same
+row in between. Caught via a `/code-review` pass on an earlier fix, then
+confirmed live: a successful login's own lockout-clearing step could land
+in the same instant as a different request's 5th failed attempt and
+erase the lock that request had just set, bypassing the entire
+15-minute lockout (FR-ACC-09/NFR-SEC-02) for free. `FOR UPDATE` forces
+concurrent requests against the same account row to run one at a time
+for the decide-and-write step, closing the gap structurally. Prisma's
+query API has no equivalent to `FOR UPDATE`, which is why this drops to
+raw SQL — the same justification as the migration's hand-written partial
+indexes (see the `User` indexes note above): the abstraction genuinely
+can't express this, not a style choice. See
+`backend/src/modules/account/account.service.js`'s `loginWithPassword`
+and `clearLockout` for the actual implementation.
+
+## Requirements changed by user research (2026-08-27)
+
+**Six requirements changed after the parallel UX module's user research was validated against this baseline.** Two added, four amended. Each carries a dated amendment note in [`requirements.md`](requirements.md) with the finding behind it; this entry records the ones whose reasoning is easy to mistake for an oversight.
+
+**The endorser track record (FR-ENDORSE-11) is now private to the endorser.** It reads as a trust signal that ought to be public, and it is not. Research measured reputational risk as one of the top three reasons community members hesitate to vouch. A public score tying an endorser's standing to how their endorsed workers later behave makes that risk concrete and outside their control — and because the applicant-pool sort (FR-APPLY-04) only rewards endorsement when endorsements are plentiful, discouraging endorsers weakens the mechanic the trust model rests on. Same reasoning that keeps disputes away from endorsers. **The endorser's name is still public on each endorsement (FR-ENDORSE-10)** — that was never the deterrent. Since the figure is computed rather than stored, nothing in the schema enforces this; it is an API-layer constraint and therefore easy to leak by accident. See the note in [`database-schema.md`](database-schema.md) under `Endorsement`.
+
+**FR-APPLY-12 deliberately has no "viewed" or "shortlisted" state**, even though the research recommended both. Neither has an employer action behind it in this system, so both would be states inferred from nothing — worse than silence, because they look like information.
+
+**Application resolution was wired to one branch of four, and was rewired 2026-08-27. Don't put it back.** FR-APPLY-09 used to fire only when a posting reached Filled. That made it the sole automatic resolution path in the system, while the other three ways a posting can end — expiry, employer withdrawal, and a partially-filled posting that simply stalls — did nothing to Pending applications at all. Since complete fill is the least likely outcome for the population this product serves, the practical result was that most applications had no defined end.
+
+Found while drafting FR-APPLY-12, whose first draft claimed a guarantee the lifecycle could not deliver. Rather than narrowing that requirement to describe the gap, three existing requirements were amended so the guarantee became true:
+
+- **FR-APPLY-09** now fires whenever a posting stops accepting applications, by any route, not just Filled.
+- **FR-POST-13** dropped its "zero filled slots" condition, so a stalled partially-filled posting can expire — closing only its unfilled slots, leaving existing Engagements running. It also now anchors one-off **Gigs** to the posting's own start date/time rather than a flat 30 days, because FR-POST-05 only requires a start 2 hours out, so a Gig posted Monday for Tuesday previously stayed live and applicable-to for another month after the work had happened. Part-time and Internship keep the 30-day window, since their start date opens an ongoing arrangement rather than setting a deadline — the same Gig-only scoping FR-ENG-13 already uses. **Priority raised Should → Must**, since it is now load-bearing for the guarantee rather than housekeeping.
+- **FR-POST-12** gained an acceptance criterion making explicit that withdrawal resolves applicants, which it inherits from the above.
+
+**The invariant to preserve:** a posting that stops accepting applications resolves its applicants, however it stopped. Any new posting end-state must satisfy it.
+
+**`Endorsement.attributes` is optional and only selected values may ever be displayed.** Rendering unselected attributes — greyed out, or as a "not attested" list — would convert an optional field into a negative signal about the worker, which is the opposite of what an endorsement is for.
+
+**An employer-set urgency flag was proposed by the research and rejected.** FR-POST-07 already states urgency is computed and "shall never be a manually set employer toggle"; the reasoning (a self-declared flag gets gamed for visibility until it means nothing) is in [`product-overview.md`](product-overview.md). The real finding behind the proposal — employers struggle to hire at short notice — is already served by automatic urgency plus the proactive push in FR-NOTIF-01. Recorded here because the same proposal will otherwise be made again.
+
+**Several research recommendations described behaviour that already existed** and produced no change: reporting a listing before any engagement (FR-DISPUTE-01, FR-DISPUTE-03), endorsement withdrawal (FR-ENDORSE-07), the pre-submission listing preview (FR-POST-09), and saved listings (FR-DISC-06). Full per-item reasoning lives in the SPM project's reconciliation register, outside this repo.
+
 ## Code organisation
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer** —

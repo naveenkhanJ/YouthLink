@@ -27,7 +27,7 @@ Point totals are close but not identical across slices, because the underlying m
 ### Owners
 
 | Sprint | Slice | Module                                  | Stories | Points | Owner          |
-| ------ | ----- | ---------------------------------------- | ------- | ------ | -------------- |
+| ------ | ----- | --------------------------------------- | ------- | ------ | -------------- |
 | 1–2    | A     | Account Management                      | 8       | 17     | **Afham**      |
 | 1–2    | B     | Gig Posting                             | 8       | 18     | **Lahiru**     |
 | 1–2    | C     | Discovery & Search + core Notifications | 7       | 15     | **Pawan**      |
@@ -126,34 +126,36 @@ The Employer posting flow end to end: field sequencing and caps, the category al
 
 Radius browsing with auto-expansion, manual location fallback, filters, keyword search, sort order — plus the two notification triggers that fire when a posting goes live. Geolocation queries, sorting, push wiring.
 
-| Requirement                                                                                                             | Priority | Pts | Implementation tasks                                                                                                                |
-| ----------------------------------------------------------------------------------------------------------------------- | -------- | --- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| [FR-DISC-01 — Radius-based browsing](requirements.md#fr-disc-01--radius-based-browsing)                                 | Must     | 3   | – Build radius-based browse query (geospatial)<br>– Add auto-expansion logic (5km steps to 50km)<br>– Build browse results screen   |
-| [FR-DISC-02 — Manual location fallback](requirements.md#fr-disc-02--manual-location-fallback)                           | Must     | 2   | – Build manual area/city selector UI<br>– Wire fallback path when location permission is denied                                     |
-| [FR-DISC-03 — Category and arrangement-type filters](requirements.md#fr-disc-03--category-and-arrangement-type-filters) | Should   | 2   | – Add category/arrangement-type filter UI<br>– Wire filters into the browse query, combinable with radius                           |
-| [FR-DISC-05 — Sort order](requirements.md#fr-disc-05--sort-order)                                                       | Must     | 2   | – Build default sort logic (urgent-first, then nearest-first)<br>– Add alternate sort options (recency, pay high-to-low)            |
-| [FR-NOTIF-01 — Urgent gig push notifications](requirements.md#fr-notif-01--urgent-gig-push-notifications)               | Must     | 3   | – Build urgent-push trigger on posting submission<br>– Add 5/day rate limit with digest batching beyond that<br>– Wire opt-in check |
-| [FR-NOTIF-02 — Non-urgent gig notifications](requirements.md#fr-notif-02--non-urgent-gig-notifications)                 | Must     | 2   | – Build non-urgent notification trigger on posting submission<br>– Wire opt-out check                                               |
-| [FR-NOTIF-03 — Notification preferences](requirements.md#fr-notif-03--notification-preferences)                         | Must     | 1   | – Build Notification Preferences UI (both toggles)<br>– Wire toggles to user-preference storage                                     |
+| Requirement                                                                                                             | Priority | Pts | Implementation tasks                                                                                                                                                                                    |
+| ----------------------------------------------------------------------------------------------------------------------- | -------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [FR-DISC-01 — Radius-based browsing](requirements.md#fr-disc-01--radius-based-browsing)                                 | Must     | 3   | – Build radius-based browse query (geospatial)<br>– Add auto-expansion logic (5km steps to 50km)<br>– Build browse results screen<br>– Show pay figure and basis on each result card (added 2026-08-27) |
+| [FR-DISC-02 — Manual location fallback](requirements.md#fr-disc-02--manual-location-fallback)                           | Must     | 2   | – Build manual area/city selector UI<br>– Wire fallback path when location permission is denied                                                                                                         |
+| [FR-DISC-03 — Category and arrangement-type filters](requirements.md#fr-disc-03--category-and-arrangement-type-filters) | Should   | 2   | – Add category/arrangement-type filter UI<br>– Wire filters into the browse query, combinable with radius                                                                                               |
+| [FR-DISC-05 — Sort order](requirements.md#fr-disc-05--sort-order)                                                       | Must     | 2   | – Build default sort logic (urgent-first, then nearest-first)<br>– Add alternate sort options (recency, pay high-to-low)                                                                                |
+| [FR-NOTIF-01 — Urgent gig push notifications](requirements.md#fr-notif-01--urgent-gig-push-notifications)               | Must     | 3   | – Build urgent-push trigger on posting submission<br>– Add 5/day rate limit with digest batching beyond that<br>– Wire opt-in check                                                                     |
+| [FR-NOTIF-02 — Non-urgent gig notifications](requirements.md#fr-notif-02--non-urgent-gig-notifications)                 | Must     | 2   | – Build non-urgent notification trigger on posting submission<br>– Wire opt-out check                                                                                                                   |
+| [FR-NOTIF-03 — Notification preferences](requirements.md#fr-notif-03--notification-preferences)                         | Must     | 1   | – Build Notification Preferences UI (both toggles)<br>– Wire toggles to user-preference storage                                                                                                         |
 
 ### Slice D — Applying & Selection
 
-**Owner:** **Naveenkhan** · **10 stories, 20 points** · Epic: `FR-APPLY`
+**Owner:** **Naveenkhan** · **10 stories, 21 points** · Epic: `FR-APPLY`
+
+_(Was 20 points. FR-APPLY-09 re-estimated from 1 to 2 on 2026-08-27 when its trigger was broadened from Filled-only to every way a posting stops accepting applications — see its amendment note in `requirements.md`.)_
 
 The apply flow, the three-tier applicant sort, Employer selection, bidirectional contact reveal, decline and automatic not-selected. A multi-actor state machine plus the sort that gives endorsement its value.
 
-| Requirement                                                                                                                                       | Priority | Pts | Implementation tasks                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [FR-APPLY-01 — Listing detail view](requirements.md#fr-apply-01--listing-detail-view)                                                             | Must     | 2   | – Build listing detail screen<br>– Wire Employer trust-signal display (badges, business name)                                            |
-| [FR-APPLY-02 — Apply action](requirements.md#fr-apply-02--apply-action)                                                                           | Must     | 3   | – Build apply-confirmation screen with pre-filled, editable note<br>– Build apply API with duplicate-application block and Pending state |
-| [FR-APPLY-03 — Application withdrawal](requirements.md#fr-apply-03--application-withdrawal)                                                       | Should   | 2   | – Add withdraw action to the application API<br>– Add withdraw UI and reapply path                                                       |
-| [FR-APPLY-04 — Applicant pool sort order](requirements.md#fr-apply-04--applicant-pool-sort-order)                                                 | Must     | 3   | – Build three-tier applicant-pool sort algorithm<br>– Add completion-rate tiebreaker logic                                               |
-| [FR-APPLY-05 — Employer applicant view](requirements.md#fr-apply-05--employer-applicant-view)                                                     | Must     | 2   | – Build Employer applicant-list view<br>– Wire trust-signal and note display, excluding individual case history                          |
-| [FR-APPLY-06 — Selection and Engagement creation](requirements.md#fr-apply-06--selection-and-engagement-creation)                                 | Must     | 3   | – Build Select action and Engagement-creation logic<br>– Support multi-session selection up to workers-needed                            |
-| [FR-APPLY-07 — Contact reveal on selection](requirements.md#fr-apply-07--contact-reveal-on-selection)                                             | Must     | 2   | – Build contact-reveal logic on selection (bidirectional phone numbers)<br>– Wire precise-address reveal to the selected worker only     |
-| [FR-APPLY-08 — Explicit decline](requirements.md#fr-apply-08--explicit-decline)                                                                   | Should   | 1   | – Add Decline action with immediate applicant notification                                                                               |
-| [FR-APPLY-09 — Automatic not-selected notification](requirements.md#fr-apply-09--automatic-not-selected-notification)                             | Must     | 1   | – Add auto-notify-on-Filled logic for remaining Pending applicants                                                                       |
-| [FR-APPLY-10 — Pending-applicant notification on material change](requirements.md#fr-apply-10--pending-applicant-notification-on-material-change) | Should   | 1   | – Add material-change notification trigger for Pending applicants                                                                        |
+| Requirement                                                                                                                                       | Priority | Pts | Implementation tasks                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [FR-APPLY-01 — Listing detail view](requirements.md#fr-apply-01--listing-detail-view)                                                             | Must     | 2   | – Build listing detail screen<br>– Wire Employer trust-signal display (badges, business name)                                                                                                 |
+| [FR-APPLY-02 — Apply action](requirements.md#fr-apply-02--apply-action)                                                                           | Must     | 3   | – Build apply-confirmation screen with pre-filled, editable note<br>– Build apply API with duplicate-application block and Pending state                                                      |
+| [FR-APPLY-03 — Application withdrawal](requirements.md#fr-apply-03--application-withdrawal)                                                       | Should   | 2   | – Add withdraw action to the application API<br>– Add withdraw UI and reapply path                                                                                                            |
+| [FR-APPLY-04 — Applicant pool sort order](requirements.md#fr-apply-04--applicant-pool-sort-order)                                                 | Must     | 3   | – Build three-tier applicant-pool sort algorithm<br>– Add completion-rate tiebreaker logic                                                                                                    |
+| [FR-APPLY-05 — Employer applicant view](requirements.md#fr-apply-05--employer-applicant-view)                                                     | Must     | 2   | – Build Employer applicant-list view<br>– Wire trust-signal and note display, excluding individual case history                                                                               |
+| [FR-APPLY-06 — Selection and Engagement creation](requirements.md#fr-apply-06--selection-and-engagement-creation)                                 | Must     | 3   | – Build Select action and Engagement-creation logic<br>– Support multi-session selection up to workers-needed                                                                                 |
+| [FR-APPLY-07 — Contact reveal on selection](requirements.md#fr-apply-07--contact-reveal-on-selection)                                             | Must     | 2   | – Build contact-reveal logic on selection (bidirectional phone numbers)<br>– Wire precise-address reveal to the selected worker only                                                          |
+| [FR-APPLY-08 — Explicit decline](requirements.md#fr-apply-08--explicit-decline)                                                                   | Should   | 1   | – Add Decline action with immediate applicant notification                                                                                                                                    |
+| [FR-APPLY-09 — Automatic not-selected notification](requirements.md#fr-apply-09--automatic-not-selected-notification)                             | Must     | 2   | – Resolve Pending applicants whenever a posting stops accepting applications — Filled, expired, or withdrawn (broadened 2026-08-27, was Filled-only)<br>– Set each to Not selected and notify |
+| [FR-APPLY-10 — Pending-applicant notification on material change](requirements.md#fr-apply-10--pending-applicant-notification-on-material-change) | Should   | 1   | – Add material-change notification trigger for Pending applicants                                                                                                                             |
 
 ---
 
@@ -214,26 +216,48 @@ Profile identity display, verification badges, trust-signal display — plus the
 
 ### Slice D — Community Endorsement
 
-**Owner:** _TBD_ · **5 stories, 10 points** · Epic: `FR-ENDORSE`
+**Owner:** _TBD_ · **5 stories, 11 points** · Epic: `FR-ENDORSE`
+
+_(Was 10 points. FR-ENDORSE-04 re-estimated from 2 to 3 on 2026-08-27 when the scope statement, attribute chips and relationship prompt were added — see its amendment note in `requirements.md`.)_
 
 The Community Verifier/Endorser role, both endorsement entry points (shareable code and phone search), the vouch action, and the permanently-closing eligibility window. (The requirements call this actor _Community Verifier/Endorser_; the schema calls the same role `COMMUNITY_ENDORSER`.) Two entry flows and careful eligibility checks.
 
-| Requirement                                                                                                                             | Priority | Pts | Implementation tasks                                                                                                                                                                     |
-| --------------------------------------------------------------------------------------------------------------------------------------- | -------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [FR-ENDORSE-01 — Verifier role selection](requirements.md#fr-endorse-01--verifier-role-selection)                                       | Must     | 1   | – Add Verifier role option to signup role selection                                                                                                                                      |
-| [FR-ENDORSE-02 — Worker-initiated endorsement entry point](requirements.md#fr-endorse-02--worker-initiated-endorsement-entry-point)     | Must     | 3   | – Build endorsement-code generation (6-character, persistent)<br>– Build code display + OS share-sheet integration<br>– Build code-entry and eligibility validation on the Verifier side |
-| [FR-ENDORSE-03 — Verifier-initiated endorsement entry point](requirements.md#fr-endorse-03--verifier-initiated-endorsement-entry-point) | Must     | 3   | – Build Verifier phone-search API<br>– Build the generic "no eligible match" response (no info leak)<br>– Build search UI for the Verifier                                               |
-| [FR-ENDORSE-04 — Vouch action](requirements.md#fr-endorse-04--vouch-action)                                                             | Must     | 2   | – Build vouch-submission action with optional reason field<br>– Wire immediate live display, no pending-review state                                                                     |
-| [FR-ENDORSE-05 — Eligibility window](requirements.md#fr-endorse-05--eligibility-window)                                                 | Must     | 1   | – Wire eligibility-close trigger to the first-rating event (FR-RATE-02)                                                                                                                  |
+| Requirement                                                                                                                             | Priority | Pts | Implementation tasks                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------- | -------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [FR-ENDORSE-01 — Verifier role selection](requirements.md#fr-endorse-01--verifier-role-selection)                                       | Must     | 1   | – Add Verifier role option to signup role selection                                                                                                                                                                                                                                                                                                                                                                     |
+| [FR-ENDORSE-02 — Worker-initiated endorsement entry point](requirements.md#fr-endorse-02--worker-initiated-endorsement-entry-point)     | Must     | 3   | – Build endorsement-code generation (6-character, persistent)<br>– Build code display + OS share-sheet integration<br>– Build code-entry and eligibility validation on the Verifier side                                                                                                                                                                                                                                |
+| [FR-ENDORSE-03 — Verifier-initiated endorsement entry point](requirements.md#fr-endorse-03--verifier-initiated-endorsement-entry-point) | Must     | 3   | – Build Verifier phone-search API<br>– Build the generic "no eligible match" response (no info leak)<br>– Build search UI for the Verifier                                                                                                                                                                                                                                                                              |
+| [FR-ENDORSE-04 — Vouch action](requirements.md#fr-endorse-04--vouch-action)                                                             | Must     | 3   | – Build vouch-submission action with optional reason field, prompted "How do you know this person?"<br>– Add the non-dismissible plain-language scope statement shown before commitment<br>– Add optional multi-select attribute chips (`EndorsementAttribute`), empty selection valid<br>– Ensure only selected attributes render, never the unselected ones<br>– Wire immediate live display, no pending-review state |
+| [FR-ENDORSE-05 — Eligibility window](requirements.md#fr-endorse-05--eligibility-window)                                                 | Must     | 1   | – Wire eligibility-close trigger to the first-rating event (FR-RATE-02)                                                                                                                                                                                                                                                                                                                                                 |
 
 ---
 
+## Added scope — new requirements from the user-research validation (2026-08-27)
+
+Two requirements were added to the baseline after the parallel UX module's research was validated against it. Neither was part of Sprint 1–2's committed 33 stories, and neither belongs to a deferred slice above — they are new work, listed here so they are scheduled deliberately rather than discovered later.
+
+| Requirement                                                                                              | Epic         | Priority | Pts | Implementation tasks                                                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------------- | ------------ | -------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [FR-APPLY-12 — Worker's own application list](requirements.md#fr-apply-12--workers-own-application-list) | `FR-APPLY`   | Must     | 3   | – Build the worker-facing application list API (own applications only)<br>– Surface each application's current state<br>– Join the parent posting's expiry date for Pending rows<br>– Order Pending by soonest expiry<br>– Build list + empty-state screen |
+| [FR-DISPUTE-07 — Case status visibility](requirements.md#fr-dispute-07--case-status-visibility)          | `FR-DISPUTE` | Must     | 3   | – Expose case status to both parties, not just the raising party<br>– Surface the 48-hour response window and its remaining time to both<br>– Surface the recorded outcome to both<br>– Ensure under-review status states no completion date               |
+
+**Ownership.** FR-APPLY-12 belongs to the Applying & Selection epic (Naveenkhan). FR-DISPUTE-07 belongs to Disputes & Reporting, which has no owner yet — it sits in the unscheduled tail alongside the rest of `FR-DISPUTE`.
+
+**Two unscheduled requirements were also amended and carry extra work when they are eventually picked up.** Both belong to Gig Posting (Lahiru's epic) and neither is in the Sprint 1–2 table above:
+
+- **FR-POST-13 — Posting expiry.** Priority raised **Should → Must**. Now expires any Open posting regardless of fill state, anchors one-off Gigs to their own start date/time rather than a flat 30 days, and must resolve remaining Pending applicants. Materially larger than the original one-line rule.
+- **FR-POST-12 — Posting withdrawal.** The action is unchanged; it gains an acceptance criterion covering what withdrawal does to Pending applicants.
+
+These three — FR-APPLY-09, FR-POST-12 and FR-POST-13 — implement one invariant together: **a posting that stops accepting applications resolves its applicants, however it stopped.** They should be scheduled together rather than piecemeal, since implementing any one alone leaves the guarantee in `FR-APPLY-12` only partly true.
+
+**Scheduling.** Both are Sprint 3 candidates. FR-APPLY-12 has no dependency on deferred scope and could be pulled forward. FR-DISPUTE-07 sensibly waits until the dispute pipeline itself is being built, since it is a view onto states that don't exist yet.
+
 ## How the deferred slices relate to Sprint 1–2's
 
-*(This section describes the deferred scope above, not the current sprint
+_(This section describes the deferred scope above, not the current sprint
 — relevant again once that scope is actually picked up. There is nothing
 to plan here for Sprint 1–2 itself: same four owners, same four slices,
-no relationship to work out.)*
+no relationship to work out.)_
 
 **There is exactly one hard technical dependency.** The deferred **Engagement Lifecycle** (Slice A) is built directly on the Engagement record that **Applying & Selection** (Slice D, Sprint 1–2) creates — the Employer's Select action is what spawns it. Whoever builds Apply carries the most context into Engagement, so that pairing will be a sensible default when Engagement is eventually scheduled, but it isn't mandatory.
 
@@ -247,8 +271,8 @@ Beyond that, the couplings are weaker and don't map one Sprint 1–2 slice onto 
 
 ## Choosing a slice
 
-*(Sprint 1–2's four slices already have owners — this is for whenever the
-deferred scope above gets picked up.)*
+_(Sprint 1–2's four slices already have owners — this is for whenever the
+deferred scope above gets picked up.)_
 
 Rough character of each, if you're deciding on interest rather than continuity:
 
