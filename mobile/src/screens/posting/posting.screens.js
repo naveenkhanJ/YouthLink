@@ -4,17 +4,37 @@
  * This is the ONLY file you edit to add a screen. RootNavigator collects every
  * module's manifest automatically, so four people can add screens in parallel
  * without ever touching the same file.
- *
- * Each entry:
- *   name      Unique across the whole app. Prefix with the module to guarantee
- *             that — e.g. "PostingRegister", not "Register".
- *   component The screen component itself.
- *   options   Optional react-navigation screen options, e.g. { title: "..." }.
- *
- * Example:
- *   import ExampleScreen from "./ExampleScreen";
- *   export default [
- *     { name: "PostingExample", component: ExampleScreen, options: { title: "Example" } },
- *   ];
  */
-export default [];
+import PostingListScreen from './PostingListScreen.js';
+import PostingCreateScreen from './PostingCreateScreen.js';
+import PostingReviewScreen from './PostingReviewScreen.js';
+import PostingSuccessScreen from './PostingSuccessScreen.js';
+import PostingDetailScreen from './PostingDetailScreen.js';
+
+export default [
+  {
+    name: 'PostingList',
+    component: PostingListScreen,
+    options: { title: 'My Postings' },
+  },
+  {
+    name: 'PostingCreate',
+    component: PostingCreateScreen,
+    options: { title: 'Create Gig Posting' },
+  },
+  {
+    name: 'PostingReview',
+    component: PostingReviewScreen,
+    options: { title: 'Review Gig Posting' },
+  },
+  {
+    name: 'PostingSuccess',
+    component: PostingSuccessScreen,
+    options: { title: 'Posting Published', headerShown: false },
+  },
+  {
+    name: 'PostingDetail',
+    component: PostingDetailScreen,
+    options: { title: 'Gig Details' },
+  },
+];

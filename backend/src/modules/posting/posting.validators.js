@@ -33,7 +33,7 @@ export const LIMITS = {
 export const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
 export const MIN_LEAD_TIME_LABEL = '2 hours';
 export const BUSINESS_POSTING_TYPE = 'BUSINESS';
-const PAY_KINDS_WITHOUT_AMOUNT = [];
+const PAY_KINDS_WITHOUT_AMOUNT = ['UNPAID'];
 
 export const createGigPostingValidators = [
   body('title')
@@ -75,8 +75,8 @@ export const createGigPostingValidators = [
     .isFloat({ min: 0.01 }).withMessage('Enter a valid pay amount.'),
 
   body('payRateUnit')
-    .if((value, { req }) => !PAY_KINDS_WITHOUT_AMOUNT.includes(req.body.payKind))
-    .notEmpty().withMessage('Pay rate unit is required.')
+    .if((value, { req }) => req.body.payKind === 'RATE')
+    .notEmpty().withMessage('Pay rate unit is required for rate-based pay.')
     .bail()
     .isIn(ALLOWED_PAY_RATE_UNITS)
     .withMessage('Pay rate unit is not a recognized option.'),
@@ -120,7 +120,7 @@ export const createGigPostingValidators = [
     .notEmpty().withMessage('Location area label is required.'),
 
   body('workersNeeded')
-    .optional({ checkFalsy: true })
+    .optional({ nullable: true })
     .isInt({ min: LIMITS.WORKERS_MIN, max: LIMITS.WORKERS_MAX })
     .withMessage(`Workers needed must be a whole number between ${LIMITS.WORKERS_MIN} and ${LIMITS.WORKERS_MAX}.`),
 
@@ -133,8 +133,10 @@ export const createGigPostingValidators = [
     .withMessage(`Start time must be at least ${MIN_LEAD_TIME_LABEL} from now, so workers have time to apply.`),
 
   body('schedule')
-    .optional({ nullable: true, checkFalsy: true })
+    .if((value, { req }) => ['PART_TIME', 'INTERNSHIP'].includes(req.body.arrangementType))
     .trim()
+    .notEmpty().withMessage('Schedule is required for part-time and internship arrangements.')
+    .bail()
     .isLength({ max: LIMITS.SCHEDULE_MAX })
     .withMessage(`Schedule must be ${LIMITS.SCHEDULE_MAX} characters or fewer.`),
 ];
