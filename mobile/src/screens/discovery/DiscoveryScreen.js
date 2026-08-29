@@ -17,9 +17,16 @@ import { StatusBar } from "expo-status-bar";
 import { browseGigs } from "../../api/discovery.api";
 import { parseApiError } from "../../api/client";
 
+// The first entry was labelled "Current / Auto GPS" but carried hardcoded
+// Colombo coordinates and no geolocation call was ever made — so distances and
+// the radius were silently wrong for anyone outside Colombo while the chip
+// claimed to be using their location. Relabelled to state what it actually is.
+// Real device location needs expo-location, a native module, which would force
+// a full `expo run:android` rebuild — deliberately not added on a demo branch.
+// Until then the manual city list IS the location mechanism (FR-DISC-02's
+// fallback path), and it works correctly.
 const SRI_LANKA_CITIES = [
-  { label: "Current / Auto GPS", lat: 6.9271, lng: 79.8612 },
-  { label: "Colombo", lat: 6.9271, lng: 79.8612 },
+  { label: "Colombo (default)", lat: 6.9271, lng: 79.8612 },
   { label: "Kandy", lat: 7.2906, lng: 80.6337 },
   { label: "Galle", lat: 6.0535, lng: 80.221 },
   { label: "Gampaha", lat: 7.084, lng: 79.9943 },
@@ -40,10 +47,14 @@ const CATEGORIES = [
 
 const ARRANGEMENTS = ["ALL", "GIG", "PART_TIME", "INTERNSHIP"];
 
+// "Soonest Start" was wired to value "recency", which the service now correctly
+// treats as most-recently-posted; soonest-start is its own value. Both are
+// offered, so FR-DISC-05's alternate sorts are all actually reachable.
 const SORTS = [
   { label: "Nearest & Urgent", value: "default" },
   { label: "Pay: High to Low", value: "pay" },
-  { label: "Soonest Start", value: "recency" },
+  { label: "Soonest Start", value: "soonest" },
+  { label: "Recently Posted", value: "recency" },
 ];
 
 function formatEnum(val) {
@@ -63,6 +74,12 @@ export default function DiscoveryScreen({ navigation }) {
   const [selectedArrangement, setSelectedArrangement] = useState("ALL");
   const [selectedSort, setSelectedSort] = useState("default");
   const [searchKeyword, setSearchKeyword] = useState("");
+  // Typing used to fire a full browse request per keystroke, flipping the list
+  // to a spinner each time and letting responses land out of order — "car"
+  // could be overtaken by the earlier "ca" and show the wrong results. The
+  // committed value trails the typed one by 350ms of quiet, so only settled
+  // input triggers a request.
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
 
   const [postings, setPostings] = useState([]);
   const [effectiveRadius, setEffectiveRadius] = useState(5);
@@ -81,7 +98,7 @@ export default function DiscoveryScreen({ navigation }) {
           lng: selectedCity.lng,
           category: selectedCategory !== "ALL" ? selectedCategory : undefined,
           arrangementType: selectedArrangement !== "ALL" ? selectedArrangement : undefined,
-          keyword: searchKeyword.trim() || undefined,
+          keyword: debouncedKeyword.trim() || undefined,
           sortBy: selectedSort,
           autoExpand: "true",
         });
@@ -95,8 +112,13 @@ export default function DiscoveryScreen({ navigation }) {
         setRefreshing(false);
       }
     },
-    [selectedCity, selectedCategory, selectedArrangement, searchKeyword, selectedSort],
+    [selectedCity, selectedCategory, selectedArrangement, debouncedKeyword, selectedSort],
   );
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedKeyword(searchKeyword), 350);
+    return () => clearTimeout(timer);
+  }, [searchKeyword]);
 
   useEffect(() => {
     loadGigs();
@@ -114,7 +136,13 @@ export default function DiscoveryScreen({ navigation }) {
           placeholderTextColor="#9CA3AF"
           value={searchKeyword}
           onChangeText={setSearchKeyword}
-          onSubmitEditing={() => loadGigs()}
+          // Flush the debounce rather than calling loadGigs() directly:
+          // loadGigs closes over debouncedKeyword, so submitting inside the
+          // 350ms window would have searched the PREVIOUS term and then let
+          // the pending timer fire a second, different request — exactly the
+          // out-of-order problem the debounce is meant to remove. Committing
+          // the term instead triggers one load, through the same path.
+          onSubmitEditing={() => setDebouncedKeyword(searchKeyword)}
           returnKeyType="search"
         />
 
@@ -153,8 +181,41 @@ export default function DiscoveryScreen({ navigation }) {
           ))}
         </ScrollView>
 
-        {/* Sort Options (FR-DISC-05) */}
-        <View style={styles.sortRow}>
+        {/* Arrangement-type Filters (FR-DISC-03).
+            ARRANGEMENTS and selectedArrangement already existed and the value
+            was already being sent to the API, but no chips were ever rendered
+            and setSelectedArrangement was never called — so half of
+            FR-DISC-03's filter was unreachable from the UI. Rendered here,
+            matching the category row above. */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+          {ARRANGEMENTS.map((arr) => (
+            <Pressable
+              key={arr}
+              style={[styles.chip, selectedArrangement === arr && styles.chipActive]}
+              onPress={() => setSelectedArrangement(arr)}
+            >
+              <Text
+                style={[
+                  styles.chipText,
+                  selectedArrangement === arr && styles.chipTextActive,
+                ]}
+              >
+                {arr === "ALL" ? "All Types" : formatEnum(arr)}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        {/* Sort Options (FR-DISC-05).
+            Horizontally scrollable rather than a fixed flex row: a fourth
+            option was added and four flex:1 buttons can't fit labels like
+            "Nearest & Urgent" and "Recently Posted" side by side, so they
+            wrapped unevenly. Matches the chip rows above. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.sortRow}
+        >
           {SORTS.map((s) => (
             <Pressable
               key={s.value}
@@ -168,7 +229,7 @@ export default function DiscoveryScreen({ navigation }) {
               </Text>
             </Pressable>
           ))}
-        </View>
+        </ScrollView>
 
         {/* Auto-expansion notification banner (FR-DISC-01) */}
         {autoExpanded ? (
@@ -282,9 +343,11 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: "#5B4FE0" },
   chipText: { fontSize: 13, color: "#4B5563", fontWeight: "500" },
   chipTextActive: { color: "#FFFFFF" },
-  sortRow: { flexDirection: "row", justifyContent: "space-between", marginVertical: 6, gap: 4 },
+  sortRow: { flexDirection: "row", marginVertical: 6, gap: 4 },
   sortButton: {
-    flex: 1,
+    // Sized to its label rather than flex:1 — the row scrolls horizontally
+    // now, so equal widths would squeeze the longer labels instead.
+    paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
     backgroundColor: "#F3F4F6",

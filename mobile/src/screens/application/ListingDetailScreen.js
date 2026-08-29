@@ -54,13 +54,25 @@ export default function ListingDetailScreen({ route, navigation }) {
     setLoading(true);
     setError(null);
     try {
+      // The two calls have different audiences: the posting is the point of
+      // this screen, while "have I already applied?" is worker-only and 403s
+      // for an Employer viewing their own listing. Pairing them in a bare
+      // Promise.all let that 403 reject the whole thing, so the screen said
+      // "Could not load this posting" even though the posting loaded fine.
+      //
+      // Only the permission cases are swallowed. A 500 or a timeout still
+      // propagates — silently treating those as "no application" would show a
+      // worker who HAS applied the Apply button, and hand them a 409 on tap.
       const [postingRes, myApplications] = await Promise.all([
         getGigPosting(id),
-        getMyApplications(),
+        getMyApplications().catch((err) => {
+          if (err.status === 401 || err.status === 403) return null;
+          throw err;
+        }),
       ]);
       setPosting(postingRes.posting);
       setExistingApplication(
-        myApplications.find(
+        myApplications?.find(
           (a) => a.gigPosting.id === id && a.status !== "WITHDRAWN",
         ) || null,
       );

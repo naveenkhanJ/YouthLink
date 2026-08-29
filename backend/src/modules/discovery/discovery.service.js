@@ -10,6 +10,21 @@
  *   - FR-DISC-05: Sort order (urgent-first then nearest-first; alternate: pay, recency)
  */
 import prisma from "../../lib/prisma.js";
+import AppError from "../../utils/AppError.js";
+
+/**
+ * Parses an optional coordinate, rejecting anything that isn't a real number
+ * in range. Returns null when the value is absent (the manual-fallback path
+ * of FR-DISC-02), and throws a 400 when it is present but unusable.
+ */
+function toCoordinate(value, field, min, max) {
+  if (value == null || value === "") return null;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < min || parsed > max) {
+    throw AppError.badRequest(`Invalid ${field}`, { [field]: "Must be a number in range" });
+  }
+  return parsed;
+}
 
 /**
  * Calculates the great-circle distance between two points on the Earth
@@ -42,8 +57,15 @@ async function browseGigs({
   sortBy = "default",
   autoExpand = true,
 }) {
-  const userLat = lat != null ? Number(lat) : null;
-  const userLng = lng != null ? Number(lng) : null;
+  // Number("abc") is NaN, and NaN != null passes a loose null check — so an
+  // unparseable lat/lng used to sail through, make every haversine distance
+  // NaN, filter every posting out, and return 200 with an empty list plus a
+  // bogus "auto-expanded to 50km" flag. A bad coordinate is a client error.
+  const userLat = toCoordinate(lat, "lat", -90, 90);
+  const userLng = toCoordinate(lng, "lng", -180, 180);
+  if ((userLat == null) !== (userLng == null)) {
+    throw AppError.badRequest("lat and lng must be provided together");
+  }
   const initialRadius = Math.max(1, Math.min(Number(radius) || 5, 50));
 
   // Build Prisma where clause
@@ -147,7 +169,14 @@ async function browseGigs({
     }
 
     if (sortBy === "recency") {
-      // Recency: soonest start time, then created date
+      // FR-DISC-05 lists recency and soonest-start as different things: this
+      // is "most recently posted", so it sorts on createdAt descending.
+      // It previously sorted on startAt ascending, which is soonest-start —
+      // leaving recency unavailable and createdAt selected but unused.
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+
+    if (sortBy === "soonest") {
       return new Date(a.startAt) - new Date(b.startAt);
     }
 

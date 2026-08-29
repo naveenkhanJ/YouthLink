@@ -24,23 +24,40 @@ async function apply({ workerId, gigPostingId, note }) {
     });
   }
 
-  const gigPosting = await prisma.gigPosting.findUnique({ where: { id: gigPostingId } });
-  if (!gigPosting) {
-    throw AppError.notFound("Posting not found");
-  }
-  if (gigPosting.status !== "OPEN") {
-    throw AppError.conflict("This posting is no longer accepting applications");
-  }
+  // The read (is there already an application?) and the write (create one)
+  // have to be one decision, or two requests firing together both see "no
+  // existing application" and both create one. There is no
+  // @@unique([gigPostingId, workerId]) to fall back on — and there cannot be,
+  // since FR-APPLY-03 allows reapplying after a withdrawal, so the same pair
+  // legitimately repeats. Locking the posting row serialises everyone applying
+  // to the same posting for the duration of that decision. See the same
+  // pattern, and why Prisma's query API can't express it, in
+  // account.service.js's loginWithPassword and docs/decisions.md.
+  return prisma.$transaction(async (tx) => {
+    // No ::uuid cast — GigPosting.id is a text column (Prisma maps String
+    // @id @default(uuid()) to TEXT), so casting the parameter produces
+    // "operator does not exist: text = uuid". Matches the existing raw-SQL
+    // precedent in account.service.js.
+    const [gigPosting] = await tx.$queryRaw`
+      SELECT "id", "status" FROM "GigPosting" WHERE "id" = ${gigPostingId} FOR UPDATE
+    `;
+    if (!gigPosting) {
+      throw AppError.notFound("Posting not found");
+    }
+    if (gigPosting.status !== "OPEN") {
+      throw AppError.conflict("This posting is no longer accepting applications");
+    }
 
-  const existing = await prisma.application.findFirst({
-    where: { gigPostingId, workerId, status: { not: "WITHDRAWN" } },
-  });
-  if (existing) {
-    throw AppError.conflict("You have already applied to this posting");
-  }
+    const existing = await tx.application.findFirst({
+      where: { gigPostingId, workerId, status: { not: "WITHDRAWN" } },
+    });
+    if (existing) {
+      throw AppError.conflict("You have already applied to this posting");
+    }
 
-  return prisma.application.create({
-    data: { gigPostingId, workerId, note: note || null },
+    return tx.application.create({
+      data: { gigPostingId, workerId, note: note || null },
+    });
   });
 }
 
@@ -50,6 +67,9 @@ async function apply({ workerId, gigPostingId, note }) {
  * selected or declined, the decision has already been acted on.
  */
 async function withdraw({ applicationId, workerId }) {
+  // Status is re-checked in the WHERE clause, not just read beforehand, so a
+  // double-tap can't produce two withdrawals: the second update matches zero
+  // rows because the first already moved it off PENDING.
   const application = await prisma.application.findUnique({ where: { id: applicationId } });
   if (!application || application.workerId !== workerId) {
     throw AppError.notFound("Application not found");
@@ -58,9 +78,16 @@ async function withdraw({ applicationId, workerId }) {
     throw AppError.conflict("Only a Pending application can be withdrawn");
   }
 
-  return prisma.application.update({
-    where: { id: applicationId },
+  const { count } = await prisma.application.updateMany({
+    where: { id: applicationId, workerId, status: "PENDING" },
     data: { status: "WITHDRAWN", withdrawnAt: new Date() },
+  });
+  if (count === 0) {
+    throw AppError.conflict("Only a Pending application can be withdrawn");
+  }
+
+  return prisma.application.findUnique({
+    where: { id: applicationId },
   });
 }
 
@@ -96,9 +123,15 @@ async function getApplicantPool({ gigPostingId, employerId }) {
         select: {
           id: true,
           legalName: true,
+          phone: true, // released only once selected — see the mapping below
           phoneVerifiedAt: true,
           ratingsReceived: {
-            where: { revealedAt: { not: null } },
+            // revealedAt gates the double-blind reveal (FR-RATE-02); removedAt
+            // excludes ratings an admin has taken down (FR-MOD). Without the
+            // second filter a removed rating still counts toward the average
+            // an employer sorts on — latent today because nothing writes
+            // removedAt yet, wrong the moment moderation lands.
+            where: { revealedAt: { not: null }, removedAt: null },
             select: { score: true },
           },
           completionRecords: { select: { outcome: true, weight: true } },
@@ -132,6 +165,13 @@ async function getApplicantPool({ gigPostingId, employerId }) {
         id: worker.id,
         displayName: worker.legalName,
         phoneVerified: Boolean(worker.phoneVerifiedAt),
+        // FR-APPLY-07's contact reveal is bidirectional, but only the worker
+        // side was implemented: getMyApplications hands the worker the
+        // employer's phone off the Engagement, while the employer had no way
+        // to reach the person they just selected. Released here on exactly the
+        // same trigger — selection — and null for everyone still Pending, so
+        // browsing a pool never exposes an applicant's number.
+        phone: application.status === "SELECTED" ? worker.phone : null,
       },
       // tier 1 = rating history, tier 2 = zero-history + endorsed, tier 3 = neither
       tier: hasHistory ? 1 : isEndorsed ? 2 : 3,
@@ -208,17 +248,45 @@ async function select({ applicationId, employerId }) {
     if (application.gigPosting.employerId !== employerId) {
       throw AppError.forbidden();
     }
+
+    // Lock the posting row before deciding anything about its slots. Being
+    // inside $transaction is not enough on its own: under Postgres's default
+    // isolation level two concurrent selections can both read filledCount = 1
+    // of 2, both conclude a slot is free, and both create an Engagement —
+    // overfilling the posting and breaking FR-APPLY-06's workers-needed cap.
+    // FOR UPDATE makes the second request wait for the first to commit, so it
+    // reads the already-incremented count. Prisma's query API has no
+    // equivalent, which is why this is raw SQL — same justification as the
+    // migration's hand-written partial indexes. See docs/decisions.md.
+    const [posting] = await tx.$queryRaw`
+      SELECT "id", "status", "filledCount", "workersNeeded"
+      FROM "GigPosting" WHERE "id" = ${application.gigPostingId} FOR UPDATE
+    `;
+
+    // Re-read from the locked row, never from the earlier include: another
+    // request may have changed status or filledCount between the two reads.
     if (application.status !== "PENDING") {
       throw AppError.conflict("Only a Pending application can be selected");
     }
-    if (application.gigPosting.filledCount >= application.gigPosting.workersNeeded) {
+    if (posting.status !== "OPEN") {
+      // Previously unchecked: selecting on a posting that had been withdrawn
+      // or had expired would quietly flip its status back to FILLED.
+      throw AppError.conflict("This posting is no longer accepting applications");
+    }
+    if (posting.filledCount >= posting.workersNeeded) {
       throw AppError.conflict("This posting has no open slots left");
     }
 
-    await tx.application.update({
-      where: { id: applicationId },
+    // Conditioned on PENDING so a double-tap can't create two Engagements for
+    // the same application; the unique index on Engagement.applicationId is
+    // the last line of defence, but this gives a clean 409 instead of a 500.
+    const { count } = await tx.application.updateMany({
+      where: { id: applicationId, status: "PENDING" },
       data: { status: "SELECTED", decidedAt: new Date() },
     });
+    if (count === 0) {
+      throw AppError.conflict("Only a Pending application can be selected");
+    }
 
     const engagement = await tx.engagement.create({
       data: {
@@ -229,12 +297,12 @@ async function select({ applicationId, employerId }) {
       },
     });
 
-    const filledCount = application.gigPosting.filledCount + 1;
-    const nowFilled = filledCount >= application.gigPosting.workersNeeded;
+    const filledCount = posting.filledCount + 1;
+    const nowFilled = filledCount >= posting.workersNeeded;
 
     await tx.gigPosting.update({
       where: { id: application.gigPostingId },
-      data: { filledCount, status: nowFilled ? "FILLED" : application.gigPosting.status },
+      data: { filledCount, status: nowFilled ? "FILLED" : posting.status },
     });
 
     await tx.notification.create({
@@ -271,21 +339,30 @@ async function decline({ applicationId, employerId }) {
     throw AppError.conflict("Only a Pending application can be declined");
   }
 
-  const [updated] = await prisma.$transaction([
-    prisma.application.update({
-      where: { id: applicationId },
+  // The status check above is a read, so two taps landing together both pass
+  // it and both write — producing two DECLINED writes and, more visibly, two
+  // "your application was declined" notifications for one decision. Making the
+  // update conditional on PENDING means only the first one matches a row; the
+  // notification is only created if this request is the one that won.
+  return prisma.$transaction(async (tx) => {
+    const { count } = await tx.application.updateMany({
+      where: { id: applicationId, status: "PENDING" },
       data: { status: "DECLINED", decidedAt: new Date() },
-    }),
-    prisma.notification.create({
+    });
+    if (count === 0) {
+      throw AppError.conflict("Only a Pending application can be declined");
+    }
+
+    await tx.notification.create({
       data: {
         userId: application.workerId,
         type: "APPLICATION_DECLINED",
         payload: { applicationId, gigPostingId: application.gigPostingId },
       },
-    }),
-  ]);
+    });
 
-  return updated;
+    return tx.application.findUnique({ where: { id: applicationId } });
+  });
 }
 
 /**

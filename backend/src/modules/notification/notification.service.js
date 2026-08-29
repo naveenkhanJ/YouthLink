@@ -65,18 +65,60 @@ async function notifyNewGigPosted({ gigPostingId }) {
           },
         });
       } else {
-        // Limit exceeded: batch into daily digest (FR-NOTIF-01)
-        await prisma.notification.create({
-          data: {
-            userId: worker.id,
-            type: "URGENT_DIGEST",
-            payload: {
-              gigPostingId: posting.id,
-              title: posting.title,
-              area: posting.locationAreaLabel,
-              message: "Daily urgent gigs summary",
+        // Limit exceeded: batch into today's digest (FR-NOTIF-01).
+        //
+        // This used to create a standalone URGENT_DIGEST row per posting,
+        // which is not a digest — a worker over the limit got exactly as many
+        // notifications as before, just relabelled, and the whole point of the
+        // 5/day cap was lost. Notification.batchedDigestId exists in the
+        // schema for precisely this and was never set.
+        //
+        // Now: one digest row per worker per day acts as the parent, and each
+        // further urgent gig is attached to it via batchedDigestId. The
+        // client renders the parent as "N urgent gigs today" and can expand
+        // its batchedItems — see getNotifications, which returns only
+        // top-level rows so the children don't also appear on their own.
+        //
+        // The find-or-create has to be atomic. This function is fired un-awaited
+        // from createGigPosting, so two urgent postings seconds apart would
+        // otherwise both find no digest and both create one, splitting the
+        // day's children across two parents. Locking the worker's own User row
+        // serialises digest creation per worker without blocking anyone else.
+        await prisma.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${worker.id} FOR UPDATE`;
+
+          const digest =
+            (await tx.notification.findFirst({
+              where: {
+                userId: worker.id,
+                type: "URGENT_DIGEST",
+                batchedDigestId: null,
+                createdAt: { gte: startOfDay },
+              },
+            })) ??
+            (await tx.notification.create({
+              data: {
+                userId: worker.id,
+                type: "URGENT_DIGEST",
+                payload: { message: "Daily urgent gigs summary" },
+              },
+            }));
+
+          await tx.notification.create({
+            data: {
+              userId: worker.id,
+              type: "URGENT_GIG",
+              payload: {
+                gigPostingId: posting.id,
+                title: posting.title,
+                area: posting.locationAreaLabel,
+                urgent: true,
+              },
+              // Batched, so deliberately no pushSentAt — it rolls up into the
+              // digest instead of being pushed on its own.
+              batchedDigestId: digest.id,
             },
-          },
+          });
         });
       }
     }
@@ -155,21 +197,43 @@ async function updatePreferences({ userId, notifyUrgentOptIn, notifyNewGigOptOut
  * Gets in-app notification history (FR-NOTIF-08).
  */
 async function getNotifications({ userId }) {
-  return prisma.notification.findMany({
-    where: { userId },
+  // Only top-level rows. Without the batchedDigestId filter the batched
+  // children came back alongside their own digest parent, so a worker over
+  // the 5/day cap saw MORE rows than before batching existed — the digest
+  // has to actually replace its children in history to mean anything.
+  const notifications = await prisma.notification.findMany({
+    where: { userId, batchedDigestId: null },
     orderBy: { createdAt: "desc" },
     take: 50,
+    include: {
+      batchedItems: {
+        orderBy: { createdAt: "desc" },
+        select: { id: true, type: true, payload: true, createdAt: true },
+      },
+    },
   });
+
+  // Surface the roll-up count so the client can render "N more urgent gigs
+  // today" without having to walk batchedItems itself.
+  return notifications.map((n) => ({ ...n, batchedCount: n.batchedItems.length }));
 }
 
 /**
  * Marks a notification as read.
  */
 async function markAsRead({ notificationId, userId }) {
-  return prisma.notification.updateMany({
+  // updateMany is the right call — it scopes to userId so one user can't mark
+  // another's notification read — but its count was discarded and the
+  // controller always answered { status: "ok" }, so a nonexistent or someone
+  // else's id looked like success. Surface the miss as a 404 instead.
+  const { count } = await prisma.notification.updateMany({
     where: { id: notificationId, userId },
     data: { readAt: new Date() },
   });
+  if (count === 0) {
+    throw AppError.notFound("Notification not found");
+  }
+  return { id: notificationId, readAt: new Date() };
 }
 
 export default {
