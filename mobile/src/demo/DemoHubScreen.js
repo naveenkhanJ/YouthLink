@@ -31,7 +31,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ACTIVE_MODULES, DEFERRED_MODULES } from "./moduleRegistry";
+import { ACTIVE_MODULES } from "./moduleRegistry";
 import {
   SEEDED_ACCOUNTS,
   getSession,
@@ -123,7 +123,7 @@ export default function DemoHubScreen({ navigation }) {
         {/* ---- One-tap role switching --------------------------------- */}
         <Section
           title="Switch role"
-          note="Seeded accounts, for moving between slices quickly. The real Log in and Create account screens are under Account Management below."
+          note="A fixed list of seeded fixtures, for moving between slices quickly. An account you register in the app won't appear here — sign in to it through Log in, under Account Management below."
         >
           {SEEDED_ACCOUNTS.map((account) => {
             const active = user?.phone === account.phone;
@@ -190,16 +190,6 @@ export default function DemoHubScreen({ navigation }) {
             )}
           </Section>
         ))}
-
-        {/* ---- Deferred, listed so the demo can say what is out of scope */}
-        <Section
-          title="Deferred slices"
-          note="No owner, no sprint assigned — docs/module-ownership.md"
-        >
-          <Text style={styles.emptyNote}>
-            {DEFERRED_MODULES.map((m) => m.title).join(" · ")}
-          </Text>
-        </Section>
       </ScrollView>
     </SafeAreaView>
   );

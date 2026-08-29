@@ -31,7 +31,17 @@
 import { loginPassword } from "../api/account";
 import { setAuthToken } from "../api/client";
 
-/** Accounts created by backend/src/demo/seed.demo.js. Keep the two in step. */
+/**
+ * Accounts created by backend/src/demo/seed.demo.js. Keep the two in step.
+ *
+ * Deliberately a fixed list, not a query of every user. Two reasons: one-tap
+ * sign-in only works because every seeded account shares SEEDED_PASSWORD, and
+ * an account registered through the app has a password only its creator knows;
+ * and an endpoint listing all users with their roles is not something to add
+ * for a launcher. So an account created via the Register screen will not show
+ * up here — that is intended. Sign in to it through the real Login screen,
+ * which is what that screen is for and is listed in the hub.
+ */
 export const SEEDED_ACCOUNTS = [
   {
     phone: "+9477999001",
