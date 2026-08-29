@@ -11,6 +11,14 @@
  * these. Remove once real navigation exists or an actual entry flow is
  * decided; every route name here must already exist in some module's
  * <module>.screens.js or this will crash at startup.
+ *
+ * Merge note (demo/integration-showcase): Applying & Selection and Discovery
+ * each added their own links to this list independently and conflicted here.
+ * Resolved as the union — nobody's links were dropped. On the demo branch
+ * this screen is no longer the entry point anyway (RootNavigator starts on
+ * DemoHub, which lists every module's screens from their manifests), but it
+ * stays reachable and working. Both owners will hit this same conflict when
+ * their branches merge to develop; the union is the resolution.
  */
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -18,6 +26,8 @@ import { StatusBar } from "expo-status-bar";
 const TEST_LINKS = [
   { label: "Log in", route: "AccountLogin" },
   { label: "Create account", route: "AccountRegister" },
+  { label: "Explore Gigs (FR-DISC)", route: "DiscoveryBrowse" },
+  { label: "Notification preferences (FR-NOTIF)", route: "NotificationPreferences" },
   { label: "Listing detail (FR-APPLY)", route: "ApplicationListingDetail" },
   { label: "My applications (FR-APPLY)", route: "ApplicationMine" },
   { label: "Applicant pool (FR-APPLY)", route: "ApplicationApplicantPool" },
@@ -28,8 +38,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>YouthLink</Text>
       <Text style={styles.subtitle}>
-        Navigation is wired up. Add your screens in{"\n"}
-        src/screens/&lt;module&gt;/&lt;module&gt;.screens.js
+        Navigation is wired up. Explore gigs or test features below:
       </Text>
 
       <View style={styles.links}>

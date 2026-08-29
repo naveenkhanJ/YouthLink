@@ -1,21 +1,33 @@
 /**
- * Notifications controllers — the HTTP layer.
+ * Notifications controllers — HTTP layer.
  *
  * Epic: FR-NOTIF  ·  Owner: Pawan
- *
- * A controller reads the request, calls the service, and shapes the response.
- * It should contain no business rules and no Prisma calls — those belong in
- * notification.service.js, so the rules stay testable and reusable.
- *
- * Throw AppError for expected failures; asyncHandler forwards it to the error
- * handler, which turns it into the right status code.
  */
-// import AppError from "../../utils/AppError.js";
-// import service from "./notification.service.js";
+import service from "./notification.service.js";
 
 export default {
-  // async create(req, res) {
-  //   const result = await service.create(req.body);
-  //   res.status(201).json(result);
-  // },
+  async getPreferences(req, res) {
+    const preferences = await service.getPreferences({ userId: req.user.id });
+    res.json(preferences);
+  },
+
+  async updatePreferences(req, res) {
+    const { notifyUrgentOptIn, notifyNewGigOptOut } = req.body;
+    const preferences = await service.updatePreferences({
+      userId: req.user.id,
+      notifyUrgentOptIn,
+      notifyNewGigOptOut,
+    });
+    res.json(preferences);
+  },
+
+  async getNotifications(req, res) {
+    const notifications = await service.getNotifications({ userId: req.user.id });
+    res.json(notifications);
+  },
+
+  async markAsRead(req, res) {
+    await service.markAsRead({ notificationId: req.params.id, userId: req.user.id });
+    res.json({ status: "ok" });
+  },
 };
