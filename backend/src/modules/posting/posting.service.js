@@ -8,6 +8,8 @@
 
 import prisma from '../../lib/prisma.js';
 import { computeIsUrgent } from './posting.urgency.js';
+// DEMO WIRING: see the call site in createGigPosting below.
+import notificationService from '../notification/notification.service.js';
 
 /**
  * Creates a new gig posting for the given employer.
@@ -40,6 +42,21 @@ export async function createGigPosting(employerId, data) {
       // status defaults to OPEN per schema; filledCount defaults to 0.
     },
   });
+
+  // DEMO WIRING: FR-NOTIF-01/02 fire "when a posting is published", and
+  // notification.service.js implements that fan-out in full — but nothing in
+  // backend/src ever called it, so it was dead code and notification history
+  // stayed empty after posting a gig. This is the trigger point the two
+  // requirements describe. Owner note: this belongs in the real integration
+  // between Gig Posting and Notifications, decided by those two owners.
+  //
+  // Deliberately not awaited: a notification failure must not fail the
+  // posting the employer just created, and the fan-out loops over every
+  // eligible worker. Errors are logged, never surfaced to the client.
+  notificationService
+    .notifyNewGigPosted({ gigPostingId: posting.id })
+    .catch((err) => console.error('notifyNewGigPosted failed:', err));
+
   return posting;
 }
 
