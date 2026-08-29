@@ -30,6 +30,7 @@
  */
 import { loginPassword } from "../api/account";
 import { setAuthToken } from "../api/client";
+import { whoAmI } from "./demo.api";
 
 /**
  * Accounts created by backend/src/demo/seed.demo.js. Keep the two in step.
@@ -101,11 +102,18 @@ export function getSession() {
 
 /**
  * Logs in through the real password endpoint and records the result.
+ *
+ * There is one auth token for the whole app, so issuing a new one IS signing
+ * the previous account out — no separate step, and no way for two accounts to
+ * be signed in at once. Any earlier session is dropped before the request so
+ * a failure can't leave the hub showing someone who is no longer signed in.
+ *
  * @param {string} phone
  * @param {string} [password]
  * @returns {Promise<object>} The signed-in user.
  */
 export async function signIn(phone, password = SEEDED_PASSWORD) {
+  signOut();
   const { token, user } = await loginPassword({ phone, password });
   setAuthToken(token);
   session = { token, user };
@@ -118,6 +126,40 @@ export function signOut() {
   setAuthToken(null);
   session = null;
   emit();
+}
+
+/**
+ * Reconciles this store with whoever the shared auth token actually belongs to.
+ *
+ * Sign-in can happen where this module cannot see it — Account Management's own
+ * Login and Register screens set the shared token directly, because they are
+ * finished screens with no reason to know a demo launcher exists. Without this,
+ * the hub kept displaying whichever seeded fixture it last signed in itself,
+ * and showed that fixture as selected, while the app was really acting as
+ * somebody else entirely.
+ *
+ * Called by the hub whenever it regains focus. Cheap, and the only way to be
+ * right without modifying a module that is deliberately not being touched.
+ *
+ * @returns {Promise<object|null>} The reconciled user, or null if signed out.
+ */
+export async function refreshFromToken() {
+  try {
+    const user = await whoAmI();
+    // Preserve the token we hold; only the identity needed correcting.
+    session = { token: session?.token ?? null, user };
+  } catch (err) {
+    if (err.status === 401 || err.status === 403) {
+      // No usable token — genuinely signed out.
+      session = null;
+    } else {
+      // Backend down or similar. Leave whatever is on screen rather than
+      // wrongly reporting the user as signed out because the network blipped.
+      return session?.user ?? null;
+    }
+  }
+  emit();
+  return session?.user ?? null;
 }
 
 /** @returns {string | null} The signed-in user's ActorRole, if any. */

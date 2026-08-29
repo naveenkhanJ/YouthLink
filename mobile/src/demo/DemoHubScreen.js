@@ -20,7 +20,7 @@
  * Deliberately plain. It is scaffolding around four people's real work, and it
  * should look like scaffolding rather than pass for anyone's finished UI.
  */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -30,11 +30,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { ACTIVE_MODULES } from "./moduleRegistry";
 import {
   SEEDED_ACCOUNTS,
   getSession,
+  refreshFromToken,
   signIn,
   signOut,
   subscribe,
@@ -66,6 +68,17 @@ export default function DemoHubScreen({ navigation }) {
   // rather than owning it — any other demo screen can sign out and this
   // header stays correct.
   useEffect(() => subscribe(setSession), []);
+
+  // Ask the server who the token actually belongs to every time the hub is
+  // shown. Signing in through Account Management's own Login screen replaces
+  // the shared token without this module hearing about it, so without this the
+  // hub would keep showing the seeded fixture it last signed in itself — and
+  // show that fixture as selected — while the app acted as somebody else.
+  useFocusEffect(
+    useCallback(() => {
+      refreshFromToken();
+    }, []),
+  );
 
   async function handleSignIn(phone) {
     setBusyPhone(phone);

@@ -12,6 +12,17 @@
 import { request } from "../api/client";
 
 /**
+ * Whoever the currently-held auth token belongs to, or a 401 if there isn't
+ * one. Lets the hub stay correct when a sign-in happened somewhere it can't
+ * see — Account Management's own Login screen, which sets the shared token
+ * and has no reason to notify a demo launcher.
+ * @returns {Promise<{id: string, role: string, phone: string, legalName: string}>}
+ */
+export function whoAmI() {
+  return request("/api/demo/me");
+}
+
+/**
  * Every posting still accepting applications. Stands in for Discovery
  * (FR-DISC, not yet built) so a worker can reach a posting to apply to.
  * The coarse-vs-precise location rule still applies — see FR-POST-08.

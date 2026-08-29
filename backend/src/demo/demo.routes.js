@@ -83,6 +83,34 @@ router.get(
   }),
 );
 
+/**
+ * GET /api/demo/me — who the current bearer token belongs to.
+ *
+ * The demo hub needs this because signing in can happen two ways: its own
+ * one-tap role switcher, and Account Management's real Login screen. That
+ * screen sets the shared auth token and renders its own confirmation — it has
+ * no reason to tell a demo launcher anything, and it is finished work that is
+ * not being modified for the demo. So rather than the hub guessing, it asks
+ * the server whose token it is currently holding.
+ *
+ * Deliberately here and not a GET /api/account/me: adding an endpoint to a
+ * finished module for a launcher's benefit is the wrong trade. If the app ever
+ * wants a real "current user" endpoint, that is Account Management's call to
+ * make, and this one should be deleted in favour of it.
+ */
+router.get(
+  "/me",
+  asyncHandler(async (req, res) => {
+    // requireAuth already re-read this row and rejected suspended or deleted
+    // accounts, so anything reaching here is a live, usable session.
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, role: true, phone: true, legalName: true, accountStatus: true },
+    });
+    res.json(user);
+  }),
+);
+
 // The notifications read that used to live here is gone. It existed only
 // because the Notifications slice was an empty stub; that module has since
 // landed with a real GET /api/notifications which additionally rolls batched
