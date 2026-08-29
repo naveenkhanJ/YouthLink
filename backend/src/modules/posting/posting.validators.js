@@ -33,7 +33,36 @@ export const LIMITS = {
 export const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
 export const MIN_LEAD_TIME_LABEL = '2 hours';
 export const BUSINESS_POSTING_TYPE = 'BUSINESS';
-const PAY_KINDS_WITHOUT_AMOUNT = [];
+
+// FR-POST-04 gives each arrangement type its own pay shape:
+//   Gig          -> FIXED_TOTAL, a single total, no rate unit
+//   Part-time    -> RATE, an amount plus a day/week/month unit
+//   Internship   -> UNPAID (no figure at all), or STIPEND / PAID
+//
+// PAY_KINDS_WITHOUT_AMOUNT was an empty array, so every pay kind was required
+// to carry BOTH an amount and a rate unit. That made two of the three
+// arrangement types impossible to submit: an Unpaid internship was rejected
+// for having no amount, and a Gig was rejected for having no rate unit even
+// though "fixed total" means precisely that there isn't one.
+const PAY_KINDS_WITHOUT_AMOUNT = ['UNPAID'];
+const PAY_KINDS_WITH_RATE_UNIT = ['RATE'];
+
+// FR-POST-04 doesn't just say which fields a pay kind carries — it says which
+// pay kinds each arrangement type may use at all. Without this, {GIG, RATE}
+// and {PART_TIME, UNPAID} both pass the field-shape checks above and are
+// stored, leaving the rule enforced only by whichever client happens to be
+// asking. The mobile form already offers the right options; this makes the
+// API agree rather than trust it.
+const PAY_KINDS_BY_ARRANGEMENT = {
+  GIG: ['FIXED_TOTAL'],
+  PART_TIME: ['RATE'],
+  INTERNSHIP: ['UNPAID', 'STIPEND', 'PAID'],
+};
+
+// FR-POST-03: a free-text Schedule is required for the two ongoing
+// arrangements and deliberately not for a one-off Gig, where the single start
+// time already says when the work happens. It was optional for all three.
+const ARRANGEMENTS_REQUIRING_SCHEDULE = ['PART_TIME', 'INTERNSHIP'];
 
 export const createGigPostingValidators = [
   body('title')
@@ -66,7 +95,15 @@ export const createGigPostingValidators = [
     .notEmpty().withMessage('Pay type is required.')
     .bail()
     .isIn(ALLOWED_PAY_KINDS)
-    .withMessage('Pay type is not a recognized option.'),
+    .withMessage('Pay type is not a recognized option.')
+    .bail()
+    // FR-POST-04 — the pay kind has to be one this arrangement type allows.
+    .custom((value, { req }) => {
+      const allowed = PAY_KINDS_BY_ARRANGEMENT[req.body.arrangementType];
+      // Arrangement type has its own validator; don't double-report it here.
+      return !allowed || allowed.includes(value);
+    })
+    .withMessage('That pay type is not available for this arrangement type.'),
 
   body('payAmount')
     .if((value, { req }) => !PAY_KINDS_WITHOUT_AMOUNT.includes(req.body.payKind))
@@ -74,12 +111,30 @@ export const createGigPostingValidators = [
     .bail()
     .isFloat({ min: 0.01 }).withMessage('Enter a valid pay amount.'),
 
+  // The mirror of the payRateUnit guard below: an unpaid internship has no
+  // figure, so storing one would leave a pay amount in the row that every
+  // screen correctly refuses to show.
+  body('payAmount')
+    .if((value, { req }) => PAY_KINDS_WITHOUT_AMOUNT.includes(req.body.payKind))
+    .optional({ nullable: true, checkFalsy: true })
+    .custom(() => false)
+    .withMessage('An unpaid arrangement cannot carry a pay amount.'),
+
   body('payRateUnit')
-    .if((value, { req }) => !PAY_KINDS_WITHOUT_AMOUNT.includes(req.body.payKind))
+    .if((value, { req }) => PAY_KINDS_WITH_RATE_UNIT.includes(req.body.payKind))
     .notEmpty().withMessage('Pay rate unit is required.')
     .bail()
     .isIn(ALLOWED_PAY_RATE_UNITS)
     .withMessage('Pay rate unit is not a recognized option.'),
+
+  // A rate unit on a fixed total or an unpaid internship is meaningless, so
+  // reject it outright rather than silently storing a value the pay shape
+  // says nothing about.
+  body('payRateUnit')
+    .if((value, { req }) => !PAY_KINDS_WITH_RATE_UNIT.includes(req.body.payKind))
+    .optional({ nullable: true, checkFalsy: true })
+    .custom(() => false)
+    .withMessage('A pay rate unit only applies to a rate-based arrangement.'),
 
   body('postedAsType')
     .notEmpty().withMessage('Posting-as type is required.')
@@ -132,7 +187,18 @@ export const createGigPostingValidators = [
     .custom((value) => new Date(value).getTime() >= Date.now() + MIN_LEAD_TIME_MS)
     .withMessage(`Start time must be at least ${MIN_LEAD_TIME_LABEL} from now, so workers have time to apply.`),
 
+  // FR-POST-03: required for Part-time and Internship, optional for a Gig.
   body('schedule')
+    .if((value, { req }) => ARRANGEMENTS_REQUIRING_SCHEDULE.includes(req.body.arrangementType))
+    .trim()
+    .notEmpty()
+    .withMessage('A schedule is required for a part-time job or internship.')
+    .bail()
+    .isLength({ max: LIMITS.SCHEDULE_MAX })
+    .withMessage(`Schedule must be ${LIMITS.SCHEDULE_MAX} characters or fewer.`),
+
+  body('schedule')
+    .if((value, { req }) => !ARRANGEMENTS_REQUIRING_SCHEDULE.includes(req.body.arrangementType))
     .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isLength({ max: LIMITS.SCHEDULE_MAX })

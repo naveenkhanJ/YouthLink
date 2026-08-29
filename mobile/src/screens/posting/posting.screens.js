@@ -10,11 +10,25 @@
  *             that — e.g. "PostingRegister", not "Register".
  *   component The screen component itself.
  *   options   Optional react-navigation screen options, e.g. { title: "..." }.
- *
- * Example:
- *   import ExampleScreen from "./ExampleScreen";
- *   export default [
- *     { name: "PostingExample", component: ExampleScreen, options: { title: "Example" } },
- *   ];
  */
-export default [];
+import CreatePostingScreen from "./CreatePostingScreen";
+import MyPostingsScreen from "./MyPostingsScreen";
+import PostingDetailScreen from "./PostingDetailScreen";
+
+export default [
+  {
+    name: "PostingMine",
+    component: MyPostingsScreen,
+    options: { title: "My postings" },
+  },
+  {
+    name: "PostingCreate",
+    component: CreatePostingScreen,
+    options: { title: "Post a gig" },
+  },
+  {
+    name: "PostingDetail",
+    component: PostingDetailScreen,
+    options: { title: "Posting" },
+  },
+];
