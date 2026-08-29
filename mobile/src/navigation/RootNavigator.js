@@ -13,8 +13,15 @@
  */
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Pressable, Text } from "react-native";
 
 import HomeScreen from "../screens/HomeScreen";
+
+// DEMO-ONLY (demo/integration-showcase) — the three edits below are the whole
+// footprint on this file: this import, demoScreens in the list, and the
+// initial route plus the header button. Reverting them restores the original.
+// See DEMO.md.
+import demoScreens from "../demo/demo.screens";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -30,6 +37,7 @@ const Stack = createNativeStackNavigator();
 
 /** Every module's screens, flattened into one list. */
 const moduleScreens = [
+  ...demoScreens, // DEMO-ONLY — see the note at the top of this file
   ...accountScreens,
   ...postingScreens,
   ...discoveryScreens,
@@ -55,7 +63,26 @@ if (duplicates.length > 0) {
 export default function RootNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      {/* DEMO-ONLY: initialRouteName is "DemoHub" rather than "Home", and
+          every screen gets a header button back to the hub — the demo order
+          isn't fixed in advance, so any screen has to be one tap from the
+          launcher. Revert both to restore the original navigator. */}
+      <Stack.Navigator
+        initialRouteName="DemoHub"
+        screenOptions={({ navigation, route }) =>
+          route.name === "DemoHub"
+            ? {}
+            : {
+                headerRight: () => (
+                  <Pressable onPress={() => navigation.navigate("DemoHub")}>
+                    <Text style={{ color: "#5B4FE0", fontWeight: "600" }}>
+                      Demo hub
+                    </Text>
+                  </Pressable>
+                ),
+              }
+        }
+      >
         <Stack.Screen
           name="Home"
           component={HomeScreen}
