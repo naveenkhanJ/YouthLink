@@ -74,7 +74,7 @@ export default function NotificationPreferencesScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color="#5B4FE0" size="large" />
+        <ActivityIndicator color="#1D4ED8" size="large" />
       </View>
     );
   }
@@ -101,7 +101,7 @@ export default function NotificationPreferencesScreen() {
             value={notifyUrgentOptIn}
             onValueChange={handleToggleUrgent}
             trackColor={{ false: "#E5E7EB", true: "#C7D2FE" }}
-            thumbColor={notifyUrgentOptIn ? "#5B4FE0" : "#9CA3AF"}
+            thumbColor={notifyUrgentOptIn ? "#1D4ED8" : "#9CA3AF"}
           />
         </View>
       </View>
@@ -118,7 +118,7 @@ export default function NotificationPreferencesScreen() {
             value={!notifyNewGigOptOut}
             onValueChange={handleToggleGeneral}
             trackColor={{ false: "#E5E7EB", true: "#C7D2FE" }}
-            thumbColor={!notifyNewGigOptOut ? "#5B4FE0" : "#9CA3AF"}
+            thumbColor={!notifyNewGigOptOut ? "#1D4ED8" : "#9CA3AF"}
           />
         </View>
       </View>
@@ -148,5 +148,5 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 4 },
   description: { fontSize: 13, color: "#6B7280", lineHeight: 18 },
   errorText: { fontSize: 13, color: "#DC2626", marginBottom: 12 },
-  savingText: { fontSize: 12, color: "#5B4FE0", textAlign: "center", marginTop: 8 },
+  savingText: { fontSize: 12, color: "#1D4ED8", textAlign: "center", marginTop: 8 },
 });

@@ -19,7 +19,12 @@ import TextField from "./components/TextField";
 const NOTE_MAX_LENGTH = 300;
 
 export default function ApplyScreen({ route, navigation }) {
-  const { gigPostingId, title } = route.params;
+  // route.params is undefined whenever this screen is opened without being
+  // handed a posting — reaching it directly from a launcher rather than from a
+  // listing. Destructuring it directly threw "Cannot read property
+  // 'gigPostingId' of undefined" and took down the whole render. Applying with
+  // no posting isn't meaningful, so default and show the way back instead.
+  const { gigPostingId, title } = route.params ?? {};
   const [note, setNote] = useState("");
   const [formError, setFormError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,6 +41,20 @@ export default function ApplyScreen({ route, navigation }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!gigPostingId) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>No posting selected</Text>
+        <Text style={styles.body}>
+          Open a listing first — the Apply screen needs to know which gig you're
+          applying to.
+        </Text>
+        <Button title="Browse gigs" onPress={() => navigation.navigate("DiscoveryBrowse")} />
+        <StatusBar style="dark" />
+      </View>
+    );
   }
 
   if (submitted) {

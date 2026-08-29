@@ -10,7 +10,12 @@
  */
 
 export const colors = {
-  primary: "#5B4FE0",
+  // Corporate blue, matching the Account module's theme.js (updated
+  // 2026-08-30 on demo/integration-showcase). Kept in step by hand because
+  // there is no shared token file — see the note in that file.
+  primary: "#1D4ED8",
+  primaryDark: "#1E40AF",
+  primaryTint: "#EFF6FF",
   textPrimary: "#111827",
   textSecondary: "#6B7280",
   textPlaceholder: "#9CA3AF",

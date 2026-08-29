@@ -83,23 +83,11 @@ router.get(
   }),
 );
 
-/**
- * GET /api/demo/notifications — the signed-in user's notifications.
- *
- * Makes FR-APPLY-08 (explicit decline) and FR-APPLY-09 (automatic
- * not-selected when a posting fills) visible during the demo. Naveenkhan's
- * service already writes these rows; nothing read them back.
- */
-router.get(
-  "/notifications",
-  asyncHandler(async (req, res) => {
-    const notifications = await prisma.notification.findMany({
-      where: { userId: req.user.id },
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    });
-    res.json(notifications);
-  }),
-);
+// The notifications read that used to live here is gone. It existed only
+// because the Notifications slice was an empty stub; that module has since
+// landed with a real GET /api/notifications which additionally rolls batched
+// digest children up into their parent. Keeping a second, dumber copy meant
+// the demo screen silently read the wrong shape. Deleted rather than kept in
+// sync — one endpoint, owned by the module it belongs to.
 
 export default router;

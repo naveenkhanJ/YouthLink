@@ -47,12 +47,23 @@ export default function ListingDetailScreen({ route, navigation }) {
   const [idInput, setIdInput] = useState("");
   const [posting, setPosting] = useState(null);
   const [existingApplication, setExistingApplication] = useState(null);
+  // Whether this viewer may apply at all. Derived from the applications call
+  // rather than from a stored role: that endpoint is Youth Job-Seeker-only, so
+  // it succeeding IS the permission answer, and a 403 is the denial. Avoids
+  // this screen needing an app-wide session/role store that doesn't exist yet.
+  const [canApply, setCanApply] = useState(true);
+  const [viewerRole, setViewerRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const load = useCallback(async (id) => {
     setLoading(true);
     setError(null);
+    // Reset the permission guess each load — the demo switches roles between
+    // visits, so a stale "can't apply" from an Employer session must not
+    // survive into the next worker's.
+    setCanApply(true);
+    setViewerRole(null);
     try {
       // The two calls have different audiences: the posting is the point of
       // this screen, while "have I already applied?" is worker-only and 403s
@@ -66,7 +77,13 @@ export default function ListingDetailScreen({ route, navigation }) {
       const [postingRes, myApplications] = await Promise.all([
         getGigPosting(id),
         getMyApplications().catch((err) => {
-          if (err.status === 401 || err.status === 403) return null;
+          if (err.status === 401 || err.status === 403) {
+            // Not a Youth Job-Seeker (or not signed in) — record that rather
+            // than offering an Apply button that will fail on tap.
+            setCanApply(false);
+            setViewerRole(err.status === 403 ? "employer" : null);
+            return null;
+          }
           throw err;
         }),
       ]);
@@ -164,12 +181,22 @@ export default function ListingDetailScreen({ route, navigation }) {
             You've applied — status: {formatEnum(existingApplication.status)}
           </Text>
         </View>
-      ) : (
+      ) : canApply ? (
         <Button
           title="Apply"
           onPress={() => navigation.navigate("ApplicationApply", { gigPostingId, title: posting.title })}
           disabled={posting.status !== "OPEN"}
         />
+      ) : (
+        // Applying is Youth Job-Seeker-only (the apply endpoint 403s for
+        // anyone else), so an Employer previewing their own listing used to
+        // get a live Apply button that failed on tap. Say why instead.
+        <View style={styles.card}>
+          <Text style={styles.row}>
+            Viewing as {formatEnum(viewerRole ?? "guest")} — only a Youth
+            Job-Seeker can apply.
+          </Text>
+        </View>
       )}
 
       <StatusBar style="dark" />

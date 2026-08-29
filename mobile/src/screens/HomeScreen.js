@@ -76,10 +76,10 @@ const styles = StyleSheet.create({
   links: { marginTop: 32, width: "100%", gap: 12 },
   linkButton: {
     borderWidth: 1,
-    borderColor: "#5B4FE0",
+    borderColor: "#1D4ED8",
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: "center",
   },
-  linkLabel: { color: "#5B4FE0", fontWeight: "600" },
+  linkLabel: { color: "#1D4ED8", fontWeight: "600" },
 });

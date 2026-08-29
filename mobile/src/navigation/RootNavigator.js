@@ -75,7 +75,7 @@ export default function RootNavigator() {
             : {
                 headerRight: () => (
                   <Pressable onPress={() => navigation.navigate("DemoHub")}>
-                    <Text style={{ color: "#5B4FE0", fontWeight: "600" }}>
+                    <Text style={{ color: "#1D4ED8", fontWeight: "600" }}>
                       Demo hub
                     </Text>
                   </Pressable>

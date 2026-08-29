@@ -34,8 +34,15 @@ function ApplicantCard({ applicant, onSelect, onDecline, actingId }) {
       </View>
 
       {hasHistory ? (
+        // avgRating and completionRate are computed independently by the
+        // service — a worker can have revealed ratings but no CompletionRecord
+        // yet. Formatting completionRate unconditionally rendered that as
+        // "0% completion", which reads as a bad record rather than no record.
         <Text style={styles.row}>
-          ★ {applicant.avgRating.toFixed(1)} · {Math.round(applicant.completionRate * 100)}% completion
+          ★ {applicant.avgRating.toFixed(1)}
+          {applicant.completionRate != null
+            ? ` · ${Math.round(applicant.completionRate * 100)}% completion`
+            : ""}
         </Text>
       ) : (
         <Text style={styles.row}>

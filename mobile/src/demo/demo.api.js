@@ -22,11 +22,17 @@ export function browsePostings() {
 }
 
 /**
- * The signed-in user's notifications. Makes FR-APPLY-08 (decline) and
- * FR-APPLY-09 (automatic not-selected) visible; Applying & Selection writes
- * these rows but nothing read them back.
+ * The signed-in user's notifications.
+ *
+ * Points at the Notifications slice's own endpoint, NOT the demo one. When
+ * this screen was written that module was an empty stub, so src/demo/ carried
+ * a stand-in read. Pawan's FR-NOTIF module has since landed with a real
+ * GET /api/notifications that also rolls batched digest children up into
+ * their parent (batchedCount / batchedItems) — which the demo endpoint does
+ * not do, so reading from it showed every batched child individually and left
+ * the digest UI dead. Using the real one instead; the demo route is gone.
  * @returns {Promise<Array<object>>}
  */
 export function listNotifications() {
-  return request("/api/demo/notifications");
+  return request("/api/notifications");
 }

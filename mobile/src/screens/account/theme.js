@@ -7,15 +7,27 @@
  * for the full reasoning, what's directly observed vs. extrapolated, and
  * why this deliberately isn't a shared/top-level theme file.
  *
- * `colors.primary` is a screenshot estimate, not color-picked from a source
+ * `colors.primary` was a screenshot estimate, not color-picked from a source
  * file. Kept as a single constant so replacing it with an exact hex later
  * (once final brand colors land) is a one-line change, not a find-and-replace
  * across every screen — that's the actual mechanism for minimizing rework,
  * not pixel-perfect guessing today.
+ *
+ * Updated 2026-08-30 on demo/integration-showcase: the indigo/violet estimate
+ * (#5B4FE0) is now a corporate blue, Afham's call ahead of the demo. This is
+ * the only change made to the Account Management module for that demo — the
+ * rest of the slice is finished and deliberately untouched.
+ *
+ * The one-line-change mechanism above only half worked in practice: the other
+ * modules hardcoded the old hex rather than importing a token, so this had to
+ * be changed in 13 places across 7 files. Worth raising with the team — the
+ * fix is a token each module imports, not more find-and-replace.
  */
 
 export const colors = {
-  primary: "#5B4FE0",
+  primary: "#1D4ED8",
+  primaryDark: "#1E40AF",
+  primaryTint: "#EFF6FF",
   textPrimary: "#111827",
   textSecondary: "#6B7280",
   textPlaceholder: "#9CA3AF",

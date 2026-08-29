@@ -36,6 +36,15 @@ export async function createGigPosting(req, res) {
     return res.status(401).json({ error: 'Authentication required.' });
   }
 
+  // Only Employers post gigs. This was unreachable before requireAuth was
+  // wired in (every request 401'd first), so the gap never showed; now that
+  // the route works, without this check any signed-in Youth Job-Seeker could
+  // create a posting and then apply to their own gig. Mirrors the role guard
+  // application.controller.js already applies to its own actions.
+  if (req.user.role !== 'EMPLOYER') {
+    return res.status(403).json({ error: 'Only an Employer can create a posting.' });
+  }
+
   try {
     const posting = await gigPostingService.createGigPosting(employerId, req.body);
     return res.status(201).json({ status: 'ok', posting });

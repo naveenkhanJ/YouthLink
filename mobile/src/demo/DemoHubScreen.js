@@ -47,6 +47,16 @@ const ROLE_LABELS = {
   COMMUNITY_ENDORSER: "Community Endorser",
 };
 
+/** Initials for the signed-in avatar, e.g. "Dilani Fernando" -> "DF". */
+function initials(name = "") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+}
+
 export default function DemoHubScreen({ navigation }) {
   const [session, setSession] = useState(getSession);
   const [busyPhone, setBusyPhone] = useState(null);
@@ -79,24 +89,32 @@ export default function DemoHubScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.banner}>
-          Integration demo build — scaffolding, not production UI
-        </Text>
+        {/* ---- Branded header carrying the session --------------------- */}
+        <View style={styles.hero}>
+          <View style={styles.heroTop}>
+            <Text style={styles.heroTitle}>YouthLink</Text>
+            <Text style={styles.heroTag}>DEMO BUILD</Text>
+          </View>
 
-        {/* ---- Who is signed in --------------------------------------- */}
-        <View style={styles.sessionCard}>
           {user ? (
-            <>
-              <Text style={styles.sessionName}>{user.legalName}</Text>
-              <Text style={styles.sessionRole}>
-                {ROLE_LABELS[user.role] ?? user.role} · {user.phone}
-              </Text>
-              <Pressable style={styles.signOut} onPress={signOut}>
+            <View style={styles.identity}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{initials(user.legalName)}</Text>
+              </View>
+              <View style={styles.identityMain}>
+                <Text style={styles.identityName}>{user.legalName}</Text>
+                <Text style={styles.identityMeta}>
+                  {ROLE_LABELS[user.role] ?? user.role} · {user.phone}
+                </Text>
+              </View>
+              <Pressable style={styles.signOut} onPress={signOut} hitSlop={8}>
                 <Text style={styles.signOutText}>Sign out</Text>
               </Pressable>
-            </>
+            </View>
           ) : (
-            <Text style={styles.sessionEmpty}>Not signed in</Text>
+            <Text style={styles.identityEmpty}>
+              Not signed in — pick a role below to begin
+            </Text>
           )}
         </View>
 
@@ -105,7 +123,7 @@ export default function DemoHubScreen({ navigation }) {
         {/* ---- One-tap role switching --------------------------------- */}
         <Section
           title="Switch role"
-          note="Seeded accounts, for moving between slices quickly. Account Management's own Log in and Create account screens are listed below."
+          note="Seeded accounts, for moving between slices quickly. The real Log in and Create account screens are under Account Management below."
         >
           {SEEDED_ACCOUNTS.map((account) => {
             const active = user?.phone === account.phone;
@@ -222,31 +240,49 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#F3F4F6" },
   content: { padding: 16, paddingBottom: 40 },
 
-  banner: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#92400E",
-    backgroundColor: "#FEF3C7",
-    borderRadius: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    marginBottom: 16,
-    textAlign: "center",
+  hero: {
+    backgroundColor: "#1D4ED8",
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 20,
+  },
+  heroTop: { flexDirection: "row", alignItems: "center" },
+  heroTitle: { flex: 1, fontSize: 20, fontWeight: "800", color: "#FFFFFF" },
+  heroTag: {
+    fontSize: 10,
+    fontWeight: "800",
+    letterSpacing: 0.6,
+    color: "#BFDBFE",
+    borderColor: "#60A5FA",
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    overflow: "hidden",
   },
 
-  sessionCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+  identity: { flexDirection: "row", alignItems: "center", marginTop: 16 },
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#3B82F6",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  sessionName: { fontSize: 18, fontWeight: "700", color: "#111827" },
-  sessionRole: { fontSize: 13, color: "#6B7280", marginTop: 2 },
-  sessionEmpty: { fontSize: 15, color: "#6B7280" },
-  signOut: { marginTop: 12, alignSelf: "flex-start" },
-  signOutText: { fontSize: 14, fontWeight: "600", color: "#DC2626" },
+  avatarText: { color: "#FFFFFF", fontWeight: "800", fontSize: 15 },
+  identityMain: { flex: 1, marginLeft: 12 },
+  identityName: { fontSize: 16, fontWeight: "700", color: "#FFFFFF" },
+  identityMeta: { fontSize: 12, color: "#BFDBFE", marginTop: 2 },
+  identityEmpty: { fontSize: 14, color: "#DBEAFE", marginTop: 14 },
+  signOut: {
+    borderWidth: 1,
+    borderColor: "#93C5FD",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  signOutText: { fontSize: 12, fontWeight: "700", color: "#FFFFFF" },
 
   error: {
     fontSize: 13,
@@ -258,13 +294,19 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
 
-  section: { marginBottom: 22 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#111827" },
+  section: { marginBottom: 24 },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: "#1D4ED8",
+  },
   sectionNote: {
     fontSize: 12,
     color: "#6B7280",
-    marginTop: 2,
-    marginBottom: 8,
+    marginTop: 4,
+    marginBottom: 10,
     lineHeight: 17,
   },
   emptyNote: {
@@ -279,18 +321,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderRadius: 10,
+    paddingVertical: 13,
     paddingHorizontal: 14,
     marginTop: 8,
     borderWidth: 1,
     borderColor: "#E5E7EB",
+    // Subtle lift so the cards read as tappable against the grey ground.
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
-  rowActive: { borderColor: "#5B4FE0", backgroundColor: "#EEF2FF" },
+  rowActive: { borderColor: "#1D4ED8", borderWidth: 2, backgroundColor: "#EFF6FF" },
   rowDisabled: { opacity: 0.45 },
   rowMain: { flex: 1 },
   rowTitle: { fontSize: 15, fontWeight: "600", color: "#111827" },
-  rowTitleActive: { color: "#5B4FE0" },
-  rowDetail: { fontSize: 12, color: "#6B7280", marginTop: 2 },
-  rowMark: { fontSize: 12, color: "#9CA3AF", marginLeft: 10 },
+  rowTitleActive: { color: "#1D4ED8" },
+  rowDetail: { fontSize: 12, color: "#6B7280", marginTop: 3, lineHeight: 16 },
+  rowMark: { fontSize: 12, color: "#9CA3AF", marginLeft: 10, fontWeight: "600" },
 });

@@ -244,7 +244,7 @@ export default function DiscoveryScreen({ navigation }) {
       {/* Main List */}
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator color="#5B4FE0" size="large" />
+          <ActivityIndicator color="#1D4ED8" size="large" />
         </View>
       ) : (
         <FlatList
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 8,
   },
-  chipActive: { backgroundColor: "#5B4FE0" },
+  chipActive: { backgroundColor: "#1D4ED8" },
   chipText: { fontSize: 13, color: "#4B5563", fontWeight: "500" },
   chipTextActive: { color: "#FFFFFF" },
   sortRow: { flexDirection: "row", marginVertical: 6, gap: 4 },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   },
   sortButtonActive: { backgroundColor: "#E0E7FF" },
   sortText: { fontSize: 11, color: "#4B5563", fontWeight: "600" },
-  sortTextActive: { color: "#4338CA" },
+  sortTextActive: { color: "#1E40AF" },
   expandedBanner: {
     backgroundColor: "#FEF3C7",
     borderRadius: 6,

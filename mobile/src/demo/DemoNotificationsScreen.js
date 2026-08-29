@@ -5,14 +5,16 @@
  * Only exists on `demo/integration-showcase`. Never merge into develop.
  * ===========================================================================
  *
- * Applying & Selection writes Notification rows on select, decline, and the
- * automatic not-selected sweep when a posting fills — but nothing in the app
- * ever read them back, so FR-APPLY-08 and FR-APPLY-09 were invisible. This is
- * a plain list so those two requirements can actually be seen happening.
+ * Two modules write Notification rows — Applying & Selection on select,
+ * decline and the automatic not-selected sweep, and Notifications on the
+ * urgent/non-urgent fan-out — but nothing in the app displayed them, so
+ * FR-APPLY-08/09 and FR-NOTIF-01/02 were all invisible.
  *
- * NOT an implementation of the Notifications slice (FR-NOTIF, Pawan): no push
- * delivery, no urgent/non-urgent triggers, no rate limiting or digests, no
- * preference toggles. Just a read of rows another module already writes.
+ * NOT an implementation of the Notifications slice (FR-NOTIF, Pawan). It reads
+ * that module's own GET /api/notifications and renders what comes back,
+ * including the digest roll-up (batchedCount / batchedItems) its 5-per-day cap
+ * produces. The triggers, the cap, the batching and the preferences screen are
+ * all his; this is only somewhere for the result to be seen.
  */
 import { useCallback, useState } from "react";
 import {
@@ -85,8 +87,9 @@ export default function DemoNotificationsScreen() {
       refreshControl={<RefreshControl refreshing={false} onRefresh={load} />}
     >
       <Text style={styles.banner}>
-        Demo scaffolding — reads rows Applying &amp; Selection writes. Not the
-        Notifications slice (FR-NOTIF): no push, triggers or preferences.
+        Demo scaffolding — a plain list over the real GET /api/notifications.
+        The Notifications slice owns the triggers, the 5/day cap and the
+        preferences screen; this only gives them somewhere to be seen.
       </Text>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -100,14 +103,28 @@ export default function DemoNotificationsScreen() {
 
       {items.map((item) => {
         const [label, requirement] = TYPE_LABELS[item.type] ?? [item.type, ""];
+        const rolledUp = item.batchedCount > 0;
         return (
-          <View key={item.id} style={styles.card}>
-            <Text style={styles.label}>{label}</Text>
+          <View key={item.id} style={[styles.card, rolledUp && styles.cardDigest]}>
+            <Text style={styles.label}>
+              {rolledUp ? `${item.batchedCount} more urgent gigs today` : label}
+            </Text>
             <Text style={styles.meta}>
               {formatWhen(item.createdAt)}
               {requirement ? ` · ${requirement}` : ""}
               {item.readAt ? "" : " · unread"}
             </Text>
+
+            {/* The 5/day push cap (FR-NOTIF-01) rolls everything past the
+                limit into one digest instead of pushing each one. The gigs
+                are still listed — they just arrive as a single notification. */}
+            {rolledUp
+              ? item.batchedItems.map((child) => (
+                  <Text key={child.id} style={styles.child}>
+                    • {child.payload?.title ?? "Urgent gig"}
+                  </Text>
+                ))
+              : null}
           </View>
         );
       })}
@@ -121,11 +138,12 @@ const styles = StyleSheet.create({
 
   banner: {
     fontSize: 12,
-    fontWeight: "600",
     color: "#92400E",
-    backgroundColor: "#FEF3C7",
+    backgroundColor: "#FFFBEB",
+    borderLeftWidth: 3,
+    borderLeftColor: "#F59E0B",
     borderRadius: 6,
-    padding: 8,
+    padding: 10,
     marginBottom: 14,
     lineHeight: 17,
   },
@@ -147,6 +165,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
+  cardDigest: { borderColor: "#1D4ED8", backgroundColor: "#EFF6FF" },
   label: { fontSize: 15, fontWeight: "600", color: "#111827" },
   meta: { fontSize: 12, color: "#6B7280", marginTop: 4 },
+  child: { fontSize: 13, color: "#374151", marginTop: 6, lineHeight: 18 },
 });

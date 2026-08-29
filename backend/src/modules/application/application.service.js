@@ -394,6 +394,7 @@ async function getMyApplications({ workerId }) {
       engagement: {
         select: {
           id: true,
+          status: true,
           contactRevealedAt: true,
           employer: { select: { phone: true, legalName: true, businessName: true } },
           gigPosting: { select: { locationAddress: true } },
@@ -401,6 +402,21 @@ async function getMyApplications({ workerId }) {
       },
     },
   });
+
+  // FR-POST-08's precise-address release is already expressed once, in
+  // posting.location.js, which treats a CANCELLED engagement as NOT entitling
+  // the worker to the exact address. This path released it for any engagement
+  // regardless of status — the same rule enforced two different ways. Latent
+  // today (nothing cancels an engagement until Engagement Lifecycle lands),
+  // wrong the moment it does, so it's aligned here rather than left to
+  // diverge. The employer's phone goes with it: both are the one contact
+  // reveal, and both should end when the engagement does.
+  for (const application of applications) {
+    if (application.engagement && application.engagement.status === "CANCELLED") {
+      application.engagement.gigPosting.locationAddress = null;
+      application.engagement.employer.phone = null;
+    }
+  }
 
   // Pending first, soonest posting-expiry first (no known expiry sorts
   // last); everything else follows, most recently decided first.
