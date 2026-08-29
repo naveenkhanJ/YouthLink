@@ -26,3 +26,19 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# symlinked aliases
+backend/.claude/
+backend/.windsurf/
+
+# per-developer working notes — not shared, not part of the deliverable
+.worklog/
+
+# Firebase Admin service-account credentials — a real credential, never commit
+serviceAccountKey.json
+firebase-adminsdk-*.json
+*firebase-adminsdk*.json
+
+# Per-developer local-only workarounds — never a real fix, never shared.
+# See README.md's "Known temporary blocker" note before adding to this pattern.
+*.local.js

@@ -45,7 +45,7 @@ Everything is collected in one sitting (`FR-ACC-01`). There is no partial-save.
 | Field                | Rule                                                                                                                |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Role                 | One of the three consumer actors, chosen at signup                                                                  |
-| Phone number         | Verified by a 6-digit OTP, valid 5 minutes (`FR-ACC-08`)                                                            |
+| Phone number         | Verified by a 6-digit OTP delivered through Firebase Phone Authentication (`FR-ACC-08`)                             |
 | Password             | Hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`)                   |
 | Email                | **Optional.** If given, verified once by a confirmation link. Registration isn't blocked if the link goes unclicked |
 | NIC number           | Required. Stored as entered, **never verified** and never parsed — including for age (`FR-ACC-04`)                  |
@@ -63,7 +63,7 @@ The NIC is collected but never checked against anything. Accordingly, **no badge
 
 ### Logging in
 
-Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP. Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
+Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP (delivered through Firebase Phone Authentication). Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
 
 Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock.
 
@@ -93,7 +93,9 @@ All of the above lives on **one Settings screen** (`FR-ACC-18`), together with n
 
 ### Abandoned signups
 
-Phone uniqueness only finalises once a complete account exists. A signup that verifies a phone number then stops expires after 24 hours, releasing that number (`FR-ACC-06`). Without this, an abandoned attempt would lock a real person's number forever.
+Registration is a single atomic submission (`FR-ACC-01`): the phone is verified through Firebase on the device, then every field is submitted together and one complete account is created. **Because nothing is persisted before that, there is no such thing as a half-finished signup holding a phone number hostage.**
+
+This was not always the design. Signup was originally staged, with phone verification persisted first — which is why `FR-ACC-06`, `PENDING_SIGNUP` and the partial index on phone still exist. See [`decisions.md`](decisions.md).
 
 ### Deleting an account
 

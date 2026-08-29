@@ -6,12 +6,14 @@ Functional and non-functional requirements for YouthLink, a mobile platform conn
 
 This is the normative requirements baseline the codebase is built against: **129 Functional Requirements** across 13 modules and **32 Non-Functional Requirements** across 7 categories, each with a stable ID and Given/When/Then acceptance criteria.
 
-**Referencing requirements in your work.** Every requirement has a permanent ID (`FR-POST-01`, `NFR-SEC-03`). Use them in branch names and commit messages, per [`CONTRIBUTING.md`](../CONTRIBUTING.md):
+**Referencing requirements in your work.** Every requirement has a permanent ID (`FR-POST-01`, `NFR-SEC-03`). Use them in commit messages, per [`CONTRIBUTING.md`](../CONTRIBUTING.md) — list every requirement a commit touches:
 
 ```
-feature/backend/fr-post-01-posting-endpoint-yourname
 feat(backend): add posting creation endpoint [FR-POST-01]
+feat(backend): add NIC storage and duplicate checks [FR-ACC-04, FR-ACC-05]
 ```
+
+Branch names are based on the **epic**, not on individual requirement IDs — `feature/gig-posting-yourname`. The commit message is where requirement traceability lives, which is what makes `git log --grep "FR-POST-01"` work.
 
 **Priority tags.** `Must` / `Should` / `Could` / `Won't (this build)` reflect how load-bearing a requirement is to the product, not which sprint it lands in. Sprint and ownership allocation lives in [`module-ownership.md`](module-ownership.md).
 
@@ -84,6 +86,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a self-declared birthdate indicates the user is under 18, when they attempt to submit, then registration is declined outright.
 - Given the ToS/Privacy Policy checkbox is unchecked, when the user attempts to submit, then registration is blocked.
 - Given the user provides an email, when they do not click the confirmation link, then the email remains unverified but registration is not blocked by this alone.
+- Given all fields are submitted together with a verified Firebase ID token, when the request succeeds, then exactly one `User` row is created with `accountStatus = ACTIVE` — registration is a single atomic submission, not a staged one.
 
 #### FR-ACC-02 — Employer posting-as type
 
@@ -148,6 +151,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given a phone number is OTP-verified but the account is not completed, when 24 hours pass, then the phone number is released from the uniqueness constraint (FR-ACC-05) and available for reuse.
 
+> **Amended 2026-08-17 — superseded in practice.** This requirement assumed a staged signup in which phone verification was persisted before the remaining fields were submitted, leaving a `PENDING_SIGNUP` row that could hold a phone number hostage. That assumption came from the scope decision behind it, written when the backend generated and verified the OTP itself.
+>
+> Since FR-ACC-08 was amended on 2026-08-15, phone verification happens client-side through Firebase and registration is a single atomic submission (FR-ACC-01). **No row exists before the account is complete, so there is nothing to expire and no phone number is ever locked by an abandoned attempt.** This requirement therefore has no trigger under the current design.
+>
+> Retained rather than deleted, because it becomes live again if signup is ever split into stages. The supporting fields and index are retained for the same reason — see [`database-schema.md`](database-schema.md) and [`decisions.md`](decisions.md).
+
 #### FR-ACC-07 — Login
 
 | Actor(s)        | Priority |
@@ -167,11 +176,15 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | --------------- | -------- |
 | All actor types | Must     |
 
-**Requirement:** The system shall generate a 6-digit numeric OTP, valid for 5 minutes, for signup verification, the OTP login path, phone number changes, and password reset — a shared mechanism, distinct in purpose from the per-engagement check-in codes and the endorsement invite code.
+**Requirement:** The system shall provide 6-digit numeric OTP verification for signup verification, the OTP login path, phone number changes, and password reset, split across two mechanisms. **Signup and OTP-login phone verification are delivered by Firebase Phone Authentication**, which generates and verifies its own 6-digit code; its validity window is set by Firebase and is not configurable by this system. **Phone number changes, password reset, and dashboard admin login use the system's own OTP mechanism**, generating a 6-digit code valid for 5 minutes, single-use. Both are distinct in purpose from the per-engagement check-in codes and the endorsement invite code.
 
 **Acceptance Criteria:**
 
-- Given an OTP is generated, when 5 minutes elapse without use, then it expires and a new one must be requested.
+- Given a system-generated OTP (phone change, password reset, or admin login) is created, when 5 minutes elapse without use, then it expires and a new one must be requested.
+- Given a system-generated OTP has been used once, when it is submitted again, then it is rejected.
+- Given a user completes Firebase phone verification at signup or OTP login, when the backend receives the resulting Firebase ID token, then the phone number is treated as verified only after that token is validated server-side.
+
+> **Amended 2026-08-15.** As originally written, this requirement described a single self-implemented OTP covering all four purposes, and the schema's `OtpPurpose` enum still carries `SIGNUP` and `LOGIN` values from that version. The Sprint 0 tech-stack decision of 2026-08-13 selected Firebase for OTP delivery, and Firebase Phone Authentication generates and verifies its own code — an application cannot inject its own into it. The two decisions were never reconciled at the time; the conflict surfaced on the first day of Sprint 1 implementation and was resolved by the Product Owner in favour of Firebase for the two user-facing paths. The `OtpCode` table is retained for the three purposes above, including dashboard admin login, where no Firebase client exists.
 
 #### FR-ACC-09 — Password security
 
