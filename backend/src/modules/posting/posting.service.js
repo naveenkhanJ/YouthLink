@@ -44,7 +44,14 @@ export async function createGigPosting(employerId, data) {
 }
 
 export async function getGigPostingById(id) {
-  return prisma.gigPosting.findUnique({ where: { id } });
+  // DEMO WIRING: engagements are included so posting.location.js can decide
+  // whether this viewer is a selected worker and may see the precise address
+  // (FR-POST-08 / FR-APPLY-07). sanitizePostingLocation strips this array back
+  // out before the posting reaches the client.
+  return prisma.gigPosting.findUnique({
+    where: { id },
+    include: { engagements: { select: { workerId: true, status: true } } },
+  });
 }
 
 export async function listGigPostingsByEmployer(employerId) {

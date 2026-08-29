@@ -26,6 +26,10 @@ import ratingRoutes from "./modules/rating/rating.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
 import endorsementRoutes from "./modules/endorsement/endorsement.routes.js";
 
+// DEMO-ONLY — remove with the rest of src/demo/ before this branch goes
+// anywhere near develop. See DEMO.md.
+import demoRoutes from "./demo/demo.routes.js";
+
 const app = express();
 
 app.use(cors());
@@ -57,6 +61,11 @@ app.use("/api/engagements", engagementRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/profiles", profileRoutes);
 app.use("/api/endorsements", endorsementRoutes);
+
+// DEMO-ONLY — stands in for the not-yet-built Discovery browse and a
+// notifications read, so the post -> apply -> select loop can be shown end to
+// end. Delete this line with src/demo/. See DEMO.md.
+app.use("/api/demo", demoRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
