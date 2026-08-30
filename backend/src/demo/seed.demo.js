@@ -33,6 +33,15 @@ import { encryptNic, getNicLast4 } from "../modules/account/nicCrypto.js";
 const DEMO_PASSWORD = "Demo1234";
 const DEMO_PHONE_PREFIX = "+9477999";
 
+/**
+ * The numbers registered in Firebase Console as test numbers, which return a
+ * fixed code instead of sending real SMS. Deliberately OUTSIDE the
+ * DEMO_PHONE_PREFIX block, so an account registered through the app on one of
+ * them is NOT destroyed by a re-seed — see freeTestNumbers() for the one
+ * command that does clear them.
+ */
+const FIREBASE_TEST_NUMBERS = ["+94770000001", "+94770000002"];
+
 /** Builds the User fields the schema requires, so callers stay readable. */
 async function makeUser({ phone, legalName, role, nic, businessName }) {
   return {
@@ -68,7 +77,15 @@ async function wipe() {
     return;
   }
 
-  // Order matters: children before parents, or the foreign keys reject it.
+  await deleteUsers(ids);
+  console.log(`Wiped ${ids.length} demo accounts and everything attached to them.`);
+}
+
+/**
+ * Deletes users and everything hanging off them, children before parents —
+ * the foreign keys reject any other order.
+ */
+async function deleteUsers(ids) {
   const postings = await prisma.gigPosting.findMany({
     where: { employerId: { in: ids } },
     select: { id: true },
@@ -77,7 +94,9 @@ async function wipe() {
 
   await prisma.rating.deleteMany({ where: { rateeId: { in: ids } } });
   await prisma.completionRecord.deleteMany({ where: { userId: { in: ids } } });
-  await prisma.endorsement.deleteMany({ where: { workerId: { in: ids } } });
+  await prisma.endorsement.deleteMany({
+    where: { OR: [{ workerId: { in: ids } }, { endorserId: { in: ids } }] },
+  });
   await prisma.notification.deleteMany({ where: { userId: { in: ids } } });
   await prisma.engagement.deleteMany({
     where: { OR: [{ workerId: { in: ids } }, { gigPostingId: { in: postingIds } }] },
@@ -86,9 +105,45 @@ async function wipe() {
     where: { OR: [{ workerId: { in: ids } }, { gigPostingId: { in: postingIds } }] },
   });
   await prisma.gigPosting.deleteMany({ where: { id: { in: postingIds } } });
+  await prisma.otpCode.deleteMany({ where: { userId: { in: ids } } });
+  await prisma.emailVerificationToken.deleteMany({ where: { userId: { in: ids } } });
   await prisma.user.deleteMany({ where: { id: { in: ids } } });
+}
 
-  console.log(`Wiped ${ids.length} demo accounts and everything attached to them.`);
+/**
+ * Frees the two Firebase test phone numbers so registration can be shown live.
+ *
+ * Neither seed() nor wipe() touches these: they only match the +9477999 block
+ * the fixtures live in, and the Firebase test numbers are outside it on
+ * purpose, so a real account made through the app survives a re-seed.
+ *
+ * The catch is FR-ACC-05 — a phone can only be registered once. Demonstrating
+ * registration a second time therefore needs the previous account removed
+ * first, which is what this does. Nothing else in the database is touched.
+ */
+async function freeTestNumbers() {
+  const users = await prisma.user.findMany({
+    where: { phone: { in: FIREBASE_TEST_NUMBERS } },
+    select: { id: true, phone: true, legalName: true, nicLast4: true },
+  });
+
+  if (users.length === 0) {
+    console.log(
+      `Both Firebase test numbers are already free:\n  ${FIREBASE_TEST_NUMBERS.join("\n  ")}`,
+    );
+    return;
+  }
+
+  await deleteUsers(users.map((u) => u.id));
+  console.log("Freed for live registration:");
+  for (const u of users) {
+    console.log(`  ${u.phone}  (was "${u.legalName}", NIC ...${u.nicLast4})`);
+  }
+  console.log(
+    "\nRe-register any of these through the app's Create account screen.\n" +
+      "Reminder: the NIC is unique too (FR-ACC-05), so reuse the same NIC only\n" +
+      "if you want to demonstrate the duplicate-NIC rejection.",
+  );
 }
 
 async function seed() {
@@ -293,14 +348,31 @@ Demo data seeded.
   Postings         "${urgentPosting.title}"  (urgent, 2 slots, 3 applicants)
                    "${normalPosting.title}"  (not urgent, 1 slot)
 
-Real Firebase test accounts are untouched — +94770000001 still works for the
-OTP login path, and +94770000002 is still free to register live.
+Anything registered on a Firebase test number is untouched by this — those
+numbers sit outside the block this script owns, so a re-seed never destroys an
+account you made through the app. To clear them and show registration again:
+
+  node src/demo/seed.demo.js --free-test-numbers
 `);
 }
 
-const wipeOnly = process.argv.includes("--wipe");
+const arg = process.argv[2];
+const action =
+  arg === "--wipe" ? wipe : arg === "--free-test-numbers" ? freeTestNumbers : seed;
 
-(wipeOnly ? wipe() : seed())
+if (arg && !["--wipe", "--free-test-numbers"].includes(arg)) {
+  console.error(
+    `Unknown option "${arg}".\n\n` +
+      "  node src/demo/seed.demo.js                       reset the demo fixtures\n" +
+      "  node src/demo/seed.demo.js --wipe                remove them entirely\n" +
+      "  node src/demo/seed.demo.js --free-test-numbers   clear the Firebase test\n" +
+      "                                                   numbers so registration\n" +
+      "                                                   can be demonstrated live\n",
+  );
+  process.exit(1);
+}
+
+action()
   .then(() => process.exit(0))
   .catch((err) => {
     console.error("Seed failed:", err);
