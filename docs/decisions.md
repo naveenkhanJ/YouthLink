@@ -121,6 +121,32 @@ Found while drafting FR-APPLY-12, whose first draft claimed a guarantee the life
 
 **Several research recommendations described behaviour that already existed** and produced no change: reporting a listing before any engagement (FR-DISPUTE-01, FR-DISPUTE-03), endorsement withdrawal (FR-ENDORSE-07), the pre-submission listing preview (FR-POST-09), and saved listings (FR-DISC-06). Full per-item reasoning lives in the SPM project's reconciliation register, outside this repo.
 
+## Amendment batch of 2026-08-27 — decisions with no other home
+
+**Thirty-four amendments landed as one batch** (register: the SPM project's `UEE Prototype Screen Specifications.md`), raised while writing screen specifications for every module. Most reasoning lives beside the amended requirement; the entries below are the ones that would otherwise look arbitrary.
+
+**User-facing error messages are full sentences with terminal periods.** Two registers had shipped — Account/Posting's `Title is required.` versus Application's `Posting not found` — and the prototype cannot show both. The sentence register won: it is the majority of shipped strings and the warmer voice for a consumer product. The Application module's eight terse fragments change to match, with its owner's sign-off.
+
+**Session lifetime is 30 days, and one behaviour covers every dead session.** `EXPIRES_IN = "30d"` was previously a fact only `jwt.js` knew. Expiry, `passwordChangedAt` rejection, and suspension all produce the same redirect-to-login with a neutral message — three triggers, one symptom, one screen.
+
+**Checkpoint codes record failed attempts and never lock.** A worker mistyping at the kerb must not brick an arrival; a guesser must not be invisible. Per-checkpoint counters render in the Moderator's code-exchange history, turning brute-force attempts into evidence instead of prevention theatre. Codes deliberately never expire — an expiring arrival code strands a legitimately delayed worker.
+
+**Email links land on minimal web pages, never mobile deep links.** The email-verification link (FR-ACC-14) opens a one-line confirmation page; the email password-reset link (FR-ACC-10) opens the reset form served on the web, token in the URL. Deferred deep-linking was already rejected once (FR-ENDORSE-02), app-link verification is real setup cost, and email is the fallback channel — the path used precisely when something already went wrong, which should have the fewest moving parts.
+
+### Staff accounts — named limitation and runbook
+
+**No demote, deactivate, unlock, reset, or role-change flows exist, and no super-admin outranks another Admin.** Accepted deliberately at founding-team scale, the same treatment `NFR-REL-03` gives concurrent case review. The mitigations are direct database access plus the audit log — with the caveat that **SQL interventions are invisible to the audit log by construction**, which is why each one below must be recorded by hand as a dated line appended to this entry.
+
+The sanctioned procedures (the only approved shapes — do not improvise variants):
+
+- **Deactivate a staff account:** `UPDATE "AdminAccount" SET "deactivatedAt" = now() WHERE phone = '<phone>';` — takes effect on the account's next request once the dashboard auth check lands (batch A33).
+- **Reset a staff password:** generate a bcrypt hash offline, then `UPDATE "AdminAccount" SET "passwordHash" = '<hash>', "passwordChangedAt" = now() WHERE phone = '<phone>';` — the `passwordChangedAt` write is what kills existing sessions.
+- **Change a role:** `UPDATE "AdminAccount" SET role = 'ADMIN' /* or 'MODERATOR' */ WHERE phone = '<phone>';`
+- **Unlock early:** `UPDATE "AdminAccount" SET "lockedUntil" = NULL, "failedLoginAttempts" = 0 WHERE phone = '<phone>';`
+
+*Manual intervention log (append below, dated, with who ran it and why):*
+
+
 ## Code organisation
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer** —
