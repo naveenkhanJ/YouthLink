@@ -1,6 +1,6 @@
 # YouthLink — Database Schema
 
-The complete entity-relationship specification for YouthLink: **20 tables, 49 foreign keys**, covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
+The complete entity-relationship specification for YouthLink: **22 tables, 53 foreign keys**, covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
 
 ## About this document
 
@@ -130,11 +130,12 @@ Deliberately **not** a role flag on `User` — FR-ADM-07 requires Admin/Moderato
 | -------------------------- | ----------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `id`                       | String            | PK                                           |                                                                                                 |
 | `phone`                    | String            | unique (within this table), required         | FR-ADM-07                                                                                       |
-| `passwordHash`             | String            | required                                     | NFR-SEC-01                                                                                      |
+| `passwordHash`             | String            | **nullable**                                 | NFR-SEC-01. Nullable since 2026-09-20 (O5/A34): a promoted account has no password until its holder sets one at first sign-in, which FR-ADM-06's amendment makes OTP-only — "no password yet" is a real state and a placeholder hash would be a lie. The admin-assisted reset added by `FR-ADM-06`'s amendment returns an account to that state. The login path must reject null explicitly |
 | `failedLoginAttempts`      | Int               | default 0                                    | NFR-SEC-02 — arguably more warranted here, per NFR-SEC-04's own "higher-value target" reasoning |
 | `lockedUntil`              | DateTime          | nullable                                     |                                                                                                 |
 | `passwordChangedAt`            | DateTime              | nullable                                        | Batch A33 (2026-08-27): staff sessions terminable — same `iat` rejection as `User`, re-checked per dashboard request |
 | `deactivatedAt`                | DateTime              | nullable                                        | Batch A33: set via the `decisions.md` runbook; dashboard auth rejects on next request. No flow exists, deliberately |
+| `lastSignInAt`             | DateTime          | nullable                                     | O6 (2026-09-20). The staff surface's Status column is **derived, not stored** — it is the sign-in state of the account, separate from its role. `deactivatedAt` set → *Access removed* · `lastSignInAt` null → *First sign-in pending* · a long gap → *Inactive — N days* · otherwise *Active*. The audit log cannot stand in for this: it records actions on things, not sessions, so it would conflate "has not signed in" with "has not done anything" |
 | `role`                     | Enum(`AdminRole`) | required                                     | `ADMIN`, `MODERATOR`                                                                            |
 | `promotedByAdminAccountId` | String            | FK → `AdminAccount`, nullable, self-relation | Null for Phase-1 backend-seeded accounts (FR-ADM-06)                                            |
 | `createdAt`                | DateTime          |                                              |                                                                                                 |
@@ -144,6 +145,52 @@ Deliberately **not** a role flag on `User` — FR-ADM-07 requires Admin/Moderato
 **FR-ADM-06 Phase 2 ("promote an already-registered user")** creates a _new_ `AdminAccount` row for that person; it does not flip a flag on their `User` row, because FR-ADM-07 requires the two identities to stay separate. The promotion is recorded via `promotedByAdminAccountId` plus an `AuditLogEntry`.
 
 **No `Session` or `RefreshToken` table, for either `User` or `AdminAccount`.** The requirements explicitly accept multiple simultaneous logins with no session-invalidation logic, as a deliberate simplification. The assumption: stateless JWTs, with every authenticated request re-checking live `accountStatus`/`suspendedAt`/`lockedUntil` — which is what actually delivers NFR-REL-02's "suspension takes effect on the very next request" without a session store. Recorded under Design Decisions below, since the requirements don't state a token strategy outright.
+
+---
+
+### `AccountRecoveryRequest`
+
+Added 2026-09-20 (batch **E8**, signed off 2026-09-16). `FR-ACC-10` says that with neither phone nor a
+verified email reachable *"no automated path succeeds — this is a named limitation."* That was a dead
+end rather than a policy: the account holds ratings, completion history and endorsements, which are the
+product's entire value to a job-seeker, so losing a SIM destroyed a worker's reputation and the platform
+offered nothing back. This table is the identity-verified, Admin-assisted route back.
+
+Deliberately **not** a `Report` and **not** a `DisputeCase`: `FR-ACC-10`'s amendment reserves this review
+to an **Admin**, never a Moderator, and `NFR-OPS-01` already denies Moderators the audit log entirely.
+This never enters Moderator triage.
+
+| Field | Type | Constraints | Notes / Traceability |
+| ----- | ---- | ----------- | -------------------- |
+| `id` | String | PK | |
+| `userId` | String | FK → `User`, **nullable** | The account the submitted details resolve to. Nullable deliberately — a submission matching no account is still a submission, and telling the requester otherwise is an enumeration leak — nothing identifying is disclosed to the requester at any point (`FR-ACC-10`) |
+| `nicSubmittedEncrypted` | String | required | What the requester submitted, encrypted with the same deterministic scheme as `User.nicEncrypted`; that determinism is what makes the match possible |
+| `legalNameSubmitted` | String(100) | required | Retained rather than reduced to a verdict: the Admin adjudicates the claim, and the case that matters in practice is the **partial** match, which one flag cannot express |
+| `birthdateSubmitted` | DateTime | required | As above. Retention is bounded by the requirement, not by this table |
+| `deviceId` | String | required | **The device binding.** An install-scoped identifier the app generates on first run — not a hardware id, needing no permission. The outcome is shown, and the password reset granted, on that device and no other (`FR-ACC-10`). Without it an approved recovery is a bearer grant |
+| `status` | Enum(`AccountRecoveryStatus`) | default `AWAITING_REVIEW` | A queued request awaits **Admin** review; there is no Moderator stage for it to pass through |
+| `createdAt` | DateTime | | |
+| `reviewedByAdminAccountId` | String | FK → `AdminAccount`, nullable | The ruling is attributable to the acting Admin and is written to the audit log (`NFR-SEC-06`) |
+| `reviewedAt` | DateTime | nullable | |
+| `completedAt` | DateTime | nullable | Set when the requester has used the grant to set a new password; consumed once |
+
+Indexed on (`status`, `createdAt`) — the Admin queue is ordered oldest first, so the longest-waiting request surfaces first.
+
+**There is no notification, and that is a finding rather than an omission.** A `Notification` row needs a
+`userId`, and the requester is unauthenticated by
+definition — binding the notice to the account would decide the identity question the Admin has not yet
+ruled on. Both transports, phone and email, are unreachable by the definition of this path. And a push
+would confirm to whoever filled in the form that such an account exists, the same enumeration weakness
+`FR-ENDORSE-03`'s deliberately generic *"no eligible match found"* already guards against. Delivery is
+therefore **device-bound and pull-based**: the app that made the request renders the outcome in place.
+
+**Everything the reviewing Admin is shown is derived, not stored** — the rating average, the completion
+percentage, the named endorsements, *"No disputes · no warnings"* — from `User`, `Rating`,
+`CompletionRecord`, `Endorsement`, `DisputeCase` and `Warning`.
+
+**The rejected *outcome* screen is ruled Tier C** (Afham, 2026-09-20): `REJECTED` exists in data and is
+acted on when a request is reviewed. The worker-facing app presents only the approved outcome — a
+recorded scope decision, not an omission.
 
 ---
 
@@ -559,6 +606,9 @@ The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counti
 | `DisputeTriggerType`        | `UNABLE_TO_CONFIRM`, `END_ENGAGEMENT_ISSUE`, `STALLED_AUTO_FLAG`, `REPORT`                                                                                                                                                                                                                                                                              |
 | `DisputeStatus`             | `AWAITING_RESPONSE`, `UNDER_REVIEW`, `ESCALATED`, `RESOLVED`                                                                                                                                                                                                                                                                                            |
 | `DisputeResolution`         | `RULED_FOR_RAISER`, `RULED_FOR_OTHER`, `INCONCLUSIVE`, `WARNING_ONLY`, `NO_SHOW_CONFIRMED`                                                                                                                                                                                                                                                              |
+| `AuditAction`               | `CASE_REVIEW_OPENED`, `CLARIFICATION_REQUESTED`, `WARNING_RECORDED`, `CASE_CLOSED_NO_ACTION`, `CASE_ESCALATED`, `DISPUTE_RULED`, `CONTENT_RESTORED`, `CONTENT_ESCALATED`, `POSTING_REMOVED`, `RATING_REMOVED`, `ACCOUNT_SUSPENDED`, `USER_PROMOTED`, `STAFF_PASSWORD_RESET`, `STAFF_ACCESS_REMOVED`, `METRICS_EXPORTED`, `ACCOUNT_RECOVERY_APPROVED`, `ACCOUNT_RECOVERY_REJECTED` — batch A29 (2026-08-27), **corrected 2026-09-20 against the actions the dashboard actually performs.** A closed enum is only safe when it is closed over the vocabulary that exists; A29's ten values were derived from "one per Module 10 acting surface", and the audit log is a Module 11 surface that also receives staff-administration and metrics actions. Six values were missing outright, and `CASE_WARNING_CLOSED` was renamed — recording a warning against a **user** and closing a case against a **report** are two acts, not one |
+| `AuditTargetType`           | `USER`, `POSTING`, `RATING`, `DISPUTE_CASE`, `REPORT`, `ADMIN_ACCOUNT`, `PLATFORM_METRICS` — batch A29; `PLATFORM_METRICS` added 2026-09-20 as the target of a metrics export (`FR-DASH-04`, `NFR-OPS-02`), which none of the other six covers |
+| `AccountRecoveryStatus`     | `AWAITING_REVIEW`, `APPROVED`, `REJECTED` — added 2026-09-20 (batch E8). Three values and no more: the review offers exactly two actions, and there is no Moderator stage for a request to be under review for |
 | `NotificationType`          | `URGENT_GIG`, `NEW_GIG`, `URGENT_DIGEST`, `APPLICATION_RECEIVED`, `APPLICATION_SELECTED`, `APPLICATION_DECLINED`, `APPLICATION_NOT_SELECTED`, `MATERIAL_CHANGE`, `CANCELLATION_REQUEST`, `END_ENGAGEMENT`, `STALLED_ENGAGEMENT_PROMPT`, `NEW_DISPUTE_CASE`, `CLARIFICATION_REQUEST`, `ENDORSEMENT_RECEIVED`, `ENDORSEMENT_PAYOFF`, `NO_APPLICANT_NUDGE`, `CANCELLATION_RESOLVED`, `RATING_WINDOW_OPEN`, `RATING_REVEALED`, `DISPUTE_OPENED`, `DISPUTE_RESOLVED`, `FLAGGED_CONTENT_OUTCOME` *(last six added 2026-08-27, batches A18/A23/A25)* |
 
 ---
@@ -597,6 +647,8 @@ erDiagram
     User ||--o{ Rating : "gives"
     User ||--o{ Rating : "receives"
     AdminAccount ||--o{ Rating : "removes (policy violation)"
+    User ||--o{ AccountRecoveryRequest : "requests recovery of"
+    AdminAccount ||--o{ AccountRecoveryRequest : "reviews"
     Rating ||--o| RatingRemovalRequest : "removal requested via"
     User ||--o{ RatingRemovalRequest : "requests"
     Engagement ||--o{ CompletionRecord : "produces"
