@@ -268,6 +268,24 @@ These three — FR-APPLY-09, FR-POST-12 and FR-POST-13 — implement one invaria
 
 **Scheduling.** Both are Sprint 3 candidates. FR-APPLY-12 has no dependency on deferred scope and could be pulled forward. FR-DISPUTE-07 sensibly waits until the dispute pipeline itself is being built, since it is a view onto states that don't exist yet.
 
+## Added scope — the error and offline pass (2026-09-16) and openings O5/O6 (2026-09-20)
+
+Two amendments create work that no slice's story table covered. Recorded the same way as the 2026-08-27 audit above, so neither ends up unowned by default.
+
+| Requirement | Work | Slice |
+|---|---|---|
+| `FR-ACC-10` (E8) | **Account recovery, worker side** — the request form, its submitted state, and the approved outcome that leads into setting a new password. Four screens, and the device-binding identifier the request carries | **Slice A — Account Management** |
+| `FR-ACC-10` (E8) | **Account recovery, dashboard side** — the request in the Admin case queue, the review surface showing the NIC match against engagement and rating history, and the approve/reject actions with their audit entries. **Admin only**; it must not be reachable by a Moderator | **Slice A**, with the dashboard's case-queue owner — coordinate, as it adds a card type to a shared surface |
+| `FR-ACC-12` (E5) | Password reset by verified email while logged in — reuses `FR-ACC-10`'s existing channel | **Slice A — Account Management** |
+| `FR-ACC-05` (E1, E2) · `FR-ACC-09` (E6, E7) · `FR-ACC-01` (E3) | Pre-verification availability checks, the remaining-attempts warning, and the lockout naming the OTP path | **Slice A — Account Management** |
+| `FR-ADM-06` (O5, O6) | **The staff-account surface** — the Admin-only list, admin-assisted password reset, and removal of staff access | **Slice A**, dashboard side |
+| `FR-POST-15` · `NFR-USE-01` (E9) | Device-only retention of an in-progress posting form | **Slice B — Gig Posting** |
+| `NFR-PERF-01` (E10) | Loading and skeleton states on every operation that can exceed the perceptible threshold | **cross-cutting** — the component exists; each slice applies it to its own network calls |
+
+**Most of this lands on Slice A**, which is the expected shape: eight of the ten E-rows and both O-rows are account-access concerns, and that is the area the error pass examined.
+
+---
+
 ## How the deferred slices relate to Sprint 1–2's
 
 _(This section describes the deferred scope above, not the current sprint

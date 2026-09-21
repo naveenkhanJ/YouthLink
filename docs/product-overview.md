@@ -65,7 +65,13 @@ The NIC is collected but never checked against anything. Accordingly, **no badge
 
 Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP (delivered through Firebase Phone Authentication). Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
 
-Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock.
+Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock — and **the lockout message says so** (amended 2026-09-16, E7), because a lock that names no way out is a wall rather than a recoverable error. Remaining attempts are shown before the threshold is reached, not only once it has been (E6).
+
+**When neither channel works at all** (amended 2026-09-16, E8), there is now a route back rather than a named limitation. A person with no reachable phone and no verified email can submit their NIC, legal name and birthdate from the app; an **Admin** — never a Moderator — checks those against the account record alongside its engagement and rating history, and approves or rejects. This exists because the account is not just a login: it holds ratings, completion history and endorsements, which are the whole of what the product is worth to a job-seeker. Losing a SIM should not destroy a reputation someone spent months earning.
+
+**The outcome comes back only to the device that asked**, and that is deliberate rather than incidental. Both notification channels are unreachable by the definition of this path; the person is not signed in, so a notice attached to the account would assume the answer the Admin has not yet given; and anything pushed to the account would confirm to whoever filled in the form that an account with those details exists. Nothing identifying is shown to the requester at any point, and the approval unlocks a password reset on that device alone.
+
+**A smaller trap was closed at the same time** (E5). Changing a phone number requires the password; resetting the password sends an OTP to the phone. Someone who had lost their phone and forgotten their password could do neither — and losing the phone is the commonest reason to need a new number. A logged-in user with a verified email can now reset through that channel.
 
 Multiple simultaneous logins are allowed with no session-invalidation logic. A user may be signed in on several devices at once.
 
@@ -482,7 +488,14 @@ Admin/Moderator accounts are **entirely separate** from any consumer account for
 
 **Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard — into either role directly; there is no ladder, and only Admins grant.
 
-**A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin. Staff accounts have no demote, deactivate, or reset *flows* in this build; the sanctioned manual procedures live in [`decisions.md`](decisions.md)'s runbook.
+**A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin.
+
+**Staff accounts now have a management surface** (amended 2026-09-20, openings O5/O6). Nothing previously let an Admin even *see* who held one — "Users" is the consumer population by `FR-ADM-07`, and staff never appear there. An **Admin-only** surface now lists each staff account with its role, staff phone, who promoted it and when, and its **sign-in state**: active, first sign-in pending, inactive, or access removed. Two actions sit on it:
+
+- **Reset password** — a one-time code goes to the staff member's own phone, their current password stops working immediately, and they set a new one at next sign-in. This is the *same* mechanism as a first sign-in rather than a second one invented for the purpose, which is why no secret passes through the acting Admin here either.
+- **Remove staff access** — the account is deactivated and cannot sign in again. **Case history and audit entries stay**, because accountability does not depend on the account still being usable, and any consumer account belonging to the same person is untouched.
+
+Both are recorded in the audit log against the acting Admin — which is the point of making them flows. **Changing a role and unlocking early remain backend-only**, and remain in [`decisions.md`](decisions.md)'s runbook with its honest caveat: SQL cannot write an audit entry, so those two must be logged by hand.
 
 ### The dashboard
 
@@ -591,3 +604,5 @@ The **internal dashboard stays English-only permanently** (`NFR-LOC-03`); it's s
 | Uptime (`NFR-PERF-04`)                                              | 99.9% stated target                                                        |
 
 The system is built to scale horizontally with **no hard-coded concurrent-user ceiling** (`NFR-PERF-05`).
+
+**Any operation that can exceed the perceptible threshold shows a loading or skeleton state** (amended 2026-09-16, E10). The table above set thresholds and said nothing about what the interface shows while one is being missed — so a slow network was indistinguishable from a frozen screen, which is the plainest way to fail visibility of system status.

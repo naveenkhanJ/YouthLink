@@ -92,6 +92,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given the user provides an email, when they do not click the confirmation link, then the email remains unverified but registration is not blocked by this alone.
 - Given all fields are submitted together with a verified Firebase ID token, when the request succeeds, then exactly one `User` row is created with `accountStatus = ACTIVE` — registration is a single atomic submission, not a staged one.
 
+> **Amended 2026-09-16 (batch E3, E4).** Two clarifications, neither changing what the requirement asks for.
+>
+> **E3 — how the 100-character legal-name cap is enforced.** The cap was stated and its mechanism was not, while the house convention elsewhere is explicit: `FR-PROF-02` and `FR-POST-01` both say *"input is blocked or truncated at the cap"*. The same applies here — **input is blocked at 100 characters**, with the remaining count shown as the cap is approached, and the server rejects over-length independently of the client. Prevention rather than an error message, so **no error state exists or should be built** for a condition the field cannot reach.
+>
+> **E4 — the "valid for 5 minutes" clause is retained and becomes a specification.** It appeared to contradict `FR-ACC-08`'s statement that Firebase's window *"is not configurable by this system"*. It does not: the application enforces **its own, stricter validity window on top of Firebase's**, so five minutes is true because the app makes it true. See `FR-ACC-08`'s amendment of the same date for the mechanism and its one risk.
+
 #### FR-ACC-02 — Employer posting-as type
 
 | Actor(s)                | Priority |
@@ -148,6 +154,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given an NIC, verified phone, or verified email already exists on an account, when a new signup attempts to use the same value, then registration is blocked for that field.
 
+> **Amended 2026-09-16 (batch E1, E2).** Uniqueness was specified; *when* it is checked, and what the user is told, were not.
+>
+> **E1 — phone availability is checked at entry, before an SMS is spent.** As written, a person who already has an account completes Firebase verification — an SMS the project pays for, and three screens of their time — before being told the number is taken. The system shall perform a **read-only availability check on the phone number at the point of entry**, before OTP delivery is requested. This does not breach `FR-ACC-01`'s *"single atomic submission"*, which is about **account creation**: the check creates no row.
+>
+> **E2 — a duplicate unverified email no longer fails silently.** Uniqueness is on the *verified* email, so two accounts may hold the same unverified address and the second person's confirmation link simply fails, with nothing explaining why — `FR-ACC-01` says an unverified email *"is not blocked by this alone"*. The system shall check the address at entry and state plainly that it is already in use on another account, rather than accepting it and failing later at a step the user cannot connect to the cause.
+>
+> **Acceptance criteria added:** Given a phone number already belongs to an account, when it is entered at signup, then the user is told before any OTP is sent. · Given an email address is already held by another account, when it is entered, then the user is told at entry rather than at confirmation-link time.
+
 #### FR-ACC-06 — Incomplete signup expiry
 
 | Actor(s)        | Priority |
@@ -198,6 +212,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-15.** As originally written, this requirement described a single self-implemented OTP covering all four purposes, and the schema's `OtpPurpose` enum still carries `SIGNUP` and `LOGIN` values from that version. The Sprint 0 tech-stack decision of 2026-08-13 selected Firebase for OTP delivery, and Firebase Phone Authentication generates and verifies its own code — an application cannot inject its own into it. The two decisions were never reconciled at the time; the conflict surfaced on the first day of Sprint 1 implementation and was resolved by the Product Owner in favour of Firebase for the two user-facing paths. The `OtpCode` table is retained for the three purposes above, including dashboard admin login, where no Firebase client exists.
 
+> **Amended 2026-09-16 (batch E4).** The Firebase-delivered codes gain an **application-enforced validity window**, independent of Firebase's own.
+>
+> The contradiction this resolves: `FR-ACC-01` states a 6-digit OTP *"valid for 5 minutes"*, while this requirement states that Firebase's window is not configurable by us. Deleting the five minutes was rejected — stating nothing is unhelpful, and quoting an *observed* Firebase value would couple the product's copy to an undocumented third-party internal that can change without notice. **Firebase does not publish how long a delivered code stays valid**; the figures commonly quoted (30 seconds to 2 minutes) are `timeout_milliseconds` on `PhoneAuthOptions`, which is the Android auto-retrieval window, not the code's validity.
+>
+> So the application owns the window instead: the client starts a timer when the code is sent, and when it lapses the app invalidates the entry itself and offers Resend, without waiting for Firebase. `FR-ACC-01`'s five minutes is that window's value.
+>
+> **One risk, stated because it is real and must be validated in implementation.** If our window is *longer* than Firebase's, the interface would show a live countdown for a code Firebase has already rejected. **Ours must sit safely inside theirs**, and since theirs is undocumented that has to be established by observation during Sprint work rather than assumed here. The design degrades gracefully either way: if Firebase rejects first, the generic *"This code is no longer valid"* response still fires correctly.
+
 #### FR-ACC-09 — Password security
 
 | Actor(s)        | Priority |
@@ -213,6 +235,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 
 > **Amended 2026-08-27 (batch A2).** Password rules added — previously `validateFields()` accepted any single character, and nothing anywhere stated a minimum. Values follow NIST SP 800-63B Rev 4: minimum 8 (not 15) because a second factor exists — every account has a verified phone and FR-ACC-07's independent OTP path; maximum 64 to bound hashing cost; no composition rules, since they push users toward predictable substitutions. A compromised-credential blocklist is deferred future scope, noted rather than required.
+
+> **Amended 2026-09-16 (batch E6, E7).** The lockout existed; neither its warning nor its exit was stated.
+>
+> **E6 — remaining attempts are surfaced before the threshold.** The requirement specified the lock but never that the count leading up to it is shown, so the behaviour was assumed on the dashboard and absent on mobile, with nothing stating which was correct. A lockout that arrives unannounced is not recoverable; it is a wall.
+>
+> **E7 — the lockout names its own way out.** That the **OTP login path stays open** during a password lockout is inferable, since the block is scoped to password attempts, but it was never stated, and a developer reading this requirement alone could reasonably implement a full account lock — a materially worse product. `FR-ACC-08`'s own criterion already grants the OTP path to a user who has forgotten their password. The system shall keep that path available during a password lockout, **and the lockout message shall offer it.**
+>
+> **Acceptance criteria added:** Given fewer than 5 attempts have failed, when a password attempt fails, then the number of remaining attempts is shown. · Given an account is locked on the password path, when the lockout message is shown, then it names the OTP login path as the available route, and that path succeeds.
 
 #### FR-ACC-10 — Password reset
 
@@ -232,6 +262,20 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 > **Amended 2026-08-27 (batch A3).** A completed password reset **invalidates every existing session**. Previously a stolen token outlived the password change — by omission, not by design: stateless JWTs with no session table meant nothing rejected old tokens. Mechanism (batch A5): `User.passwordChangedAt`, with `requireAuth` rejecting any token whose `iat` predates it — no new query, since the middleware already re-reads the user row per request.
 >
 > The email reset link opens the reset form **served as a minimal web page** (token in the URL), not a mobile deep link — deferred deep-linking was already rejected once (FR-ENDORSE-02), and the fallback channel should have the fewest moving parts.
+
+> **Amended 2026-09-16 (batch E8) — an identity-verified, Admin-assisted recovery path.**
+>
+> The third acceptance criterion above says that with neither channel reachable *"no automated path succeeds — this is a named limitation."* **That was a dead end rather than a policy.** A search of this document for support-assisted or manual recovery returned nothing: there was no route back at all. And the account is not merely a login — it holds ratings, completion history and endorsements, which are the product's entire value to a job-seeker. As written, losing a SIM permanently destroyed a worker's accumulated reputation and the platform offered them nothing. For a product aligned to SDG 1 and SDG 8, that is the wrong answer to give the exact person it exists to serve.
+>
+> **The system shall provide an Admin-adjudicated account recovery path.** A user with no reachable phone and no verified email may submit their NIC, legal name and birthdate from the app; the system matches the NIC against the account record using the deterministic encryption already in place for that purpose; an **Admin** — never a Moderator — reviews the match alongside the account's engagement and rating history and either approves or rejects it; an approval is recorded in the audit log like any other privileged action (`NFR-SEC-06`).
+>
+> **The outcome is delivered to the device that made the request, and by no other channel.** This is not a presentation detail. Both notification transports are, by the definition of this path, unreachable; the requester is unauthenticated, so binding a notice to the account would decide the identity question before the Admin has ruled on it; and pushing anything to the account would confirm to whoever filled in the form that an account with those details exists — the same enumeration weakness `FR-ENDORSE-03`'s deliberately generic *"no eligible match found"* already guards against. **No identifying data is revealed to the requester at any point**, and the approval grants a password reset only on the requesting device.
+>
+> **Retention.** Submitted identity details are kept while the request is open because the Admin adjudicates the claim itself and a partial match is the case that matters. Requests that are **rejected or completed shall be purged of those details after 90 days**, which bounds how long identity data about a person who may hold no account is retained at all.
+>
+> **Acceptance criteria added:** Given a user has neither a reachable phone nor a verified email, when they request recovery, then they can submit identity details for Admin review. · Given a recovery request is submitted, when a Moderator opens the case queue, then it is not visible to them. · Given an Admin approves a recovery, when the requester returns **on the device that made the request**, then they may set a new password, and their ratings, completed engagements and endorsements are unchanged. · Given a recovery request is approved or rejected, when the requester is on any other device, then no outcome is shown and no notification is sent by any channel.
+>
+> **E5 (same batch) puts a self-service floor under the case that leads here most often** — see `FR-ACC-12`.
 
 #### FR-ACC-11 — Password change
 
@@ -261,6 +305,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user requests a phone number change, when they have not re-entered their password, then the change is blocked.
 - Given the new number has not yet completed OTP verification, when checked, then the old number still satisfies the uniqueness constraint.
 - Given the new number completes OTP verification, when the swap finalizes, then the old number is released from the uniqueness constraint atomically with the new number taking effect.
+
+> **Amended 2026-09-16 (batch E5).** Closing a dead end neither requirement could see on its own.
+>
+> **The trap.** This requirement gates a phone-number change behind password re-entry; `FR-ACC-10` routes password reset by OTP **to the phone**. So a logged-in user who has lost their phone *and* forgotten their password can neither change their number (no password) nor reset their password (no phone) — and losing the phone is the single most likely reason anyone needs to change their number. The two requirements are individually sensible and jointly a dead end.
+>
+> **Resolution.** A logged-in user with a **verified email** on file may reset their password through that channel, reusing `FR-ACC-10`'s existing secondary channel, and may then satisfy this requirement's password gate normally. The alternative — gating the phone change on OTP-to-the-new-number plus email confirmation — was considered and rejected as the larger change for the same outcome.
+>
+> Where no verified email exists either, the route is `FR-ACC-10`'s Admin-assisted recovery (batch E8). A self-service path remains strictly better than an Admin ticket, which is why both exist.
+>
+> **Acceptance criterion added:** Given a logged-in user has a verified email and cannot receive SMS, when they request a password reset, then the email channel is available to them without first satisfying the phone gate.
 
 #### FR-ACC-13 — NIC correction
 
@@ -643,6 +697,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given an Employer exits the posting flow before submitting, when they return, then no partially-completed posting is recoverable.
+
+> **Amended 2026-09-16 (batch E9).** This requirement stands unchanged; what it rules out is narrowed to what it was written to rule out.
+>
+> **The tension.** `NFR-USE-01` requires the product to tolerate connectivity loss, while this requirement says a posting *"is completed in one sitting or not submitted"*. So an Employer on a 2G connection who composes a posting and loses signal loses the entire form — inside a product whose own non-functional requirement anticipates exactly that connectivity.
+>
+> **The resolution is a distinction, not a reversal.** This requirement and the out-of-scope table rule out **draft-and-save as a feature**: a server-side draft the user manages, returns to and lists. They do not rule out **local retention of an in-progress form** as connectivity tolerance. Those are different things with different costs — one is a feature with a lifecycle, storage and UI; the other is not losing what someone just typed.
+>
+> **The system shall retain an in-progress posting on the device only**, unsent, until it is submitted or explicitly discarded. **No server state, no draft list, no lifecycle** — so this requirement's decision stands intact, and the acceptance criterion above remains true as written: nothing partially-completed is recoverable *from the system*.
 
 #### FR-POST-16 — Posted-as auto-population
 
@@ -1674,6 +1736,20 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 >
 > Also recorded: promotion **creates** accounts and never edits them — changing an existing staff account's role, deactivating it, or resetting its password have no flows in this build, deliberately; see the staff-account runbook in `decisions.md`.
 
+> **Amended 2026-09-20 (openings O5, O6).** **The paragraph directly above is superseded for two of its three cases.**
+>
+> **O6 — staff accounts had no management surface at all.** `FR-ADM-07` separates staff accounts from consumer accounts, so `FR-DASH-02`'s *"any user account"* is the consumer population and Admins and Moderators never appear there. Yet nothing gave an Admin a way to **see** who holds a staff account. The system shall provide an **Admin-only** staff-account surface listing each staff account's name, role, staff phone, promoting account and promotion date, and its **sign-in state** — *active*, *first sign-in pending*, *inactive*, or *access removed*. Moderators shall not have access to it.
+>
+> **O5 — no staff password-reset path existed anywhere.** Consumer users have `FR-ACC-10`; a staff member who forgot their password had no specified recovery short of direct database access. The system shall allow an Admin to trigger an **admin-assisted reset**: a one-time code is sent to the staff member's own phone, their current password stops working immediately, and they set a new one at next sign-in — the same mechanism as a first sign-in under this requirement's 2026-08-27 amendment, rather than a second one invented for the purpose. No secret is transmitted or known to anyone else, which is the same property that amendment established.
+>
+> **Removal of access** likewise becomes a flow: an Admin may deactivate a staff account, after which it cannot sign in to the dashboard. **Case history and audit entries are retained** — accountability does not depend on the account still being active — and any consumer account belonging to the same person is untouched, per `FR-ADM-07`.
+>
+> **What remains backend-only, and stays in `decisions.md`'s runbook: changing a role, and unlocking early.** Both actions are rarer, neither has a screen, and the honest position is that they are SQL with a hand-written log entry.
+>
+> Every action on this surface is a privileged action under `NFR-SEC-06` and is recorded in the audit log with the acting account.
+>
+> **Acceptance criteria added:** Given an Admin opens the staff surface, when it loads, then every staff account is listed with its role and sign-in state, and no consumer account appears. · Given a Moderator navigates to it, when they do, then access is denied. · Given an Admin resets a staff account's password, when the reset is issued, then that account's current password stops working immediately and a one-time code is sent to its own phone. · Given an Admin removes a staff account's access, when the next dashboard request is made by that account, then it is rejected, and the account's audit entries and case history remain intact.
+
 #### FR-ADM-07 — Separate Admin/Moderator accounts
 
 | Actor(s) | Priority |
@@ -2050,6 +2126,10 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 
 **Acceptance Criteria:** See NFR-OPS-01.
 
+> **Amended 2026-09-20 (batch A29, corrected).** *"Every action"* is now a **closed vocabulary** rather than free text, enumerated as `AuditAction` and `AuditTargetType` in `database-schema.md`. Free strings meant each developer would invent their own verb for the same act, and a log whose vocabulary drifts cannot be filtered or counted at the moment accountability matters.
+>
+> **A closed enumeration is only safe when it is closed over the actions that exist.** A29's original list was derived from the Module 10 moderation surfaces and was seven values short of what the dashboard actually performs: opening a case review, closing a case with no action, resetting a staff password, removing staff access, exporting metrics, and approving or rejecting an account recovery. One value was also renamed, because recording a warning against a **user** and closing a case against a **report** are two acts, not one. **Adding an action to the dashboard therefore means adding a value here** — which is the point of the closure, not a cost of it.
+
 ### 4.2 NFR-PRIV — Privacy & Compliance
 
 #### NFR-PRIV-01 — PDPA-aligned baseline protections
@@ -2165,6 +2245,8 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 **Requirement:** The system shall keep already-loaded listings viewable without a live network connection, even though posting and applying require connectivity.
 
 **Acceptance Criteria:** Given a user has loaded a listing and then loses connectivity, when they view that listing again, then it remains viewable from local cache.
+
+> **Amended 2026-09-16 (batch E9).** Offline tolerance extends to **an in-progress posting form**, retained on the device until submitted or explicitly discarded. This is the counterpart of `FR-POST-15`'s amendment of the same date, and it does not reopen that requirement's decision: there is no server state and no draft list. Recorded here as well so the connectivity requirement and the no-draft requirement cannot be read as contradicting one another again.
 
 #### NFR-USE-02 — Low data usage
 
@@ -2286,6 +2368,8 @@ _The response-time thresholds below follow Nielsen Norman Group's interaction-de
 **Requirement:** The system shall respond to any direct-manipulation interaction with no network round-trip (filter toggles, category selection, opening a menu) within 0.1 seconds, the threshold for a user to feel they're directly manipulating the interface rather than issuing a command to it.
 
 **Acceptance Criteria:** Given a user taps a filter, toggle, or menu that requires no server round-trip, when tapped, then visible feedback appears within 0.1 seconds.
+
+> **Amended 2026-09-16 (batch E10).** This requirement covers direct manipulation; **nothing covered what the interface shows while a network operation is in flight.** The system shall present a loading or skeleton state for any operation that can exceed the perceptible threshold, so that no network wait is indistinguishable from a frozen interface. Absence of that state is what weakens visibility of system status, the first of Nielsen's heuristics, and it is why a loading component existed in the design system with nothing requiring it.
 
 #### NFR-PERF-02 — Common-action response time
 

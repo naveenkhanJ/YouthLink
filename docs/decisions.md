@@ -135,17 +135,49 @@ Found while drafting FR-APPLY-12, whose first draft claimed a guarantee the life
 
 ### Staff accounts — named limitation and runbook
 
-**No demote, deactivate, unlock, reset, or role-change flows exist, and no super-admin outranks another Admin.** Accepted deliberately at founding-team scale, the same treatment `NFR-REL-03` gives concurrent case review. The mitigations are direct database access plus the audit log — with the caveat that **SQL interventions are invisible to the audit log by construction**, which is why each one below must be recorded by hand as a dated line appended to this entry.
+> **Narrowed 2026-09-20 (openings O5, O6).** **Two of these four are no longer runbook items.** Deactivating a staff account and resetting a staff password now have flows on the Admin staff surface (`FR-ADM-06`, amended the same date), and a flow can do what SQL cannot: write an audit entry. The entry below is narrowed rather than deleted, because the limitation it names is still real for what remains, and because the reasoning is the record.
 
-The sanctioned procedures (the only approved shapes — do not improvise variants):
+**No role-change or early-unlock flow exists, and no super-admin outranks another Admin.** Accepted deliberately at founding-team scale, the same treatment `NFR-REL-03` gives concurrent case review. The mitigations are direct database access plus the audit log — with the caveat that **SQL interventions are invisible to the audit log by construction**, which is why each one below must be recorded by hand as a dated line appended to this entry.
 
-- **Deactivate a staff account:** `UPDATE "AdminAccount" SET "deactivatedAt" = now() WHERE phone = '<phone>';` — takes effect on the account's next request once the dashboard auth check lands (batch A33).
-- **Reset a staff password:** generate a bcrypt hash offline, then `UPDATE "AdminAccount" SET "passwordHash" = '<hash>', "passwordChangedAt" = now() WHERE phone = '<phone>';` — the `passwordChangedAt` write is what kills existing sessions.
+**Deactivation and password reset are no longer on this list.** Both are performed from the staff surface by an Admin, and both are recorded as `STAFF_ACCESS_REMOVED` and `STAFF_PASSWORD_RESET` in the audit log. Do **not** perform either by SQL now that a flow exists: doing so would lose the attribution the flow provides, which is the whole reason it was built.
+
+The sanctioned procedures that remain (the only approved shapes — do not improvise variants):
+
 - **Change a role:** `UPDATE "AdminAccount" SET role = 'ADMIN' /* or 'MODERATOR' */ WHERE phone = '<phone>';`
 - **Unlock early:** `UPDATE "AdminAccount" SET "lockedUntil" = NULL, "failedLoginAttempts" = 0 WHERE phone = '<phone>';`
 
 *Manual intervention log (append below, dated, with who ran it and why):*
 
+
+## Amendment batch of 2026-09-16 — the error and offline pass (E1–E10)
+
+Four decisions from that batch that are not requirement text and would otherwise live nowhere.
+
+### The OTP validity window is ours, not Firebase's (E4)
+
+`FR-ACC-01` promised a code *"valid for 5 minutes"* while `FR-ACC-08` recorded that Firebase's window is not configurable by us. **Three options were considered and two rejected.** Deleting the five minutes tells the user nothing. Quoting an *observed* Firebase value couples the product's copy to an undocumented third-party internal that can change without notice — the slower-acting version of simply inventing a number.
+
+**Firebase does not publish a code's validity.** The figures commonly quoted — 30 seconds to 2 minutes — are `timeout_milliseconds` on `PhoneAuthOptions`, the Android **auto-retrieval** window, which is how long the SDK waits to read the SMS automatically. That is not the code's lifetime. The `auth/code-expired` error exists, so codes do expire, but the duration is a server-side detail Firebase does not document.
+
+**So the application enforces its own, stricter window on top.** The client starts a timer when the code is sent; when it lapses the app invalidates the entry itself and offers Resend. *"Codes last 5 minutes"* becomes true because we make it true.
+
+**The risk, stated so it is validated rather than assumed:** if our window is *longer* than Firebase's, the interface shows a live countdown for a code Firebase has already killed. **Ours must sit safely inside theirs**, and since theirs is undocumented that must be established by observation during Sprint work. The design degrades gracefully either way — if Firebase rejects first, the generic *"this code is no longer valid"* response still fires correctly.
+
+### An in-progress posting is kept on the device, and that is not a draft feature (E9)
+
+`NFR-USE-01` requires tolerance of connectivity loss; `FR-POST-15` says a posting is completed in one sitting. Both stand. What `FR-POST-15` rules out is **draft-and-save as a feature** — a server-side draft the user manages, returns to and lists. Keeping what someone just typed on their own device until they submit or discard it is not that: no server state, no draft list, no lifecycle, and nothing for another surface to read. The distinction is the decision; recording it here is what stops the two requirements reading as a contradiction again.
+
+### Account recovery is bound to the requesting device (E8, ruling R1)
+
+The approval of an account recovery grants a password reset **on the device that submitted the request**, identified by an install-scoped identifier the app generates on first run. It is not a hardware identifier and needs no permission.
+
+**This is the security mechanism, not a convenience.** Without it an approved recovery is a bearer grant: anyone who reached the screen could set the password on an account an Admin had just judged recoverable. It is also the only delivery channel available — the path is defined by phone and email both being unreachable — and it is what lets the flow tell the requester an outcome without confirming to an unauthenticated stranger that an account with those details exists.
+
+### Recovery submissions are purged after 90 days (E8, ruling R2)
+
+A recovery request stores the NIC, legal name and birthdate the requester submitted, because the Admin adjudicates that claim and a **partial** match is the case that matters — a single "matched/did not match" flag cannot express it. The cost is that identity data about a person who may hold no account sits in the table. **Rejected and completed requests are therefore purged of those details after 90 days**, which bounds the exposure without removing what the Admin needs while the request is live.
+
+---
 
 ## Code organisation
 
