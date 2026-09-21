@@ -22,77 +22,82 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id                           String        @id @default(uuid())
+  id                           String         @id @default(uuid())
   role                         ActorRole
   phone                        String
   phoneVerifiedAt              DateTime?
   passwordHash                 String
-  failedLoginAttempts          Int           @default(0)
+  // Batch A5 (2026-08-27). Any JWT whose `iat` predates this is rejected by requireAuth, so a
+  // password reset or change signs out every device (FR-ACC-07, NFR-SEC-06).
+  passwordChangedAt            DateTime?
+  failedLoginAttempts          Int            @default(0)
   lockedUntil                  DateTime?
   email                        String?
   emailVerifiedAt              DateTime?
   nicEncrypted                 String
-  nicLast4                     String        @db.VarChar(4)
-  legalName                    String        @db.VarChar(100)
-  birthdate                    DateTime      @db.Date
+  nicLast4                     String         @db.VarChar(4)
+  legalName                    String         @db.VarChar(100)
+  birthdate                    DateTime       @db.Date
   postingAsType                PostingAsType?
-  businessName                 String?       @db.VarChar(100)
-  businessBio                  String?       @db.VarChar(300)
-  bio                          String?       @db.VarChar(300)
+  businessName                 String?        @db.VarChar(100)
+  businessBio                  String?        @db.VarChar(300)
+  bio                          String?        @db.VarChar(300)
   bioPromptShownAt             DateTime?
   endorsementSuggestionShownAt DateTime?
-  notifyUrgentOptIn            Boolean       @default(false)
-  notifyNewGigOptOut           Boolean       @default(false)
+  notifyUrgentOptIn            Boolean        @default(false)
+  notifyNewGigOptOut           Boolean        @default(false)
   tosAcceptedAt                DateTime?
-  accountStatus                AccountStatus @default(PENDING_SIGNUP)
+  accountStatus                AccountStatus  @default(PENDING_SIGNUP)
   signupExpiresAt              DateTime?
-  endorsementCode              String?       @unique @db.VarChar(6)
+  endorsementCode              String?        @unique @db.VarChar(6)
   firstRatingReceivedAt        DateTime?
   autoHiddenAt                 DateTime?
   suspendedAt                  DateTime?
   suspensionReason             String?
   deletedAt                    DateTime?
-  createdAt                    DateTime      @default(now())
-  updatedAt                    DateTime      @updatedAt
+  createdAt                    DateTime       @default(now())
+  updatedAt                    DateTime       @updatedAt
 
-  gigPostings            GigPosting[]
-  applications           Application[]
-  engagementsAsWorker    Engagement[]                  @relation("EngagementWorker")
-  engagementsAsEmployer  Engagement[]                  @relation("EngagementEmployer")
-  engagementsCancelled   Engagement[]                  @relation("EngagementCancelledBy")
-  engagementsEnded       Engagement[]                  @relation("EngagementEndedBy")
-  cancellationRequests   CancellationRequest[]
-  ratingsGiven           Rating[]                      @relation("RatingRater")
-  ratingsReceived        Rating[]                      @relation("RatingRatee")
-  completionRecords      CompletionRecord[]
-  endorsementsGiven      Endorsement[]                 @relation("EndorsementEndorser")
-  endorsementsReceived   Endorsement[]                 @relation("EndorsementWorker")
-  reportsFiled           Report[]                      @relation("ReportReporter")
-  reportsAgainst         Report[]                      @relation("ReportTargetUser")
-  disputesRaised         DisputeCase[]                 @relation("DisputeRaisedBy")
-  disputesResponded      DisputeCase[]                 @relation("DisputeRespondent")
-  disputeEvidence        DisputeEvidence[]
-  clarificationsAsked    DisputeClarificationRequest[]
-  warnings               Warning[]
-  savedGigs              SavedGig[]
-  notifications          Notification[]
-  otpCodes               OtpCode[]
-  emailTokens            EmailVerificationToken[]
+  gigPostings             GigPosting[]
+  applications            Application[]
+  engagementsAsWorker     Engagement[]                  @relation("EngagementWorker")
+  engagementsAsEmployer   Engagement[]                  @relation("EngagementEmployer")
+  engagementsCancelled    Engagement[]                  @relation("EngagementCancelledBy")
+  engagementsEnded        Engagement[]                  @relation("EngagementEndedBy")
+  cancellationRequests    CancellationRequest[]
+  ratingsGiven            Rating[]                      @relation("RatingRater")
+  ratingsReceived         Rating[]                      @relation("RatingRatee")
+  completionRecords       CompletionRecord[]
+  endorsementsGiven       Endorsement[]                 @relation("EndorsementEndorser")
+  endorsementsReceived    Endorsement[]                 @relation("EndorsementWorker")
+  reportsFiled            Report[]                      @relation("ReportReporter")
+  reportsAgainst          Report[]                      @relation("ReportTargetUser")
+  disputesRaised          DisputeCase[]                 @relation("DisputeRaisedBy")
+  disputesResponded       DisputeCase[]                 @relation("DisputeRespondent")
+  disputeEvidence         DisputeEvidence[]
+  clarificationsAsked     DisputeClarificationRequest[]
+  warnings                Warning[]
+  savedGigs               SavedGig[]
+  notifications           Notification[]
+  otpCodes                OtpCode[]
+  emailTokens             EmailVerificationToken[]
+  ratingRemovalRequests   RatingRemovalRequest[]
+  accountRecoveryRequests AccountRecoveryRequest[]
 
   @@index([accountStatus])
   @@index([deletedAt])
 }
 
 model OtpCode {
-  id             String        @id @default(uuid())
+  id             String     @id @default(uuid())
   phone          String
   userId         String?
   adminAccountId String?
-  code           String        @db.VarChar(6)
+  code           String     @db.VarChar(6)
   purpose        OtpPurpose
   expiresAt      DateTime
   consumedAt     DateTime?
-  createdAt      DateTime      @default(now())
+  createdAt      DateTime   @default(now())
 
   user         User?         @relation(fields: [userId], references: [id])
   adminAccount AdminAccount? @relation(fields: [adminAccountId], references: [id])
@@ -102,14 +107,14 @@ model OtpCode {
 }
 
 model EmailVerificationToken {
-  id         String             @id @default(uuid())
+  id         String            @id @default(uuid())
   userId     String
   email      String
-  token      String             @unique
+  token      String            @unique
   purpose    EmailTokenPurpose
   expiresAt  DateTime
   consumedAt DateTime?
-  createdAt  DateTime           @default(now())
+  createdAt  DateTime          @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
@@ -119,24 +124,84 @@ model EmailVerificationToken {
 model AdminAccount {
   id                       String    @id @default(uuid())
   phone                    String    @unique
-  passwordHash             String
+  // NULLABLE since 2026-09-20 (O5/A34). A promoted account has no password until its holder sets one
+  // at first sign-in — FR-ADM-06's amendment makes that login OTP-only, so "no password yet" is a
+  // real state and a placeholder hash would be a lie. FR-ADM-06's admin-assisted reset returns an
+  // account to that state: nulling the hash is what stops the current password working immediately.
+  // The login path must reject null explicitly rather than let bcrypt compare against it.
+  passwordHash             String?
   failedLoginAttempts      Int       @default(0)
   lockedUntil              DateTime?
+  // Batch A33 (2026-08-27). Staff sessions terminable on the same `iat` rule as User, re-checked
+  // per dashboard request. `deactivatedAt` is set through the decisions.md runbook — no UI flow
+  // exists for it, deliberately, and dashboard auth rejects on the next request.
+  passwordChangedAt        DateTime?
+  deactivatedAt            DateTime?
+  // O6 (2026-09-20). The staff surface's Status column is DERIVED, not stored — it is the sign-in
+  // state of the account, separate from its role. Its four values resolve as:
+  // deactivatedAt set -> "Access removed" · lastSignInAt null -> "First sign-in pending" ·
+  // long gap -> "Inactive — N days" · otherwise "Active". Nothing else in the schema records when a
+  // staff account last signed in, and the audit log cannot stand in: it records actions on things,
+  // not sessions, so it would conflate "has not signed in" with "has not done anything".
+  lastSignInAt             DateTime?
   role                     AdminRole
   promotedByAdminAccountId String?
   createdAt                DateTime  @default(now())
 
-  promotedBy   AdminAccount?  @relation("AdminPromotion", fields: [promotedByAdminAccountId], references: [id])
-  promoted     AdminAccount[] @relation("AdminPromotion")
+  promotedBy AdminAccount?  @relation("AdminPromotion", fields: [promotedByAdminAccountId], references: [id])
+  promoted   AdminAccount[] @relation("AdminPromotion")
 
-  otpCodes            OtpCode[]
-  ratingsRemoved      Rating[]
-  disputesModerated   DisputeCase[]                 @relation("DisputeModerator")
-  disputesRuled       DisputeCase[]                 @relation("DisputeAdmin")
-  clarificationsMade  DisputeClarificationRequest[]
-  warningsIssued      Warning[]
-  auditLog            AuditLogEntry[]
-  notifications       Notification[]
+  otpCodes           OtpCode[]
+  ratingsRemoved     Rating[]
+  disputesModerated  DisputeCase[]                 @relation("DisputeModerator")
+  disputesRuled      DisputeCase[]                 @relation("DisputeAdmin")
+  clarificationsMade DisputeClarificationRequest[]
+  warningsIssued     Warning[]
+  auditLog           AuditLogEntry[]
+  notifications      Notification[]
+  recoveriesReviewed AccountRecoveryRequest[]
+}
+
+// E8 (signed off 2026-09-16). FR-ACC-10 says that with neither phone nor verified email reachable
+// "no automated path succeeds" — which was a dead end, not a policy: the account holds ratings,
+// completion history and endorsements, which are the product's entire value to a job-seeker. This is
+// the identity-verified, Admin-assisted route back.
+//
+// NOT a Report and NOT a DisputeCase. FR-ACC-10's amendment reserves this review to an Admin, never a
+// Moderator, and NFR-OPS-01 already denies Moderators the audit log entirely.
+//
+// THERE IS NO NOTIFICATION, and that is a finding rather than an omission. FR-ACC-10 requires the
+// outcome to reach the requesting device and no other channel. A Notification needs a userId, and
+// the requester is unauthenticated by definition; both transports
+// are unreachable by the definition of this path; and a push would confirm to whoever filled in the
+// form that such an account exists — the enumeration leak FR-ACC-10 says must not happen.
+model AccountRecoveryRequest {
+  id                       String                @id @default(uuid())
+  // The account the submitted details resolve to. NULLABLE deliberately: a submission matching no
+  // account is still a submission, and saying so to the requester is the leak named above.
+  userId                   String?
+  // WHAT WAS SUBMITTED, retained rather than reduced to a verdict — the Admin adjudicates
+  // the claim, and the case that matters in practice is the PARTIAL match, which one flag cannot
+  // express. NIC uses the same deterministic scheme as User.nicEncrypted (account/nicCrypto.js);
+  // that determinism is what makes the match possible. Retention is bounded by the requirement.
+  nicSubmittedEncrypted    String
+  legalNameSubmitted       String                @db.VarChar(100)
+  birthdateSubmitted       DateTime              @db.Date
+  // THE DEVICE BINDING. An install-scoped identifier the app generates on first run — not a hardware
+  // id, needing no permission. Without it an approved recovery is a bearer grant: anyone reaching the
+  // screen could set the password. This is the security mechanism of the flow.
+  deviceId                 String
+  status                   AccountRecoveryStatus @default(AWAITING_REVIEW)
+  createdAt                DateTime              @default(now())
+  reviewedByAdminAccountId String?
+  reviewedAt               DateTime?
+  // The approved grant, consumed once, when the requester sets a new password.
+  completedAt              DateTime?
+
+  user       User?         @relation(fields: [userId], references: [id])
+  reviewedBy AdminAccount? @relation(fields: [reviewedByAdminAccountId], references: [id])
+
+  @@index([status, createdAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -237,36 +302,43 @@ model Application {
 }
 
 model Engagement {
-  id                    String             @id @default(uuid())
-  applicationId         String             @unique
-  gigPostingId          String
-  workerId              String
-  employerId            String
-  status                EngagementStatus   @default(ACTIVE)
-  contactRevealedAt     DateTime           @default(now())
-  arrivalCode           String?            @db.VarChar(6)
-  arrivalStatus         CheckpointStatus   @default(PENDING)
-  arrivalConfirmedAt    DateTime?
-  completionCode        String?            @db.VarChar(6)
-  completionStatus      CheckpointStatus   @default(PENDING)
-  completionConfirmedAt DateTime?
-  paymentCode           String?            @db.VarChar(6)
-  paymentStatus         CheckpointStatus?
-  paymentConfirmedAt    DateTime?
-  startedAt             DateTime?
-  ratingOpenedAt        DateTime?
-  ratingEnforced        Boolean            @default(true)
-  cancelledAt           DateTime?
-  cancelledByUserId     String?
-  cancellationReason    CancellationReason?
-  isLateCancellation    Boolean?
-  endedAt               DateTime?
-  endedByUserId         String?
-  endIssueFlag          Boolean?
-  stalledPromptSentAt   DateTime?
-  stalledFlaggedAt      DateTime?
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+  id                       String              @id @default(uuid())
+  applicationId            String              @unique
+  gigPostingId             String
+  workerId                 String
+  employerId               String
+  status                   EngagementStatus    @default(ACTIVE)
+  contactRevealedAt        DateTime            @default(now())
+  arrivalCode              String?             @db.VarChar(6)
+  arrivalStatus            CheckpointStatus    @default(PENDING)
+  arrivalConfirmedAt       DateTime?
+  completionCode           String?             @db.VarChar(6)
+  completionStatus         CheckpointStatus    @default(PENDING)
+  completionConfirmedAt    DateTime?
+  paymentCode              String?             @db.VarChar(6)
+  paymentStatus            CheckpointStatus?
+  paymentConfirmedAt       DateTime?
+  // Batch A17 (2026-08-27), decision D3: wrong checkpoint-code entries are RECORDED, never
+  // rate-limited. A worker mistyping at arrival must not brick the checkpoint at the kerb, so
+  // there is no lockout; the counters make repeated guessing visible evidence instead, rendered
+  // in FR-MOD-01's code-exchange history where Moderators already look (FR-ENG-01).
+  arrivalFailedAttempts    Int                 @default(0)
+  completionFailedAttempts Int                 @default(0)
+  paymentFailedAttempts    Int                 @default(0)
+  startedAt                DateTime?
+  ratingOpenedAt           DateTime?
+  ratingEnforced           Boolean             @default(true)
+  cancelledAt              DateTime?
+  cancelledByUserId        String?
+  cancellationReason       CancellationReason?
+  isLateCancellation       Boolean?
+  endedAt                  DateTime?
+  endedByUserId            String?
+  endIssueFlag             Boolean?
+  stalledPromptSentAt      DateTime?
+  stalledFlaggedAt         DateTime?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
 
   application            Application             @relation(fields: [applicationId], references: [id])
   gigPosting             GigPosting              @relation(fields: [gigPostingId], references: [id])
@@ -315,18 +387,41 @@ model Rating {
   score                   Int
   submittedAt             DateTime  @default(now())
   revealedAt              DateTime?
-  publicResponse          String?
+  // Batch A20: the only user-authored text field with no cap. 300 matches bio and note.
+  publicResponse          String?   @db.VarChar(300)
   removedAt               DateTime?
   removedByAdminAccountId String?
-  removalReason           String?
+  removalReason           String?   @db.VarChar(300)
 
-  engagement Engagement    @relation(fields: [engagementId], references: [id])
-  rater      User          @relation("RatingRater", fields: [raterId], references: [id])
-  ratee      User          @relation("RatingRatee", fields: [rateeId], references: [id])
-  removedBy  AdminAccount? @relation(fields: [removedByAdminAccountId], references: [id])
+  engagement     Engagement            @relation(fields: [engagementId], references: [id])
+  rater          User                  @relation("RatingRater", fields: [raterId], references: [id])
+  ratee          User                  @relation("RatingRatee", fields: [rateeId], references: [id])
+  removedBy      AdminAccount?         @relation(fields: [removedByAdminAccountId], references: [id])
+  removalRequest RatingRemovalRequest?
 
   @@unique([engagementId, raterId])
   @@index([rateeId, revealedAt])
+}
+
+// Batch A21 (2026-08-27), decision D8. `Rating` already carries the RULING — removedAt,
+// removedByAdminAccountId, removalReason — but nothing carried the REQUEST. `Report` cannot
+// target a Rating, and reusing it would be wrong even if it could: FR-RATE-06 is explicit that a
+// rating-fairness path never enters the Moderator triage queue and reaches Admin directly.
+//
+// `ratingId` is unique because docs/database-schema.md's ER diagram declares this relationship
+// `Rating ||--o| RatingRemovalRequest`, and both other `||--o|` relations in this schema
+// (Application->Engagement, Report->DisputeCase) are enforced with a unique FK. One request per
+// rating, ever — a ruled request is not re-openable. See the drafting note for the consequence.
+model RatingRemovalRequest {
+  id                String    @id @default(uuid())
+  ratingId          String    @unique
+  requestedByUserId String
+  grounds           String    @db.VarChar(300)
+  createdAt         DateTime  @default(now())
+  ruledAt           DateTime?
+
+  rating      Rating @relation(fields: [ratingId], references: [id])
+  requestedBy User   @relation(fields: [requestedByUserId], references: [id])
 }
 
 model CompletionRecord {
@@ -381,7 +476,7 @@ model Report {
   targetGigPostingId String?
   targetEngagementId String?
   reason             ReportReason
-  detail             String?
+  detail             String?      @db.VarChar(1000)
   status             ReportStatus @default(QUEUED)
   createdAt          DateTime     @default(now())
 
@@ -407,16 +502,16 @@ model DisputeCase {
   moderatorAccountId String?
   adminAccountId     String?
   resolution         DisputeResolution?
-  resolutionNotes    String?
+  resolutionNotes    String?            @db.VarChar(1000)
   resolvedAt         DateTime?
   createdAt          DateTime           @default(now())
 
-  engagement     Engagement?   @relation(fields: [engagementId], references: [id])
-  report         Report?       @relation(fields: [reportId], references: [id])
-  raisedBy       User?         @relation("DisputeRaisedBy", fields: [raisedByUserId], references: [id])
-  respondent     User?         @relation("DisputeRespondent", fields: [respondentUserId], references: [id])
-  moderator      AdminAccount? @relation("DisputeModerator", fields: [moderatorAccountId], references: [id])
-  admin          AdminAccount? @relation("DisputeAdmin", fields: [adminAccountId], references: [id])
+  engagement Engagement?   @relation(fields: [engagementId], references: [id])
+  report     Report?       @relation(fields: [reportId], references: [id])
+  raisedBy   User?         @relation("DisputeRaisedBy", fields: [raisedByUserId], references: [id])
+  respondent User?         @relation("DisputeRespondent", fields: [respondentUserId], references: [id])
+  moderator  AdminAccount? @relation("DisputeModerator", fields: [moderatorAccountId], references: [id])
+  admin      AdminAccount? @relation("DisputeAdmin", fields: [adminAccountId], references: [id])
 
   evidence       DisputeEvidence[]
   clarifications DisputeClarificationRequest[]
@@ -440,15 +535,15 @@ model DisputeEvidence {
 }
 
 model DisputeClarificationRequest {
-  id                       String    @id @default(uuid())
-  disputeCaseId            String
+  id                        String    @id @default(uuid())
+  disputeCaseId             String
   requestedByAdminAccountId String
-  requestedFromUserId      String
-  question                 String
-  deadline                 DateTime
-  response                 String?
-  respondedAt              DateTime?
-  createdAt                DateTime  @default(now())
+  requestedFromUserId       String
+  question                  String    @db.VarChar(300)
+  deadline                  DateTime
+  response                  String?   @db.VarChar(1000)
+  respondedAt               DateTime?
+  createdAt                 DateTime  @default(now())
 
   disputeCase   DisputeCase  @relation(fields: [disputeCaseId], references: [id])
   requestedBy   AdminAccount @relation(fields: [requestedByAdminAccountId], references: [id])
@@ -462,7 +557,7 @@ model Warning {
   userId                 String
   disputeCaseId          String?
   issuedByAdminAccountId String
-  reason                 String
+  reason                 String   @db.VarChar(300)
   issuedAt               DateTime @default(now())
 
   user        User         @relation(fields: [userId], references: [id])
@@ -477,13 +572,16 @@ model Warning {
 // ---------------------------------------------------------------------------
 
 model AuditLogEntry {
-  id             String   @id @default(uuid())
+  id             String          @id @default(uuid())
   adminAccountId String
-  action         String
-  targetType     String
+  // Batch A29 (2026-08-27), decision D7. Free strings meant every developer would invent their
+  // own verbs for the same act, and an audit log whose vocabulary drifts cannot be filtered or
+  // counted. One value per acting surface in Module 10 (FR-ADM-06, NFR-SEC-05).
+  action         AuditAction
+  targetType     AuditTargetType
   targetId       String?
   details        Json?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime        @default(now())
 
   adminAccount AdminAccount @relation(fields: [adminAccountId], references: [id])
 
@@ -539,6 +637,16 @@ enum AccountStatus {
 enum AdminRole {
   ADMIN
   MODERATOR
+}
+
+// A queued request awaits Admin review, and the review offers exactly two actions, approve and reject.
+// Three values and no more — there is no Moderator stage for this to be under review for. The
+// worker-facing app presents only the approved outcome; REJECTED still has to exist in data, and is
+// a recorded scope decision rather than an omission.
+enum AccountRecoveryStatus {
+  AWAITING_REVIEW
+  APPROVED
+  REJECTED
 }
 
 enum OtpPurpose {
@@ -695,6 +803,51 @@ enum DisputeResolution {
   NO_SHOW_CONFIRMED
 }
 
+// Batch A29 (2026-08-27), decision D7 — CORRECTED 2026-09-20 against the screen it exists for.
+// Free strings meant every developer would invent their own verb for the same act, and an audit log
+// whose vocabulary drifts cannot be filtered or counted. But a CLOSED enum is only safe when it is
+// closed over the vocabulary that actually exists, and D7's ten values were derived from "one per
+// Module 10 acting surface". The audit log is a MODULE 11 surface that also receives staff
+// administration and metrics actions, and D7 covered seven of the fourteen the dashboard performs.
+// The six marked below were missing outright, and CASE_WARNING_CLOSED was renamed — recording a
+// warning against a USER and closing a case against a REPORT are two acts, not one.
+enum AuditAction {
+  // Case handling (Module 10)
+  CASE_REVIEW_OPENED // + 2026-09-20 · "Opened case review"
+  CLARIFICATION_REQUESTED
+  WARNING_RECORDED // renamed from CASE_WARNING_CLOSED, 2026-09-20
+  CASE_CLOSED_NO_ACTION // + 2026-09-20 · "Closed case — no action"
+  CASE_ESCALATED
+  DISPUTE_RULED
+  // Content and accounts
+  CONTENT_RESTORED
+  CONTENT_ESCALATED
+  POSTING_REMOVED
+  RATING_REMOVED
+  ACCOUNT_SUSPENDED
+  // Staff administration (Module 11) — USER_PROMOTED is FR-ADM-06; the two below are its 2026-09-20
+  // amendment (openings O5/O6), and both are logged like every other privileged action.
+  USER_PROMOTED
+  STAFF_PASSWORD_RESET // + 2026-09-20 · "Reset staff password"
+  STAFF_ACCESS_REMOVED // + 2026-09-20 · "Removed staff access"
+  // Platform
+  METRICS_EXPORTED // + 2026-09-20 · metrics export (FR-DASH-04, NFR-OPS-02)
+  ACCOUNT_RECOVERY_APPROVED // + 2026-09-20 · account recovery approved (FR-ACC-10)
+  ACCOUNT_RECOVERY_REJECTED // + 2026-09-20 · an unlogged staff refusal on
+  //   someone's account is precisely what NFR-SEC-06 forbids
+}
+
+enum AuditTargetType {
+  USER
+  POSTING
+  RATING
+  DISPUTE_CASE
+  REPORT
+  ADMIN_ACCOUNT
+  PLATFORM_METRICS // + 2026-09-20 · the target of a metrics export, which none of the
+  //   six above covers
+}
+
 enum NotificationType {
   URGENT_GIG
   NEW_GIG
@@ -712,4 +865,15 @@ enum NotificationType {
   ENDORSEMENT_RECEIVED
   ENDORSEMENT_PAYOFF
   NO_APPLICANT_NUDGE
+  // Added 2026-08-27, batches A18/A23/A25. CANCELLATION_RESOLVED closes the loop a pending
+  // CANCELLATION_REQUEST opens; the two rating values carry FR-NOTIF-11; DISPUTE_OPENED and
+  // DISPUTE_RESOLVED carry FR-NOTIF-12, without which a respondent's 48-hour window ran on a
+  // case they were never told existed; FLAGGED_CONTENT_OUTCOME tells a content owner what came
+  // of the auto-hide, the threshold-silent ruling's outcome notice.
+  CANCELLATION_RESOLVED
+  RATING_WINDOW_OPEN
+  RATING_REVEALED
+  DISPUTE_OPENED
+  DISPUTE_RESOLVED
+  FLAGGED_CONTENT_OUTCOME
 }
