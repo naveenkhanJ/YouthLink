@@ -13,23 +13,35 @@ than describing them, and that file is what the names mean. The two together are
 
 ## The modules
 
-| Module | Screens | File |
-| --- | --- | --- |
-| **M0** First run | 4 | [`M0-first-run.md`](M0-first-run.md) |
-| **M1** Account | 92 | [`M1-account.md`](M1-account.md) |
-| **M2** Posting | 45 | [`M2-posting.md`](M2-posting.md) |
-| **M3** Discovery | 38 | [`M3-discovery.md`](M3-discovery.md) |
-| **M4** Applying and selection | 60 | [`M4-applying.md`](M4-applying.md) |
-| **M5** Engagement lifecycle | 66 | [`M5-engagement.md`](M5-engagement.md) |
-| **M6** Ratings | 13 | [`M6-ratings.md`](M6-ratings.md) |
-| **M7** Profile | 2 | [`M7-profile.md`](M7-profile.md) |
-| **M8** Endorsement | 20 | [`M8-endorsement.md`](M8-endorsement.md) |
-| **M9** Disputes | 13 | [`M9-disputes.md`](M9-disputes.md) |
-| **M10** Moderation | 35 | [`M10-moderation.md`](M10-moderation.md) |
-| **M11** Staff dashboard | 68 | [`M11-dashboard.md`](M11-dashboard.md) |
-| **MHF** Help and FAQ | 5 | [`MHF-help.md`](MHF-help.md) |
-| **MNAV** Navigation shells | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
-| **Total** | **464** | |
+| Module | Screens | Frames on its page | File |
+| --- | --- | --- | --- |
+| **M0** First run | 4 | 4 | [`M0-first-run.md`](M0-first-run.md) |
+| **M1** Account | 92 | **93** | [`M1-account.md`](M1-account.md) |
+| **M2** Posting | 45 | 45 | [`M2-posting.md`](M2-posting.md) |
+| **M3** Discovery | 38 | 38 | [`M3-discovery.md`](M3-discovery.md) |
+| **M4** Applying and selection | 60 | 60 | [`M4-applying.md`](M4-applying.md) |
+| **M5** Engagement lifecycle | 66 | 66 | [`M5-engagement.md`](M5-engagement.md) |
+| **M6** Ratings | 13 | 13 | [`M6-ratings.md`](M6-ratings.md) |
+| **M7** Profile | 2 | 2 | [`M7-profile.md`](M7-profile.md) |
+| **M8** Endorsement | 20 | **19** | [`M8-endorsement.md`](M8-endorsement.md) |
+| **M9** Disputes | 13 | 13 | [`M9-disputes.md`](M9-disputes.md) |
+| **M10** Moderation | 41 | **39** | [`M10-moderation.md`](M10-moderation.md) |
+| **M11** Staff dashboard | 68 | **70** | [`M11-dashboard.md`](M11-dashboard.md) |
+| **MHF** Help and FAQ | 5 | 5 | [`MHF-help.md`](MHF-help.md) |
+| **MNAV** Navigation shells | 3 | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
+| **Total** | **470** | **470** | |
+
+**The two columns differ for four modules because a Figma prototype link must target a frame on the same
+page**, so five screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
+counted under the module its **number** belongs to, and documented in the file for the **page** it sits on.
+
+| Screen | Numbered | Drawn on | Documented in | Why it sits there |
+| --- | --- | --- | --- | --- |
+| `8.6` | M8 | M1 Account | [`M1-account.md`](M1-account.md) | opens over the M1 account screen it belongs to |
+| `10.7` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | the removal dialog over `11.2ad` |
+| `10.6n` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | the suspend dialog reached from `11.3` |
+| `10.6nb` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | its outcome, reached from `10.6n` |
+| `11.3g` | M11 | M10 Moderation | [`M10-moderation.md`](M10-moderation.md) | the base `10.6` is drawn over |
 
 ## How to read a screen
 
@@ -103,8 +115,8 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ACC-17` | Must | Account deletion | [M1](M1-account.md) `1.17`, `1.17b`, `1.17be`, `1.17d`, `1.17p` · [M2](M2-posting.md) `2.10w`, `2.11w` · [M4](M4-applying.md) `4.3w`, `4.4`, `4.5d`, `4.9` · [M5](M5-engagement.md) `5.1a`, `5.1r`, `5.1x`, `5.2x`, `5.8`, `5.9b`, `5.9r` |
 | `FR-ACC-18` | Must | Unified Settings screen | [M1](M1-account.md) `1.10` |
 | `FR-ACC-19` | Must | Terms of Service and Privacy Policy acceptance | [M1](M1-account.md) `1.20` |
-| `FR-ADM-01` | Must | Final dispute ruling | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1r`, `10.2`, `10.2b`, `10.3`, `10.3c`, `10.4`, `10.4e`, `10.5`, `10.5e`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b` · [M6](M6-ratings.md) `6.1f` · [M9](M9-disputes.md) `9.2`, `9.2f` |
-| `FR-ADM-02` | Must | Payment-dispute ruling scope | [M10](M10-moderation.md) `10.5` · [M9](M9-disputes.md) `9.2` |
+| `FR-ADM-01` | Must | Final dispute ruling | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1r`, `10.2`, `10.2b`, `10.3`, `10.3c`, `10.4`, `10.4e`, `10.5`, `10.5e`, `10.5p`, `10.5pe`, `10.5pr`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b` · [M6](M6-ratings.md) `6.1f` · [M9](M9-disputes.md) `9.2`, `9.2f` |
+| `FR-ADM-02` | Must | Payment-dispute ruling scope | [M10](M10-moderation.md) `10.5`, `10.5p`, `10.5pe`, `10.5pr` · [M9](M9-disputes.md) `9.2` |
 | `FR-ADM-03` | Must | Account suspension | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18`, `1.6bnr3`, `1.6sus`, `1.7sus` · [M10](M10-moderation.md) `10.1`, `10.2`, `10.3`, `10.4`, `10.5`, `10.6`, `10.7`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
 | `FR-ADM-05` | Must | Posting removal | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1r`, `10.2`, `10.3`, `10.4`, `10.5`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
 | `FR-ADM-06` | Must | Admin/Moderator account bootstrapping | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.3`, `11.7` |
@@ -173,8 +185,8 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `NFR-LOC-03` | Must | Dashboard remains English-only permanently | [M11](M11-dashboard.md) `11.3` |
 | `FR-MOD-01` | Must | Dispute case triage | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.2`, `10.3`, `10.4`, `10.5`, `10.6`, `10.7`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
 | `FR-MOD-02` | Must | Warning threshold and auto-escalation | [M1](M1-account.md) `1.1`, `1.12b`, `1.17`, `1.18`, `1.6`, `1.8`, `1.9` · [M10](M10-moderation.md) `10.2b`, `10.3`, `10.3c`, `10.5`, `10.5e`, `10.8b` · [M2](M2-posting.md) `2.9e` · [M3](M3-discovery.md) `3.1`, `3.4`, `3.5`, `3.7` · [M4](M4-applying.md) `4.5b` · [M5](M5-engagement.md) `5.1`, `5.13b`, `5.4b`, `5.5b`, `5.9b` · [M6](M6-ratings.md) `6.1f`, `6.5b` · [M7](M7-profile.md) `7.1d` · [M8](M8-endorsement.md) `8.1b`, `8.3d`, `8.4e`, `8.5` · [M9](M9-disputes.md) `9.1d`, `9.2f`, `9.3e`, `9.4` |
-| `FR-MOD-03` | Should | Mid-review clarification request | [M10](M10-moderation.md) `10.2` · [M2](M2-posting.md) `2.10`, `2.11` · [M9](M9-disputes.md) `9.2`, `9.4` |
-| `FR-MOD-04` | Must | Flagged content review | [M10](M10-moderation.md) `10.4` |
+| `FR-MOD-03` | Should | Mid-review clarification request | [M10](M10-moderation.md) `10.1pca`, `10.1pce`, `10.2` · [M2](M2-posting.md) `2.10`, `2.11` · [M9](M9-disputes.md) `9.2`, `9.4` |
+| `FR-MOD-04` | Must | Flagged content review | [M10](M10-moderation.md) `10.4`, `10.4e`, `10.4r`, `10.4rb` |
 | `FR-NOTIF-01` | Must | Urgent gig push notifications | [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` · [M4](M4-applying.md) `4.1` |
 | `FR-NOTIF-02` | Must | Non-urgent gig notifications | [M2](M2-posting.md) `2.9` · [M3](M3-discovery.md) `3.10` |
 | `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11` |
