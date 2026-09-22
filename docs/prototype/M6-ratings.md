@@ -37,7 +37,7 @@ when reproducing a screen for review; replace them with real data in the product
 
 ### `6.1` — Rate this engagement
 
-**Reached from** `3.10`, `3.10pd`, `3.10x`, `5.2b`, `5.5b`, `5.13b`  ·  **Leads to** `6.2`  ·
+**Reached from** `3.10`, `3.10r`, `5.2b`, `5.5b`, `5.13b`  ·  **Leads to** `6.2`  ·
 **Exits** back → `5.5b` / `5.13b`
 
 ```
@@ -172,7 +172,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 Both ratings, side by side, each in its own card. **Neither card is a component** — they are plain frames,
 because the two differ only in content and a component would add a variant axis that carries nothing.
 
-**Reached from** `3.10`, `3.10pd`, `3.10x`, `5.2d`  ·  **Leads to** `6.4`  ·  **Exits** back → `5.2d`
+**Reached from** `3.10`, `5.2d`  ·  **Leads to** `6.4`  ·  **Exits** back → `5.2d`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle

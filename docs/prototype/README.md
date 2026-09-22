@@ -18,7 +18,7 @@ than describing them, and that file is what the names mean. The two together are
 | **M0** First run | 4 | 4 | [`M0-first-run.md`](M0-first-run.md) |
 | **M1** Account | 92 | **93** | [`M1-account.md`](M1-account.md) |
 | **M2** Posting | 45 | 45 | [`M2-posting.md`](M2-posting.md) |
-| **M3** Discovery | 38 | 38 | [`M3-discovery.md`](M3-discovery.md) |
+| **M3** Discovery | 40 | 40 | [`M3-discovery.md`](M3-discovery.md) |
 | **M4** Applying and selection | 60 | 60 | [`M4-applying.md`](M4-applying.md) |
 | **M5** Engagement lifecycle | 66 | 66 | [`M5-engagement.md`](M5-engagement.md) |
 | **M6** Ratings | 13 | 13 | [`M6-ratings.md`](M6-ratings.md) |
@@ -29,7 +29,7 @@ than describing them, and that file is what the names mean. The two together are
 | **M11** Staff dashboard | 68 | **70** | [`M11-dashboard.md`](M11-dashboard.md) |
 | **MHF** Help and FAQ | 5 | 5 | [`MHF-help.md`](MHF-help.md) |
 | **MNAV** Navigation shells | 3 | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
-| **Total** | **470** | **470** | |
+| **Total** | **472** | **472** | |
 
 **The two columns differ for four modules because a Figma prototype link must target a frame on the same
 page**, so five screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
@@ -191,14 +191,14 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-NOTIF-02` | Must | Non-urgent gig notifications | [M2](M2-posting.md) `2.9` · [M3](M3-discovery.md) `3.10` |
 | `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11` |
 | `FR-NOTIF-04` | Must | Application-related notifications | [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.7`, `4.9` |
-| `FR-NOTIF-05` | Must | Engagement-related notifications | [M3](M3-discovery.md) `3.10` · [M5](M5-engagement.md) `5.11`, `5.13`, `5.14`, `5.9` |
+| `FR-NOTIF-05` | Must | Engagement-related notifications | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` · [M5](M5-engagement.md) `5.11`, `5.13`, `5.14`, `5.9` |
 | `FR-NOTIF-06` | Must | Dispute/case notifications | [M2](M2-posting.md) `2.10`, `2.11` · [M3](M3-discovery.md) `3.10`, `3.13` · [M9](M9-disputes.md) `9.2` |
 | `FR-NOTIF-07` | Should | Endorsement notifications | [M3](M3-discovery.md) `3.10v` |
-| `FR-NOTIF-08` | Could | In-app notification history | [M3](M3-discovery.md) `3.10` |
+| `FR-NOTIF-08` | Could | In-app notification history | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r`, `3.10x` |
 | `FR-NOTIF-09` | Must | Notification permission handling | [M3](M3-discovery.md) `3.10`, `3.10pd`, `3.11pd`, `3.3`, `3.4`, `3.9` |
 | `FR-NOTIF-10` | Should | Distinct treatment for urgent vs. regular notifications | [M3](M3-discovery.md) `3.10`, `3.13` |
-| `FR-NOTIF-11` | Should | Rating notifications | [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.6` |
-| `FR-NOTIF-12` | Must | Dispute-lifecycle notifications to the parties | [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.6` |
+| `FR-NOTIF-11` | Should | Rating notifications | [M3](M3-discovery.md) `3.10`, `3.10r` · [M4](M4-applying.md) `4.6` |
+| `FR-NOTIF-12` | Must | Dispute-lifecycle notifications to the parties | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` · [M4](M4-applying.md) `4.6` |
 | `NFR-OPS-01` | Must | Audit log visibility | [M11](M11-dashboard.md) `11.2`, `11.2a`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3m`, `11.4`, `11.4a`, `11.5`, `11.5m`, `11.5x`, `11.5xm`, `11.6`, `11.6m` |
 | `NFR-OPS-02` | Should | Metrics dashboard export | [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6` |
 | `NFR-PERF-01` | Must | Direct-manipulation response time | [M0](M0-first-run.md) `0.1` · [M3](M3-discovery.md) `3.5` |

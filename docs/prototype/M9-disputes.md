@@ -26,7 +26,7 @@ Read `README.md` first for the notation, and `design-system.md` for the tokens a
 
 ### `9.1` — Report
 
-**Reached from** [M3](M3-discovery.md) `3.8`, `3.12g`  ·  **Leads to** `9.1d`  ·  **Exits** back → history
+**Reached from** [M3](M3-discovery.md) `3.12g`  ·  **Leads to** `9.1d`  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -177,7 +177,7 @@ pick the copy and the button from whether the viewer is the opener or the respon
 
 ### `9.2c` — Dispute case · clarification requested
 
-**Reached from** [M10](M10-moderation.md) `10.2b`  ·  **Leads to** `9.4`  ·  **Exits** back → history
+**Reached from** [M3](M3-discovery.md) `3.10q`, `3.10r`, `3.10` ("Question about your case"), sent from [M10](M10-moderation.md) `10.2b`  ·  **Leads to** `9.4`  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -252,7 +252,7 @@ defence needs to know it landed, and that reassurance is the only thing separati
 
 ### `9.2e` — Dispute case · escalated
 
-**Reached from** [M10](M10-moderation.md) `10.1e`  ·  **Leads to** nothing  ·  **Exits** back → history
+**Reached from** the worker's own case — no notification is sent on escalation (FR-NOTIF-12); the state follows [M10](M10-moderation.md) `10.1e`  ·  **Leads to** nothing  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -275,7 +275,7 @@ admin it is about the incident rather than the two people, and the copy follows.
 
 ### `9.2f` — Dispute case · resolved
 
-**Reached from** [M10](M10-moderation.md) `10.5r`  ·  **Leads to** nothing  ·  **Exits** back → history
+**Reached from** [M3](M3-discovery.md) `3.10r`, `3.10` ("Your case is resolved"), recorded on [M10](M10-moderation.md) `10.5r`  ·  **Leads to** nothing  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle

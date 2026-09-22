@@ -121,6 +121,17 @@ at all. Setting a size and weight without a line height is not using the scale.
 `elevation/bar` casts **upward** — it is for the tab bar and bottom-anchored bars, which throw their
 shadow onto the content above them.
 
+**The scrim.** Every dialog, bottom sheet and OS prompt sits over a `scrim`: a 360×800 (or 1440×900)
+rectangle, full-bleed, absolutely positioned at `@0,0`, filled with `color/overlay/scrim` at **40% node
+opacity**. It is node opacity, not paint opacity, because a paint opacity on a variable-bound fill does not
+carry into instances. Two rules go with it:
+- **Nothing drawn behind a scrim is interactive.** The screen under a dialog is a picture of where you
+  were, not a live screen.
+- **The scrim's own tap and the overlay's controls are the only exits.** A sheet's scrim dismisses it
+  (`Display/BottomSheet`, `OS/ShareSheet`); a dialog's does not (`Feedback/ConfirmDialog`,
+  `Desktop/DashDialog`, the `promptCard` prompts, `OS/PermissionDialog`), because dismissing by accident is
+  the thing a dialog's Cancel exists to make deliberate — and an OS prompt must be answered.
+
 ---
 
 ## 5. Components
@@ -173,10 +184,10 @@ distinction exists to prevent.
 | `Display/Badge` | `Family`: Verified · Endorsed · Urgent · Posting · Application · Engagement · Case<br>`Value`: 19 values — Default, Count, Open, Filled, Withdrawn, Expired, Pending, Selected, Declined, NotSelected, Active, Completed, Cancelled, Ended, Disputed, AwaitingResponse, UnderReview, Escalated, Resolved | 77×24 · horizontal, pad 4/10, gap 5, centred · r999 | `check` vector 8×6 · `label` |
 | `Display/StarsDisplay` | — | 152×24 · horizontal, gap 6, centred | `star` 16×16 · `avg` · `count` |
 | `Display/CountdownText` | `Format`: Cooldown · Deadline | 99×20 | `countdown` text |
-| `Display/ListingCard` | `State`: Default · Urgent | 328×134 · vertical, pad 16, gap 6 · r8 | `title` · `meta` · `pay` · `fill` |
+| `Display/ListingCard` | `State`: Default · Urgent | 328×134 · vertical, pad 16, gap 6 · r8 | `title` · `meta` · `pay` · `fill` — all four **FILL width and wrap** (296 at 100%) |
 | `Display/ApplicantRow` | `Tier`: History · EndorsedNew · New<br>`Show endorsed`: boolean | 328×188 · vertical, pad 16, gap 8 · r8 | `nameRow` · `trustRow` · `note` · `Action/ListRowAction` |
 | `Display/EngagementRow` | `Action`: Required · None | 328×116 · vertical, pad 16, gap 8 · r8 | `topRow` · `posting` · `nextAction` |
-| `Display/NotificationRow` | `Type`: Standard · Digest | 328×108 · horizontal, pad 12, gap 10 · r8 | `unreadDot` 8×8 · `content` frame, vertical, gap 2 |
+| `Display/NotificationRow` | `Type`: Standard · Digest | 328×108 · horizontal, pad 12, gap 10 · r8 | `unreadDot` 8×8 · `content` frame, **FILL**, vertical, gap 2 — `title` and `body` wrap at 286; `time` hugs |
 | `Display/EndorsementRow` | `State`: Default · Revoked<br>`Show revoke`: boolean | 328×124 · vertical, pad 16, gap 8 · r8 | `nameRow` · `relationship` · `attributes` · `revokeAction` |
 | `Display/ProfileTrustBlock` | `Tier`: ZeroHistory · History | 328×84 · vertical, pad 16, gap 8 · r8 | `headline` · `endorsedBy` |
 | `Display/CodePanel` | `View`: Holder · Enterer · PaymentGate | 328×132 · vertical, pad 16, gap 12 · r8 | `codeBox` 132×48 · `instruction` |
@@ -188,6 +199,18 @@ distinction exists to prevent.
 
 `Display/MapArea` is the **only** absolutely-positioned component, because a map is a picture rather than
 a stack. Everything else is auto-layout.
+
+**Text that must survive 130% expansion wraps; it does not hug.** Three components used to size their
+text to its content (`WIDTH_AND_HEIGHT`), which is invisible at 100% and breaks at 130%: a ListingCard line
+ran past the card's edge, and two tab labels collided. `3.1x130` is the specimen that shows the fixed
+behaviour — card text wraps inside the card, the Browse chip row (`controls`, FILL, wrap, 8 row gap)
+drops `Saved` to a second line, and tab labels truncate rather than overlap. A notification row's title
+and body wrap for the same reason: A11's titles include a posting title, so their length is not bounded.
+
+**The urgent digest (`Type=Digest`) is specified but not drawn on any screen.** Its sample text is the A11
+form — title *"{n} more urgent gigs today"*, body *the top title plus a count* — and it expands in place to
+its batched children. Nothing in the prototype's story reaches five urgent pushes in a day, so no history
+shows one; build it from this row and FR-NOTIF-01.
 
 ### Feedback
 
@@ -205,7 +228,7 @@ a stack. Everything else is auto-layout.
 | Component | Variants | Size · layout | Children |
 | --- | --- | --- | --- |
 | `Chrome/ScreenHeader` | `Action`: None · Slot | 360×56 · horizontal, pad 0/4, gap 4, centred | `backHit` 44×44 · `title`, `mobile/title` |
-| `Chrome/TabBar` | `Role`: Worker · Employer · Verifier<br>`Notification badge`: boolean | 360×64 · horizontal | five 72×58 tabs, vertical, pad 6/0, gap 2, centred |
+| `Chrome/TabBar` | `Role`: Worker · Employer · Verifier<br>`Notification badge`: boolean | 360×64 · horizontal | five 72×58 tabs, vertical, pad 6/0, gap 2, centred — each `label` FILLs its tab, **one line, truncates with an ellipsis** |
 | `Chrome/PagerDots` | `Active`: 1 · 2 · 3 | 40×8 · horizontal, gap 8 | three 8×8 `dot` ellipses |
 
 **`Chrome/PagerDots` carries the active dot at full strength and the other two at 30% node opacity**, both
@@ -333,7 +356,7 @@ them looks like a defect to a checker, and each has been ruled once already.
 | --- | --- |
 | `1.4x130`, `3.1x130` | 130% text-expansion specimens. Every text is scaled ×1.3 and carries **no** text style, because a style would force its own size and destroy the demonstration. On 2026-09-22 a library-wide style binding did exactly that to `1.4x130` and had to be reverted — **any bulk edit must skip a frame whose id ends `x130`** |
 | `1.4k` | Keyboard-open specimen. Normal scale, so it takes library changes like any other screen; it is a specimen only in that no flow visits it |
-| `3.2` | Not a specimen. It matches `/expansion/` by name — *radius* auto-expansion — and is a real step in three flows |
+| `3.2` | Not a specimen. It shows *radius* auto-expansion (FR-DISC-01) — the search widened for a user in Homagama — and is a real step in F0. It used to match `/expansion/` by name, which is why it was listed here; renamed 2026-09-23 to say what it shows, it is kept here so the ruling is not repeated |
 | `0.1`'s `YouthLink` text | The splash sets Archivo Bold 30 directly rather than using `Brand/Wordmark`. The component is a **horizontal** lockup, 196×48 with a 40×40 mark; the splash is a **vertical** one, a 76×76 mark above the name. They are different compositions, and §3's "never set Archivo anywhere else" yields here rather than restructuring a released splash |
 
 **If a state you need is in none of the three layers, it is a gap — raise it.** The layers are meant to be
