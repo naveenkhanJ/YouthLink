@@ -56,13 +56,13 @@ arrives and 126 when a clarification is answered — the card height is the case
 
 ### `10.1a` — Case review · clarification answered
 
-**Reached from** `10.1c`  ·  **Leads to** `10.2`, `10.3s`  ·  **Opens** `10.1e`
+**Reached from** `10.1c`  ·  **Leads to** `10.3s`  ·  **Opens** `10.1e`
 
 ```
 FRAME 1440x900 · absolute · fill color/bg/subtle
   INSTANCE Desktop/DashSidebar 240x900 [FIXED/FIXED] @0,0 · vertical pad 20/12/20/12 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator, Active=Case queue} · [standard, see header]
   INSTANCE Desktop/DashHeader 1200x56 [FIXED/FIXED] @240,0 · horizontal pad 0/24/0/24 gap 16 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator} · [standard, see header]
-  FRAME content 1200x600 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
+  FRAME content 1200x632 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 394x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Dispute — arrival could not be confirmed · Ready for review"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Shop assistant — weekend · Raised by Kavindu Perera (worker) · Respondent: Saman Stores (employer)"
@@ -82,17 +82,24 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Kavindu Perera — Verified · New to YouthLink · Endorsed (Sunil Bandara)"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Saman Stores — Employer (Business) · 12 completed engagements · no prior warnings"
     FRAME actions 610x48 [HUG/HUG] · horizontal pad 0 gap 12
-      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
-        TEXT label 157x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Request clarification"
+      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
+        TEXT label 157x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Request clarification"
       INSTANCE Action/Button 195x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 147x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Close with warning"
       INSTANCE Action/Button 186x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 138x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Escalate to Admin"
+    TEXT clarifyLock 1100x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Clarification is unavailable — a case allows one request, and this one has been answered."
 ```
 
-**The same screen, unlocked.** All three buttons are `{State=Default}` and `disabledReason` is
-gone entirely rather than emptied — compare `10.1`. `Evidence so far` is now **126** and holds three rows:
-the raiser, the respondent, and the clarification answer.
+**Unlocked, but not completely.** `disabledReason` is gone entirely rather than emptied —
+compare `10.1` — and `Close with warning` and `Escalate to Admin` are both `{State=Default}`. `Evidence so
+far` is now **126** and holds three rows: the raiser, the respondent, and the clarification answer.
+
+**`Request clarification` stays `{State=Disabled}`,** because `FR-MOD-03` allows one request per case and
+this case has spent it. `clarifyLock` says so in the screen. This is the `promoteLock` idiom from `10.6` —
+a note explaining why *one* control is dead while its neighbours work — rather than `10.1`'s
+`disabledReason`, which explains why *all three* are. **A disabled control carries no reaction anywhere in
+this module**, so there is no edge from here to `10.2`.
 
 ### `10.1c` — Case review · clarification pending
 
@@ -145,7 +152,7 @@ the question is sent, not when it is answered.
 FRAME 1440x900 · absolute · fill color/bg/subtle
   INSTANCE Desktop/DashSidebar 240x900 [FIXED/FIXED] @0,0 · vertical pad 20/12/20/12 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator, Active=Case queue} · [standard, see header]
   INSTANCE Desktop/DashHeader 1200x56 [FIXED/FIXED] @240,0 · horizontal pad 0/24/0/24 gap 16 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator} · [standard, see header]
-  FRAME content 1200x600 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
+  FRAME content 1200x632 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 394x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Dispute — arrival could not be confirmed · Ready for review"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Shop assistant — weekend · Raised by Kavindu Perera (worker) · Respondent: Saman Stores (employer)"
@@ -165,12 +172,13 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Kavindu Perera — Verified · New to YouthLink · Endorsed (Sunil Bandara)"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Saman Stores — Employer (Business) · 12 completed engagements · no prior warnings"
     FRAME actions 610x48 [HUG/HUG] · horizontal pad 0 gap 12
-      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
-        TEXT label 157x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Request clarification"
+      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
+        TEXT label 157x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Request clarification"
       INSTANCE Action/Button 195x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 147x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Close with warning"
       INSTANCE Action/Button 186x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 138x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Escalate to Admin"
+    TEXT clarifyLock 1100x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Clarification is unavailable — a case allows one request, and this one has been answered."
   FRAME scrim 1440x900 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Desktop/DashDialog 440x198 [FIXED/HUG] @500,351 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
     TEXT title 167x26 [HUG/HUG] · fill color/text/primary · desktop/title · "Escalate to Admin?"
@@ -356,13 +364,13 @@ The payment case's clarification-pending state. Unlike `10.2`, the question went
 
 ### `10.1pca` — Case review · payment dispute, clarification answered
 
-**Reached from** `10.1pc`  ·  **Leads to** `10.2p`, `10.3p`  ·  **Opens** `10.1pce`
+**Reached from** `10.1pc`  ·  **Leads to** `10.3p`  ·  **Opens** `10.1pce`
 
 ```
 FRAME 1440x900 · absolute · fill color/bg/subtle
   INSTANCE Desktop/DashSidebar 240x900 [FIXED/FIXED] @0,0 · vertical pad 20/12/20/12 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator, Active=Case queue} · [standard, see header]
   INSTANCE Desktop/DashHeader 1200x56 [FIXED/FIXED] @240,0 · horizontal pad 0/24/0/24 gap 16 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator} · [standard, see header]
-  FRAME content 1200x600 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
+  FRAME content 1200x632 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 339x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Dispute — payment not released · Ready for review"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Warehouse packing — night shift · Raised by Tharindu Silva (worker) · Respondent: Ceylon Logistics (employer)"
@@ -382,19 +390,21 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Tharindu Silva — Verified · New to YouthLink · not endorsed"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Ceylon Logistics — Employer (Business) · 4 completed engagements · no prior warnings"
     FRAME actions 610x48 [HUG/HUG] · horizontal pad 0 gap 12
-      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
-        TEXT label 157x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Request clarification"
+      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
+        TEXT label 157x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Request clarification"
       INSTANCE Action/Button 195x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 147x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Close with warning"
       INSTANCE Action/Button 186x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 138x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Escalate to Admin"
+    TEXT clarifyLock 1100x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Clarification is unavailable — a case allows one request, and this one has been answered."
 ```
 
 **Added 2026-09-22.** The payment thread had no clarification-answered state, so `10.1pc` was
 a dead end while the arrival thread ran on to `10.1a`. This is that missing state, and the delta from
-`10.1pc` is exactly the delta from `10.1c` to `10.1a`: status to *Ready for review*, the answered line,
-the answer itself in the third evidence row, all three buttons to `{State=Default}`, `disabledReason` gone.
-`content` lands at **600**, matching `10.1a` to the pixel.
+`10.1pc` is exactly the delta from `10.1c` to `10.1a`: status to *Ready for review*, the answered line, the
+answer itself in the third evidence row, `disabledReason` swapped for `clarifyLock`, and the two acting
+buttons to `{State=Default}` while `Request clarification` stays disabled on `FR-MOD-03`'s one-per-case
+rule. `content` lands at **632**, matching `10.1a` to the pixel.
 
 The answer is deliberately **inconclusive** — the receipt shows money leaving Ceylon Logistics' account but
 not the account it reached. That is what makes `10.5p` able to demonstrate `FR-ADM-01`'s third outcome.
@@ -407,7 +417,7 @@ not the account it reached. That is what makes `10.5p` able to demonstrate `FR-A
 FRAME 1440x900 · absolute · fill color/bg/subtle
   INSTANCE Desktop/DashSidebar 240x900 [FIXED/FIXED] @0,0 · vertical pad 20/12/20/12 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator, Active=Case queue} · [standard, see header]
   INSTANCE Desktop/DashHeader 1200x56 [FIXED/FIXED] @240,0 · horizontal pad 0/24/0/24 gap 16 · fill color/bg/default · stroke color/border/default mixed · {Role=Moderator} · [standard, see header]
-  FRAME content 1200x600 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
+  FRAME content 1200x632 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 339x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Dispute — payment not released · Ready for review"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Warehouse packing — night shift · Raised by Tharindu Silva (worker) · Respondent: Ceylon Logistics (employer)"
@@ -427,12 +437,13 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Tharindu Silva — Verified · New to YouthLink · not endorsed"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Ceylon Logistics — Employer (Business) · 4 completed engagements · no prior warnings"
     FRAME actions 610x48 [HUG/HUG] · horizontal pad 0 gap 12
-      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
-        TEXT label 157x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Request clarification"
+      INSTANCE Action/Button 205x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
+        TEXT label 157x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Request clarification"
       INSTANCE Action/Button 195x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 147x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Close with warning"
       INSTANCE Action/Button 186x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 138x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Escalate to Admin"
+    TEXT clarifyLock 1100x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Clarification is unavailable — a case allows one request, and this one has been answered."
   FRAME scrim 1440x900 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Desktop/DashDialog 440x198 [FIXED/HUG] @500,351 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
     TEXT title 167x26 [HUG/HUG] · fill color/text/primary · desktop/title · "Escalate to Admin?"
@@ -581,7 +592,7 @@ end to end — promote an existing user, and they can work the queue — which n
 
 ### `10.2` — Request clarification
 
-**Reached from** `10.1a`, `10.1r`  ·  **Leads to** `10.2b`
+**Reached from** `10.1r`  ·  **Leads to** `10.2b`
 
 ```
 FRAME 1440x900 · absolute · fill color/bg/subtle
@@ -629,7 +640,7 @@ Sent. The composer's `windowNote` (`desktop/table`, secondary) is replaced by `s
 
 ### `10.2p` — Request clarification · payment dispute
 
-**Reached from** `10.1p`, `10.1pca`  ·  **Leads to** `10.2pb`
+**Reached from** `10.1p`  ·  **Leads to** `10.2pb`
 
 ```
 FRAME 1440x900 · absolute · fill color/bg/subtle
@@ -1735,7 +1746,7 @@ sequence** — which is the split `10.8`'s option labels describe.
 | --- | --- |
 | A ruling *for the other party* | `10.5r` or `10.5pr` with `option2` selected and the outcome sentence changed. The `OptionGroup`, the notes card and the finality line are identical — `FR-ADM-01`'s three outcomes share one screen |
 | A clarification window that expired unanswered | `10.1r` / `10.1pca` — the actions unlock on expiry exactly as they unlock on an answer, which is what `disabledReason` promises |
-| A second clarification | not built, and not buildable — `FR-MOD-03` allows **one** request per case, so a second is a requirement change rather than a screen. Note that `Request clarification` is nonetheless left enabled on `10.1a` and `10.1pca`; that is a known inconsistency, not a second request being sanctioned |
+| A second clarification | not built, and not buildable — `FR-MOD-03` allows **one** request per case, so a second is a requirement change rather than a screen. The interface enforces it: `Request clarification` is `{State=Disabled}` with a `clarifyLock` note on `10.1a` and `10.1pca`, the two screens where a clarification has already been answered |
 | Reactivating a suspended account | not drawn. `FR-ADM-03` covers suspension; the reverse is in `FR-ADM-07`'s staff-account surface (O6), which lands in [M11](M11-dashboard.md) |
 | Verification-document approval | deliberately absent — `FR-ADM-04` is future-contingent and not built in this version |
 | An Admin acting on an un-escalated case | `10.1pa`, which is exactly that state, and carries no buttons |
