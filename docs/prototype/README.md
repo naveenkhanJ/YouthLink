@@ -59,7 +59,7 @@ INSTANCE groundsField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/b
 | `of Input/TextArea` | the component the instance is of, shown whenever the layer was renamed. Without it you cannot tell that `pagination`, `helpLink` and `userRow03` are instances at all |
 | `328x48` | rendered size in the prototype |
 | `[FILL/FIXED]` | sizing mode, horizontal/vertical — `FILL` stretches to the parent, `HUG` shrinks to content, `FIXED` is absolute |
-| `@16,728` | position from the parent's top-left. **Appears only where the parent is not auto-layout** — if it is absent, the parent positions the child and you must not place it yourself |
+| `@16,728` | position from the parent's top-left. **Appears only where the parent does not lay the child out** — either the parent is not auto-layout, or the child is set to *absolute position* inside an auto-layout parent, which is how every scrim, dialog and bottom sheet floats over a screen. If it is absent, the parent positions the child and you must not place it yourself |
 | `horizontal pad … gap …` | auto-layout: direction, padding `top/right/bottom/left` (a single number means all four), and the gap between children |
 | `fill color/brand/primary` | the fill. **A token name means bind the token.** Since 2026-09-22 no tree in this folder contains a raw hex — every one was traced to the token that resolves to it — so **a literal appearing here is a defect to raise, not a value to copy** |
 | `stroke blue/700 2` | stroke colour and weight |

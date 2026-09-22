@@ -94,8 +94,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME spacer-grow 8x352 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 87x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Share code"
-  RECTANGLE scrim 360x800 [FIXED/FIXED] · fill color/overlay/scrim · opacity 40%
-  INSTANCE OS/ShareSheet 360x314 [FIXED/HUG] · vertical pad 8/16/24/16 gap 16 · fill color/bg/default
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE OS/ShareSheet 360x314 [FIXED/HUG] @0,486 · vertical pad 8/16/24/16 gap 16 · fill color/bg/default
     RECTANGLE handle 36x4 [FIXED/FIXED] · fill #c7ccd4 · r2
     TEXT Share 45x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Share"
     FRAME preview 328x64 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r10
@@ -465,8 +465,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT revokedLabel 49x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Revoked"
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
-  RECTANGLE scrim 360x800 [FIXED/FIXED] · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x180 [FIXED/HUG] · vertical pad 20 gap 12 · fill color/bg/default · r12
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x180 [FIXED/HUG] @16,310 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 257x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Revoke this endorsement?"
     TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
@@ -530,8 +530,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT revokedLabel 49x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Revoked"
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
-  RECTANGLE scrim 360x800 [FIXED/FIXED] · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] · vertical pad 20 gap 12 · fill color/bg/default · r12
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] @16,296 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 288x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Revoke your endorsement of Ishara Fernando?"
     TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
@@ -592,8 +592,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT revokedLabel 49x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Revoked"
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
-  RECTANGLE scrim 360x800 [FIXED/FIXED] · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] · vertical pad 20 gap 12 · fill color/bg/default · r12
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] @16,296 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 288x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Revoke your endorsement of Kavindu Perera?"
     TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
