@@ -50,6 +50,14 @@ to today, and the indirection is what lets a colour change in one place.
 **One brand colour, deliberately.** Everything else is a neutral or a state. If a design needs a colour
 that is not here, that is a design decision, not an implementation one.
 
+**The one exception: decorative illustration may bind primitives directly.** The onboarding artwork on
+`0.2`–`0.4` uses `blue/700`, `white` and `bg/brand-tint` on its discs, figures and code bars. There is no
+semantic role for illustration ink — it is not text, not a border, not a state — and inventing
+`color/illustration/*` would grow the semantic layer for three screens. Binding it to
+`color/brand/primary` instead would assert the art is brand-coloured *because* it is brand, so a future
+brand change would repaint the illustrations too. Everything that does carry a role uses its semantic
+name; **this exception covers illustration only, and does not extend to any control, surface or text.**
+
 ## 2. Spacing and radius
 
 | Token | Value | | Token | Value |
@@ -81,12 +89,26 @@ padding*, and if the gutter ever changes it should not drag every 16px gap with 
 | `mobile/tab-label` | Inter Regular | 10 | 14 | tab bar only |
 | `mobile/display-number` | Inter Semi Bold | 20 | 26 | large figures |
 | `mobile/section-label` | Inter Semi Bold | 11 | 16 | section labels · letter-spacing **0.8px** |
+| `mobile/secondary-medium` | Inter Medium | 14 | 20 | the bold lead-in before an em-dash in an explanation step |
+| `mobile/code` | Inter Semi Bold | 20 | 26 | an entered code · letter-spacing **6px** |
 | `desktop/title` | Inter Semi Bold | 18 | 26 | dashboard page title |
 | `desktop/body` | Inter Regular | 14 | 20 | dashboard body |
+| `desktop/body-medium` | Inter Medium | 14 | 20 | dashboard links and emphasised dashboard body |
 | `desktop/table` | Inter Regular | 13 | 18 | dashboard tables and dense rows |
+| `desktop/caption` | Inter Regular | 12 | 16 | dashboard captions and queue ordinals |
+| `desktop/display-number` | Inter Semi Bold | 24 | 32 | the large figure on a stat card |
 
 **The `mobile/` and `desktop/` prefixes are a hard boundary.** `desktop/table` at 13px on a phone screen
-is a defect, not a choice — the prototype is checked for it.
+is a defect, not a choice — the prototype is checked for it. Four pairs are metrically identical across
+that boundary — `mobile/secondary` / `desktop/body`, `mobile/secondary-medium` / `desktop/body-medium`,
+`mobile/caption` / `desktop/caption`, `mobile/display` / `desktop/display-number`. **They are separate
+styles on purpose**: the boundary is about which surface a style belongs to, so either side can move
+without dragging the other with it. Picking one by how it looks today defeats the point.
+
+**Every line height here is explicit, and that is the whole contract.** Inter's own default at 16px is
+about 19px; this scale says 24. Until 2026-09-22 the component library used the default, so body copy
+rendered 5px tighter than the table claimed and nothing noticed, because no component referenced a style
+at all. Setting a size and weight without a line height is not using the scale.
 
 ## 4. Effects
 
@@ -103,8 +125,8 @@ shadow onto the content above them.
 
 ## 5. Components
 
-Fifty component sets. Each row gives the frame size of the first variant, its auto-layout, and its
-children. **Padding is listed `top/right/bottom/left`**; a single number means all four are equal.
+Fifty-six component sets — fifty product components in the six groups below, plus four OS mocks. Each row
+gives the frame size of the first variant, its auto-layout, and its children. **Padding is listed `top/right/bottom/left`**; a single number means all four are equal.
 Sizing modes appear in screen files as `[horizontal/vertical]` — `FILL`, `HUG` or `FIXED`.
 
 ### Inputs
@@ -123,9 +145,14 @@ Sizing modes appear in screen files as `[horizontal/vertical]` — `FILL`, `HUG`
 | `Input/Toggle` | `State`: Off · On | 328×64 · horizontal, pad 8/0/8/0, gap 16, centred | label · `track` 44×24 |
 | `Input/StarInput` | `State`: Empty · Selected | 172×28 · vertical, gap 8 | `stars` frame, horizontal, gap 8 |
 | `Input/DateTimeField` | `State`: Default · Filled · Error | 328×74 · vertical, gap 6 | label · `field` 328×48, pad 12 |
+| `Input/TextArea` | `State`: Default · Filled · Error | 328×96 · vertical, pad 12 · r8 · hug height, **minimum 96** | one text, `mobile/body`, width FILL |
 
 **Every input is 328 wide on a 360 screen** — that is `spacing/gutter` of 16 on each side. **Every field
 row is 48 tall.** Those two numbers hold across the whole mobile surface.
+
+`Input/TextArea` is the one input that is not 48 tall, because it holds a paragraph rather than a line.
+It hugs its content but never drops below 96 — an empty box still has to read as somewhere you can type.
+Screens 6.4 and 6.5 hand-built this shape twice, at two different heights, before it was a component.
 
 ### Actions
 
@@ -179,6 +206,13 @@ a stack. Everything else is auto-layout.
 | --- | --- | --- | --- |
 | `Chrome/ScreenHeader` | `Action`: None · Slot | 360×56 · horizontal, pad 0/4, gap 4, centred | `backHit` 44×44 · `title`, `mobile/title` |
 | `Chrome/TabBar` | `Role`: Worker · Employer · Verifier<br>`Notification badge`: boolean | 360×64 · horizontal | five 72×58 tabs, vertical, pad 6/0, gap 2, centred |
+| `Chrome/PagerDots` | `Active`: 1 · 2 · 3 | 40×8 · horizontal, gap 8 | three 8×8 `dot` ellipses |
+
+**`Chrome/PagerDots` carries the active dot at full strength and the other two at 30% node opacity**, both
+bound to `color/brand/primary`. The inactive weight is opacity rather than a second token because a pager
+has one colour and two strengths, not two colours. Until 2026-09-22 the three onboarding screens drew the
+row by hand with all three dots identical and *the same on all three screens*, so the pager showed no
+position at all — which is the only thing a pager is for.
 
 `backHit` is 44×44 whether or not an arrow is drawn in it — that is the minimum touch target, and it stays
 that size so the header's layout does not shift between screens that have a back arrow and screens that
@@ -190,7 +224,7 @@ do not.
 | --- | --- | --- | --- |
 | `Desktop/DashSidebar` | `Role`: Admin · Moderator<br>`Active`: Case queue · All postings · Users · Metrics · Audit log · Staff | 240×640 · vertical, pad 20/12, gap 4 | `Brand/Wordmark` · `surface` · `roleChip` · spacer · six 216×36 nav rows, pad 8/10 |
 | `Desktop/DashHeader` | `Role`: Admin · Moderator | 1200×56 · horizontal, pad 0/24, gap 16, centred | `pageTitle` · `userSearch` 256×32 · `identity` · `signOut` |
-| `Desktop/DataTable` | — | 1152×220 · vertical | `filterRow` 1152×60 · `headerRow` 1152×34 on `#e7ebf4` · data rows 1152×42, pad 10/16, gap 16 |
+| `Desktop/DataTable` | — | 1152×220 · vertical | `filterRow` 1152×60 · `headerRow` 1152×34 on `bg/brand-tint` · data rows 1152×42, pad 10/16, gap 16 |
 | `Desktop/TableRow` | `Kind`: Header · Row<br>`Cols`: 5 · 4 | 1152×40 · horizontal, pad 0/16, gap 16, centred | up to five column texts, `desktop/table` |
 | `Desktop/DetailPane` | `Role`: Admin · Moderator | 420×304 · vertical, pad 20, gap 10 · r8 | `nameRow` · six `field-*` rows 380×20 · `actions` |
 | `Desktop/DashDialog` | — | 440×198 · vertical, pad 20/24, gap 12 · r12 | `title` · `body` · `actions`, right-aligned |
@@ -199,12 +233,30 @@ do not.
 | `Desktop/OptionGroup` | — | 1152×198 · vertical, pad 14/16, gap 10 · r10 | `groupTitle` · three `Desktop/OptionRow` |
 | `Desktop/StatCard` | — | 272×116 · vertical, pad 14/16, gap 4 · r8 | `statValue` · `statLabel` · `statSub` |
 | `Desktop/DashBadge` | `Family`: Case · Posting<br>`Value`: AwaitingResponse · UnderReview · Escalated · Resolved · Open · Filled · Withdrawn · Expired | 139×22 · horizontal, pad 2/8, gap 5, centred · r999 | `dot` ellipse 5×5 · `label` |
-| `Desktop/Pagination` | `Page`: First · Middle · Last · Single | 1152×44 · horizontal, pad 12/16, space-between · `#ffffff` | `countText` · `pager` frame, gap 16 |
+| `Desktop/Pagination` | `Page`: First · Middle · Last · Single | 1152×44 · horizontal, pad 12/16, space-between · `color/bg/default`, border `color/border/default` | `countText` `desktop/body` · `pager` frame, gap 16, with `prevLink` / `position` / `nextLink`; the live link is `color/brand/primary`, the dead one `color/text/secondary` |
 
 **`Desktop/SectionCard` and `Desktop/TableRow` carry more slots than most uses need**, and the unused ones
 are switched off rather than emptied. A hidden `row3` still reads `"Row 3 text"` in the file — that is the
 component default sitting behind a disabled slot, not content anyone forgot to replace. **Check
 visibility before treating a default string as a defect**; 159 of 184 apparent cases were exactly this.
+
+### OS mocks
+
+| Component | Variants | Size · layout | Children |
+| --- | --- | --- | --- |
+| `OS/PermissionDialog` | `Context`: Location · Notifications · Camera | 280×288 · vertical, pad 20/20/16/20, gap 12 · r12 | `icon-*` 24×24 · `question` 240×48 · three 240×44 `option` rows |
+| `OS/PushNotification` | `Channel`: Regular · Urgent | 328×104 · horizontal · r12 | `content` 328×104 |
+| `OS/Keyboard` | — | 360×260 · absolute | 26 `key` 30×42 plus the modifier row |
+| `OS/ShareSheet` | — | 360×306 · vertical, pad 8/16/24/16, gap 16 | `handle` 36×4 · `preview` 328×56 · `apps` 328×78 · `cancel` 328×48 |
+
+Used on `3.3` and `3.9` (permission), `3.13` (push), `1.4k` (keyboard) and `8.1s` (share).
+
+**These four imitate the operating system, not this product, and are deliberately exempt from §1 and §3.**
+A platform keyboard is not drawn in the product's type scale and a system sheet's grab handle is not a
+brand colour, so their text carries no text style and `OS/ShareSheet`'s handle stays on a literal
+`#c7ccd4`. The keyboard's 26 letter keys are 26 of the 40 unstyled texts left in the file, and that handle
+is the *only* unbound colour left anywhere — both on purpose.
+**Do not build product UI out of them** — they exist to show what the OS puts on top of a screen.
 
 ---
 
@@ -273,6 +325,16 @@ Each was ruled with a reason; none is an oversight.
 | Interactive column re-sorting | The sorted column is marked in every header and the order is stated. Re-sorting is behaviour to implement; every alternative order was not drawn |
 | The **rejected** outcome of an account recovery | The approved outcome is drawn; rejection follows the same screen with the outcome text changed. `AccountRecoveryStatus.REJECTED` exists in the schema |
 | Any Sinhala or Tamil interface | `NFR-LOC-01`'s acceptance criterion is that none is present. Building one would breach the requirement |
+
+**Four frames and one text node are deliberately off-system.** They are listed here because every one of
+them looks like a defect to a checker, and each has been ruled once already.
+
+| Off-system | Why, and what not to "fix" |
+| --- | --- |
+| `1.4x130`, `3.1x130` | 130% text-expansion specimens. Every text is scaled ×1.3 and carries **no** text style, because a style would force its own size and destroy the demonstration. On 2026-09-22 a library-wide style binding did exactly that to `1.4x130` and had to be reverted — **any bulk edit must skip a frame whose id ends `x130`** |
+| `1.4k` | Keyboard-open specimen. Normal scale, so it takes library changes like any other screen; it is a specimen only in that no flow visits it |
+| `3.2` | Not a specimen. It matches `/expansion/` by name — *radius* auto-expansion — and is a real step in three flows |
+| `0.1`'s `YouthLink` text | The splash sets Archivo Bold 30 directly rather than using `Brand/Wordmark`. The component is a **horizontal** lockup, 196×48 with a 40×40 mark; the splash is a **vertical** one, a 76×76 mark above the name. They are different compositions, and §3's "never set Archivo anywhere else" yields here rather than restructuring a released splash |
 
 **If a state you need is in none of the three layers, it is a gap — raise it.** The layers are meant to be
 exhaustive, and a state that falls through them is a finding rather than something to improvise.

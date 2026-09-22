@@ -36,25 +36,28 @@ than describing them, and that file is what the names mean. The two together are
 Each screen is a tree, indented by nesting, in the order elements appear. One line per node:
 
 ```
-INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · {Style=Primary, State=Default}
-  TEXT label 111x24 [HUG/HUG] · mobile/body-medium · "Send to admin"
+INSTANCE groundsField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
+  TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "This engagement never took place …"
 ```
 
 | Part | Meaning |
 | --- | --- |
 | `INSTANCE` / `FRAME` / `TEXT` | node kind. `INSTANCE` is a component from `design-system.md` |
-| `Action/Button` | the component, or the layer name for a plain frame |
+| `groundsField` | the layer name — **for an instance this is the role it plays on this screen, not the component** |
+| `of Input/TextArea` | the component the instance is of, shown whenever the layer was renamed. Without it you cannot tell that `pagination`, `helpLink` and `userRow03` are instances at all |
 | `328x48` | rendered size in the prototype |
 | `[FILL/FIXED]` | sizing mode, horizontal/vertical — `FILL` stretches to the parent, `HUG` shrinks to content, `FIXED` is absolute |
 | `@16,728` | position from the parent's top-left. **Appears only where the parent is not auto-layout** — if it is absent, the parent positions the child and you must not place it yourself |
 | `horizontal pad … gap …` | auto-layout: direction, padding `top/right/bottom/left` (a single number means all four), and the gap between children |
-| `fill color/brand/primary` | the fill. **A token name means bind the token**; a raw hex means the prototype used a literal there, which is usually worth fixing rather than copying |
+| `fill color/brand/primary` | the fill. **A token name means bind the token.** Since 2026-09-22 no tree in this folder contains a raw hex — every one was traced to the token that resolves to it — so **a literal appearing here is a defect to raise, not a value to copy** |
 | `stroke blue/700 2` | stroke colour and weight |
 | `r8` | corner radius |
 | `{Style=Primary}` | the component's variant properties for this instance |
+| `opacity 30%` | node opacity, shown only below 100%. It is how the inactive pager dots and the dimmed code bars are drawn, and it is invisible in a screenshot at a glance |
 | `mobile/body-medium` | the text style, from `design-system.md` §3 |
 | `align center` | text alignment, shown only when it is not the default left |
 | `"Send to admin"` | the exact copy. **Strings are specification, not placeholder** |
+| `· run mobile/secondary-medium "Arrival"` | one styled run inside a text node, listed under it whenever a single string carries more than one. A bold lead-in before an em-dash is a run, and printing only the whole string loses it |
 | `[frame reaction]` | a prototype interaction on the frame itself rather than on a child — an auto-advance, usually |
 
 **Sizes are what the prototype renders, not what to hard-code.** Rebuild the layout from the auto-layout
