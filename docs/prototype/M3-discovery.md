@@ -145,12 +145,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 12.4 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,000 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Shop assistant — weekend"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Retail · Nugegoda · 12.9 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,500 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 7,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 8:00 AM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
@@ -199,7 +199,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 1.9 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,000 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
@@ -209,7 +209,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Shop assistant — weekend"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Retail · Nugegoda · 3.4 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,500 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 7,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 8:00 AM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Delivery rider — mornings"
@@ -343,7 +343,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x237 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x62 [FILL/HUG] · fill color/text/primary · (no style) · "Café service crew — evenings"
       TEXT meta 296x52 [FILL/HUG] · fill color/text/secondary · (no style) · "Food service · Nugegoda · 1.9 km away"
-      TEXT pay 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Rs 3,000 per day"
+      TEXT pay 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Rs 6,000 for the job"
       TEXT fill 296x42 [FILL/HUG] · fill color/text/secondary · (no style) · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     INSTANCE Display/ListingCard 328x206 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "House cleaning — Saturday"
@@ -353,7 +353,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x159 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Shop assistant — weekend"
       TEXT meta 296x26 [FILL/HUG] · fill color/text/secondary · (no style) · "Retail · Nugegoda · 3.4 km away"
-      TEXT pay 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Rs 3,500 per day"
+      TEXT pay 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Rs 7,000 for the job"
       TEXT fill 296x21 [FILL/HUG] · fill color/text/secondary · (no style) · "1 of 1 open · Starts Sat 8:00 AM"
     INSTANCE Display/ListingCard 328x206 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x31 [FILL/HUG] · fill color/text/primary · (no style) · "Delivery rider — mornings"
@@ -524,7 +524,7 @@ FRAME 360x800 · absolute · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 1.9 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,000 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
@@ -534,7 +534,7 @@ FRAME 360x800 · absolute · fill color/bg/subtle
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Shop assistant — weekend"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Retail · Nugegoda · 3.4 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 3,500 per day"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 7,000 for the job"
       TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 8:00 AM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Delivery rider — mornings"
@@ -635,7 +635,7 @@ Keyword search (FR-DISC-04) is scoped by the radius, as the result count says: *
 
 ### `3.8` — Saved gigs
 
-**Reached from** `3.1`, `3.1f`, `3.1x130` (Saved)  ·  **Leads to** `3.12h`, `3.12g`  ·  **Exits** back → history
+**Reached from** `3.1`, `3.1f`, `3.1x130` (Saved)  ·  **Leads to** `3.12c`, `3.12g`  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -651,18 +651,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 43x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Expired"
       TEXT meta 187x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "No longer accepting applications"
-    FRAME savedDead 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      FRAME topRow 300x24 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT title 217x24 [FILL/HUG] · fill color/text/secondary · mobile/body-medium · "House move helpers"
-        INSTANCE Display/Badge 75x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Expired}
-          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
-          TEXT label 43x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Expired"
-      TEXT meta 187x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "No longer accepting applications"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
-      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
-      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · Colombo 05 · 3.1 km away"
-      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 4,500 for the job"
-      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 5 Sep 2026, 8:00 AM"
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 1.9 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
       TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Data entry — work from home"
       TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Retail · Maharagama · 4.8 km away"
@@ -671,8 +664,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ```
 
 **Saved gigs, read on or after Mon 31 Aug** — the day the scam posting appeared, which is why it is
-here at all. By then Event setup has run (29 Aug), so it shows as an expired row, like House move helpers;
-House cleaning (5 Sep) is still open. Expired rows are not links: there is nothing left to apply for.
+here at all. Three saves: Event setup, which started on 29 Aug and so shows as an expired row (expired rows
+are not links — there is nothing left to apply for); Café service crew, still open (Fri 4 Sep) and a link to
+its detail; and the scam posting. Until 2026-09-23 the list also held House move helpers, which expired on
+12 Aug, two weeks before Kavindu registered, so he could never have saved it.
 The scam posting's card reads the way the posting form would have made it (M2 pass, 2026-09-23): an
 allowed category (Retail — FR-POST-02 has no "Other"), a real area (Maharagama, 4.8 km), a fixed total
 (FR-POST-04) and a start date (FR-POST-01). The scam lives in its description, not in fields the form
@@ -740,7 +735,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Shop assistant — weekend"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Retail · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
-      TEXT pay 300x26 [FIXED/HUG] · fill color/text/primary · mobile/display-number · "Rs 3,500 per day"
+      TEXT pay 300x26 [FIXED/HUG] · fill color/text/primary · mobile/display-number · "Rs 7,000 for the job"
       TEXT fillStart 300x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 8:00 AM"
     TEXT description 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Help at the counter, restock shelves and keep the shop tidy through the weekend rush."
     INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=Area}
@@ -765,11 +760,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
 
-The Shop assistant detail — Kavindu's first application.
+The Shop assistant detail — Kavindu's first application, before 8:00 AM on Thursday. **A one-off gig,
+so it quotes a fixed total** — Rs 7,000 for the weekend (FR-POST-04); until 2026-09-23 it read "Rs 3,500 per
+day", a rate format only part-time jobs take. It is not yet urgent: the start is just over 48 hours away until
+8:00 AM, which is why the badge is hidden.
 
 ### `3.12c` — Listing detail, job-seeker view · Café service crew
 
-**Reached from** `3.1`, `3.1x130`, `3.2`  ·  **Leads to** [M4](M4-applying.md) `4.1c` (Apply)  ·  **Exits** back → history
+**Reached from** `3.1`, `3.1x130`, `3.2`, `3.8`  ·  **Leads to** [M4](M4-applying.md) `4.1c` (Apply)  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -781,7 +779,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Café service crew — evenings"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Food service · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
-      TEXT pay 300x26 [FIXED/HUG] · fill color/text/primary · mobile/display-number · "Rs 3,000 per day"
+      TEXT pay 300x26 [FIXED/HUG] · fill color/text/primary · mobile/display-number · "Rs 6,000 for the job"
       TEXT fillStart 300x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
     TEXT description 328x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Serve tables and clear up during the Friday evening rush. Two evenings, 6 to 11 pm. Meal included."
     INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=Area}
@@ -806,11 +804,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
 
-The Café detail. It starts Fri 4 Sep, so the date is written out.
+The Café detail. It starts Fri 4 Sep, so the date is written out. Two evenings, one-off: Rs 6,000 for
+the job (it read "Rs 3,000 per day" until 2026-09-23).
 
 ### `3.12h` — Listing detail, job-seeker view · House cleaning
 
-**Reached from** `3.1`, `3.1x130`, `3.2`, `3.8`  ·  **Leads to** [M4](M4-applying.md) `4.1h` (Apply)  ·  **Exits** back → history
+**Reached from** `3.1`, `3.1x130`, `3.2`  ·  **Leads to** [M4](M4-applying.md) `4.1h` (Apply)  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1067,7 +1066,7 @@ a connection"* — because applying writes to the server.
 
 ### `3.10x` — Notification history · the first evening (27 Aug)
 
-**Reached from** the Notifications tab on Thursday's Browse screens (`3.1`, `3.1f`, `3.1ldg`, `3.1ofl`, `3.1x130`), `3.10ldg` (after 1.5 s)  ·  **Leads to** `3.12t`, `3.12o`, `3.12` (rows), `3.11` (Preferences), `3.1` (Browse tab)
+**Reached from** the Notifications tab on Thursday's Browse screens (`3.1`, `3.1f`, `3.1ldg`, `3.1ofl`, `3.1x130`), `3.10ldg` (after 1.5 s)  ·  **Leads to** [M4](M4-applying.md) `4.3e`, `3.12t`, `3.12o`, `3.12` (rows), `3.11` (Preferences), `3.1` (Browse tab)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1075,6 +1074,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME titleRow 328x44 [FILL/HUG] · horizontal pad 0 gap 12
       TEXT screenTitle 225x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Notifications"
       TEXT prefsLink 91x44 [FIXED/FIXED] · fill color/brand/primary · mobile/body · align right · "Preferences"
+    INSTANCE Display/NotificationRow 328x152 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x128 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed) changed"
+        TEXT body 286x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "The start moved to Sat 29 Aug 2026, 7:00 AM · you can withdraw if it no longer suits you"
+        TEXT time 38x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "1h ago"
     INSTANCE Display/NotificationRow 328x108 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
       ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
@@ -1092,14 +1097,19 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
         TEXT title 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Urgent gig near you"
         TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Rs 6,000 for the job · 4.5 km · starts Sat 5:00 AM"
-        TEXT time 45x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "12h ago"
+        TEXT time 45x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "13h ago"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Worker} · [standard, see header]
 ```
 
-**Thursday 27 Aug, 8 PM — the same day as `3.1`.** Three rows, newest first:
-- **New gig near you** — the tutoring job, posted two hours earlier.
-- **New gig near you** — Office cleaning in Kirulapone.
-- **Urgent gig near you** — the morning's Event setup push.
+**Thursday 27 Aug, 8 PM — the same day as `3.1`.** Four rows, newest first:
+- **Event setup crew (3 needed) changed** (1h ago) — Lanka Events moved the start to 7:00 AM at about 7 PM
+  (M2 `2.11e2`), and Kavindu's application is still pending, so he is told what changed and that he can
+  withdraw (FR-APPLY-10's `APPLICATION_TERMS_CHANGED`, added 2026-09-23). It opens his applications list
+  with the new closing time (M4 `4.3e`).
+- **New gig near you** — the tutoring job, posted at about 6 PM.
+- **New gig near you** — Office cleaning in Kirulapone, posted at about 3 PM.
+- **Urgent gig near you** — the Event setup push, sent as the gig went live at about 7:00 AM (FR-NOTIF-01),
+  so "13h ago". Kavindu had registered and allowed notifications before then.
 
 Café, House cleaning, Shop assistant and Delivery rider are absent, because they were posted before
 Kavindu registered. The bodies follow A11 (*title · pay + basis · distance · starts*).
@@ -1110,7 +1120,7 @@ notifications are never batched.
 
 ### `3.10pd` — Notification history · push notifications denied
 
-**Reached from** the Notifications tab when push is denied  ·  **Leads to** `3.12t`, `3.12o`, `3.12` (rows), `3.11pd` (Preferences), `3.1` (Browse tab)
+**Reached from** the Notifications tab when push is denied  ·  **Leads to** [M4](M4-applying.md) `4.3e`, `3.12t`, `3.12o`, `3.12` (rows), `3.11pd` (Preferences), `3.1` (Browse tab)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1120,6 +1130,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME titleRow 328x44 [FILL/HUG] · horizontal pad 0 gap 12
       TEXT screenTitle 225x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Notifications"
       TEXT prefsLink 91x44 [FIXED/FIXED] · fill color/brand/primary · mobile/body · align right · "Preferences"
+    INSTANCE Display/NotificationRow 328x152 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x128 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed) changed"
+        TEXT body 286x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "The start moved to Sat 29 Aug 2026, 7:00 AM · you can withdraw if it no longer suits you"
+        TEXT time 38x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "1h ago"
     INSTANCE Display/NotificationRow 328x108 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
       ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
@@ -1137,11 +1153,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
         TEXT title 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Urgent gig near you"
         TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Rs 6,000 for the job · 4.5 km · starts Sat 5:00 AM"
-        TEXT time 45x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "12h ago"
+        TEXT time 45x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "13h ago"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Worker} · [standard, see header]
 ```
 
-The same evening with push permission denied. `pdBanner` (`FormBanner {Kind=Info}`, not Error —
+The same evening with push permission denied — the same four rows. `pdBanner` (`FormBanner {Kind=Info}`, not Error —
 nothing failed, the user chose) says the list still works, and it does: every row is live. That is
 FR-NOTIF-09 satisfied, not a courtesy. Its Preferences link goes to `3.11pd`.
 
@@ -1177,8 +1193,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ```
 
 **Wed 2 Sep, minutes after the moderator's question.** Newest first: the question (with its
-text and its 24-hour deadline, as A11 asks), then the cancellation request (30 Aug), then the change to
-the tutoring start (29 Aug). The dispute's later rows do not exist yet — which is why the demo's clarification
+text and its 24-hour deadline, as A11 asks), then the cancellation request (31 Aug), then the change to
+the tutoring start (29 Aug). The request is dated **31 Aug** ("2d ago"). The dispute's later rows do not exist yet — which is why the demo's clarification
 journey opens here and not on `3.10`.
 
 ### `3.10r` — Notification history · the ruling (4 Sep)
@@ -1269,7 +1285,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
         TEXT title 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Cancellation requested"
         TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Grade 8 maths tutoring · Dilrukshi Herath: schedule conflict · respond within 48 hours"
-        TEXT time 40x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "6d ago"
+        TEXT time 40x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "5d ago"
     INSTANCE Display/NotificationRow 328x108 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
       ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
       FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
@@ -1284,7 +1300,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 - **Rate your engagement** (4 Sep).
 - **Your case is resolved** (4 Sep).
 - **Question about your case** (2 Sep).
-- **Cancellation requested**, with its reason (30 Aug).
+- **Cancellation requested**, with its reason (31 Aug, "5d ago").
 - **Grade 8 maths tutoring changed** (29 Aug).
 
 Thursday's gig rows are further down the history, off the bottom of this frame.
@@ -1387,7 +1403,7 @@ Notifications tab on Thursday's screens opens this one instead.
 
 ### `3.10e` — Notification history · employer (Lanka Events)
 
-**Reached from** the employer's Notifications tab after the engagement completed  ·  **Leads to** [M6](M6-ratings.md) `6.1e`, [M4](M4-applying.md) `4.5s` ×3 (rows) · `3.11e` (Preferences)
+**Reached from** the employer's Notifications tab after the engagement completed  ·  **Leads to** [M6](M6-ratings.md) `6.1e`, [M4](M4-applying.md) `4.5x` ×3 (rows) · `3.11e` (Preferences)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1427,8 +1443,8 @@ APPLICATION_RECEIVED row per applicant** — FR-NOTIF-04 notifies the employer o
 gives the row the applicant's name. Three rows replaced the old *"3 people applied"* summary. Three rows
 with no NotificationType and no requirement behind them were dropped: *Engagement completed* (completion
 is what opens the rating window, already the top row), *Re-confirmation received*, and *Your gig is
-live*. Read on Saturday, the applicant rows open the pool after Nethmi's selection (M4 `4.5s`), not the
-Thursday pool `3.10ea` leads to.
+live*. Read on Saturday, after the gig started at 7:00 AM, the applicant rows open the pool as it closed
+(M4 `4.5x`: Nethmi selected, Kavindu and Tharindu not selected), not the Thursday pool `3.10ea` leads to.
 
 ### `3.10ez` — Notification history · employer, first run
 
@@ -1639,10 +1655,10 @@ on different dates; within a journey, time only moves forward.
 
 | When | Screens | What is true then |
 | --- | --- | --- |
-| **Thu 27 Aug, early** | `3.9`, `3.3` | Kavindu registers; the two prompts follow (A10) |
+| **Thu 27 Aug, before 7:00 AM** | `3.9`, `3.3` | Kavindu registers; the two prompts follow (A10) |
 | **Thu 27 Aug, ~7:45 AM** | `3.1` family, `3.5`–`3.8`\*, `3.12` family | Five gigs within 5 km; only Event setup is urgent — Lanka Events posted it at about 7:00 AM and nobody has applied yet, so it reads 0 of 3 filled. The first-run user, in Homagama, sees `3.4` → `3.2` the same morning |
 | **Thu 27 Aug, ~8:40 AM** | `3.10ea` | Lanka Events' three applications have arrived (the employer's side of the same morning) |
-| **Thu 27 Aug, 8 PM** | `3.10x`, `3.10pd`, `3.11`, `3.11pd` | Tutoring and office cleaning posted that afternoon; the morning's urgent push |
+| **Thu 27 Aug, 8 PM** | `3.10x`, `3.10pd`, `3.11`, `3.11pd` | Office cleaning posted at ~3 PM, tutoring at ~6 PM; the Event setup start moved at ~7 PM; the morning's urgent push |
 | **Mon 31 Aug on** | `3.8`, `3.12g` | The scam posting has appeared and been reported; Event setup has run |
 | **Wed 2 Sep** | `3.10q` | The moderator's question |
 | **Fri 4 Sep** | `3.10r` | The ruling, and the rating window it opens |
@@ -1671,7 +1687,8 @@ table gives that type. Bodies carry the content A11 names in whatever words fit.
 | Ratings are in | `RATING_REVEALED` | `3.10` | [M6](M6-ratings.md) `6.3` |
 | Cancellation requested | `CANCELLATION_REQUEST` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.9` |
 | Grade 8 maths tutoring changed | `MATERIAL_CHANGE` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.11` |
-| New applicant for Event setup crew (3 needed) | `APPLICATION_RECEIVED` | `3.10ea` ×3, `3.10e` ×3 | [M4](M4-applying.md) `4.5` (from `3.10ea`), `4.5s` (from `3.10e`) |
+| Event setup crew (3 needed) changed | `APPLICATION_TERMS_CHANGED` | `3.10x`, `3.10pd` | [M4](M4-applying.md) `4.3e` |
+| New applicant for Event setup crew (3 needed) | `APPLICATION_RECEIVED` | `3.10ea` ×3, `3.10e` ×3 | [M4](M4-applying.md) `4.5` (from `3.10ea`), `4.5x` (from `3.10e`) |
 | Your endorsement paid off | `ENDORSEMENT_PAYOFF` | `3.10v` ×2 | [M8](M8-endorsement.md) `8.5` |
 
 Row links into other modules cross pages, so they are wired in the demo rather than on this page.
@@ -1712,11 +1729,8 @@ same rule.
 
 ## Open, and carried to the modules that own them
 
-- **M4's application lists still count "Closes in N days" from Tue 1 Sep.** But
-  Kavindu's browsing and applying sit on Thu 27 Aug: he has to have applied for the tutoring job before Dilrukshi changed
-  it on 29 Aug. Those counts are re-dated when M4 is specified.
 - **M1's Settings (`1.10`) holds the same two toggles as `3.11`, drawn Off.** FR-NOTIF-03 puts them in
   Settings; one of the two screens has to go or defer to the other. This is settled when M1 is specified.
-- **Two notifications have no type.** FR-APPLY-10 notifies pending applicants of a material change, and
-  M8's revocation promises "the person is told". Neither has a `NotificationType` or an A11 row. They are
-  requirements gaps, not prototype ones.
+- **One notification has no type.** M8's revocation promises "the person is told", but there is no
+  `NotificationType` or A11 row for it — a requirements gap, not a prototype one. (FR-APPLY-10's notice to
+  pending applicants was the other; it became `APPLICATION_TERMS_CHANGED` on 2026-09-23.)

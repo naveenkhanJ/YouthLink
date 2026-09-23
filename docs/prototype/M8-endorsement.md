@@ -773,35 +773,69 @@ notifications, and the badge would be the first thing promising otherwise.
 
 ### `8.7` — Endorsement suggestion (dialog)
 
-**Reached from** [M4](M4-applying.md) `4.3n`  ·  **Leads to** `8.1` (See my code), history back (Not now)
+**Opens over** [M4](M4-applying.md) `4.3n` on Friday 28 Aug, when the third employer declines  ·  **Leads to** `8.1` (See my code), [M4](M4-applying.md) `4.3n` (Not now)
 
 ```
-FRAME 360x800 · absolute · fill color/bg/subtle
-  FRAME content 360x744 [FIXED/FIXED] @0,0 · vertical pad 66/16/16/16 gap 12
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 12
     TEXT screenTitle 184x32 [HUG/HUG] · fill color/text/primary · mobile/display · "My applications"
-    FRAME app-Pending 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+    FRAME app-Pending-E 328x144 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
         TEXT title 213x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
         INSTANCE Display/Badge 79x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Pending}
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
           TEXT label 47x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Pending"
-      TEXT meta 93x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes in 2 days"
-    FRAME app-Pending-2 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      TEXT meta 263x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Sat 29 Aug 2026, 7:00 AM · 1 of 3 filled"
+      INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
+    FRAME app-Pending-S 328x120 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       FRAME topRow 300x24 [FILL/HUG] · horizontal pad 0 gap 8
         TEXT title 213x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Shop assistant — weekend"
         INSTANCE Display/Badge 79x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Pending}
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
           TEXT label 47x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Pending"
-      TEXT meta 93x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes in 5 days"
-    FRAME app-Pending-3 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      TEXT meta 192x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Sat 29 Aug 2026, 8:00 AM"
+      INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
+    FRAME app-Pending-T 328x120 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       FRAME topRow 300x24 [FILL/HUG] · horizontal pad 0 gap 8
         TEXT title 213x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Grade 8 maths tutoring"
         INSTANCE Display/Badge 79x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Pending}
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
           TEXT label 47x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Pending"
-      TEXT meta 93x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes in 6 days"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Ordered by closing date — soonest first."
-  INSTANCE Chrome/TabBar 360x64 [FIXED/FIXED] @0,736 · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+      TEXT meta 137x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Sat 26 Sep 2026"
+      INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
+    FRAME app-Declined-H 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 210x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
+        INSTANCE Display/Badge 82x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Declined}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
+          TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Declined"
+      TEXT meta 145x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Declined by the employer"
+    FRAME app-Declined-D 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x24 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 210x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Delivery rider — mornings"
+        INSTANCE Display/Badge 82x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Declined}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
+          TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Declined"
+      TEXT meta 145x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Declined by the employer"
+    FRAME app-Declined-O 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 210x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Office cleaning — Kirulapone"
+        INSTANCE Display/Badge 82x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Declined}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
+          TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Declined"
+      TEXT meta 145x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Declined by the employer"
+    FRAME app-Withdrawn-C 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 198x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
+        INSTANCE Display/Badge 94x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Withdrawn}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
+          TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
+      TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
+    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   FRAME promptCard 328x196 [HUG/HUG] @16,302 · vertical pad 20/20/16/20 gap 12 · fill color/bg/default · r12
     TEXT promptTitle 288x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "No luck yet?"
@@ -815,8 +849,13 @@ FRAME 360x800 · absolute · fill color/bg/subtle
 
 **This is the only M8 screen with a Worker tab bar**, because it is the *endorsed* person's screen, not the
 Verifier's. It is an M4 applications list with a prompt over it, filed here because the prompt is what the
-screen is for: `FR-ENDORSE-13` suggests an endorsement to a zero-history worker whose applications are not
-landing.
+screen is for: **FR-ENDORSE-14** suggests an endorsement to a worker with no history and no endorsement
+once three of their applications have ended unselected. The backdrop is Kavindu's list on Friday morning
+(M4's `4.3n`): House cleaning, Delivery rider and Office cleaning have just declined him — the third
+unselected outcome — while Event setup, Shop assistant and tutoring are still pending and Café is the one he
+withdrew. His own withdrawal does not count towards the three, and pending applications never did (the
+requirement's acceptance criteria, amended 2026-09-23). Until that pass the backdrop was an all-pending
+list, and the suggestion fired over three applications that had not ended at all.
 
 **`promptCard` is a hand-built frame, not `Feedback/ConfirmDialog`** — pad 20/20/16/20 against the
 component's 20 all round, and 196 tall against 160. It is a prompt rather than a confirmation: two
@@ -824,8 +863,9 @@ different actions, neither destructive, so the component's title-body-actions sh
 proportions do not. **Recorded rather than changed**, because adopting the component would alter a
 released screen for consistency alone.
 
-**The frame is absolutely positioned** — the only one in this module — so `@x,y` appears on its children.
-The card sits at `@16,302`, roughly optically centred rather than mathematically.
+**The frame is vertical auto layout, with the scrim and the card absolutely positioned over it** — the
+same structure as every other list in M4, which it was not until 2026-09-23 (its `content` was a fixed 744
+and ran 8 px under the tab bar). The card sits at `@16,302`; at 196 tall its centre is the frame's centre.
 
 ---
 

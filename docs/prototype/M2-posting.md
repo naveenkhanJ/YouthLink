@@ -269,8 +269,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]
 ```
 
-**Dilrukshi Herath, Thursday 27 Aug, early afternoon** — the part-time tutoring job Kavindu applies
-for that evening. "Step 1 of 7", like every posting at this point: the arrangement is chosen on step 3.
+**Dilrukshi Herath, Thursday 27 Aug, a little before 6:00 PM** — the part-time tutoring job Kavindu
+applies for that evening (its new-gig row in his 8 PM history, M3 `3.10x`, reads "2h ago"). "Step 1 of 7", like every posting at this point: the arrangement is chosen on step 3.
 
 ### `2.2t` — Category picker · tutoring
 
@@ -1098,7 +1098,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]
 ```
 
-**Dilrukshi, Thursday afternoon, just after posting.** The tutoring job at 0 of 1 with no applicants,
+**Dilrukshi, Thursday about 6:00 PM, just after posting.** The tutoring job at 0 of 1 with no applicants,
 and her expired House move helpers.
 
 ### `2.11d` — Posting detail, owner view · tutoring (Dilrukshi)
@@ -1476,8 +1476,8 @@ only moves forward.
 | **Thu 27 Aug, ~7:00 AM** | `2.9e`, `2.10p`, `2.11p`, `2.11pe`, `2.11pw`, `2.10w`, `2.11x` | Posted, urgent, nobody has applied. `2.11pw` → `2.10w` → `2.11x` is the branch where it is withdrawn at once |
 | **Thu 27 Aug, 7:50–8:40 AM** | — (M3 `3.10ea`, M4 `4.5`) | Nethmi, Kavindu and Tharindu apply; the employer opens the pool from the notifications |
 | **Thu 27 Aug, after Nethmi is selected** | `2.10`, `2.11`, `2.11f`, `2.11ex` | 1 of 3 filled; Kavindu and Tharindu pending |
-| **Thu 27 Aug, ~7:00 PM** | `2.11e`, `2.11e2`, `2.11c` | The start moves to 7:00 AM; Nethmi has until Fri 28 Aug, 1:00 PM |
-| **Thu 27 Aug, early afternoon** | `2.1t`–`2.9t`, `2.10db`, `2.9et`, `2.10d`, `2.11d`, `2.11de`, `2.11dw`, `2.10dw`, `2.11dx`, `2.11hx` | Dilrukshi posts the tutoring job; the withdrawal is a branch the worker story does not take |
+| **Thu 27 Aug, ~6:00 PM** | `2.1t`–`2.9t`, `2.10db`, `2.9et`, `2.10d`, `2.11d`, `2.11de`, `2.11dw`, `2.10dw`, `2.11dx`, `2.11hx` | Dilrukshi posts the tutoring job; the withdrawal is a branch the worker story does not take |
+| **Thu 27 Aug, ~7:00 PM** | `2.11e`, `2.11e2`, `2.11c` | The start moves to 7:00 AM; Nethmi has until Fri 28 Aug, 1:00 PM, and the two pending applicants are told |
 | **31 Aug – 4 Sep** | `2.10g`, `2.11g` | R. Gunasekara's posting, hidden after three reports and under review |
 | **No date** | `2.10z`, `2.1n`, `2.8err`, `2.9bnr`, `2.1rst` | A new account, a blank form, and the failure states |
 
@@ -1530,14 +1530,8 @@ the kept form). The demo routes the other three tabs per role and per journey.
 
 - **M5: `2.11f` (Thursday) opens `5.3t`, which shows Friday's arrival already confirmed.** The engagement
   detail needs its Thursday state, or the link a Friday source.
-- **M4: the pool after the posting has expired.** M3's `3.10e` is read on Saturday, after the start, and its
-  applicant rows open `4.5s`, where Kavindu and Tharindu are still pending — by then they have been resolved
-  as not selected.
 - **M1, M3, M5: Dilrukshi's and R. Gunasekara's Notifications, Engagements and Profile tabs** still open
   Lanka Events' screens, because neither has hub screens of their own. Their Postings and Post a Gig tabs
   are correct.
-- **M3 and M4: two one-off gigs quote a daily rate.** Shop assistant (Rs 3,500 per day) and Café service crew
-  (Rs 3,000 per day) are one-off gigs, and FR-POST-04 gives a gig a fixed total. Corrected with the applying
-  screens.
 - **M5: `5.12` states the amended window** ("until Fri 28 Aug 2026, 1:00 PM"); the worker's side of the same
   change, and the requirement's other three rules, are specified there.

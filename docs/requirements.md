@@ -893,6 +893,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given a pool with rated, endorsed-unrated, and unendorsed-unrated applicants, when displayed, then tier 1 (by rating) appears first, tier 2 (endorsed) next, tier 3 (unendorsed) last.
 - Given two tier-1 applicants share the same average rating, when sorted, then the one with the higher completion rate ranks first.
+- Given two applicants share tier 2 or tier 3, when sorted, then the earlier application ranks first.
+
+> **Amended 2026-09-23 (M4 review).** Tiers 2 and 3 had no order within them, so two developers would sort the same pool differently. Earliest application first: it is stable, needs no data the tier does not already have, and rewards applying promptly — which matters most for the urgent postings these pools usually belong to.
 
 #### FR-APPLY-05 — Employer applicant view
 
@@ -973,6 +976,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a Pending applicant exists and the Employer changes pay or start time before selection, when the change is saved, then that applicant receives a notification of the change.
+
+> **Amended 2026-09-23 (M4 review).** The notification this requirement promises had no `NotificationType`, so nothing could send it. It is **`APPLICATION_TERMS_CHANGED`** — title *"{title} changed"*, body *what changed · you can withdraw if it no longer suits you*, opening the applicant's own application list (FR-APPLY-12). It is distinct from `MATERIAL_CHANGE`, which asks an engaged worker to re-confirm (FR-ENG-09): a pending applicant is informed, not asked. It fires for every material change while the application is Pending, before or after other slots fill.
 
 #### FR-APPLY-11 — No application cap
 
@@ -1506,6 +1511,9 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a zero-history, unendorsed worker has submitted 3 applications with no selection, when the 3rd unselected outcome is reached, then the one-time suggestion with a direct link is shown.
+- Given one of those applications was withdrawn by the worker, when unselected outcomes are counted, then the withdrawal does not count — only Declined and Not selected do.
+
+> **Amended 2026-09-23 (M4 review).** "Unselected outcome" was undefined. A withdrawal is the worker's own choice and says nothing about how employers see them, so it does not count; Declined (FR-APPLY-08) and Not selected (FR-APPLY-09) do.
 
 #### FR-ENDORSE-15 — Verifier code-entry prompt
 
@@ -2004,6 +2012,7 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 > | `APPLICATION_SELECTED` | You're selected for {title} | start time · employer name | engagement detail |
 > | `APPLICATION_DECLINED` | Update on {title} | you weren't selected this time | own application |
 > | `APPLICATION_NOT_SELECTED` | Update on {title} | the posting has closed | own application |
+> | `APPLICATION_TERMS_CHANGED` | {title} changed | what changed · you can withdraw if it no longer suits you | own application list *(added 2026-09-23, FR-APPLY-10)* |
 > | `MATERIAL_CHANGE` | {title} changed | what changed · respond by {deadline} (FR-ENG-09) | re-confirmation |
 > | `CANCELLATION_REQUEST` | Cancellation requested | reason · respond within 48h | respond screen |
 > | `CANCELLATION_RESOLVED` | Cancellation {outcome} | accepted / rejected / auto-resolved | engagement detail |
