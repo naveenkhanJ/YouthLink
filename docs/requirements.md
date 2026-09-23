@@ -1035,6 +1035,13 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-27 (batch A17).** Failed code entries are **recorded, never locked out**: a per-checkpoint failed-attempt counter (schema batch) increments on each wrong entry and is displayed in the Moderator's code-exchange history (FR-MOD-01). No lockout — a worker mistyping at the kerb must not brick the arrival checkpoint — but guessing stops being silently free: an implausible attempt count is visible evidence in any later dispute. Codes do not expire, deliberately: an expiring arrival code would strand a legitimately delayed worker.
 
+> **Amended 2026-09-24 (M5 review) — order and scope of the codes.** Two things the criteria above assumed without stating. **(1) The checkpoints are sequential.** Completion becomes enterable only once arrival is confirmed, and payment only once completion is — a later checkpoint shows *Not reached* until then. Without this, a worker could confirm completion of work nobody saw them arrive for, and the order FR-MOD-01's code-exchange history reads in would not be the order events happened. **(2) One set of three codes per Engagement, whatever the arrangement.** A Part-time Engagement is not issued fresh codes per session or shift; its arrival checkpoint is the first session, and it reaches closure through End Engagement (FR-ENG-12). This is FR-ENG-04's per-Engagement scoping applied along time rather than across workers — each Engagement has its own codes, and only one set of them.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given arrival has not been confirmed, when the worker opens the Engagement, then completion shows as not yet reached and cannot be entered.
+- Given a Part-time Engagement with sessions on several days, when its checkpoints are generated, then there is one arrival, one completion and one payment code for the whole Engagement.
+
 #### FR-ENG-02 — Unpaid internship checkpoint exception
 
 | Actor(s) | Priority |
@@ -1077,13 +1084,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall let either party request cancellation of a not-yet-started regular Engagement, requiring a reason from a fixed list (Schedule conflict, Gig details no longer suitable, Found other work, Personal or family emergency, Other), with a 48-hour response window for the other party to accept or reject. No response within 48 hours shall auto-resolve against the non-responder. A cancellation submitted within 24 hours of start shall be classified Late.
+**Requirement:** The system shall let either party request cancellation of a not-yet-started Engagement whose start is **more than 48 hours away at the moment the request is made**, requiring a reason from a fixed list (Schedule conflict, Gig details no longer suitable, Found other work, Personal or family emergency, Other), with a 48-hour response window for the other party to accept or reject. No response within 48 hours shall auto-resolve against the non-responder. The regime is fixed when the request is sent. A regular cancellation is never classified Late.
 
 **Acceptance Criteria:**
 
 - Given a cancellation request is submitted with a reason from the fixed list, when sent, then the other party has 48 hours to accept or reject.
 - Given no response arrives within 48 hours, when the window closes, then the request auto-resolves against whoever did not respond.
-- Given a cancellation is submitted less than 24 hours before start, when classified, then it is marked Late.
+- Given a request was sent under regular rules, when the posting's start is later edited, then the request keeps the regime it was sent under.
+- Given a regular cancellation takes effect, when it is classified, then it is not marked Late.
+
+> **Amended 2026-09-24 (M5 review) — the regime is decided at the moment of cancellation.** As written, this requirement and FR-ENG-06 split on the *posting's* urgency, while FR-POST-07 makes urgency dynamic: every posting becomes urgent in its last 48 hours. So a regular Engagement could never reach its last 24 hours as regular, and the *"within 24 hours of start → Late"* rule above could never fire. Deciding the regime **at the moment of cancellation** — more than 48 hours to the start is regular, 48 hours or less is urgent (FR-ENG-06) — gives every Engagement exactly one rule at every moment, and it is what the prototype's own copy already said (*"fixed when you sent it"*). A regular request is always sent more than 48 hours out, so it cannot be late; the late-cancellation case it was meant to catch moves to FR-ENG-06 as its 24-hour clause.
 
 #### FR-ENG-06 — Cancellation (urgent gig)
 
@@ -1091,12 +1101,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall apply cancellation on an urgent Engagement immediately, with no approval window, still requiring a reason from the fixed list. A cancellation submitted within 6 hours of start shall be classified Late.
+**Requirement:** The system shall apply cancellation immediately, with no approval window, to a not-yet-started Engagement whose start is **48 hours away or less at the moment of cancellation**, still requiring a reason from the fixed list. The cancellation shall be classified Late if it is submitted within 6 hours of the start, or within 24 hours of the start when the Engagement was created more than 48 hours before the start.
 
 **Acceptance Criteria:**
 
 - Given a cancellation is submitted on an urgent Engagement, when sent, then it takes effect immediately without awaiting the other party's response.
 - Given the cancellation is submitted less than 6 hours before start, when classified, then it is marked Late.
+- Given an Engagement created three days before its start is cancelled 12 hours before the start, when classified, then it takes effect immediately and is marked Late.
+- Given an Engagement created 30 hours before its start is cancelled 12 hours before the start, when classified, then it takes effect immediately and is not marked Late.
+
+> **Amended 2026-09-24 (M5 review).** Paired with FR-ENG-05's amendment: *urgent* here means the start is 48 hours away or less **when the cancellation is made**, not when the posting was published. Two Late thresholds follow from how far ahead the Engagement was agreed. One booked inside the urgent window was always short-notice work, so only the last 6 hours count as late — the rule this requirement always had. One booked more than 48 hours ahead gave the other party a reasonable expectation of the work; cancelling it within the final 24 hours is exactly the case FR-ENG-05's retired 24-hour clause existed to catch, and it keeps that weight here. Neither threshold changes FR-ENG-07's weight of 2.0.
 
 #### FR-ENG-07 — Completion-rate tracking
 
@@ -1150,6 +1164,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 > 4. **A worker's non-acceptance is not held against them.** When the window closes without acceptance, the Engagement routes into cancellation as before, but that cancellation is attributed to the Employer's change and does not count against the worker's completion rate (FR-ENG-07).
 >
 > Applies equally to FR-ENG-11's per-worker windows, and `MaterialChangeRequest.deadline` is computed from rule 1 rather than fixed.
+
+> **Amended 2026-09-24 (M5 review) — rule 5.** 5. **Declining cancels at once.** A worker who answers *can't make it* does not wait for the window to close: the Engagement is cancelled immediately, attributed to the Employer's change exactly as non-acceptance is under rule 4, so it does not count against the worker's completion rate. Either party may still rate the cancelled Engagement (FR-RATE-05). Holding a declined Engagement open until the deadline would only delay the Employer's search for a replacement, which is the reason rule 1 caps the window in the first place. Under rules 4 and 5 the cancellation is written directly rather than as an FR-ENG-05 request — there is nothing left for anyone to accept.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given a worker declines a material change before its window closes, when the answer is submitted, then the Engagement is cancelled immediately, recorded as the Employer's change, and the worker's completion rate is unaffected.
 
 **Acceptance Criteria (added 2026-09-23):**
 
@@ -1225,6 +1245,13 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 - Given an Engagement on a Part-time or Internship posting, when its start date/time passes, then this mechanism does not apply to it.
 - Given a one-off Gig that genuinely runs longer than 24 hours from its start, when the prompt fires while work is still in progress, then neither party is obliged to act and the Engagement continues normally — an accepted edge case of anchoring to start rather than end.
 
+> **Amended 2026-09-24 (M5 review) — what the prompt offers.** The requirement said when the prompt fires but not what a party can do with it. It offers two things. **Dismiss** (*still running*) closes the prompt and changes nothing, which is the fourth criterion's edge case made into a control. **Update status** opens the earliest unresolved checkpoint (FR-ENG-01's order), where the code can still be entered — codes do not expire — or *unable to confirm* opens a dispute (FR-ENG-03). The prompt does not end or close the Engagement itself. For a one-off Gig, the only routes to closure are the checkpoints and a dispute ruling (FR-ADM-08); End Engagement is Part-time only (FR-ENG-12).
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given the stalled prompt is shown, when a party chooses to dismiss it, then the Engagement is unchanged.
+- Given the stalled prompt is shown with arrival still unconfirmed, when a party chooses to update the status, then the arrival code entry opens, including the unable-to-confirm option.
+
 #### FR-ENG-14 — Engagements list
 
 | Actor(s)                                  | Priority |
@@ -1239,6 +1266,13 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 - Given an Engagement requires something of the viewing party (a code entry, a re-confirmation, a cancellation response, an unclaimed rating), when the list renders, then that Engagement surfaces the required action rather than only a status label.
 
 > **Added 2026-08-27 (batch A14).** FR-ENG previously specified thirteen state transitions and no container — every engagement screen hung off a list no requirement described, while `Engagement`'s `@@index([workerId, status])` and `@@index([employerId, status])` already encoded exactly this query. FR-APPLY-12 was added for precisely the same reason on the applications side.
+
+> **Amended 2026-09-24 (M5 review) — status and owed action are separate.** The status label is always the Engagement's `EngagementStatus` (Active, Completed, Cancelled, Ended, Disputed). The next required action is a separate line, and it names only what **the viewing party** owes, with its deadline where one applies (*"Respond to the dispute — by Wed 2 Sep 2026"*). A row where the viewer owes nothing shows the status alone, even while the other party owes something. The prototype had put an owed action (*Needs response*) inside the status badge, which made one label carry two facts and hid the real status. The two parties' rows for the same Engagement can therefore differ in their action line, never in their status.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given an Engagement where only the other party owes an action, when the viewer's list renders, then the row shows its status and no action line.
+- Given an Engagement with an open cancellation request, when the list renders, then its status reads Active and the responding party's row carries the response and its deadline as the action.
 
 ### 3.7 FR-RATE — Ratings & Reputation
 
@@ -1806,6 +1840,13 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 
 - Given Admin's ruling confirms the Engagement happened and was completed, when the ruling is recorded, then the standard double-blind rating step opens for both parties as normal.
 - Given Admin's ruling confirms a genuine no-show (the Engagement did not happen at all), when the ruling is recorded, then no rating step opens — the reliable party's completion-rate stat receives a positive credit, the unreliable party's a negative mark, and the case closes.
+
+> **Amended 2026-09-24 (M5 review) — what a "happened and completed" ruling does to checkpoints nobody reached.** The first criterion opened the rating step but left the checkpoints where the dispute found them. In the typical case, arrival could not be confirmed, so completion was never reached either, and the Engagement had no path to *Completed*. The ruling now settles every arrival and completion checkpoint it covers that was never confirmed. Each is marked **settled by ruling** with the ruling's date, the Engagement becomes Completed, and the rating step opens. **The payment checkpoint stays open.** A ruling establishes that the work happened, not that the worker was paid, and codes do not expire (FR-ENG-01), so payment is still confirmed the normal way: the worker shares their code once paid. If payment is disputed later, that is a separate case (FR-DISPUTE-03). This needs one new `CheckpointStatus` value, `SETTLED_BY_RULING` (see `database-schema.md`).
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given a dispute opened because arrival could not be confirmed, when Admin rules that the Engagement happened and was completed, then arrival and completion show as settled by ruling with the ruling's date, the Engagement's status becomes Completed, and the rating step opens.
+- Given the same ruling, when the worker opens the Engagement, then the payment checkpoint is still open and their payment code is still available to share.
 
 ### 3.12 FR-DASH — Shared Dashboard Infrastructure
 

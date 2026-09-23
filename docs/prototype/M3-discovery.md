@@ -1163,7 +1163,7 @@ FR-NOTIF-09 satisfied, not a courtesy. Its Preferences link goes to `3.11pd`.
 
 ### `3.10q` — Notification history · the moderator's question (2 Sep)
 
-**Reached from** the Notifications tab on 2 Sep  ·  **Leads to** [M9](M9-disputes.md) `9.2c`, [M5](M5-engagement.md) `5.9`, `5.11` (rows) · `3.11` (Preferences) · `3.1` (Browse tab)
+**Reached from** the Notifications tab on 2 Sep  ·  **Leads to** [M9](M9-disputes.md) `9.2c`, [M5](M5-engagement.md) `5.9` (both tutoring rows) · `3.11` (Preferences) · `3.1` (Browse tab)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1199,7 +1199,7 @@ journey opens here and not on `3.10`.
 
 ### `3.10r` — Notification history · the ruling (4 Sep)
 
-**Reached from** the Notifications tab on 4 Sep  ·  **Leads to** [M6](M6-ratings.md) `6.1`, [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.9`, `5.11` (rows) · `3.11` · `3.1`
+**Reached from** the Notifications tab on 4 Sep  ·  **Leads to** [M6](M6-ratings.md) `6.1`, [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.2tc` (both tutoring rows) · `3.11` · `3.1`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1248,7 +1248,7 @@ The case view shows escalation instead ([M9](M9-disputes.md) `9.2e`).
 
 ### `3.10` — Notification history · after the reveal (5 Sep)
 
-**Reached from** the Notifications tab on 5 Sep, and back from [M6](M6-ratings.md) `6.3s` and [M5](M5-engagement.md) `5.11`  ·  **Leads to** [M6](M6-ratings.md) `6.3`, `6.1`, [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.9`, `5.11` (rows) · `3.11` · `3.1`
+**Reached from** the Notifications tab on 5 Sep, and back from [M6](M6-ratings.md) `6.3s`  ·  **Leads to** [M6](M6-ratings.md) `6.3`, [M5](M5-engagement.md) `5.2d` ("Rate your engagement"), [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.2tc` (both tutoring rows) · `3.11` · `3.1`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1683,15 +1683,15 @@ table gives that type. Bodies carry the content A11 names in whatever words fit.
 | New gig near you | `NEW_GIG` | `3.10x`, `3.10pd` | the listing |
 | Question about your case | `CLARIFICATION_REQUEST` | `3.10`, `3.10q`, `3.10r` | [M9](M9-disputes.md) `9.2c` |
 | Your case is resolved | `DISPUTE_RESOLVED` | `3.10`, `3.10r` | [M9](M9-disputes.md) `9.2f` |
-| Rate your engagement | `RATING_WINDOW_OPEN` | `3.10`, `3.10r`, `3.10e` | [M6](M6-ratings.md) `6.1` / `6.1e` |
+| Rate your engagement | `RATING_WINDOW_OPEN` | `3.10`, `3.10r`, `3.10e` | [M6](M6-ratings.md) `6.1` (from `3.10r`), `6.1e` (from `3.10e`); [M5](M5-engagement.md) `5.2d` from `3.10`, read after the reveal |
 | Ratings are in | `RATING_REVEALED` | `3.10` | [M6](M6-ratings.md) `6.3` |
-| Cancellation requested | `CANCELLATION_REQUEST` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.9` |
-| Grade 8 maths tutoring changed | `MATERIAL_CHANGE` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.11` |
+| Cancellation requested | `CANCELLATION_REQUEST` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.9` (from `3.10q`), `5.2tc` (from `3.10r`, `3.10`) |
+| Grade 8 maths tutoring changed | `MATERIAL_CHANGE` | `3.10`, `3.10q`, `3.10r` | [M5](M5-engagement.md) `5.9` (from `3.10q`), `5.2tc` (from `3.10r`, `3.10`) |
 | Event setup crew (3 needed) changed | `APPLICATION_TERMS_CHANGED` | `3.10x`, `3.10pd` | [M4](M4-applying.md) `4.3e` |
 | New applicant for Event setup crew (3 needed) | `APPLICATION_RECEIVED` | `3.10ea` ×3, `3.10e` ×3 | [M4](M4-applying.md) `4.5` (from `3.10ea`), `4.5x` (from `3.10e`) |
 | Your endorsement paid off | `ENDORSEMENT_PAYOFF` | `3.10v` ×2 | [M8](M8-endorsement.md) `8.5` |
 
-Row links into other modules cross pages, so they are wired in the demo rather than on this page.
+Row links into other modules cross pages, so they are wired in the demo rather than on this page. **A row opens the engagement as it stands on its snapshot's date**, not as it stood when the notification was sent (ruled for M5 on 2026-09-24): on 2 Sep the tutoring engagement's live item is Dilrukshi's pending request, so both tutoring rows open `5.9`; by 4 Sep it is cancelled, so they open `5.2tc`; and on 5 Sep the rating the *Rate your engagement* row announced has been given and revealed, so that row opens the engagement (`5.2d`).
 
 ## Transitions that are not clicks
 

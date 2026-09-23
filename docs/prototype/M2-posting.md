@@ -1528,10 +1528,11 @@ the kept form). The demo routes the other three tabs per role and per journey.
 
 ## Open, and carried to the modules that own them
 
-- **M5: `2.11f` (Thursday) opens `5.3t`, which shows Friday's arrival already confirmed.** The engagement
-  detail needs its Thursday state, or the link a Friday source.
-- **M1, M3, M5: Dilrukshi's and R. Gunasekara's Notifications, Engagements and Profile tabs** still open
-  Lanka Events' screens, because neither has hub screens of their own. Their Postings and Post a Gig tabs
-  are correct.
-- **M5: `5.12` states the amended window** ("until Fri 28 Aug 2026, 1:00 PM"); the worker's side of the same
-  change, and the requirement's other three rules, are specified there.
+- *Closed in the M5 pass (2026-09-24):* `2.11f` (Thursday) now opens `5.3t` in its Thursday state, before
+  the start.
+- **M1, M3: Dilrukshi's and R. Gunasekara's Notifications and Profile tabs** still open Lanka Events'
+  screens, because neither has hub screens of their own. Their Postings and Post a Gig tabs are correct, and
+  their Engagements tab now opens the empty employer list (M5 `5.1ez`), which is true for both.
+- **M5: `5.12` states the amended window** ("until Fri 28 Aug 2026, 1:00 PM"). The worker's side of a
+  material change is drawn for Dilrukshi's tutoring change (`5.11`, with rules 4 and 5); Nethmi's own
+  re-confirmation of this change follows the same pattern and is listed in M5's states not drawn.

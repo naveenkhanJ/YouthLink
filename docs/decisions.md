@@ -123,7 +123,7 @@ Found while drafting FR-APPLY-12, whose first draft claimed a guarantee the life
 
 ## Amendment batch of 2026-08-27 — decisions with no other home
 
-**Thirty-four amendments landed as one batch** (register: the SPM project's `UEE Prototype Screen Specifications.md`), raised while writing screen specifications for every module. Most reasoning lives beside the amended requirement; the entries below are the ones that would otherwise look arbitrary.
+**Thirty-four amendments landed as one batch**, raised while writing screen specifications for every module. Most reasoning lives beside the amended requirement; the entries below are the ones that would otherwise look arbitrary.
 
 **User-facing error messages are full sentences with terminal periods.** Two registers had shipped — Account/Posting's `Title is required.` versus Application's `Posting not found` — and the prototype cannot show both. The sentence register won: it is the majority of shipped strings and the warmer voice for a consumer product. The Application module's eight terse fragments change to match, with its owner's sign-off.
 

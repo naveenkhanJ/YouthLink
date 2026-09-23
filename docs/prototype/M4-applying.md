@@ -1573,7 +1573,7 @@ running 8 px under the tab bar.
 
 ### `4.3r` — My applications · from Saturday 29 Aug
 
-**Reached from** the Applications tab on every established worker screen  ·  **Leads to** [M5](M5-engagement.md) `5.2` (Shop assistant row), [M5](M5-engagement.md) `5.2t` (tutoring row)
+**Reached from** the Applications tab on every established worker screen  ·  **Leads to** [M5](M5-engagement.md) `5.2s` (Shop assistant row), [M5](M5-engagement.md) `5.9` (tutoring row)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1635,7 +1635,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 **From Saturday 29 Aug, after 7:00 AM.** Seven rows, every one resolved:
 - **Selected** — Shop assistant and tutoring. Saman Stores and Dilrukshi selected him on Friday afternoon,
   after Sunil Bandara vouched for him that day. *Contact shared — see engagement*: each row opens its
-  engagement ({M5} `5.2`, `5.2t`), because a selected application's life continues there.
+  engagement ({M5} `5.2s`, `5.9`), because a selected application's life continues there. The demo opens
+  this list in the Monday–Wednesday journey, so the rows open the engagements as they stand that week — the
+  Shop assistant dispute and Dilrukshi's pending cancellation request (M5 pass, 2026-09-24).
 - **Not selected** — the Event setup crew. It started at 7:00 AM with one place filled, and FR-APPLY-09
   resolved every application still pending the moment it closed: *Not selected — the posting closed at its
   start*.
@@ -2876,7 +2878,7 @@ Rs 6,000 for the job — since 2026-09-23; both used to quote a daily rate.
   Friday morning (`4.3n`) bring the suggestion; he shares his code; Sunil Bandara vouches; Saman Stores and
   Dilrukshi select him that afternoon. Tharindu is the endorsed newcomer, through a different verifier.
 - **Shop assistant and Café stay one-off gigs with fixed totals.** The engagement screens that treat Shop
-  assistant as part-time are settled in M5 (below).
+  assistant as part-time were settled in M5: End Engagement is part-time only, so those screens were deleted.
 
 ## Transitions that are not clicks
 
@@ -2910,9 +2912,7 @@ screens, `4.3n` on Friday's, `4.3r` everywhere after, and `4.3ldg` → `4.3e` in
 
 ## Open, and carried to the modules that own them
 
-- **M5: Shop assistant is a one-off gig, but its engagement uses part-time rules.** Its screens offer
-  FR-ENG-12's part-time *End engagement* and FR-ENG-13's one-off stalled prompt at once. The engagement
-  screens now carry the fixed total (Rs 7,000 for the job); the End engagement path is settled in the M5 pass.
-- **M5: `2.11f` (Thursday) opens `5.3t`, which shows Friday's arrival already confirmed** — carried from M2.
-- **M1, M3, M5: Dilrukshi's and R. Gunasekara's Notifications, Engagements and Profile tabs** still open
-  Lanka Events' screens — carried from M2.
+- *Closed in the M5 pass (2026-09-24):* the Shop assistant engagement no longer offers End Engagement, and
+  `5.3t`, which M2's `2.11f` opens on Thursday, now shows the engagement before its start.
+- **M1, M3: Dilrukshi's and R. Gunasekara's Notifications and Profile tabs** still open Lanka Events'
+  screens — carried from M2. Their Engagements tab now opens the empty employer list (M5 `5.1ez`).

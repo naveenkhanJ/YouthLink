@@ -1,6 +1,6 @@
 # M6 — Ratings
 
-Thirteen screens. Read [`design-system.md`](design-system.md) first — this file names components and text
+Fourteen screens. Read [`design-system.md`](design-system.md) first — this file names components and text
 styles rather than describing them, and that file is what the names mean.
 
 **Requirements this module serves:** `FR-RATE-01` · `FR-RATE-02` · `FR-RATE-03` · `FR-RATE-04` ·
@@ -28,6 +28,7 @@ engagement**, never an average carried between them.
 | `6.5b` | `FR-MOD-02`, `FR-RATE-04` |
 | `6.6` | `FR-RATE-03`, `FR-RATE-04`, `FR-RATE-05`, `FR-RATE-06` |
 | `6.6b` | `FR-RATE-04`, `FR-RATE-05` |
+| `6.6d` | `FR-ENG-09`, `FR-RATE-02`, `FR-RATE-05` |
 
 **Sample content is Sri Lankan and consistent across the prototype.** *Saman Stores*, *Nethmi Jayasinghe*,
 *R. Gunasekara* and *Dilrukshi Herath* are the same people on every screen that names them. Keep the names
@@ -37,8 +38,8 @@ when reproducing a screen for review; replace them with real data in the product
 
 ### `6.1` — Rate this engagement
 
-**Reached from** `3.10`, `3.10r`, `5.2b`, `5.5b`, `5.13b`  ·  **Leads to** `6.2`  ·
-**Exits** back → `5.5b` / `5.13b`
+**Reached from** `3.10r`, `5.2b`  ·  **Leads to** `6.2`  ·
+**Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -72,7 +73,7 @@ every mobile screen in this product.**
 The employer's side of `6.1`. **Identical structure, different cast** — the rating mechanism does not vary
 by role, which is why there is no separate component.
 
-**Reached from** `3.10e`, `5.3b`, `5.13eb`  ·  **Leads to** `6.2e`  ·  **Exits** back → `5.3b` / `5.13eb`
+**Reached from** `3.10e`, `5.3b`  ·  **Leads to** `6.2e`  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -120,8 +121,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 
 ### `6.2` — Awaiting reveal
 
-**Reached from** `5.2c`, `5.2ce`, `6.1`  ·  **Leads to** `5.2c`, `5.2ce`  ·
-**Exits** "Back to engagement" → `5.2c` / `5.2ce` · back → `5.2c` / `5.2ce`
+**Reached from** `6.1`, `5.2c` ("View status")  ·  **Leads to** `5.2c`  ·
+**Exits** "Back to engagement" → `5.2c` · back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -135,19 +136,21 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
       VECTOR Vector 22x16 [FIXED/FIXED] @13,17 · stroke color/state/success 3
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
-    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 16 Sep 2026."
+    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 18 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
 
 **The date is computed, not stored per rating.** It is `Engagement.ratingOpenedAt` + 14 days, which is why
-the line can be shown before the other party has done anything.
+the line can be shown before the other party has done anything. For Saman Stores rating opened with the
+ruling on Fri 4 Sep 2026 (FR-ADM-08), so the date is **18 Sep 2026** (M5 `5.2b`). Until 2026-09-24 this read
+a date that matched no opening event.
 
 ### `6.2e` — Awaiting reveal · employer
 
-**Reached from** `5.3c`, `5.3ce`, `6.1e`  ·  **Leads to** `5.3c`  ·
-**Exits** "Back to engagement" → `5.3c` / `5.3ce` · back → `5.3c` / `5.3ce`
+**Reached from** `6.1e`, `5.3c` ("View status")  ·  **Leads to** `5.3c`  ·
+**Exits** "Back to engagement" → `5.3c` · back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -161,11 +164,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
       VECTOR Vector 22x16 [FIXED/FIXED] @13,17 · stroke color/state/success 3
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
-    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 16 Sep 2026."
+    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 12 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
+
+Nethmi's shift completed by codes on Sat 29 Aug 2026, so rating opened then and the date is **12 Sep 2026** (M5 `5.3b`).
 
 ### `6.3` — Revealed ratings
 
@@ -364,7 +369,7 @@ to rate when the work never happened, but how a cancellation was handled is stil
 screen is drawn mid-entry, with three stars chosen, so the submit button is live; the empty state before
 any star is tapped is the first Layer-3 rule at the end of this file.
 
-**Reached from** `5.2tc`  ·  **Leads to** `6.6b`  ·  **Exits** back → `5.2tc`
+**Reached from** `5.2tc`, `5.11d`  ·  **Leads to** `6.6b` — or `6.6d` after a declined change  ·  **Exits** back → `5.2tc` / `5.11d`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -400,8 +405,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 ### `6.6b` — Rate cancelled engagement · submitted, awaiting reveal
 
-**Reached from** `5.2tcr`, `6.6`  ·  **Leads to** `5.2tcr`  ·
-**Exits** "Back to engagement" → `5.2tcr` · back → `5.2tcr`
+**Reached from** `6.6`, `5.2tcr` ("View status")  ·  **Leads to** `5.2tcr`  ·
+**Exits** "Back to engagement" → `5.2tcr` · back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -415,12 +420,41 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
       VECTOR Vector 22x16 [FIXED/FIXED] @13,17 · stroke color/state/success 3
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
-    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 21 Sep 2026."
+    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 14 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
 
+Dilrukshi's cancellation was accepted on Mon 31 Aug 2026 (M5 `5.9b`) — rating opens at cancellation — so the date is **14 Sep 2026**.
+
+
+### `6.6d` — Rate cancelled engagement · submitted after declining the change
+
+**Reached from** `6.6` (after a declined change, M5 `5.11d`), `5.11dr` ("View status")  ·  **Leads to** `5.11dr`  ·
+**Exits** "Back to engagement" → `5.11dr` · back → history
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Dilrukshi Herath"
+    FRAME sentGlyph 48x48 [FIXED/FIXED]
+      ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
+      VECTOR Vector 22x16 [FIXED/FIXED] @13,17 · stroke color/state/success 3
+    TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
+    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 13 Sep 2026."
+    FRAME spacer-grow 328x438 [FILL/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
+```
+
+Added 2026-09-24. The same screen as `6.6b` for the other tutoring branch: Kavindu declined Dilrukshi's start-time
+change on Sun 30 Aug 2026, which cancels at once (FR-ENG-09 rule 5) and opens rating then, so the date is
+**13 Sep 2026**. A separate frame because the date and the engagement it returns to (`5.11dr`) differ.
 ---
 
 ## States not drawn in this module

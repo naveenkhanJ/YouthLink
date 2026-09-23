@@ -1,18 +1,19 @@
 # M9 — Disputes
 
-Thirteen screens covering two different things that both end at a moderator: **reporting a posting**
+Fourteen screens covering two different things that both end at a moderator: **reporting a posting**
 (`9.1`, `9.1d`) and **a dispute over a checkpoint** (everything else). They are separate mechanisms.
 A report is anonymous and about content; a dispute is between two named people about whether something
 happened, and both sides can see it.
 
-**Six of the thirteen are the same screen in different states.** `9.2` and its variants are one case
-detail, and which one you draw depends on the case's status and on who is looking. Four are the reporter's
+**Eight of the fourteen are the same screen in different states.** `9.2` and its variants are one case
+detail, and which one you draw depends on the case's status and on who is looking. Six are the opener's
 view, two are the respondent's — the `context` line always names *the other party*, which is how you tell
 them apart at a glance.
 
 | Screen | Status badge | Whose view |
 | --- | --- | --- |
 | `9.2` | `AwaitingResponse` | the person who opened it |
+| `9.2k` | `AwaitingResponse` | the person who opened it — from completion, on M5's code-exchange branch |
 | `9.2r` | `AwaitingResponse` | the person who must respond |
 | `9.2c` | `UnderReview` | opener, with a question to answer |
 | `9.2u` | `UnderReview` | opener, nothing to do |
@@ -115,7 +116,7 @@ the moment a reporter is deciding whether they regret it.
 
 ### `9.2` — Dispute case
 
-**Reached from** [M5](M5-engagement.md) `5.6`  ·  **Leads to** nothing  ·  **Exits** back → history
+**Reached from** [M5](M5-engagement.md) `5.6` ("Open dispute", from arrival), `5.2s` ("Open the dispute case")  ·  **Leads to** [MHF](MHF-help.md) `HF.4`  ·  **Exits** back → history (after opening the case, → [M5](M5-engagement.md) `5.2s`)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -143,6 +144,36 @@ which is the same case from the other side and *does* carry a pinned button.
 
 **"If they don't, review goes ahead without their side"** is `FR-DISPUTE-07` made visible. A silent
 respondent does not stall the case; the 48-hour window expires and the moderator decides on what exists.
+
+### `9.2k` — Dispute case · opened from completion (code-exchange branch)
+
+**Reached from** [M5](M5-engagement.md) `5.6` ("Open dispute", from the branch's completion code)  ·  **Leads to** [MHF](MHF-help.md) `HF.4`  ·  **Exits** back → history
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dispute case"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+    INSTANCE Display/Badge 136x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Case, Value=AwaitingResponse}
+      ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/urgent
+      TEXT label 104x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Awaiting response"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
+    TEXT trigger 328x48 [FIXED/HUG] · fill color/text/primary · mobile/body · "Opened from: completion could not be confirmed."
+    INSTANCE Display/CountdownText 245x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Deadline}
+      TEXT countdown 245x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Response window closes 1 Sep 2026"
+    TEXT windowNote 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Saman Stores has 48 hours to respond. If they don't, review goes ahead without their side."
+    TEXT visibilityNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You'll see the outcome here when the case is decided."
+    INSTANCE Action/Link 201x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+      TEXT label 201x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How disputes are resolved"
+```
+
+Added 2026-09-24. `9.2` with two lines changed: *"Opened from: completion could not be confirmed."* and *"Response
+window closes 1 Sep 2026"*. It belongs to M5's code-exchange branch — arrival confirmed on Saturday, completion
+disputed on Sunday 30 Aug, so Saman Stores' 48 hours (FR-DISPUTE-04) run to Tue 1 Sep. The canonical case,
+`9.2`, is the arrival dispute opened on Mon 31 Aug; from arrival the same `5.6` opens that one. Its later states
+follow `9.2u` → `9.2f`.
 
 ### `9.2r` — Dispute case · awaiting your response, respondent view
 

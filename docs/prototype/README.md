@@ -20,16 +20,16 @@ than describing them, and that file is what the names mean. The two together are
 | **M2** Posting | 48 | 48 | [`M2-posting.md`](M2-posting.md) |
 | **M3** Discovery | 41 | 41 | [`M3-discovery.md`](M3-discovery.md) |
 | **M4** Applying and selection | 66 | 66 | [`M4-applying.md`](M4-applying.md) |
-| **M5** Engagement lifecycle | 66 | 66 | [`M5-engagement.md`](M5-engagement.md) |
-| **M6** Ratings | 13 | 13 | [`M6-ratings.md`](M6-ratings.md) |
+| **M5** Engagement lifecycle | 57 | 57 | [`M5-engagement.md`](M5-engagement.md) |
+| **M6** Ratings | 14 | 14 | [`M6-ratings.md`](M6-ratings.md) |
 | **M7** Profile | 2 | 2 | [`M7-profile.md`](M7-profile.md) |
 | **M8** Endorsement | 20 | **19** | [`M8-endorsement.md`](M8-endorsement.md) |
-| **M9** Disputes | 13 | 13 | [`M9-disputes.md`](M9-disputes.md) |
+| **M9** Disputes | 14 | 14 | [`M9-disputes.md`](M9-disputes.md) |
 | **M10** Moderation | 41 | **39** | [`M10-moderation.md`](M10-moderation.md) |
 | **M11** Staff dashboard | 68 | **70** | [`M11-dashboard.md`](M11-dashboard.md) |
 | **MHF** Help and FAQ | 5 | 5 | [`MHF-help.md`](MHF-help.md) |
 | **MNAV** Navigation shells | 3 | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
-| **Total** | **482** | **482** | |
+| **Total** | **475** | **475** | |
 
 **The two columns differ for four modules because a Figma prototype link must target a frame on the same
 page**, so five screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
@@ -112,7 +112,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ACC-14` | Must | Email add/change | [M1](M1-account.md) `1.14`, `1.9` |
 | `FR-ACC-15` | Should | Display name editing | [M1](M1-account.md) `1.15`, `1.18`, `1.19` · [M6](M6-ratings.md) `6.3` |
 | `FR-ACC-16` | Should | Posting-as type change | [M1](M1-account.md) `1.16`, `1.5` · [M2](M2-posting.md) `2.9` |
-| `FR-ACC-17` | Must | Account deletion | [M1](M1-account.md) `1.17`, `1.17b`, `1.17be`, `1.17d`, `1.17p` · [M5](M5-engagement.md) `5.1a`, `5.1r`, `5.1x`, `5.2x`, `5.8`, `5.9b`, `5.9r` |
+| `FR-ACC-17` | Must | Account deletion | [M1](M1-account.md) `1.17`, `1.17b`, `1.17be`, `1.17d`, `1.17p` |
 | `FR-ACC-18` | Must | Unified Settings screen | [M1](M1-account.md) `1.10` |
 | `FR-ACC-19` | Must | Terms of Service and Privacy Policy acceptance | [M1](M1-account.md) `1.20` |
 | `FR-ADM-01` | Must | Final dispute ruling | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1r`, `10.2`, `10.2b`, `10.3`, `10.3c`, `10.4`, `10.4e`, `10.5`, `10.5e`, `10.5p`, `10.5pe`, `10.5pr`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b` · [M6](M6-ratings.md) `6.1f` · [M9](M9-disputes.md) `9.2`, `9.2f` |
@@ -121,14 +121,14 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ADM-05` | Must | Posting removal | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1r`, `10.2`, `10.3`, `10.4`, `10.5`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
 | `FR-ADM-06` | Must | Admin/Moderator account bootstrapping | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.3`, `11.7` |
 | `FR-ADM-07` | Must | Separate Admin/Moderator accounts | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.1`, `11.3`, `11.7`, `11.7d`, `11.7ds`, `11.7m`, `11.7r`, `11.7rs` |
-| `FR-ADM-08` | Must | Dispute ruling's effect on the rating step | [M10](M10-moderation.md) `10.5` · [M5](M5-engagement.md) `5.13`, `5.2`, `5.3` · [M6](M6-ratings.md) `6.1` · [M9](M9-disputes.md) `9.2` |
+| `FR-ADM-08` | Must | Dispute ruling's effect on the rating step | [M10](M10-moderation.md) `10.5` · [M5](M5-engagement.md) `5.1c`, `5.2b`, `5.2c`, `5.2d` · [M6](M6-ratings.md) `6.1` · [M9](M9-disputes.md) `9.2` |
 | `FR-APPLY-01` | Must | Listing detail view | [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
 | `FR-APPLY-02` | Must | Apply action | [M4](M4-applying.md) `4.1`, `4.1c`, `4.1d`, `4.1h`, `4.1o`, `4.1s`, `4.1t`, `4.2`, `4.2c`, `4.2d`, `4.2h`, `4.2o`, `4.2s`, `4.2t` |
 | `FR-APPLY-03` | Should | Application withdrawal | [M4](M4-applying.md) `4.4`, `4.4c`, `4.4d`, `4.4h`, `4.4o`, `4.4s`, `4.4t`, `4.3cw`, `4.3dw`, `4.3hw`, `4.3ow`, `4.3sw`, `4.3tw`, `4.3w` |
 | `FR-APPLY-04` | Must | Applicant pool sort order | [M4](M4-applying.md) `4.5`, `4.5d`, `4.5dk`, `4.5dt`, `4.5s`, `4.5sk`, `4.5st`, `4.5x` |
 | `FR-APPLY-05` | Must | Employer applicant view | [M4](M4-applying.md) `4.5`, `4.6`, `4.6k`, `4.6t` |
 | `FR-APPLY-06` | Must | Selection and Engagement creation | [M4](M4-applying.md) `4.7`, `4.7k`, `4.7t`, `4.5s`, `4.5sk`, `4.5st` |
-| `FR-APPLY-07` | Must | Contact reveal on selection | [M4](M4-applying.md) `4.8`, `4.8k`, `4.8t` · [M5](M5-engagement.md) `5.2`, `5.3` |
+| `FR-APPLY-07` | Must | Contact reveal on selection | [M4](M4-applying.md) `4.8`, `4.8k`, `4.8t` |
 | `FR-APPLY-08` | Should | Explicit decline | [M4](M4-applying.md) `4.9`, `4.9k`, `4.9t`, `4.9p`, `4.9pk`, `4.9pt`, `4.5d`, `4.5dk`, `4.5dt`, `4.3n` |
 | `FR-APPLY-09` | Must | Automatic not-selected notification | [M2](M2-posting.md) `2.11pw`, `2.11dw`, `2.11ex`, `2.11hx` · [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.3r`, `4.5x` |
 | `FR-APPLY-10` | Should | Pending-applicant notification on material change | [M2](M2-posting.md) `2.11pe`, `2.11e2` · [M3](M3-discovery.md) `3.10x`, `3.10pd` · [M4](M4-applying.md) `4.3e` |
@@ -147,51 +147,51 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-DISC-06` | Could | Saved/favorited gigs | [M3](M3-discovery.md) `3.8` |
 | `FR-DISC-07` | Could | Filter and sort persistence | [M3](M3-discovery.md) `3.5`, `3.5c` |
 | `FR-DISPUTE-01` | Must | Report action | [M9](M9-disputes.md) `9.1`, `9.2` |
-| `FR-DISPUTE-02` | Must | Report threshold and auto-hide | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M5](M5-engagement.md) `5.2` · [M9](M9-disputes.md) `9.1`, `9.1d`, `9.2c`, `9.2e`, `9.2f`, `9.2r`, `9.2u`, `9.3`, `9.4d` · [MHF](MHF-help.md) `HF.4` |
-| `FR-DISPUTE-03` | Must | Dispute entry points | [M5](M5-engagement.md) `5.13`, `5.14`, `5.6` · [M9](M9-disputes.md) `9.1` |
-| `FR-DISPUTE-04` | Must | Response window and evidence | [M9](M9-disputes.md) `9.3` |
-| `FR-DISPUTE-05` | Should | Evidence upload | [M10](M10-moderation.md) `10.2` · [M3](M3-discovery.md) `3.12` · [M5](M5-engagement.md) `5.6` · [M9](M9-disputes.md) `9.1`, `9.2`, `9.3`, `9.4` · [MHF](MHF-help.md) `HF.4` |
+| `FR-DISPUTE-02` | Must | Report threshold and auto-hide | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M9](M9-disputes.md) `9.1`, `9.1d`, `9.2c`, `9.2e`, `9.2f`, `9.2r`, `9.2u`, `9.3`, `9.4d` · [MHF](MHF-help.md) `HF.4` |
+| `FR-DISPUTE-03` | Must | Dispute entry points | [M5](M5-engagement.md) `5.14`, `5.5`, `5.5a`, `5.6` · [M9](M9-disputes.md) `9.1`, `9.2k` |
+| `FR-DISPUTE-04` | Must | Response window and evidence | [M5](M5-engagement.md) `5.1es`, `5.2s`, `5.3s` · [M9](M9-disputes.md) `9.3` |
+| `FR-DISPUTE-05` | Should | Evidence upload | [M10](M10-moderation.md) `10.2` · [M3](M3-discovery.md) `3.12` · [M9](M9-disputes.md) `9.1`, `9.2`, `9.3`, `9.4` · [MHF](MHF-help.md) `HF.4` |
 | `FR-DISPUTE-06` | Must | Discovered false birthdate | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.2`, `10.4`, `10.5`, `10.6`, `10.7` · [M9](M9-disputes.md) `9.1` |
-| `FR-DISPUTE-07` | Must | Case status visibility | [M3](M3-discovery.md) `3.12` · [M5](M5-engagement.md) `5.2b` · [M6](M6-ratings.md) `6.3s` · [M9](M9-disputes.md) `9.1`, `9.1d`, `9.2`, `9.2c`, `9.2e`, `9.2f`, `9.2r`, `9.2u`, `9.3`, `9.3e`, `9.4`, `9.4d` · [MHF](MHF-help.md) `HF.4` |
+| `FR-DISPUTE-07` | Must | Case status visibility | [M3](M3-discovery.md) `3.12` · [M5](M5-engagement.md) `5.2s`, `5.3s` · [M6](M6-ratings.md) `6.3s` · [M9](M9-disputes.md) `9.1`, `9.1d`, `9.2`, `9.2c`, `9.2e`, `9.2f`, `9.2r`, `9.2u`, `9.3`, `9.3e`, `9.4`, `9.4d`, `9.2k` · [MHF](MHF-help.md) `HF.4` |
 | `FR-ENDORSE-01` | Must | Verifier role selection | [M1](M1-account.md) `1.1v` |
 | `FR-ENDORSE-02` | Must | Worker-initiated endorsement entry point | [M8](M8-endorsement.md) `8.1`, `8.2`, `8.4` |
 | `FR-ENDORSE-03` | Must | Verifier-initiated endorsement entry point | [M1](M1-account.md) `1.12b` · [M10](M10-moderation.md) `10.3c`, `10.5`, `10.5e` · [M6](M6-ratings.md) `6.1f` · [M8](M8-endorsement.md) `8.1b`, `8.3`, `8.3d`, `8.4` · [M9](M9-disputes.md) `9.2f` |
 | `FR-ENDORSE-04` | Must | Vouch action | [M8](M8-endorsement.md) `8.4` |
 | `FR-ENDORSE-05` | Must | Eligibility window | [M1](M1-account.md) `1.12b` · [M10](M10-moderation.md) `10.3c`, `10.5`, `10.5e` · [M6](M6-ratings.md) `6.1f` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.2`, `8.3d` · [M9](M9-disputes.md) `9.2f` |
 | `FR-ENDORSE-06` | Must | Endorsement coverage across applications | [M4](M4-applying.md) `4.5`, `4.6t` |
-| `FR-ENDORSE-07` | Should | Endorsement revocation | [M1](M1-account.md) `1.18`, `1.19` · [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.7rd`, `11.7rds` · [M3](M3-discovery.md) `3.5c` · [M5](M5-engagement.md) `5.13e`, `5.13eb`, `5.1e`, `5.1ec`, `5.1ex`, `5.3`, `5.3b`, `5.3c`, `5.3x`, `5.7e`, `5.8e` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.1s`, `8.2`, `8.3`, `8.3d`, `8.3m`, `8.4`, `8.4e`, `8.5`, `8.5c`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK`, `8.7` |
+| `FR-ENDORSE-07` | Should | Endorsement revocation | [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.7rd`, `11.7rds` · [M1](M1-account.md) `1.18`, `1.19` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.1s`, `8.2`, `8.3`, `8.3d`, `8.3m`, `8.4`, `8.4e`, `8.5`, `8.5c`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK`, `8.7` |
 | `FR-ENDORSE-08` | Should | Uncapped endorsements per worker | [M4](M4-applying.md) `4.5`, `4.6` |
 | `FR-ENDORSE-09` | Should | Endorsement notification to worker | [M3](M3-discovery.md) `3.10` · [M8](M8-endorsement.md) `8.4` |
 | `FR-ENDORSE-10` | Must | Endorsement display | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6`, `4.6t` · [M11](M11-dashboard.md) `11.3`, `11.3m`, `11.3x` · [M8](M8-endorsement.md) `8.5` |
-| `FR-ENDORSE-11` | Must | Verifier track record | [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.5`, `11.7rd`, `11.7rds` · [M3](M3-discovery.md) `3.5c` · [M5](M5-engagement.md) `5.13e`, `5.13eb`, `5.1e`, `5.1ec`, `5.1ex`, `5.3`, `5.3b`, `5.3c`, `5.3x`, `5.7e`, `5.8e` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.5`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK` |
+| `FR-ENDORSE-11` | Must | Verifier track record | [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.5`, `11.7rd`, `11.7rds` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.5`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK` |
 | `FR-ENDORSE-12` | Should | Endorsement payoff notification | [M3](M3-discovery.md) `3.10v` |
 | `FR-ENDORSE-13` | Could | Bio prompt for zero-history workers | [M1](M1-account.md) `1.11`, `1.16`, `1.18`, `1.4` · [M6](M6-ratings.md) `6.2` · [M7](M7-profile.md) `7.1`, `7.1d` · [M8](M8-endorsement.md) `8.6` |
 | `FR-ENDORSE-14` | Could | Endorsement-seeking suggestion | [M4](M4-applying.md) `4.3n` · [M8](M8-endorsement.md) `8.7` |
 | `FR-ENDORSE-15` | Should | Verifier code-entry prompt | [M8](M8-endorsement.md) `8.2`, `8.3`, `8.4` |
-| `FR-ENG-01` | Must | Check-in code checkpoints | [M5](M5-engagement.md) `5.4`, `5.5` |
-| `FR-ENG-02` | Must | Unpaid internship checkpoint exception | [M5](M5-engagement.md) `5.2` |
-| `FR-ENG-03` | Must | Unable-to-confirm fallback | [M5](M5-engagement.md) `5.6` |
-| `FR-ENG-04` | Must | Per-Engagement checkpoint scoping | [M5](M5-engagement.md) `5.1`, `5.12`, `5.2`, `5.3` |
-| `FR-ENG-05` | Must | Cancellation (regular gig) | [M5](M5-engagement.md) `5.2tc`, `5.2tcr`, `5.7`, `5.8`, `5.9` |
-| `FR-ENG-06` | Must | Cancellation (urgent gig) | [M5](M5-engagement.md) `5.10` |
-| `FR-ENG-07` | Must | Completion-rate tracking | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6` |
-| `FR-ENG-08` | Must | Per-Engagement cancellation scope | [M2](M2-posting.md) `2.11` · [M5](M5-engagement.md) `5.12` |
-| `FR-ENG-09` | Must | Material change re-confirmation | [M2](M2-posting.md) `2.11`, `2.11e`, `2.11e2`, `2.11c` · [M3](M3-discovery.md) `3.1`, `3.10` · [M5](M5-engagement.md) `5.11` · [M8](M8-endorsement.md) `8.2`, `8.5` |
+| `FR-ENG-01` | Must | Check-in code checkpoints | [M5](M5-engagement.md) `5.2`, `5.2h`, `5.2p`, `5.3`, `5.3b`, `5.4`, `5.4b`, `5.4c`, `5.5`, `5.5a` |
+| `FR-ENG-02` | Must | Unpaid internship checkpoint exception | [MHF](MHF-help.md) `HF.2` (copy only) · *no unpaid-internship engagement is drawn — see [M5](M5-engagement.md), States not drawn* |
+| `FR-ENG-03` | Must | Unable-to-confirm fallback | [M5](M5-engagement.md) `5.5`, `5.5a`, `5.6` |
+| `FR-ENG-04` | Must | Per-Engagement checkpoint scoping | [M5](M5-engagement.md) `5.12`, `5.4`, `5.4c`, `5.5`, `5.5a` |
+| `FR-ENG-05` | Must | Cancellation (regular gig) | [M5](M5-engagement.md) `5.1tx`, `5.2tc`, `5.2tx`, `5.7t`, `5.8t`, `5.9`, `5.9b`, `5.9r` |
+| `FR-ENG-06` | Must | Cancellation (urgent gig) | [M5](M5-engagement.md) `5.10`, `5.2nc`, `5.3x`, `5.7e` |
+| `FR-ENG-07` | Must | Completion-rate tracking | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6` · [M5](M5-engagement.md) `5.10`, `5.11d`, `5.2nc`, `5.3x` |
+| `FR-ENG-08` | Must | Per-Engagement cancellation scope | [M2](M2-posting.md) `2.11` · [M5](M5-engagement.md) `5.3x` |
+| `FR-ENG-09` | Must | Material change re-confirmation | [M2](M2-posting.md) `2.11`, `2.11e`, `2.11e2`, `2.11c` · [M3](M3-discovery.md) `3.1`, `3.10` · [M5](M5-engagement.md) `5.11`, `5.11d`, `5.12`, `5.1w` · [M8](M8-endorsement.md) `8.2`, `8.5` |
 | `FR-ENG-10` | Should | Urgency recomputation on time change | [M2](M2-posting.md) `2.11e2` |
 | `FR-ENG-11` | Must | Multi-slot material change re-confirmation | [M2](M2-posting.md) `2.11e2`, `2.11c` · [M5](M5-engagement.md) `5.12` |
-| `FR-ENG-12` | Must | Part-time End Engagement | [M5](M5-engagement.md) `5.13` |
+| `FR-ENG-12` | Must | Part-time End Engagement | *not drawn — End Engagement is part-time only, and the story's one part-time engagement never starts; see [M5](M5-engagement.md), States not drawn* |
 | `FR-ENG-13` | Must | Stalled engagement handling | [M5](M5-engagement.md) `5.14` |
-| `FR-ENG-14` | Must | Engagements list | [M5](M5-engagement.md) `5.1`, `5.1e` |
+| `FR-ENG-14` | Must | Engagements list | [M5](M5-engagement.md) `5.1`, `5.1a`, `5.1c`, `5.1cr`, `5.1cv`, `5.1e`, `5.1ec`, `5.1ecr`, `5.1es`, `5.1eu`, `5.1ex`, `5.1ez`, `5.1n`, `5.1nw`, `5.1r`, `5.1tx`, `5.1v`, `5.1w`, `5.1z` |
 | `NFR-LOC-03` | Must | Dashboard remains English-only permanently | [M11](M11-dashboard.md) `11.3` |
 | `FR-MOD-01` | Must | Dispute case triage | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.2`, `10.3`, `10.4`, `10.5`, `10.6`, `10.7`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
-| `FR-MOD-02` | Must | Warning threshold and auto-escalation | [M1](M1-account.md) `1.1`, `1.12b`, `1.17`, `1.18`, `1.6`, `1.8`, `1.9` · [M10](M10-moderation.md) `10.2b`, `10.3`, `10.3c`, `10.5`, `10.5e`, `10.8b` · [M3](M3-discovery.md) `3.1`, `3.4`, `3.5`, `3.7` · [M5](M5-engagement.md) `5.1`, `5.13b`, `5.4b`, `5.5b`, `5.9b` · [M6](M6-ratings.md) `6.1f`, `6.5b` · [M7](M7-profile.md) `7.1d` · [M8](M8-endorsement.md) `8.1b`, `8.3d`, `8.4e`, `8.5` · [M9](M9-disputes.md) `9.1d`, `9.2f`, `9.3e`, `9.4` |
+| `FR-MOD-02` | Must | Warning threshold and auto-escalation | [M10](M10-moderation.md) `10.2b`, `10.3`, `10.3c`, `10.5`, `10.5e`, `10.8b` · [M1](M1-account.md) `1.1`, `1.12b`, `1.17`, `1.18`, `1.6`, `1.8`, `1.9` · [M3](M3-discovery.md) `3.1`, `3.4`, `3.5`, `3.7` · [M6](M6-ratings.md) `6.1f`, `6.5b` · [M7](M7-profile.md) `7.1d` · [M8](M8-endorsement.md) `8.1b`, `8.3d`, `8.4e`, `8.5` · [M9](M9-disputes.md) `9.1d`, `9.2f`, `9.3e`, `9.4` |
 | `FR-MOD-03` | Should | Mid-review clarification request | [M10](M10-moderation.md) `10.1pca`, `10.1pce`, `10.2` · [M9](M9-disputes.md) `9.2`, `9.4` |
 | `FR-MOD-04` | Must | Flagged content review | [M10](M10-moderation.md) `10.4`, `10.4e`, `10.4r`, `10.4rb` |
 | `FR-NOTIF-01` | Must | Urgent gig push notifications | [M2](M2-posting.md) `2.9e` · [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
 | `FR-NOTIF-02` | Must | Non-urgent gig notifications | [M2](M2-posting.md) `2.9et` · [M3](M3-discovery.md) `3.10` |
 | `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11` |
 | `FR-NOTIF-04` | Must | Application-related notifications | [M3](M3-discovery.md) `3.10`, `3.10ea` · [M4](M4-applying.md) `4.3e`, `4.5`, `4.7`, `4.9` |
-| `FR-NOTIF-05` | Must | Engagement-related notifications | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` · [M5](M5-engagement.md) `5.11`, `5.13`, `5.14`, `5.9` |
+| `FR-NOTIF-05` | Must | Engagement-related notifications | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` · [M5](M5-engagement.md) `5.11`, `5.14`, `5.9` |
 | `FR-NOTIF-06` | Must | Dispute/case notifications | [M3](M3-discovery.md) `3.10`, `3.13` · [M9](M9-disputes.md) `9.2` |
 | `FR-NOTIF-07` | Should | Endorsement notifications | [M3](M3-discovery.md) `3.10v` |
 | `FR-NOTIF-08` | Could | In-app notification history | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r`, `3.10x` |
@@ -219,24 +219,24 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-POST-13` | Must | Posting expiry | [M2](M2-posting.md) `2.11ex`, `2.11hx` · [M4](M4-applying.md) `4.3r`, `4.5x` |
 | `FR-POST-14` | Must | Slot-fill status display | [M2](M2-posting.md) `2.10`, `2.10p`, `2.10w`, `2.10dw`, `2.11` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.13` · [M4](M4-applying.md) `4.3`, `4.3d`, `4.5`, `4.5s` |
 | `FR-POST-15` | Must | No draft state | [M2](M2-posting.md) `2.1rst`, `2.9bnr`, `2.10b`, `2.10db` |
-| `FR-POST-16` | Must | Posted-as auto-population | [M1](M1-account.md) `1.16`, `1.18`, `1.4`, `1.5` · [M2](M2-posting.md) `2.11`, `2.9` · [M5](M5-engagement.md) `5.3`, `5.4` · [M6](M6-ratings.md) `6.3` · [M8](M8-endorsement.md) `8.2`, `8.4`, `8.4e` |
+| `FR-POST-16` | Must | Posted-as auto-population | [M1](M1-account.md) `1.16`, `1.18`, `1.4`, `1.5` · [M2](M2-posting.md) `2.11`, `2.9` · [M6](M6-ratings.md) `6.3` · [M8](M8-endorsement.md) `8.2`, `8.4`, `8.4e` |
 | `FR-POST-17` | Could | No-applicant nudge | [M4](M4-applying.md) `4.5b` |
 | `FR-POST-18` | Must | Posting status computation (Open/Filled) | [M2](M2-posting.md) `2.10`, `2.11f` |
-| `NFR-PRIV-04` | Must | No general user directory | [M1](M1-account.md) `1.4k`, `1.6`, `1.7` · [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.2`, `11.3`, `11.4`, `11.6` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M5](M5-engagement.md) `5.1` · [M8](M8-endorsement.md) `8.2`, `8.3` · [MHF](MHF-help.md) `HF.3` |
-| `NFR-PRIV-05` | Must | Report anonymity | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M5](M5-engagement.md) `5.2` · [M9](M9-disputes.md) `9.1`, `9.2` |
+| `NFR-PRIV-04` | Must | No general user directory | [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.2`, `11.3`, `11.4`, `11.6` · [M1](M1-account.md) `1.4k`, `1.6`, `1.7` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M8](M8-endorsement.md) `8.2`, `8.3` · [MHF](MHF-help.md) `HF.3` |
+| `NFR-PRIV-05` | Must | Report anonymity | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M9](M9-disputes.md) `9.1`, `9.2` |
 | `NFR-PRIV-06` | Could | Anonymized usage analytics | [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6` |
 | `FR-PROF-01` | Must | Profile display identity | [M1](M1-account.md) `1.15`, `1.18`, `1.19` · [M4](M4-applying.md) `4.6`, `4.6k`, `4.6t` · [M6](M6-ratings.md) `6.3` |
 | `FR-PROF-02` | Must | Verification badges | [M1](M1-account.md) `1.18`, `1.19` |
 | `FR-PROF-03` | Should | Profile bio | [M1](M1-account.md) `1.11`, `1.16`, `1.18` · [M7](M7-profile.md) `7.1` |
 | `FR-PROF-04` | Should | Bio-to-application-note integration | [M1](M1-account.md) `1.11`, `1.16`, `1.18`, `1.4` · [M4](M4-applying.md) `4.1` · [M6](M6-ratings.md) `6.4` · [M7](M7-profile.md) `7.1` |
-| `FR-PROF-05` | Must | Contextual profile visibility | [M1](M1-account.md) `1.10`, `1.17`, `1.18`, `1.19`, `1.2`, `1.20`, `1.4k`, `1.6`, `1.7`, `1.8`, `1.9` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M4](M4-applying.md) `4.6` · [M5](M5-engagement.md) `5.1` · [M8](M8-endorsement.md) `8.2`, `8.3` |
+| `FR-PROF-05` | Must | Contextual profile visibility | [M1](M1-account.md) `1.10`, `1.17`, `1.18`, `1.19`, `1.2`, `1.20`, `1.4k`, `1.6`, `1.7`, `1.8`, `1.9` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M4](M4-applying.md) `4.6` · [M8](M8-endorsement.md) `8.2`, `8.3` |
 | `FR-PROF-06` | Must | Trust-signal display on profile | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.6`, `4.6t` |
 | `FR-RATE-01` | Must | Rating scale and submission | [M6](M6-ratings.md) `6.1`, `6.3` |
-| `FR-RATE-02` | Must | Double-blind submission | [M6](M6-ratings.md) `6.1`, `6.2`, `6.3` |
+| `FR-RATE-02` | Must | Double-blind submission | [M5](M5-engagement.md) `5.1cv`, `5.2c`, `5.2d` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.6d` |
 | `FR-RATE-03` | Must | Completion-rate as a distinct stat | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.4`, `6.6` |
-| `FR-RATE-04` | Must | Per-Engagement independent ratings | [M5](M5-engagement.md) `5.13`, `5.2b`, `5.9` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.5b`, `6.6`, `6.6b` |
-| `FR-RATE-05` | Must | Rating applicability by Engagement outcome | [M5](M5-engagement.md) `5.13`, `5.13b`, `5.13br`, `5.13r`, `5.1c`, `5.1cr`, `5.2`, `5.2b`, `5.2c`, `5.2ce`, `5.2d`, `5.3`, `5.5b`, `5.9` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.6`, `6.6b` |
-| `FR-RATE-06` | Should | Rating disputes | [M5](M5-engagement.md) `5.13`, `5.9` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.6` |
+| `FR-RATE-04` | Must | Per-Engagement independent ratings | [M5](M5-engagement.md) `5.2b`, `5.3b` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.5b`, `6.6`, `6.6b` |
+| `FR-RATE-05` | Must | Rating applicability by Engagement outcome | [M5](M5-engagement.md) `5.11d`, `5.1c`, `5.1ec`, `5.2b`, `5.2tc`, `5.3b`, `5.5b`, `5.9b` · [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.6`, `6.6b`, `6.6d` |
+| `FR-RATE-06` | Should | Rating disputes | [M6](M6-ratings.md) `6.1`, `6.2`, `6.3`, `6.4`, `6.5`, `6.6` |
 | `NFR-REL-01` | Must | Stalled-engagement resolution integrity | [M5](M5-engagement.md) `5.14` |
 | `NFR-REL-02` | Must | Immediate suspension effect | [M10](M10-moderation.md) `10.6` |
 | `NFR-SEC-02` | Must | Login rate-limiting | [M3](M3-discovery.md) `3.12` |
@@ -245,7 +245,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `NFR-SEC-05` | Must | Role-based access control | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1er`, `10.1r`, `10.4`, `10.4e`, `10.4r`, `10.5`, `10.5e`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8`, `10.8b` |
 | `NFR-SEC-06` | Must | Audit logging of privileged actions | [M11](M11-dashboard.md) `11.6` |
 | `NFR-USE-01` | Should | Offline tolerance | [M1](M1-account.md) `1.3err1` · [M2](M2-posting.md) `2.9bnr`, `2.1rst` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.12ofl`, `3.1ofl` · [M4](M4-applying.md) `4.1bnr` |
-| `NFR-USE-03` | Should | Static Help/FAQ content | [M1](M1-account.md) `1.18` · [M5](M5-engagement.md) `5.4` · [M8](M8-endorsement.md) `8.4` · [M9](M9-disputes.md) `9.1` · [MHF](MHF-help.md) `HF.1`, `HF.2`, `HF.3`, `HF.4` |
+| `NFR-USE-03` | Should | Static Help/FAQ content | [M1](M1-account.md) `1.18` · [M5](M5-engagement.md) `5.2`, `5.6` · [M8](M8-endorsement.md) `8.4` · [M9](M9-disputes.md) `9.1` · [MHF](MHF-help.md) `HF.1`, `HF.2`, `HF.3`, `HF.4` |
 
 ## Requirements with no interface
 

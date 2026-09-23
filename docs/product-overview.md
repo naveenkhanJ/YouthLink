@@ -164,7 +164,7 @@ Pay is always stated — there are no "negotiable" postings. Currency is always 
 
 ### What the system computes, and the employer cannot set
 
-**Urgency** (`FR-POST-07`) is derived purely from whether the start time falls within 24–48 hours of posting. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
+**Urgency** (`FR-POST-07`) is derived purely from whether the start time is 48 hours away or less, with no lower bound. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
 
 **Public location precision** (`FR-POST-08`). The precise address is stored but never shown publicly. Browsing and applying workers see a coarse, suburb-level area on a map. Full precision is released only to a worker who has actually been selected, and only to them.
 
@@ -297,13 +297,17 @@ The holder deliberately **flips** at the payment step. The party best positioned
 
 This confirms payment _occurred_, not that the _amount_ was right — the stated pay figure is the reference point for an amount dispute. And it's cooperative, so it's not bulletproof: either party can refuse to share or enter a code. That's what the fallback is for.
 
+The checkpoints run **in order** — completion can only be entered once arrival is confirmed, and payment once completion is — and each Engagement has **one** set of three codes, including a part-time one, whose arrival checkpoint is its first session (`FR-ENG-01`, amended 2026-09-24).
+
 **"Unable to confirm"** is available at any checkpoint and routes into dispute resolution rather than leaving the engagement stuck (`FR-ENG-03`).
 
 ### Cancelling before work starts
 
-**Regular engagements** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A cancellation inside 24 hours of start is classified **Late**.
+Which rule applies is decided **at the moment of cancelling**, by how far away the start is then — not by how the posting was labelled when it was published (`FR-ENG-05/06`, amended 2026-09-24).
 
-**Urgent engagements** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. Late threshold scales down to 6 hours.
+**More than 48 hours to the start** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A request made this far ahead is never Late.
+
+**48 hours or less to the start** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. It is **Late** within 6 hours of the start — or within 24 hours, if the engagement was agreed more than 48 hours ahead.
 
 Late cancellations weigh more heavily against the completion-rate stat than early ones (`FR-ENG-07`).
 
@@ -311,7 +315,7 @@ Cancellation is scoped to one Engagement: it reopens that one slot and leaves ev
 
 ### Changing an engagement's terms
 
-**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours or half the time left before the start, whichever is shorter** (48 hours fixed 2026-08-27; capped 2026-09-23, because urgent gigs start sooner than 48 hours); if they don't accept by the window's close, that Engagement routes into the cancellation flow (`FR-ENG-09`) without counting against the worker's completion rate. No material change is allowed in the last 2 hours before the start, and a posting can't be edited again while a re-confirmation is pending.
+**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours or half the time left before the start, whichever is shorter** (48 hours fixed 2026-08-27; capped 2026-09-23, because urgent gigs start sooner than 48 hours); if they don't accept by the window's close — or say they can't make it, which cancels at once — that Engagement is cancelled as the employer's change (`FR-ENG-09`), without counting against the worker's completion rate, and either party may still rate it. No material change is allowed in the last 2 hours before the start, and a posting can't be edited again while a re-confirmation is pending.
 
 **Minor** — title or description text only. No re-confirmation; nothing the worker committed to has changed.
 
@@ -325,7 +329,7 @@ The sequence: End Engagement → "did something go wrong?" → **yes** opens a d
 
 ### Stalled engagements
 
-For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
+For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. It offers two things: dismiss it (still running — nothing changes), or go to the earliest unresolved checkpoint, where the code can still be entered or "unable to confirm" opens a dispute. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
 
 The trigger is anchored to **start** time because no end time or duration is collected anywhere in the posting flow. The accepted trade-off is that a Gig genuinely running longer than 24 hours gets a slightly early prompt — harmless, since neither party is obliged to act.
 
@@ -462,7 +466,7 @@ Three outcomes, not two (`FR-ADM-01`): ruled for the party who raised it, ruled 
 
 **What a ruling can actually change** (`FR-ADM-02`): since no money ever moves through the app, a payment-dispute ruling is a **reputational and record-keeping outcome only**. Admin cannot issue a refund or force a transaction. It affects the responsible party's completion-rate stat, and repeat or severe cases can lead to suspension.
 
-**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, the normal double-blind rating step opens. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
+**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, any arrival or completion checkpoint that was never confirmed is marked **settled by ruling**, the engagement becomes Completed, and the normal double-blind rating step opens. The payment checkpoint stays open — the ruling says the work happened, not that it was paid — so the worker still shares their payment code once paid. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
 
 Admin aims to resolve escalated cases within **3–5 business days** — an operational target, not a system-enforced rule (`NFR-OPS-03`).
 
