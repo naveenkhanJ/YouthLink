@@ -1432,7 +1432,7 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
         FRAME dataRow 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
           TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Data entry — work from home"
           TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "R. Gunasekara"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Other"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Retail"
           FRAME statusCell 140x22 [FIXED/FIXED]
             INSTANCE Desktop/DashBadge 93x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Withdrawn}
               ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/text/secondary

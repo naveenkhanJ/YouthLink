@@ -203,6 +203,8 @@ Fill status displays plainly throughout — "2 of 3 filled" (`FR-POST-14`).
 
 **Editing** (`FR-POST-11`): unrestricted before any slot fills. After a slot fills, a _material_ change requires the affected worker's re-confirmation; a _minor_ change doesn't. See §6.
 
+**Stopping hiring after a slot fills** (`FR-POST-12`, amended 2026-09-23): Withdraw is gone once any slot fills. To take no one else, the employer lowers workers needed to the number already filled — the posting becomes Filled, the remaining applicants are resolved, and the engaged worker re-confirms, because crew size is a material change. Ending a committed worker's engagement is a cancellation, never a side effect of closing the posting.
+
 **No drafts.** A posting is completed in one sitting or not submitted (`FR-POST-15`).
 
 **No-applicant nudge** (`FR-POST-17`): an employer whose posting has zero applicants is nudged at 24 hours for a regular gig, or at the halfway point between posting and start time for an urgent one.
@@ -309,7 +311,7 @@ Cancellation is scoped to one Engagement: it reopens that one slot and leaves ev
 
 ### Changing an engagement's terms
 
-**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours** (fixed 2026-08-27); if they don't accept by the window's close, that Engagement routes into the cancellation flow (`FR-ENG-09`).
+**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours or half the time left before the start, whichever is shorter** (48 hours fixed 2026-08-27; capped 2026-09-23, because urgent gigs start sooner than 48 hours); if they don't accept by the window's close, that Engagement routes into the cancellation flow (`FR-ENG-09`) without counting against the worker's completion rate. No material change is allowed in the last 2 hours before the start, and a posting can't be edited again while a re-confirmation is pending.
 
 **Minor** — title or description text only. No re-confirmation; nothing the worker committed to has changed.
 

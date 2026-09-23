@@ -649,8 +649,10 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a posting has zero filled slots, when the Employer withdraws it, then it is removed from active browse/search results.
-- Given at least one slot has filled, when the Employer attempts Withdraw, then the system directs them to the cancellation flow (FR-ENG-05/06) instead.
+- Given at least one slot has filled, when the Employer views the posting, then Withdraw is unavailable and the system names the two actions that do apply: lowering workers needed through editing to stop further hiring (a material change, FR-ENG-09), or cancelling an Engagement (FR-ENG-05/06).
 - Given a withdrawn posting had Pending applicants, when the withdrawal completes, then those applications are set to Not selected and the applicants are notified (FR-APPLY-09).
+
+> **Amended 2026-09-23 (M2 review).** The rule itself stands; only the second criterion's redirect changes. As written, an Employer who had filled one slot of three and wanted to stop hiring was sent to the cancellation flow — which ends a committed worker's Engagement to achieve something that has nothing to do with them. Stopping further hiring is already expressible without a new mechanism: lowering workers needed to the number already filled makes the posting Filled (FR-POST-18), which resolves the remaining Pending applicants (FR-APPLY-09), and because crew size is a material change the engaged worker is asked to re-confirm (FR-ENG-09) — correctly, since a three-person crew and a one-person crew are different jobs. Allowing Withdraw after a fill was considered and rejected for exactly that reason: it would change the crew size without the re-confirmation the glossary requires.
 
 > **Acceptance criterion added 2026-08-27.** The Withdraw action itself is unchanged. What was missing is what withdrawal does to people who had already applied: as originally written this requirement removed the posting from browse and said nothing about its applicants, leaving them Pending indefinitely. That is now covered by FR-APPLY-09's broadened trigger, and stated here so the consequence is visible from the action that causes it.
 
@@ -1124,7 +1126,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall classify a post-selection change as material (pay, start date/time, location, workers needed, or task category) or minor (title/description only). A material change shall require the affected worker's active re-confirmation within a **48-hour response window**, routing to cancellation (FR-ENG-05/06) if not accepted when the window closes; a minor change shall require no re-confirmation.
+**Requirement:** The system shall classify a post-selection change as material (pay, start date/time, location, workers needed, or task category) or minor (title/description only). A material change shall require the affected worker's active re-confirmation within a response window of **48 hours or half the time remaining before the start, whichever is shorter**, routing to cancellation (FR-ENG-05/06) if not accepted when the window closes; a minor change shall require no re-confirmation.
 
 **Acceptance Criteria:**
 
@@ -1134,6 +1136,22 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 
 > **Amended 2026-08-27 (batch A15).** The re-confirmation window is fixed at **48 hours** — previously the only window in the system with no stated length (`database-schema.md`'s Implementation Notes flagged it as *"one value still needs agreeing"*). 48 matches the cancellation window this flow routes into; a different length would mean two adjacent windows with two durations for no stated reason. Applies equally to FR-ENG-11's per-worker windows; `MaterialChangeRequest.deadline` now has its value.
+
+> **Amended 2026-09-23 (M2 review) — the window is capped by the start time.** A flat 48 hours outlasts every urgent posting: urgent means the start is 48 hours away or less (FR-POST-07), so a material change to an urgent posting with an engaged worker always left the window open past the moment work begins — and the cancellation flow it routes into applies only to Engagements that have not started. Four rules now apply:
+>
+> 1. **The window is 48 hours or half the time remaining before the start, whichever is shorter.** Halving follows FR-POST-17's halfway rule for urgent postings, and it leaves the Employer time to find a replacement if the worker does not accept — a window that closed at the start itself would tell them only when the work was due to begin. *Example:* a change saved at 7:00 PM on Thursday to a gig now starting at 7:00 AM on Saturday leaves 36 hours, so the window closes at 1:00 PM on Friday.
+> 2. **No material change within 2 hours of the start** — the same lead time FR-POST-05 requires of a new posting. Minor changes stay allowed.
+> 3. **One pending re-confirmation at a time.** While any worker's re-confirmation on the posting is still open, the posting cannot be edited again; stacked changes would leave a worker accepting terms that had already moved.
+> 4. **A worker's non-acceptance is not held against them.** When the window closes without acceptance, the Engagement routes into cancellation as before, but that cancellation is attributed to the Employer's change and does not count against the worker's completion rate (FR-ENG-07).
+>
+> Applies equally to FR-ENG-11's per-worker windows, and `MaterialChangeRequest.deadline` is computed from rule 1 rather than fixed.
+
+**Acceptance Criteria (added 2026-09-23):**
+
+- Given a material change is saved 36 hours before the start, when the re-confirmation request is created, then its window closes 18 hours later.
+- Given the start is less than 2 hours away, when the Employer attempts a material change, then it is blocked with an explanation.
+- Given a re-confirmation is pending on a posting, when the Employer opens the posting, then editing is unavailable until every pending re-confirmation is answered or its window closes.
+- Given a worker does not accept a re-confirmation before the window closes, when the Engagement is cancelled, then the worker's completion rate is unaffected.
 
 #### FR-ENG-10 — Urgency recomputation on time change
 
@@ -1145,7 +1163,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 **Acceptance Criteria:**
 
-- Given a posting's start time is edited such that it now falls within 24–48 hours of the original posting time, when saved, then urgency status updates to Urgent, and vice versa.
+- Given a posting's start time is edited such that it is now 48 hours or less away, when saved, then urgency status updates to Urgent, and vice versa.
+
+> **Amended 2026-09-23 (M2 review).** The criterion above still carried the *"within 24–48 hours of the original posting time"* band that FR-POST-07's batch A6 amendment removed, and it measured from the original posting time rather than from the moment of the edit. Urgency is 48 hours or less from now, with no lower bound, whether the posting is new or edited.
 
 #### FR-ENG-11 — Multi-slot material change re-confirmation
 
@@ -1163,6 +1183,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 
 > **Amended 2026-08-27 (batch A15).** Each worker's independent re-confirmation window is the same **48 hours** fixed in FR-ENG-09.
+
+> **Amended 2026-09-23 (M2 review).** The window is now FR-ENG-09's *48 hours or half the time remaining before the start, whichever is shorter*; every worker on the posting gets the same deadline, because they are answering the same change.
 
 #### FR-ENG-12 — Part-time End Engagement
 
@@ -1526,6 +1548,8 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 
 
 > **Amended 2026-08-27 (batch A25, pointer).** The content's owner is **not notified at the third-report moment** — deliberately: notifying at the threshold reveals when it fired and, in small pools, helps identify reporters (NFR-PRIV-05). The owner sees a *hidden pending review* status on their own posting views, and is notified only of the review's **outcome** (restored or removed) — FR-NOTIF-12.
+
+> **Amended 2026-09-23 (M2 review).** Two consequences for the owner's own view, both following from the reasoning above. **(1) The status never shows a report count** — "3 reports" beside the hidden status would reveal the threshold that fired, the very thing the pointer above withholds. **(2) The owner cannot edit or withdraw the content while it is under review**, so the Moderator decides on the version that was reported; the outcome notification (FR-NOTIF-12) ends the pause either way.
 
 #### FR-DISPUTE-03 — Dispute entry points
 
@@ -1980,7 +2004,7 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 > | `APPLICATION_SELECTED` | You're selected for {title} | start time · employer name | engagement detail |
 > | `APPLICATION_DECLINED` | Update on {title} | you weren't selected this time | own application |
 > | `APPLICATION_NOT_SELECTED` | Update on {title} | the posting has closed | own application |
-> | `MATERIAL_CHANGE` | {title} changed | what changed · respond within 48h | re-confirmation |
+> | `MATERIAL_CHANGE` | {title} changed | what changed · respond by {deadline} (FR-ENG-09) | re-confirmation |
 > | `CANCELLATION_REQUEST` | Cancellation requested | reason · respond within 48h | respond screen |
 > | `CANCELLATION_RESOLVED` | Cancellation {outcome} | accepted / rejected / auto-resolved | engagement detail |
 > | `END_ENGAGEMENT` | {name} ended the engagement | what happens next | rating or dispute |
