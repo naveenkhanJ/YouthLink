@@ -24,13 +24,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit bio"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 10
     TEXT label 63x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Your bio"
     INSTANCE bioField 328x218 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x192 [FILL/HUG] · fill color/text/primary · mobile/body · "Second-year IT student in Colombo, free on weekends and most evenings. I've helped run my family's shop for years, so I'm comfortable handling sales, stock and customers. Reliable with time, quick to learn new tasks, and happy to take on setup, delivery or tutoring work."
     TEXT counter 54x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "271 / 300"
     TEXT helper 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shown on your profile. It also pre-fills the note on your applications, which you can edit each time."
-    FRAME spacer-grow 8x304 [FIXED/FILL]
+    FRAME spacer-grow 8x302 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -52,14 +53,15 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit bio"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 10
     TEXT label 63x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Your bio"
     INSTANCE bioField 328x218 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x192 [FILL/HUG] · fill color/text/primary · mobile/body · "Second-year IT student in Colombo, free on weekends and most evenings. I've helped run my family's shop for years, so I'm comfortable handling sales, stock and customers. Reliable with time, quick to learn new tasks, and happy to take on setup, delivery or tutoring work."
     TEXT counter 54x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "271 / 300"
     TEXT helper 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shown on your profile. It also pre-fills the note on your applications, which you can edit each time."
     TEXT savedNote 328x40 [FIXED/HUG] · fill color/state/success · mobile/secondary · "Saved — your bio now shows on your profile and pre-fills your application notes."
-    FRAME spacer-grow 8x254 [FIXED/FILL]
+    FRAME spacer-grow 8x252 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 41x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Done"
 ```
@@ -70,7 +72,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 were editing to prove it worked.
 
 **The saved screen is 40px taller in content than `7.1`**, because `savedNote` is inserted rather than
-swapped in. `spacer-grow` absorbs the difference, which is why the button stays on the bottom edge in both.
+swapped in. `spacer-grow` absorbs the difference; the button is in the pinned `ctaBar` in both, so it does
+not move.
 
 ---
 

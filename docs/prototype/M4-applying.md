@@ -18,13 +18,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shop assistant — weekend · Saman Stores"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "I've helped run my family's shop — comfortable with sales, stock and customers."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x434 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -151,13 +152,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Café service crew — evenings · Green Leaf Café"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "I've done evening café shifts before — quick on my feet and fine with a late finish."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x434 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -296,13 +298,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "House cleaning — Saturday · A. Wijeratne"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "I've cleaned for two households in Nugegoda — thorough and I bring references."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x434 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -460,13 +463,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Lanka Events (Pvt) Ltd"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x96 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Available all weekend — I've done two event setups."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x416 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -656,7 +660,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
       TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "You're offline, so your application couldn't be sent. Your note is still here — try again once you reconnect."
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Lanka Events (Pvt) Ltd"
@@ -665,6 +669,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT value 302x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Available all weekend — I've done two event setups."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x324 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -683,7 +688,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT restoredNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Your note was kept while you were offline."
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Lanka Events (Pvt) Ltd"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
@@ -691,6 +696,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT value 302x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Available all weekend — I've done two event setups."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x388 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -763,13 +769,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Grade 8 maths tutoring · Dilrukshi Herath"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "I got an A in O/L maths and tutor my cousins — patient and clear with explanations."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x434 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -982,13 +989,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Delivery rider — mornings · FreshCart Maharagama"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x96 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Licensed rider with my own helmet — I know Maharagama's lanes well."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x416 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -1229,13 +1237,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Apply"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Office cleaning — Kirulapone · Kottawa Business Centre"
     TEXT noteLabel 141x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Note to the employer"
     INSTANCE noteField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "Available Sunday from 7 AM — I've done office cleaning through a family contact."
     TEXT prefillNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Optional — the employer sees it with your profile."
     FRAME spacer-grow 8x414 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit application"
 ```
@@ -1859,7 +1868,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
@@ -1876,6 +1885,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Free all weekend — I've run event setups for two agencies and can lead a crew."
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"
@@ -1897,13 +1907,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm selection"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT who 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Select Nethmi Jayasinghe?"
     TEXT fx1 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• An engagement is created for this gig"
     TEXT fx2 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• You'll each see the other's contact details"
     TEXT fx3 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• Takes one of the 3 places on this posting"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Anyone else who applied stays in the pool until the posting fills, expires or is withdrawn."
     FRAME spacer-grow 8x452 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 108x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select Nethmi"
 ```
@@ -1924,12 +1935,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Contact details"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · engagement active"
     TEXT phoneLabel 42x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "PHONE"
     TEXT phone 132x24 [HUG/HUG] · fill color/text/primary · mobile/body · "+94 76 234 5678"
     TEXT note 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Your number is now shared with them too, with the venue address."
     FRAME spacer-grow 328x504 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 141x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to applicants"
 ```
@@ -2013,7 +2025,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
@@ -2030,6 +2042,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Free all weekend — I've run event setups for two agencies and can lead a crew."
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"
@@ -2193,7 +2206,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
@@ -2208,6 +2221,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
     FRAME spacer-grow 8x372 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"
@@ -2228,13 +2242,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm selection"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT who 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Select Kavindu Perera?"
     TEXT fx1 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• An engagement is created for this gig"
     TEXT fx2 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• You'll each see the other's contact details"
     TEXT fx3 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• Takes one of the 3 places on this posting"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Anyone else who applied stays in the pool until the posting fills, expires or is withdrawn."
     FRAME spacer-grow 8x452 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 114x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select Kavindu"
 ```
@@ -2251,12 +2266,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Contact details"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · engagement active"
     TEXT phoneLabel 42x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "PHONE"
     TEXT phone 130x24 [HUG/HUG] · fill color/text/primary · mobile/body · "+94 77 123 4567"
     TEXT note 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Your number is now shared with them too, with the venue address."
     FRAME spacer-grow 328x504 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 141x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to applicants"
 ```
@@ -2333,7 +2349,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
@@ -2348,6 +2364,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
     FRAME spacer-grow 8x372 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"
@@ -2510,7 +2527,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 262x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 139x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
@@ -2528,6 +2545,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Free from Saturday 4 AM. Strong, punctual — this would be my first gig on YouthLink."
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"
@@ -2549,13 +2567,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm selection"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT who 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Select Tharindu Silva?"
     TEXT fx1 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• An engagement is created for this gig"
     TEXT fx2 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• You'll each see the other's contact details"
     TEXT fx3 328x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "• Takes one of the 3 places on this posting"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Anyone else who applied stays in the pool until the posting fills, expires or is withdrawn."
     FRAME spacer-grow 8x452 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 121x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select Tharindu"
 ```
@@ -2572,12 +2591,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Contact details"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · engagement active"
     TEXT phoneLabel 42x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "PHONE"
     TEXT phone 132x24 [HUG/HUG] · fill color/text/primary · mobile/body · "+94 75 345 6789"
     TEXT note 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Your number is now shared with them too, with the venue address."
     FRAME spacer-grow 328x504 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 141x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to applicants"
 ```
@@ -2654,7 +2674,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
     FRAME nameRow 262x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 139x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
@@ -2672,6 +2692,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT noteLabel 115x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "APPLICATION NOTE"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Free from Saturday 4 AM. Strong, punctual — this would be my first gig on YouthLink."
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 49x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Select"

@@ -28,7 +28,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "My endorsement code"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT explainer 328x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Share this code with someone who knows your work. If they vouch for you, employers see you higher in the list."
     FRAME codeBox 328x56 [FILL/HUG] · horizontal pad 14/20/14/20 gap 0 · fill color/bg/subtle · r8
       TEXT code 104x28 [HUG/HUG] · fill color/badge/endorsed · mobile/title · "K 7 X A 2 B"
@@ -37,6 +37,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 189x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 189x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How endorsement works"
     FRAME spacer-grow 8x352 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 87x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Share code"
 ```
@@ -83,7 +84,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "My endorsement code"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT explainer 328x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Share this code with someone who knows your work. If they vouch for you, employers see you higher in the list."
     FRAME codeBox 328x56 [FILL/HUG] · horizontal pad 14/20/14/20 gap 0 · fill color/bg/subtle · r8
       TEXT code 104x28 [HUG/HUG] · fill color/badge/endorsed · mobile/title · "K 7 X A 2 B"
@@ -92,6 +93,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 189x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 189x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How endorsement works"
     FRAME spacer-grow 8x352 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 87x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Share code"
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
@@ -132,7 +134,7 @@ will arrive in a WhatsApp thread with no other context.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 14
+  FRAME content 360x664 [FILL/FILL] · vertical pad 66/16/2/16 gap 14
     TEXT screenTitle 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Have a code to enter?"
     TEXT explainer 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "If someone shared their YouthLink code with you, enter it to vouch for them."
     INSTANCE Input/CodeInputAlpha 328x100 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled}
@@ -145,7 +147,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT label 188x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Search by phone instead"
       INSTANCE Action/Link 189x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 189x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How endorsement works"
-    FRAME spacer-grow 8x276 [FIXED/FILL]
+    FRAME spacer-grow 8x280 [FIXED/FILL]
+  FRAME ctaBar 360x72 [FILL/HUG] · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 92x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Check code"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
@@ -172,7 +175,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Vouch for someone"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT explainer 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Know their number? Search for someone you can vouch for."
     INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
       TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
@@ -182,6 +185,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
           TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
     FRAME spacer-grow 8x498 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 54x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Search"
 ```
@@ -230,7 +234,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Vouch for someone"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT explainer 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Know their number? Search for someone you can vouch for."
     INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
       TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
@@ -245,6 +249,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE Action/Link 264x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 264x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Not the right person? Search again"
     FRAME spacer-grow 8x358 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 194x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Vouch for Kavindu Perera"
 ```
@@ -266,7 +271,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Vouch for someone"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT explainer 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Know their number? Search for someone you can vouch for."
     INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
       TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
@@ -276,6 +281,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         FRAME val 108x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
           TEXT 7X XXX XXXX 96x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 999 0000"
     FRAME spacer-grow 8x498 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 54x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Search"
 ```
@@ -296,7 +302,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Vouch"
   FRAME scopeStatement 360x80 [FILL/HUG] · vertical pad 10/16/10/16 gap 0 · fill color/bg/subtle
     TEXT scopeText 328x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Vouching says you know this person and consider them reliable — it doesn't guarantee their work, and employers see it with your name."
-  FRAME content 360x664 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x580 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     FRAME whoRow 147x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT whoName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
     TEXT attrLabel 195x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "WHAT STANDS OUT? (OPTIONAL)"
@@ -315,6 +321,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE reasonField 328x96 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Default}
       TEXT placeholder 302x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "My neighbour — known him 8 years"
     FRAME spacer-grow 8x248 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 194x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Vouch for Kavindu Perera"
 ```
@@ -341,7 +348,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Vouch"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     FRAME whoRow 147x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT whoName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
     FRAME successGlyph 48x48 [FIXED/FIXED]
@@ -350,6 +357,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT liveTitle 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your endorsement is live"
     TEXT liveBody 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "It shows on their profile immediately — there's no review step. You can revoke it any time from My endorsements."
     FRAME spacer-grow 8x416 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 138x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "My endorsements"
 ```

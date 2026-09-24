@@ -23,34 +23,36 @@ is also where the Terms and Privacy Policy are accepted (`FR-ACC-19`). Every ste
 **Reached from** `1.17d` · [M0](M0-first-run.md) `0.2`/`0.3` (Skip) and `0.4` (Create account)  ·  **Leads to** `1.6` ("Go to log in"), `1.2` ("Continue")
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 4"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
-      ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
-    FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
-      TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
-      TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
-      TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
-  FRAME spacer-grow 8x224 [FIXED/FILL]
-  INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 4"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
+        ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
+      FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
+        TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
+        TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
+        TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
+    FRAME spacer-grow 8x224 [FIXED/FILL]
+    INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 **Step 1 of 4**, and the step counter already knows the path: the employer's copy (`1.1e`) reads *Step 1
@@ -65,22 +67,24 @@ step.
 *In the demo:* the error walk: Send code → `1.2err`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  FRAME spacer-grow 8x418 [FIXED/FILL]
-  INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    FRAME spacer-grow 8x418 [FIXED/FILL]
+    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
 ```
 
 Kavindu Perera's number, typed: the value is drawn in `color/text/primary`. `Input/PhoneField` has no
@@ -95,35 +99,37 @@ only.
 *In the demo:* the error walk: Verify → `1.3err2`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x322 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x322 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
 ```
 
 The code is **3 7 1 5 8 2**. Sample codes are distinct across the prototype so that no screen can be
@@ -138,61 +144,65 @@ when it runs out, *Resend code* takes its place (`1.3rs2`).
 *In the demo:* the error walk: Create account → `1.4err1`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/16/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 4"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x1 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 4"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x1 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 **Email is optional** and Kavindu leaves it empty — the placeholder `you@example.com` is secondary
 text. He adds `kavindu@example.com` later, from Settings; `1.10`, `1.8` and `1.11r2` show it. The NIC help
 line promises *only the shape is checked*, and no copy on any screen implies a registry check. The birthdate
-is 2004-03-14 — he is 22.
+is 2004-03-14 — he is 22. The form is taller than the space above the pinned **Create account** bar, so
+it scrolls under the bar, and the bar carries the `elevation/bar` shadow (design system §5, *Pinned action
+bar*).
 
 ### `1.20` — Terms of Service and Privacy Policy
 
@@ -231,24 +241,26 @@ component. The two text-expansion and keyboard frames are specimens, not steps.
 *In the demo:* the error walk: Send code → `1.3` (the number corrected).
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 77 123 4567 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE fieldError 296x60 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This number is already registered. Log in instead — you can reset your password from there."
-  FRAME spacer-grow 8x342 [FIXED/FILL]
-  INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 77 123 4567 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE fieldError 296x60 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This number is already registered. Log in instead — you can reset your password from there."
+    FRAME spacer-grow 8x342 [FIXED/FILL]
+    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
 ```
 
 `FR-ACC-05`: one account per phone. The field is `{State=Error}` with a red border; the message says
@@ -261,37 +273,39 @@ what to do instead — log in, and reset the password from there if it is forgot
 *In the demo:* the error walk: Verify → `1.3err1`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Error}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "That code doesn't match. Check the 6 digits and try again."
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x266 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Error}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "That code doesn't match. Check the 6 digits and try again."
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x266 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
 ```
 
 A mistyped code: **3 7 1 5 2 8**, the last two digits swapped. Verify stays enabled — the next
@@ -304,37 +318,39 @@ attempt may be right.
 *In the demo:* the error walk: Resend code → `1.3rs2`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Error}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This code is no longer valid. Tap Resend for a new one."
-  INSTANCE resendLink 99x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 99x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Resend code"
-  FRAME spacer-grow 8x242 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Error}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/error 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This code is no longer valid. Tap Resend for a new one."
+    INSTANCE resendLink 99x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 99x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Resend code"
+    FRAME spacer-grow 8x242 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Verify"
 ```
 
 The same code as `1.3`, correct but **expired**. Verify is `{State=Disabled}` and the message says why
@@ -346,35 +362,37 @@ cooldown has passed.
 **Reached from** in the demo `1.3err1`  ·  **Leads to** `1.3` ("Resend code"), `1.2` ("Change number"), `1.6` ("Go to log in"), `1.4` ("Verify")  ·  **Exits** back → `1.2`, ✕ → `1.1`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-  INSTANCE resendLink 99x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 99x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Resend code"
-  FRAME spacer-grow 8x298 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 77 123 4567."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+    INSTANCE resendLink 99x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 99x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Resend code"
+    FRAME spacer-grow 8x298 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
 ```
 
 The cooldown has elapsed and nothing has gone wrong: `Resend code` replaces the countdown, and the
@@ -387,41 +405,43 @@ code field is still filled.
 *In the demo:* the error walk: Create account → `1.4err2`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/error 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This NIC is already registered. You can log in instead, or check the number for a typo."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x188 [FIXED/FILL]
-  INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/error 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This NIC is already registered. You can log in instead, or check the number for a typo."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x184 [FIXED/FILL]
+    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 `FR-ACC-05` again, for the NIC. The message does not say whose account holds the number, and offers
@@ -434,40 +454,42 @@ the log-in link in case it is the person's own.
 *In the demo:* the error walk: Create account → `1.4err3`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Error}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/error 1.5 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2010-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "YouthLink is for people aged 18 and over. Please check your birthdate is right."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x192 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Error}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/error 1.5 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2010-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "YouthLink is for people aged 18 and over. Please check your birthdate is right."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x188 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 **The age gate** (`FR-ACC-03`): 2010-03-14 makes the applicant 16. The typed date stays in
@@ -481,39 +503,41 @@ the password fields above are off screen.
 *In the demo:* the error walk: Create account → `1.4cnt`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Unchecked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/bg/default · stroke color/border/default 1.5 · r4
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Please accept the Terms of Service and Privacy Policy to continue."
-  FRAME spacer-grow 8x192 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Unchecked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/bg/default · stroke color/border/default 1.5 · r4
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Please accept the Terms of Service and Privacy Policy to continue."
+    FRAME spacer-grow 8x188 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 Terms not accepted: the checkbox is `{State=Unchecked}` and the message sits directly beneath it.
@@ -526,39 +550,41 @@ Create account stays enabled so that the attempt can produce this explanation.
 *In the demo:* the error walk: Create account → `1.6`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT nameValue 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Anuruddha Bandara Perera Wickramasinghe Jayasuriya Abeywardena Senanayake Silva Jr"
-  TEXT charCounter 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · align right · "90 / 100"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x216 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2004-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT nameValue 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Anuruddha Bandara Perera Wickramasinghe Jayasuriya Abeywardena Senanayake Silva Jr"
+    TEXT charCounter 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · align right · "90 / 100"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x212 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 The legal-name field **counts** as the 100-character cap approaches (*90 / 100*). Input is blocked at
@@ -597,8 +623,9 @@ FRAME 360x800 · vertical pad 6/16/0/16 gap 12 · fill color/bg/default
     FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
       TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
   FRAME spacer-grow 8x326 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FIXED/FIXED] @16,480 · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+  FRAME ctaBar 360x72 [FIXED/HUG] @0,468 · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
   INSTANCE OS/Keyboard 360x260 [FIXED/FIXED] @0,540 · fill gray/200
     FRAME key 30x42 [FIXED/FIXED] @12,14 · fill color/bg/default · r5
       TEXT q 10x19 [FIXED/FIXED] @10,12 · fill color/text/primary · (no style) · "q"
@@ -655,67 +682,74 @@ FRAME 360x800 · vertical pad 6/16/0/16 gap 12 · fill color/bg/default
     FRAME key-space 180x42 [FIXED/FIXED] @90,164 · fill color/bg/default · r5
 ```
 
-**A specimen, not a step.** The same form with the system keyboard open, to show that the Create
-account button stays above it (`@16,480`) rather than being hidden. It is in no flow.
+**A specimen, not a step.** The same form with the system keyboard open, to show that the pinned
+bar rides up with the keyboard rather than being hidden: `ctaBar` sits at `@0,468`, 12 px above the
+keyboard's top edge at 540, with the `elevation/bar` shadow, and the form scrolls under it. It is in no
+flow.
 
 ### `1.4x130` — Registration, details · 130% text expansion (specimen, not in the demo)
 
 **Reached from** nowhere — a specimen  ·  **Leads to** `1.20` ("Terms of Service / Privacy Policy")  ·  **Exits** back → `1.3`, ✕ → `1.1`
 
 ```
-FRAME 360x800 · vertical pad 6/16/16/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
-  TEXT screenTitle 231x42 [HUG/HUG] · fill color/text/primary · (no style) · "Create account"
-  TEXT step 85x21 [HUG/HUG] · fill color/text/secondary · (no style) · "Step 4 of 4"
-  INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 83x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x25 [FILL/HUG] · fill color/text/primary · (no style) · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 156x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Confirm password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x25 [FILL/HUG] · fill color/text/primary · (no style) · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  TEXT pwHelp 328x21 [FILL/HUG] · fill color/text/secondary · (no style) · "8–64 characters, spaces allowed."
-  INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 132x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x25 [FILL/HUG] · fill color/text/secondary · (no style) · "you@example.com"
-  INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 32x22 [HUG/HUG] · fill color/text/secondary · (no style) · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x25 [FILL/HUG] · fill color/text/primary · (no style) · "200412345678"
-  TEXT nicHelp 328x52 [FILL/HUG] · fill color/text/secondary · (no style) · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x87 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 79x26 [HUG/HUG] · fill color/text/secondary · (no style) · "Birthdate"
-    FRAME field 328x55 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x31 [FILL/HUG] · fill color/text/primary · (no style) · "2004-03-14"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 98x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x25 [FILL/HUG] · fill color/text/primary · (no style) · "Kavindu Perera"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · (no style) · "I accept the Terms of Service and Privacy Policy"
-        · run Inter Regular "I accept the "
-        · run Inter Regular underline "Terms of Service"
-        · run Inter Regular " and "
-        · run Inter Regular underline "Privacy Policy"
-  FRAME spacer-grow 8x1 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 155x31 [HUG/HUG] · fill color/text/inverse · (no style) · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
+    TEXT screenTitle 231x42 [HUG/HUG] · fill color/text/primary · (no style) · "Create account"
+    TEXT step 85x21 [HUG/HUG] · fill color/text/secondary · (no style) · "Step 4 of 4"
+    INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 83x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x25 [FILL/HUG] · fill color/text/primary · (no style) · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 156x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Confirm password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x25 [FILL/HUG] · fill color/text/primary · (no style) · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    TEXT pwHelp 328x21 [FILL/HUG] · fill color/text/secondary · (no style) · "8–64 characters, spaces allowed."
+    INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 132x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x25 [FILL/HUG] · fill color/text/secondary · (no style) · "you@example.com"
+    INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 32x22 [HUG/HUG] · fill color/text/secondary · (no style) · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x25 [FILL/HUG] · fill color/text/primary · (no style) · "200412345678"
+    TEXT nicHelp 328x52 [FILL/HUG] · fill color/text/secondary · (no style) · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x87 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 79x26 [HUG/HUG] · fill color/text/secondary · (no style) · "Birthdate"
+      FRAME field 328x55 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x31 [FILL/HUG] · fill color/text/primary · (no style) · "2004-03-14"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x74 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 98x22 [HUG/HUG] · fill color/text/secondary · (no style) · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x25 [FILL/HUG] · fill color/text/primary · (no style) · "Kavindu Perera"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · (no style) · "I accept the Terms of Service and Privacy Policy"
+          · run Inter Regular "I accept the "
+          · run Inter Regular underline "Terms of Service"
+          · run Inter Regular " and "
+          · run Inter Regular underline "Privacy Policy"
+    FRAME spacer-grow 8x1 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 155x31 [HUG/HUG] · fill color/text/inverse · (no style) · "Create account"
 ```
 
-**A specimen, not a step.** `1.4` with every text size at 130%, the text-expansion check. The content runs to 848 px, so the frame scrolls and the button is below the fold — which is what
-130% does to a form already this full, and the reason the specimen exists.
+**A specimen, not a step.** `1.4` with every text size at 130%, the text-expansion check. The
+form grows well past the space above the pinned bar and scrolls under it, while **Create account** stays in
+view with the `elevation/bar` shadow — which is what 130% does to a form already this full, and the reason
+the specimen exists. The specimen's text carries no text styles (`(no style)`), because each size was scaled
+by hand.
 
 ## Registration — employer and verifier
 
@@ -729,34 +763,36 @@ signing up (M8), not an extra step.
 **Reached from** role selection with Local Business/Employer chosen — the employer path starts here  ·  **Leads to** `1.6e` ("Go to log in"), `1.2e` ("Continue")
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 5"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
-      TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
-      ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
-    FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
-      TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
-      TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
-  FRAME spacer-grow 8x224 [FIXED/FILL]
-  INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 5"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
+        TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
+        ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
+      FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
+        TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
+        TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
+    FRAME spacer-grow 8x224 [FIXED/FILL]
+    INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 The employer path: *Step 1 of 5*, with `Local Business/Employer` selected.
@@ -766,22 +802,24 @@ The employer path: *Step 1 of 5*, with `Local Business/Employer` selected.
 **Reached from** `1.1e`, `1.3e`  ·  **Leads to** `1.6e` ("Go to log in"), `1.3e` ("Send code")  ·  **Exits** back → `1.1e`, ✕ → `1.1e`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 5"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
-  FRAME spacer-grow 8x418 [FIXED/FILL]
-  INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 5"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
+    FRAME spacer-grow 8x418 [FIXED/FILL]
+    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
 ```
 
 Lanka Events' number, **+94 11 234 5678** — a Colombo number.
@@ -791,35 +829,37 @@ Lanka Events' number, **+94 11 234 5678** — a Colombo number.
 **Reached from** `1.2e`  ·  **Leads to** `1.2e` ("Change number"), `1.6e` ("Go to log in"), `1.4e` ("Verify")  ·  **Exits** back → `1.2e`, ✕ → `1.1e`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 5"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 11 234 5678."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x322 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 5"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 11 234 5678."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x322 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
 ```
 
 Code **5 0 6 2 9 4**.
@@ -829,55 +869,57 @@ Code **5 0 6 2 9 4**.
 **Reached from** `1.3e`  ·  **Leads to** `1.20` ("Terms of Service / Privacy Policy"), `1.5` ("Create account")  ·  **Exits** back → `1.3e`, ✕ → `1.1e`
 
 ```
-FRAME 360x800 · vertical pad 6/16/16/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 5"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "hello@lankaevents.lk"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "198512345678"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1985-06-20"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Ruwan Jayasuriya"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x1 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 5"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "hello@lankaevents.lk"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "198512345678"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1985-06-20"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Ruwan Jayasuriya"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/FIXED] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x1 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 The details of the **person** behind the business: Ruwan Jayasuriya, born 1985-06-20, NIC
@@ -891,22 +933,24 @@ on the next step.
 *In the demo:* Continue → [M2](M2-posting.md) `2.1n`, the blank posting form — a new employer's first step.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 5"
-  TEXT question 156x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "How will you post gigs?"
-  INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Individual}
-    FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
-      TEXT label 162x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Individual/Household"
-    FRAME segment 115x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
-      TEXT label 69x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Business"
-  TEXT descIndividual 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event."
-  TEXT descBusiness 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Business — you'll add a business name, and it appears on every posting you publish."
-  TEXT changeLater 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can change this later in Settings. Postings you've already published keep the name they were posted under."
-  FRAME spacer-grow 8x218 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 5"
+    TEXT question 156x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "How will you post gigs?"
+    INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Individual}
+      FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
+        TEXT label 162x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Individual/Household"
+      FRAME segment 115x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
+        TEXT label 69x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Business"
+    TEXT descIndividual 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event."
+    TEXT descBusiness 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Business — you'll add a business name, and it appears on every posting you publish."
+    TEXT changeLater 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can change this later in Settings. Postings you've already published keep the name they were posted under."
+    FRAME spacer-grow 8x218 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 *How will you post gigs?* — `Individual/Household` selected. Both descriptions are shown so the choice
@@ -920,30 +964,32 @@ is made knowing the other, and *You can change this later in Settings* says it i
 *In the demo:* Continue → [M2](M2-posting.md) `2.1n`, the blank posting form — a new employer's first step.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 5"
-  TEXT question 156x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "How will you post gigs?"
-  INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Business}
-    FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
-      TEXT label 162x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Individual/Household"
-    FRAME segment 115x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
-      TEXT label 69x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Business"
-  TEXT descIndividual 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event."
-  TEXT descBusiness 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Business — you'll add a business name, and it appears on every posting you publish."
-  TEXT changeLater 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can change this later in Settings. Postings you've already published keep the name they were posted under."
-  INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 100x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Lanka Events (Pvt) Ltd"
-  INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 151x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business bio (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT businessBio 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Event staffing across Colombo — weddings, corporate events and concerts."
-  FRAME spacer-grow 8x42 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 5"
+    TEXT question 156x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "How will you post gigs?"
+    INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Business}
+      FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
+        TEXT label 162x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Individual/Household"
+      FRAME segment 115x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
+        TEXT label 69x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Business"
+    TEXT descIndividual 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event."
+    TEXT descBusiness 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Business — you'll add a business name, and it appears on every posting you publish."
+    TEXT changeLater 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can change this later in Settings. Postings you've already published keep the name they were posted under."
+    INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 100x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Lanka Events (Pvt) Ltd"
+    INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 151x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business bio (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT businessBio 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Event staffing across Colombo — weddings, corporate events and concerts."
+    FRAME spacer-grow 8x42 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 `Business` selected, and the two fields it unlocks: **Business name** (required) and **Business bio
@@ -955,34 +1001,36 @@ first-run profile `1.18ez` shows.
 **Reached from** role selection with Community Verifier chosen — the verifier path starts here  ·  **Leads to** `1.6v` ("Go to log in"), `1.2v` ("Continue")
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 4"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
-      TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
-    FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
-      TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
-  INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
-    FRAME radio 20x20 [FIXED/FIXED]
-      ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
-      ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
-    FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
-      TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
-      TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
-  FRAME spacer-grow 8x224 [FIXED/FILL]
-  INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 4"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 192x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 138x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Youth Job-Seeker"
+        TEXT description 192x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Find part-time work and gigs"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {State=Default}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/border/default 1.5
+      FRAME copy 191x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 191x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Local Business/Employer"
+        TEXT description 176x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Post gigs and hire workers"
+    INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
+      FRAME radio 20x20 [FIXED/FIXED]
+        ELLIPSE ring 20x20 [FIXED/FIXED] @0,0 · stroke color/brand/primary 2
+        ELLIPSE dot 10x10 [FIXED/FIXED] @5,5 · fill color/brand/primary
+      FRAME copy 180x46 [HUG/HUG] · vertical pad 0 gap 2
+        TEXT title 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
+        TEXT description 180x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Vouch for people you know"
+    FRAME spacer-grow 8x224 [FIXED/FILL]
+    INSTANCE Action/Link 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 `Community Verifier` selected. Four steps, like the worker's.
@@ -992,22 +1040,24 @@ FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
 **Reached from** `1.1v`, `1.3v`  ·  **Leads to** `1.6v` ("Go to log in"), `1.3v` ("Send code")  ·  **Exits** back → `1.1v`, ✕ → `1.1v`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
-  FRAME spacer-grow 8x418 [FIXED/FILL]
-  INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-    TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 4"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
+    FRAME spacer-grow 8x418 [FIXED/FILL]
+    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 82x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code"
 ```
 
 Sunil Bandara's number, **+94 71 456 7890**.
@@ -1017,35 +1067,37 @@ Sunil Bandara's number, **+94 71 456 7890**.
 **Reached from** `1.2v`  ·  **Leads to** `1.2v` ("Change number"), `1.6v` ("Go to log in"), `1.4v` ("Verify")  ·  **Exits** back → `1.2v`, ✕ → `1.1v`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
-  TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 71 456 7890."
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x322 [FIXED/FILL]
-  FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
-    INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 4"
+    TEXT sentTo 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a 6-digit code to +94 71 456 7890."
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x322 [FIXED/FILL]
+    FRAME linkGroup 121x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 121x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 121x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Change number"
+      INSTANCE loginLink 87x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 87x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Go to log in"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 45x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Verify"
 ```
 
 Code **8 1 3 7 0 6**.
@@ -1055,55 +1107,57 @@ Code **8 1 3 7 0 6**.
 **Reached from** `1.3v`  ·  **Leads to** `1.20` ("Terms of Service / Privacy Policy"), [M8](M8-endorsement.md) `8.2` ("Create account")  ·  **Exits** back → `1.3v`, ✕ → `1.1v`
 
 ```
-FRAME 360x800 · vertical pad 6/16/16/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
-  TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
-  TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 4"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
-    TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "195512349012"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1955-05-03"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sunil Bandara"
-  INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
-    FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
-      FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
-        VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
-      TEXT label 280x40 [FIXED/HUG] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
-        · run mobile/secondary "I accept the "
-        · run mobile/secondary underline "Terms of Service"
-        · run mobile/secondary " and "
-        · run mobile/secondary underline "Privacy Policy"
-  FRAME spacer-grow 8x1 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
+    TEXT screenTitle 179x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Create account"
+    TEXT step 64x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 4"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 121x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Confirm password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    TEXT pwHelp 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "8–64 characters, spaces allowed."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 103x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "you@example.com"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "195512349012"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1955-05-03"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sunil Bandara"
+    INSTANCE Input/Checkbox 316x44 [HUG/HUG] · vertical pad 0 gap 6 · {State=Checked}
+      FRAME row 316x44 [HUG/HUG] · horizontal pad 2/0/2/0 gap 12
+        FRAME box 24x24 [FIXED/FIXED] · fill color/brand/primary · r4
+          VECTOR check 12x10 [FIXED/FIXED] @6,8 · stroke color/text/inverse 2.5
+        TEXT label 280x40 [FIXED/HUG] · mobile/secondary · "I accept the Terms of Service and Privacy Policy"
+          · run mobile/secondary "I accept the "
+          · run mobile/secondary underline "Terms of Service"
+          · run mobile/secondary " and "
+          · run mobile/secondary underline "Privacy Policy"
+    FRAME spacer-grow 8x1 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 118x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Create account"
 ```
 
 Sunil Bandara, born 1955-05-03, NIC 195512349012, no email at this point. The verifier's first screen
@@ -1121,35 +1175,37 @@ links disappear, because neither would get the person in (`FR-ADM-03`).
 **Reached from** `1.10sed`, `1.10seg`, `1.10sn` · in the demo `1.9`  ·  **Leads to** `1.6` (the phone field (typing)), `1.7` ("Log in with a code instead"), `1.8` ("Forgot password?"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.1`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Enter your phone number and password to log in."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 113x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 101x24 [HUG/HUG] · fill color/text/secondary · mobile/body · "7X XXX XXXX"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "8–64 characters"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x242 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Enter your phone number and password to log in."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 113x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 101x24 [HUG/HUG] · fill color/text/secondary · mobile/body · "7X XXX XXXX"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "8–64 characters"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x242 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
 ```
 
 **Before anything is typed.** Placeholders in `color/text/secondary` (`7X XXX XXXX`, *8–64
@@ -1163,35 +1219,37 @@ recovery and R. Gunasekara's refusal lead back to — it belongs to nobody in pa
 *In the demo:* the error walk: Log in → `1.6bnr1`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x242 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x242 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 Kavindu's number and a masked password, both filled. *Log in with a code instead*, *Forgot password?*
@@ -1204,28 +1262,30 @@ and *Trouble getting in? Get help* sit above the button in one link group.
 *In the demo:* in the returning worker's journey the timeout lands on `8.6` (the bio prompt over `1.18`).
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Signing you in… fields are locked while we check."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 77 123 4567 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x390 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Loading}
-    ELLIPSE spinner 20x20 [FIXED/FIXED] · fill color/text/inverse
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Signing you in… fields are locked while we check."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 77 123 4567 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x390 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Loading}
+      ELLIPSE spinner 20x20 [FIXED/FIXED] · fill color/text/inverse
 ```
 
 **Submitting.** Both fields `{State=Disabled}` and the button `{State=Loading}` with a spinner; the
@@ -1238,37 +1298,39 @@ subtitle says the fields are locked while the server checks. It advances by itse
 *In the demo:* Log in with a code instead → `1.7`, Forgot password? → `1.8`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "We couldn't log you in with those details. Check your number and password, or reset your password."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x146 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "We couldn't log you in with those details. Check your number and password, or reset your password."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x146 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 A generic refusal — *We couldn't log you in with those details* — that does not say which of the
@@ -1281,37 +1343,39 @@ two was wrong, so the screen cannot be used to discover which numbers are regist
 *In the demo:* Log in with a code instead → `1.7`, Forgot password? → `1.8`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "We couldn't log you in with those details. 2 attempts left before password login is paused for 15 minutes."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x146 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "We couldn't log you in with those details. 2 attempts left before password login is paused for 15 minutes."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x146 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 After the third failure: **2 attempts left** before the password path is paused for 15 minutes
@@ -1324,37 +1388,39 @@ After the third failure: **2 attempts left** before the password path is paused 
 *In the demo:* Forgot password? → `1.8`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x146 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x146 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
 ```
 
 **Paused.** Log in is `{State=Disabled}`; the banner gives the length of the pause and the way round
@@ -1365,34 +1431,36 @@ it — log in with a code instead, which stays available.
 **Reached from** the app itself, when the session has ended or the password was changed on another device  ·  **Leads to** `1.7` ("Log in with a code instead"), `1.8` ("Forgot password?"), `1.18` ("Log in"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")
 
 ```
-FRAME 360x800 · vertical pad 66/16/24/16 gap 16 · fill color/bg/default
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  TEXT sessionBanner 328x80 [FILL/HUG] · fill color/text/primary · mobile/secondary · "You were signed out — your session ended, or your password was changed on another device. Sign in again to continue. If that change wasn't you, reset your password now."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x146 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 66/16/4/16 gap 16
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    TEXT sessionBanner 328x80 [FILL/HUG] · fill color/text/primary · mobile/secondary · "You were signed out — your session ended, or your password was changed on another device. Sign in again to continue. If that change wasn't you, reset your password now."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x146 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 **Signed out for security** — the session ended, or the password was changed on another device.
@@ -1406,33 +1474,35 @@ it. The banner ends with the one thing to do if the change was not theirs.
 *In the demo:* ‹ back → `1.6emp`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE formBanner 328x120 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x100 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This account has been suspended. Staff make that decision and it takes effect immediately. Logging in with a code will not work either, and YouthLink has no appeals process."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 987 6543"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x194 [FIXED/FILL]
-  FRAME linkGroup 184x44 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE helpLink 184x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 184x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "What suspension means"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE formBanner 328x120 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x100 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This account has been suspended. Staff make that decision and it takes effect immediately. Logging in with a code will not work either, and YouthLink has no appeals process."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 987 6543"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x194 [FIXED/FILL]
+    FRAME linkGroup 184x44 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE helpLink 184x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 184x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "What suspension means"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
 ```
 
 **R. Gunasekara, after his account was suspended on Fri 4 Sep** (M11 `10.6n`, recorded 3:38 PM). His
@@ -1445,35 +1515,37 @@ links are gone — neither would get him in. *What suspension means* opens the h
 **Reached from** `1.10se`, `1.1e`, `1.2e`, `1.3e`, `1.7e` · in the demo `1.9`  ·  **Leads to** `1.7e` ("Log in with a code instead"), `1.8e` ("Forgot password?"), `1.18e` ("Log in"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.1e`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x242 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x242 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 Lanka Events' copy: the landline number, and Log in leads to the employer's profile `1.18e`.
@@ -1483,35 +1555,37 @@ Lanka Events' copy: the landline number, and Log in leads to the employer's prof
 **Reached from** `1.10sv`, `1.1v`, `1.2v`, `1.3v`, `1.7v` · in the demo `1.9`  ·  **Leads to** `1.7v` ("Log in with a code instead"), `1.8v` ("Forgot password?"), `1.18v` ("Log in"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.1v`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-    TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-      FRAME eye 24x24 [FIXED/FIXED]
-        ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-        ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-  FRAME spacer-grow 8x242 [FIXED/FILL]
-  FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
-    INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Log in to pick up where you left off."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
+      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
+        FRAME eye 24x24 [FIXED/FIXED]
+          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
+          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
+    FRAME spacer-grow 8x242 [FIXED/FILL]
+    FRAME linkGroup 210x132 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 199x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 199x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Log in with a code instead"
+      INSTANCE Action/Link 136x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 136x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgot password?"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 Sunil Bandara's copy.
@@ -1523,43 +1597,45 @@ Sunil Bandara's copy.
 *In the demo:* in the returning worker's journey Log in lands on `8.6`.
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
-  TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x238 [FIXED/FILL]
-  FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
+    TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "77 123 4567"
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x238 [FIXED/FILL]
+    FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 The code path, with Kavindu's number and code **9 0 4 6 2 7** filled. *Use password instead* returns to
@@ -1570,43 +1646,45 @@ The code path, with Kavindu's number and code **9 0 4 6 2 7** filled. *Use passw
 **Reached from** `1.6e`  ·  **Leads to** `1.6e` ("Use password instead"), `1.18e` ("Log in"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.6e`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
-  TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x238 [FIXED/FILL]
-  FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
+    TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 105x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 93x24 [HUG/HUG] · fill color/text/primary · mobile/body · "11 234 5678"
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 5 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "5"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x238 [FIXED/FILL]
+    FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 Code **2 6 8 1 5 3**.
@@ -1616,43 +1694,45 @@ Code **2 6 8 1 5 3**.
 **Reached from** `1.6v`  ·  **Leads to** `1.6v` ("Use password instead"), `1.18v` ("Log in"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.6v`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
-  TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
-  INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
-    TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
-  FRAME spacer-grow 8x238 [FIXED/FILL]
-  FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-      TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
-    INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
+    TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 456 7890"
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 7 12x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "7"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 4 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "4"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 1 10x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "1"
+    INSTANCE Display/CountdownText 99x20 [HUG/HUG] · horizontal pad 0 gap 0 · {Format=Cooldown}
+      TEXT countdown 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Resend in 0:47"
+    FRAME spacer-grow 8x238 [FIXED/FILL]
+    FRAME linkGroup 210x88 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE Action/Link 168x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+        TEXT label 168x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Use password instead"
+      INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Log in"
 ```
 
 Code **7 4 0 9 3 1**.
@@ -1662,41 +1742,43 @@ Code **7 4 0 9 3 1**.
 **Reached from** an attempt to sign in with a code to a suspended account  ·  **Leads to** [HF](MHF-help.md) `HF.5` ("What suspension means")  ·  **Exits** back → `1.6emp`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME backHit 44x44 [FIXED/FIXED]
-    VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
-  TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
-  TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
-  TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
-  INSTANCE formBanner 328x120 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x100 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This account has been suspended. Staff make that decision and it takes effect immediately. Trying the password instead will not work either, and YouthLink has no appeals process."
-  INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
-    TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
-      FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-        TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-      FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-        TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 987 6543"
-  INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
-    FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
-      FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
-      FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
-      FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
-      FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
-      FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
-      FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
-  FRAME spacer-grow 8x182 [FIXED/FILL]
-  FRAME linkGroup 184x44 [HUG/HUG] · vertical pad 0 gap 0
-    INSTANCE helpLink 184x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
-      TEXT label 184x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "What suspension means"
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @6,14 · stroke color/text/primary 2
+    TEXT screenTitle 170x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Welcome back"
+    TEXT welcomeSub 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "We'll text you a one-time code to log in."
+    TEXT sub 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Code login"
+    INSTANCE formBanner 328x120 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x100 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This account has been suspended. Staff make that decision and it takes effect immediately. Trying the password instead will not work either, and YouthLink has no appeals process."
+    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Disabled}
+      TEXT Phone number 97x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Phone number"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8
+        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
+          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
+        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
+          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "71 987 6543"
+    INSTANCE Input/CodeInputNumeric 328x52 [FILL/HUG] · vertical pad 0 gap 8 · {State=Filled}
+      FRAME digits 328x52 [FILL/HUG] · horizontal pad 0 gap 8
+        FRAME d0 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 6 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "6"
+        FRAME d1 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 3 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "3"
+        FRAME d2 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 9 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "9"
+        FRAME d3 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 2 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "2"
+        FRAME d4 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 0 14x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "0"
+        FRAME d5 48x52 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+          TEXT 8 13x26 [HUG/HUG] · fill color/text/primary · mobile/display-number · "8"
+    FRAME spacer-grow 8x182 [FIXED/FILL]
+    FRAME linkGroup 184x44 [HUG/HUG] · vertical pad 0 gap 0
+      INSTANCE helpLink 184x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
+        TEXT label 184x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "What suspension means"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 47x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Log in"
 ```
 
 The same refusal on the code path, with Gunasekara's number and a code he did receive — **6 3 9 2 0
@@ -1720,7 +1802,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Forgot password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT explainer 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Choose where we should send your reset code."
     INSTANCE Input/RoleOption 328x78 [FILL/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
       FRAME radio 20x20 [FIXED/FIXED]
@@ -1738,6 +1820,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
       TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send reset code"
 ```
@@ -1755,7 +1838,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Forgot password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT explainer 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Choose where we should send your reset code."
     INSTANCE Input/RoleOption 328x78 [FILL/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
       FRAME radio 20x20 [FIXED/FIXED]
@@ -1773,6 +1856,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
       TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send reset code"
 ```
@@ -1789,7 +1873,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Forgot password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT explainer 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Choose where we should send your reset code."
     INSTANCE Input/RoleOption 328x78 [FILL/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
       FRAME radio 20x20 [FIXED/FIXED]
@@ -1807,6 +1891,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
       TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
     FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send reset code"
 ```
@@ -1825,7 +1910,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Reset password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Secure}
       TEXT label 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -1843,6 +1928,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT pwHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "8 to 64 characters — spaces allowed, no other rules."
     TEXT signOutLine 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Changing your password signs you out on any other device."
     FRAME spacer-grow 8x344 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 141x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Set new password"
 ```
@@ -1860,7 +1946,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Forgot password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT explainer 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Choose where we should send your reset code."
     INSTANCE Input/RoleOption 328x78 [FILL/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
       FRAME radio 20x20 [FIXED/FIXED]
@@ -1881,6 +1967,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
         TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
     FRAME spacer-grow 8x304 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send reset code"
 ```
@@ -1899,7 +1986,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Forgot password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE formBanner 328x60 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
       TEXT message 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "We can't reach you by phone or email, so we can't reset your password automatically."
     TEXT explainer 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Choose where we should send your reset code."
@@ -1919,6 +2006,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE helpLink 210x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0 · of Action/Link
       TEXT label 210x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Trouble getting in? Get help"
     FRAME spacer-grow 8x272 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 156x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Recover my account"
 ```
@@ -1931,28 +2019,30 @@ that explains why the reset cannot be automatic. The button becomes **Recover my
 **Reached from** `1.8bnr`  ·  **Leads to** `1.8rec3` ("Submit request")  ·  **Exits** back → history, ✕ → `1.6emp`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
-  FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
-  TEXT screenTitle 254x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Recover your account"
-  TEXT explainer 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Confirm the details on the account. An admin reviews every request — this isn't instant."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200156789012"
-  TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2001-03-08"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Nethmi Jayasinghe"
-  TEXT outcomeNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "We'll show the outcome here when it's been reviewed. Keep the app installed on this device."
-  FRAME spacer-grow 8x228 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit request"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 8
+    FRAME topBar 328x52 [FILL/HUG] · horizontal pad 0/0/8/0 gap 0 · [standard, see header]
+    TEXT screenTitle 254x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Recover your account"
+    TEXT explainer 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Confirm the details on the account. An admin reviews every request — this isn't instant."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200156789012"
+    TEXT nicHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits + V or X — only the shape is checked."
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Birthdate"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "2001-03-08"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 77x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Legal name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Nethmi Jayasinghe"
+    TEXT outcomeNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "We'll show the outcome here when it's been reviewed. Keep the app installed on this device."
+    FRAME spacer-grow 8x224 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit request"
 ```
 
 **The request.** Nethmi confirms the details on the account — NIC 200156789012, birthdate
@@ -1971,11 +2061,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Recover your account"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE formBanner 328x60 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/FormBanner · {Kind=Info}
       TEXT message 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Request received. An admin will review it, and the outcome will appear here."
     TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You don't need to do anything else. Keep the app installed on this device so we can show you the result."
     FRAME spacer-grow 8x480 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 41x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Done"
 ```
@@ -1992,11 +2083,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Recover your account"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE formBanner 328x60 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/FormBanner · {Kind=Info}
       TEXT message 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Your account has been recovered. Set a new password to finish."
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your ratings, completed gigs and endorsements are unchanged."
     FRAME spacer-grow 8x500 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 141x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Set new password"
 ```
@@ -3275,7 +3367,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
       TEXT label 119x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Current password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -3300,6 +3392,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT pwHelp 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "8 to 64 characters — spaces allowed, no other rules."
     TEXT signOutLine 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Changing your password signs you out on any other device."
     FRAME spacer-grow 8x256 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 139x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Change password"
 ```
@@ -3319,7 +3412,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
       TEXT label 119x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Current password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -3346,6 +3439,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT label 257x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Forgotten your current password?"
     TEXT signOutLine 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Changing your password signs you out on any other device."
     FRAME spacer-grow 8x196 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 139x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Change password"
 ```
@@ -3362,11 +3456,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Reset your password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT explainer 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "We'll email a reset link to the address on your account. You'll set a new password from there."
     TEXT targetEmail 328x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "kavindu@example.com"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Resetting your password signs you out on any other device."
     FRAME spacer-grow 8x480 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 114x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send reset link"
 ```
@@ -3385,11 +3480,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Reset your password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/FormBanner · {Kind=Info}
       TEXT message 296x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "We've sent a reset link to kavindu@example.com. Check your inbox, and your spam folder if it isn't there."
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can keep using the app. The link opens in your browser."
     FRAME spacer-grow 8x480 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 41x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Done"
 ```
@@ -3408,11 +3504,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Reset your password"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE formBanner 328x60 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/FormBanner · {Kind=Info}
       TEXT message 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "There's no verified email on this account, so we can't send a reset link."
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Add an email address — no password needed — then reset your password by email."
     FRAME spacer-grow 8x500 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 99x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Add an email"
 ```
@@ -3448,7 +3545,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change phone number"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
       TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -3465,6 +3562,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
           TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "76 555 0199"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is verified."
     FRAME spacer-grow 8x400 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 201x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code to new number"
 ```
@@ -3525,7 +3623,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change phone number"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error, Type=Secure}
       TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/error 1 · r8
@@ -3544,6 +3642,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
           TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "76 555 0199"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is verified."
     FRAME spacer-grow 8x344 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 201x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code to new number"
 ```
@@ -3563,7 +3662,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Correct NIC"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
       TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -3577,6 +3676,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "Enter your NIC"
     TEXT nicHelp 328x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits followed by V or X. Stored as entered — only the shape is checked, never a registry."
     FRAME spacer-grow 8x380 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 70x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save NIC"
 ```
@@ -3598,13 +3698,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "new.address@example.com"
     TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Nothing on your account changes until the new address is confirmed."
     FRAME spacer-grow 8x468 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
 ```
@@ -3652,7 +3753,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error, Type=Text}
       TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/error 1 · r8
@@ -3661,6 +3762,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This email is already on another account. Try a different address."
     TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Nothing on your account changes until the new address is confirmed."
     FRAME spacer-grow 8x412 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
 ```
@@ -3679,12 +3781,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3701,12 +3804,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Ruwan Jayasuriya"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3724,7 +3828,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Business name & bio"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 100x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -3735,6 +3839,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT counter 48x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "72 / 300"
     TEXT helper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shown on your profile and on your postings."
     FRAME spacer-grow 8x326 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3753,12 +3858,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3775,12 +3881,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "R. Gunasekara"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3797,12 +3904,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Nethmi Jayasinghe"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3819,12 +3927,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sunil Bandara"
     FRAME spacer-grow 8x544 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3841,7 +3950,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting as"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Individual}
       FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
         TEXT label 162x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Individual/Household"
@@ -3849,6 +3958,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT label 69x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Business"
     TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Switching from Business clears your business name and bio. Past postings keep the details they were posted with."
     FRAME spacer-grow 8x496 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
 ```
@@ -3869,7 +3979,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting as"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Business}
       FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
         TEXT label 162x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Individual/Household"
@@ -3885,6 +3995,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT businessBio 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "What your business does (optional)"
     TEXT note 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Switching to Business shows the business name and bio on your profile and your postings. Postings you've already published keep the name they were posted under."
     FRAME spacer-grow 8x300 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 38x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save"
 ```
@@ -4028,10 +4139,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
   INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
     TEXT title 352x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Delete account"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT title 328x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Account deleted"
     TEXT body 328x96 [FILL/HUG] · fill color/text/primary · mobile/body · "Your identifying details are gone. Ratings you gave and received remain, attributed to an anonymised reference, so other people's history stays honest."
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 128x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to the start"
 ```

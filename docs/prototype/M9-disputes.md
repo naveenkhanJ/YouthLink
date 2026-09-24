@@ -35,7 +35,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Report"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Reporting: Data entry — work from home"
     TEXT prompt 211x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Why are you reporting this?"
     INSTANCE Input/RoleOption 328x78 [FIXED/HUG] · horizontal pad 16 gap 12 · fill color/bg/default · stroke color/brand/primary 2 · r8 · {State=Selected}
@@ -73,7 +73,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME detailField 328x68 [FILL/HUG] · vertical pad 10/12/10/12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
       TEXT detailValue 296x48 [FIXED/HUG] · fill color/text/primary · mobile/body · "Asks for a registration fee up front and gives no real address."
     TEXT anonNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "They won't learn who reported them."
-    FRAME spacer-grow 8x8 [FIXED/FILL]
+    FRAME spacer-grow 8x6 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 106x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit report"
 ```
@@ -83,8 +84,9 @@ selection on sign-up; it is the same control — a radio, a title and a descript
 it is reused rather than duplicated. The selected row carries a 2px `color/brand/primary` stroke where the
 others carry 1.5px `color/border/default`, and only the selected row has a `dot` inside its `radio`.
 
-**`spacer-grow` is 8 tall here**, which means this screen has no slack: five options plus a detail box
-fills it. Adding a sixth reason would push the button off the screen, so it is a scope question rather
+**`spacer-grow` is 6 tall here**, which means this screen has almost no slack: five options plus a detail
+box fill the space above the pinned bar. A sixth reason would make the form scroll under the bar — the
+button stays in view, but the details box would start below the fold — so it is a scope question rather
 than a layout one.
 
 **"They won't learn who reported them"** is the product promise that makes reporting usable at all, and
@@ -101,11 +103,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Report"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Reporting: Data entry — work from home"
     TEXT prompt 203x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Report submitted"
     TEXT anonNote 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "It's queued for a moderator to review. They will never learn who reported them — reports stay anonymous, permanently."
-    FRAME spacer-grow 8x496 [FIXED/FILL]
+    FRAME spacer-grow 8x494 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 41x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Done"
 ```
@@ -185,7 +188,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dispute case"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     INSTANCE Display/Badge 136x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Case, Value=AwaitingResponse}
       ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/urgent
       TEXT label 104x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Awaiting response"
@@ -197,7 +200,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT visibilityNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You'll see the outcome here when the case is decided."
     INSTANCE Action/Link 201x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 201x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How disputes are resolved"
-    FRAME spacer-grow 328x336 [FILL/FILL]
+    FRAME spacer-grow 328x334 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 68x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Respond"
 ```
@@ -216,7 +220,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dispute case"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     INSTANCE Display/Badge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Case, Value=UnderReview}
       ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
       TEXT label 76x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Under review"
@@ -226,7 +230,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT countdown 151x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Answer by 3 Sep 2026"
     TEXT windowNote 328x96 [FIXED/HUG] · fill color/text/secondary · mobile/body · "The moderator has a question for you. Answering helps your case — unanswered questions can leave the outcome inconclusive."
     TEXT visibilityNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You'll see the outcome here when the case is decided."
-    FRAME spacer-grow 328x342 [FILL/FILL]
+    FRAME spacer-grow 328x340 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Answer the question"
 ```
@@ -342,7 +347,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Respond"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Dispute: arrival not confirmed · Shop assistant — weekend"
     TEXT prompt 214x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Your side of what happened"
     INSTANCE responseField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
@@ -364,6 +369,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT capsNote 133x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "2 of 3 · up to 5MB each"
     TEXT optionalNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Evidence is optional — not adding any never blocks review."
     FRAME spacer-grow 8x230 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 129x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit response"
 ```
@@ -386,11 +392,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Respond"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Dispute: arrival not confirmed · Shop assistant — weekend"
     TEXT subTitle 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Response submitted"
     TEXT subBody 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "A moderator now has both sides. You'll see the outcome on the case when it's decided."
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 98x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to case"
 ```
@@ -405,7 +412,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Clarification"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Dispute: arrival not confirmed · Shop assistant — weekend"
     TEXT qLabel 169x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "The moderator asked:"
     FRAME questionCard 328x68 [FILL/HUG] · vertical pad 10/12/10/12 gap 0 · fill color/bg/subtle · r8
@@ -417,6 +424,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT capNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Up to 300 characters."
     TEXT helpNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Answering helps your case — unanswered questions can leave the outcome inconclusive."
     FRAME spacer-grow 8x262 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 100x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send answer"
 ```
@@ -435,11 +443,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Clarification"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Dispute: arrival not confirmed · Shop assistant — weekend"
     TEXT subTitle 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Answer sent"
     TEXT subBody 328x72 [FIXED/HUG] · fill color/text/secondary · mobile/body · "The moderator has your answer. You'll see the outcome on the case when it's decided."
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 98x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to case"
 ```
@@ -462,10 +471,11 @@ point rather than an oversight.
 | `9.1` `detailField` | **left at `pad 10/12`** — the component's 96 minimum does not fit |
 | `9.4` `questionCard` | **left at `pad 10/12`** — it is not an input |
 
-**`9.1` is full.** Five reason options, a details box and a pinned button leave its `spacer-grow` at
-**8px** — that is all the slack on the screen. The component would take the box from 68 to 96, needing 28
-more pixels than exist, and the submit button would leave the screen. **Widening the reason list or
-adopting the component there needs a layout decision first**, not a swap.
+**`9.1` is full.** Five reason options and a details box above the pinned button leave its `spacer-grow`
+at **6px** — that is all the slack on the screen. The component would take the box from 68 to 96, needing
+28 px where 6 exist, so the form would scroll under the bar: the submit button stays pinned, but the box
+would no longer be fully visible on arrival. **Widening the reason list or adopting the component there
+needs a layout decision first**, not a swap.
 
 **`questionCard` is not a text field at all.** It carries the moderator's question: `bg/subtle` fill, no
 border, read-only. The bordered white box beside it is where you type. Making them the same component

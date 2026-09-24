@@ -14,7 +14,7 @@ Read `README.md` for the notation and `design-system.md` for the tokens and comp
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  FRAME content 360x736 [FILL/FILL] · vertical pad 6/16/16/16 gap 16
+  FRAME content 360x664 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
     FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
     TEXT screenTitle 115x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Post a gig"
     TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 7"
@@ -26,7 +26,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT descLabel 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Description"
       INSTANCE descField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
         TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
-    FRAME spacer-grow 8x284 [FIXED/FILL]
+    FRAME spacer-grow 8x288 [FIXED/FILL]
+  FRAME ctaBar 360x72 [FILL/HUG] · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]
@@ -42,27 +43,29 @@ anything but a one-off gig; the part-time path grows to 8 at step 3 (`2.3t`).
 **Reached from** `2.1`, `2.1rst`  ·  **Leads to** `2.3`  ·  **Exits** back → `2.1`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Category"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 7"
-  FRAME cat-Retail 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 42x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Retail"
-  FRAME cat-Delivery 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 62x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Delivery"
-  FRAME cat-Event setup 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
-    TEXT catLabel 90x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Event setup"
-  FRAME cat-Moving 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 56x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Moving"
-  FRAME cat-Food service 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 98x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Food service"
-  FRAME cat-Tutoring 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 63x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Tutoring"
-  FRAME cat-Cleaning 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 67x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Cleaning"
-  FRAME spacer-grow 8x118 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Category"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 7"
+    FRAME cat-Retail 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 42x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Retail"
+    FRAME cat-Delivery 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 62x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Delivery"
+    FRAME cat-Event setup 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
+      TEXT catLabel 90x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Event setup"
+    FRAME cat-Moving 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 56x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Moving"
+    FRAME cat-Food service 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 98x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Food service"
+    FRAME cat-Tutoring 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 63x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Tutoring"
+    FRAME cat-Cleaning 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 67x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Cleaning"
+    FRAME spacer-grow 8x118 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 The seven allow-listed categories of FR-POST-02, and nothing else — there is no "Other". Event setup is selected.
@@ -72,19 +75,21 @@ The seven allow-listed categories of FR-POST-02, and nothing else — there is n
 **Reached from** `2.2`  ·  **Leads to** `2.4`  ·  **Exits** back → `2.2`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 154x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Arrangement"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 7"
-  FRAME arr-One-off gig 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
-    TEXT arrLabel 88x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "One-off gig"
-  FRAME arr-Part-time job 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT arrLabel 100x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Part-time job"
-  FRAME arr-Internship 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT arrLabel 76x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Internship"
-  FRAME spacer-grow 8x374 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 154x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Arrangement"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 7"
+    FRAME arr-One-off gig 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
+      TEXT arrLabel 88x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "One-off gig"
+    FRAME arr-Part-time job 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT arrLabel 100x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Part-time job"
+    FRAME arr-Internship 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT arrLabel 76x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Internship"
+    FRAME spacer-grow 8x374 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 Gig, part-time job or internship (FR-POST-01). The choice decides the pay format on the next step (FR-POST-04) and whether a Schedule step follows (FR-POST-03).
@@ -94,18 +99,20 @@ Gig, part-time job or internship (FR-POST-01). The choice decides the pay format
 **Reached from** `2.3`  ·  **Leads to** `2.6` — a gig has no Schedule step  ·  **Exits** back → `2.3`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 43x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Pay"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 7"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 175x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Fixed total per worker (Rs)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "6,000"
-  TEXT perWorkerHelper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Each selected worker earns this amount."
-  FRAME spacer-grow 8x442 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 43x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Pay"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 7"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 175x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Fixed total per worker (Rs)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "6,000"
+    TEXT perWorkerHelper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Each selected worker earns this amount."
+    FRAME spacer-grow 8x442 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 **A gig accepts a fixed total and nothing else** (FR-POST-04). One field, labelled for what it is — a
@@ -118,28 +125,30 @@ to part-time jobs and internships.
 **Reached from** `2.4`  ·  **Leads to** `2.7`  ·  **Exits** back → `2.4`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 101x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Location"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 7"
-  INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=PrecisePin}
-    LINE grid-h1 328x0 [FIXED/FIXED] @0,40 · stroke color/border/default 1
-    LINE grid-h2 328x0 [FIXED/FIXED] @0,80 · stroke color/border/default 1
-    LINE grid-h3 328x0 [FIXED/FIXED] @0,120 · stroke color/border/default 1
-    LINE grid-v1 160x0 [FIXED/FIXED] @66,0 · stroke color/border/default 1
-    LINE grid-v2 160x0 [FIXED/FIXED] @132,0 · stroke color/border/default 1
-    LINE grid-v3 160x0 [FIXED/FIXED] @198,0 · stroke color/border/default 1
-    LINE grid-v4 160x0 [FIXED/FIXED] @264,0 · stroke color/border/default 1
-    VECTOR pin 24x32 [FIXED/FIXED] @152,48 · fill color/brand/primary
-    ELLIPSE pinDot 8x8 [FIXED/FIXED] @160,56 · fill color/bg/subtle
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 55x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Address"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "23 Temple Road, Colombo 04"
-  TEXT areaNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shown to workers as: Colombo 04 area"
-  FRAME spacer-grow 8x270 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 101x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Location"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 7"
+    INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=PrecisePin}
+      LINE grid-h1 328x0 [FIXED/FIXED] @0,40 · stroke color/border/default 1
+      LINE grid-h2 328x0 [FIXED/FIXED] @0,80 · stroke color/border/default 1
+      LINE grid-h3 328x0 [FIXED/FIXED] @0,120 · stroke color/border/default 1
+      LINE grid-v1 160x0 [FIXED/FIXED] @66,0 · stroke color/border/default 1
+      LINE grid-v2 160x0 [FIXED/FIXED] @132,0 · stroke color/border/default 1
+      LINE grid-v3 160x0 [FIXED/FIXED] @198,0 · stroke color/border/default 1
+      LINE grid-v4 160x0 [FIXED/FIXED] @264,0 · stroke color/border/default 1
+      VECTOR pin 24x32 [FIXED/FIXED] @152,48 · fill color/brand/primary
+      ELLIPSE pinDot 8x8 [FIXED/FIXED] @160,56 · fill color/bg/subtle
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 55x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Address"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "23 Temple Road, Colombo 04"
+    TEXT areaNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shown to workers as: Colombo 04 area"
+    FRAME spacer-grow 8x270 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 `Display/MapArea {Kind=PrecisePin}` over the address field: the employer enters the precise address, and
@@ -150,18 +159,20 @@ FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
 **Reached from** `2.6`  ·  **Leads to** `2.8`  ·  **Exits** back → `2.6`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 191x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Workers needed"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 6 of 7"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 109x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Workers needed"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "3"
-  TEXT rangeNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "A whole number between 1 and 20."
-  FRAME spacer-grow 8x446 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 191x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Workers needed"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 6 of 7"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 109x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Workers needed"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "3"
+    TEXT rangeNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "A whole number between 1 and 20."
+    FRAME spacer-grow 8x446 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 FR-POST-06: a whole number from 1 to 20, the range stated under the field.
@@ -171,19 +182,21 @@ FR-POST-06: a whole number from 1 to 20, the range stated under the field.
 **Reached from** `2.7`, `2.8err` (a later time chosen)  ·  **Leads to** `2.9` ("Review posting")  ·  **Exits** back → `2.7`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 7"
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sat 29 Aug 2026, 5:00 AM"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
-  FRAME spacer-grow 8x420 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review posting"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 7"
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sat 29 Aug 2026, 5:00 AM"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
+    FRAME spacer-grow 8x420 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review posting"
 ```
 
 The start is **Sat 29 Aug 2026, 5:00 AM**, about 46 hours after the gig goes live at 7:00 AM on
@@ -195,49 +208,51 @@ FR-POST-05 before anyone breaks it; `2.8err` is what happens if they do.
 **Reached from** `2.8`  ·  **Leads to** `2.9e` ("Post gig")  ·  **Exits** back → `2.8`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 10 · fill color/bg/default
-  FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
-  TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
-  TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
-  FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup crew (3 needed)"
-  FRAME rev-Description 328x80 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
-    TEXT revValue 220x80 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
-  FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup"
-  FRAME rev-Type 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "One-off gig"
-  FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 6,000 per worker"
-  FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 18,000 for 3 workers"
-  FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "23 Temple Road, Colombo 04"
-  FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Colombo 04 area"
-  FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Sat 29 Aug 2026, 5:00 AM"
-  FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Urgent — starts within 48 hours (set automatically)"
-  FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "3"
-  FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Lanka Events (Pvt) Ltd — Business"
-  FRAME spacer-grow 8x100 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 10
+    FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
+    TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
+    TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
+    FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup crew (3 needed)"
+    FRAME rev-Description 328x80 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
+      TEXT revValue 220x80 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
+    FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup"
+    FRAME rev-Type 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "One-off gig"
+    FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 6,000 per worker"
+    FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 18,000 for 3 workers"
+    FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "23 Temple Road, Colombo 04"
+    FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Colombo 04 area"
+    FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Sat 29 Aug 2026, 5:00 AM"
+    FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Urgent — starts within 48 hours (set automatically)"
+    FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "3"
+    FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Lanka Events (Pvt) Ltd — Business"
+    FRAME spacer-grow 8x98 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
 ```
 
 **Every entered field, plus the two computed previews** FR-POST-09 asks for: the precise address with
@@ -251,7 +266,7 @@ promised "the whole posting" and the screen had not shown it. Total = Rs 6,000 �
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  FRAME content 360x736 [FILL/FILL] · vertical pad 6/16/16/16 gap 16
+  FRAME content 360x664 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
     FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
     TEXT screenTitle 115x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Post a gig"
     TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 7"
@@ -263,7 +278,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT descLabel 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Description"
       INSTANCE descField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
         TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "Weekday afternoon maths tutoring for my daughter (Grade 8), at our home in Dehiwala."
-    FRAME spacer-grow 8x284 [FIXED/FILL]
+    FRAME spacer-grow 8x288 [FIXED/FILL]
+  FRAME ctaBar 360x72 [FILL/HUG] · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]
@@ -277,27 +293,29 @@ applies for that evening (its new-gig row in his 8 PM history, M3 `3.10x`, reads
 **Reached from** `2.1t`  ·  **Leads to** `2.3t`  ·  **Exits** back → `2.1t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Category"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 7"
-  FRAME cat-Retail 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 42x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Retail"
-  FRAME cat-Delivery 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 62x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Delivery"
-  FRAME cat-Event setup 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 90x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Event setup"
-  FRAME cat-Moving 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 56x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Moving"
-  FRAME cat-Food service 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 98x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Food service"
-  FRAME cat-Tutoring 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
-    TEXT catLabel 63x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Tutoring"
-  FRAME cat-Cleaning 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT catLabel 67x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Cleaning"
-  FRAME spacer-grow 8x118 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Category"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 2 of 7"
+    FRAME cat-Retail 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 42x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Retail"
+    FRAME cat-Delivery 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 62x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Delivery"
+    FRAME cat-Event setup 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 90x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Event setup"
+    FRAME cat-Moving 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 56x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Moving"
+    FRAME cat-Food service 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 98x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Food service"
+    FRAME cat-Tutoring 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
+      TEXT catLabel 63x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Tutoring"
+    FRAME cat-Cleaning 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT catLabel 67x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Cleaning"
+    FRAME spacer-grow 8x118 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 Tutoring is selected. Still "of 7" — see `2.1t`.
@@ -307,19 +325,21 @@ Tutoring is selected. Still "of 7" — see `2.1t`.
 **Reached from** `2.2t`  ·  **Leads to** `2.4t`  ·  **Exits** back → `2.2t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 154x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Arrangement"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 8"
-  FRAME arr-One-off gig 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT arrLabel 88x24 [HUG/HUG] · fill color/text/primary · mobile/body · "One-off gig"
-  FRAME arr-Part-time job 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
-    TEXT arrLabel 100x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Part-time job"
-  FRAME arr-Internship 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
-    TEXT arrLabel 76x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Internship"
-  FRAME spacer-grow 8x374 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 154x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Arrangement"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 3 of 8"
+    FRAME arr-One-off gig 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT arrLabel 88x24 [HUG/HUG] · fill color/text/primary · mobile/body · "One-off gig"
+    FRAME arr-Part-time job 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
+      TEXT arrLabel 100x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Part-time job"
+    FRAME arr-Internship 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
+      TEXT arrLabel 76x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Internship"
+    FRAME spacer-grow 8x374 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 Part-time job is chosen **on this screen**, and the total becomes 8 here: the part-time path carries the Schedule step (FR-POST-03).
@@ -329,25 +349,27 @@ Part-time job is chosen **on this screen**, and the total becomes 8 here: the pa
 **Reached from** `2.3t`  ·  **Leads to** `2.5`  ·  **Exits** back → `2.3t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 43x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Pay"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 8"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 136x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Rate per worker (Rs)"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1,800"
-  FRAME rateUnit 328x48 [FIXED/HUG] · horizontal pad 0 gap 8
-    INSTANCE Input/Chip 86x48 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/brand/primary · r999 · {Kind=Select, State=Selected}
-      TEXT label 58x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Per day"
-    INSTANCE Input/Chip 90x40 [HUG/HUG] · horizontal pad 10/14/10/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
-      TEXT label 62x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Per week"
-    INSTANCE Input/Chip 97x40 [HUG/HUG] · horizontal pad 10/14/10/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
-      TEXT label 69x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Per month"
-  TEXT perWorkerHelper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Each selected worker earns this rate."
-  FRAME spacer-grow 8x378 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 43x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Pay"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 4 of 8"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 136x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Rate per worker (Rs)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1,800"
+    FRAME rateUnit 328x48 [FIXED/HUG] · horizontal pad 0 gap 8
+      INSTANCE Input/Chip 86x48 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/brand/primary · r999 · {Kind=Select, State=Selected}
+        TEXT label 58x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Per day"
+      INSTANCE Input/Chip 90x40 [HUG/HUG] · horizontal pad 10/14/10/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 62x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Per week"
+      INSTANCE Input/Chip 97x40 [HUG/HUG] · horizontal pad 10/14/10/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 69x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Per month"
+    TEXT perWorkerHelper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Each selected worker earns this rate."
+    FRAME spacer-grow 8x378 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 **A part-time job takes a rate with a day, week or month unit** (FR-POST-04) — `rateUnit` is three
@@ -361,18 +383,20 @@ app, and no field records it.
 **Reached from** `2.4t`  ·  **Leads to** `2.6t`  ·  **Exits** back → `2.4t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Schedule"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 8"
-  TEXT kNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Part-time jobs and internships only."
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Schedule"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Mon, Wed, Fri — 4 to 6 pm"
-  FRAME spacer-grow 8x446 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 109x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Schedule"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 5 of 8"
+    TEXT kNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Part-time jobs and internships only."
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 62x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Schedule"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Mon, Wed, Fri — 4 to 6 pm"
+    FRAME spacer-grow 8x446 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 The Schedule step (FR-POST-03): free text up to 200 characters, required for part-time jobs and internships only, as `kNote` says.
@@ -382,28 +406,30 @@ The Schedule step (FR-POST-03): free text up to 200 characters, required for par
 **Reached from** `2.5`  ·  **Leads to** `2.7t`  ·  **Exits** back → `2.5`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 101x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Location"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 6 of 8"
-  INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=PrecisePin}
-    LINE grid-h1 328x0 [FIXED/FIXED] @0,40 · stroke color/border/default 1
-    LINE grid-h2 328x0 [FIXED/FIXED] @0,80 · stroke color/border/default 1
-    LINE grid-h3 328x0 [FIXED/FIXED] @0,120 · stroke color/border/default 1
-    LINE grid-v1 160x0 [FIXED/FIXED] @66,0 · stroke color/border/default 1
-    LINE grid-v2 160x0 [FIXED/FIXED] @132,0 · stroke color/border/default 1
-    LINE grid-v3 160x0 [FIXED/FIXED] @198,0 · stroke color/border/default 1
-    LINE grid-v4 160x0 [FIXED/FIXED] @264,0 · stroke color/border/default 1
-    VECTOR pin 24x32 [FIXED/FIXED] @152,48 · fill color/brand/primary
-    ELLIPSE pinDot 8x8 [FIXED/FIXED] @160,56 · fill color/bg/subtle
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 55x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Address"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "12 Hill Street, Dehiwala"
-  TEXT areaNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shown to workers as: Dehiwala area"
-  FRAME spacer-grow 8x270 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 101x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Location"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 6 of 8"
+    INSTANCE Display/MapArea 328x160 [FIXED/FIXED] · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Kind=PrecisePin}
+      LINE grid-h1 328x0 [FIXED/FIXED] @0,40 · stroke color/border/default 1
+      LINE grid-h2 328x0 [FIXED/FIXED] @0,80 · stroke color/border/default 1
+      LINE grid-h3 328x0 [FIXED/FIXED] @0,120 · stroke color/border/default 1
+      LINE grid-v1 160x0 [FIXED/FIXED] @66,0 · stroke color/border/default 1
+      LINE grid-v2 160x0 [FIXED/FIXED] @132,0 · stroke color/border/default 1
+      LINE grid-v3 160x0 [FIXED/FIXED] @198,0 · stroke color/border/default 1
+      LINE grid-v4 160x0 [FIXED/FIXED] @264,0 · stroke color/border/default 1
+      VECTOR pin 24x32 [FIXED/FIXED] @152,48 · fill color/brand/primary
+      ELLIPSE pinDot 8x8 [FIXED/FIXED] @160,56 · fill color/bg/subtle
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 55x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Address"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "12 Hill Street, Dehiwala"
+    TEXT areaNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shown to workers as: Dehiwala area"
+    FRAME spacer-grow 8x270 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 The same picker; workers will see "Dehiwala area".
@@ -413,18 +439,20 @@ The same picker; workers will see "Dehiwala area".
 **Reached from** `2.6t`  ·  **Leads to** `2.8t`  ·  **Exits** back → `2.6t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 191x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Workers needed"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 8"
-  INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-    TEXT label 109x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Workers needed"
-    FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1"
-  TEXT rangeNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "A whole number between 1 and 20."
-  FRAME spacer-grow 8x446 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 191x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Workers needed"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 8"
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 109x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Workers needed"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "1"
+    TEXT rangeNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "A whole number between 1 and 20."
+    FRAME spacer-grow 8x446 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
 ```
 
 ### `2.8t` — Start date & time · tutoring
@@ -432,19 +460,21 @@ FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
 **Reached from** `2.7t`  ·  **Leads to** `2.9t`  ·  **Exits** back → `2.7t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
-  TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 8 of 8"
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Mon 7 Sep 2026, 4:00 PM"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
-  FRAME spacer-grow 8x420 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review posting"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
+    TEXT step 63x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 8 of 8"
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Mon 7 Sep 2026, 4:00 PM"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
+    FRAME spacer-grow 8x420 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 117x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review posting"
 ```
 
 ### `2.9t` — Review before submit · tutoring
@@ -452,49 +482,51 @@ FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
 **Reached from** `2.8t`  ·  **Leads to** `2.9et` ("Post gig")  ·  **Exits** back → `2.8t`, ✕ → `2.10db`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 10 · fill color/bg/default
-  FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
-  TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
-  TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
-  FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Grade 8 maths tutoring"
-  FRAME rev-Description 328x60 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
-    TEXT revValue 220x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Weekday afternoon maths tutoring for my daughter (Grade 8), at our home in Dehiwala."
-  FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Tutoring"
-  FRAME rev-Type 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Part-time job · Mon, Wed, Fri — 4 to 6 pm"
-  FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 1,800 per day"
-  FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 1,800 per day · ongoing"
-  FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "12 Hill Street, Dehiwala"
-  FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Dehiwala area"
-  FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Mon 7 Sep 2026, 4:00 PM"
-  FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Not urgent — starts in more than 48 hours (set automatically)"
-  FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "1"
-  FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Dilrukshi Herath — Individual/Household"
-  FRAME spacer-grow 8x100 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 10
+    FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
+    TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
+    TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
+    FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Grade 8 maths tutoring"
+    FRAME rev-Description 328x60 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
+      TEXT revValue 220x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Weekday afternoon maths tutoring for my daughter (Grade 8), at our home in Dehiwala."
+    FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Tutoring"
+    FRAME rev-Type 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Part-time job · Mon, Wed, Fri — 4 to 6 pm"
+    FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 1,800 per day"
+    FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 1,800 per day · ongoing"
+    FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "12 Hill Street, Dehiwala"
+    FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Dehiwala area"
+    FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Mon 7 Sep 2026, 4:00 PM"
+    FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Not urgent — starts in more than 48 hours (set automatically)"
+    FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "1"
+    FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Dilrukshi Herath — Individual/Household"
+    FRAME spacer-grow 8x98 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
 ```
 
 The part-time review. Type carries the schedule; Total reads "per day · ongoing" because a
@@ -506,7 +538,7 @@ part-time job has no end date; urgency is **Not urgent** — Mon 7 Sep is well o
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  FRAME content 360x736 [FILL/FILL] · vertical pad 6/16/16/16 gap 16
+  FRAME content 360x664 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
     FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
     TEXT screenTitle 115x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Post a gig"
     TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 7"
@@ -519,7 +551,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       INSTANCE descField 328x96 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Default}
         TEXT placeholder 302x48 [FILL/HUG] · fill color/text/secondary · mobile/body · "What the work involves, and anything to bring"
     TEXT fillHint 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Fill in a title and a description to continue."
-    FRAME spacer-grow 8x254 [FIXED/FILL]
+    FRAME spacer-grow 8x258 [FIXED/FILL]
+  FRAME ctaBar 360x72 [FILL/HUG] · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 70x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Continue"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]
@@ -662,7 +695,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -673,6 +706,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "0 of 3 filled · Starts Sat 29 Aug 2026, 5:00 AM"
     TEXT applicantsLink 328x24 [FIXED/HUG] · fill color/brand/primary · mobile/body-medium · "No applicants yet — view pool"
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 92x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Edit posting"
@@ -693,7 +727,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 30x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Title"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -712,6 +746,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sat 29 Aug 2026, 5:00 AM"
     TEXT applyNote 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "No one is engaged yet, so changes apply as soon as you save. Save stays off until you change something; anyone who has applied is told what changed."
     FRAME spacer-grow 8x216 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 107x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save changes"
 ```
@@ -731,7 +766,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -742,6 +777,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "0 of 3 filled · Starts Sat 29 Aug 2026, 5:00 AM"
     TEXT applicantsLink 328x24 [FIXED/HUG] · fill color/brand/primary · mobile/body-medium · "No applicants yet — view pool"
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 92x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Edit posting"
@@ -866,7 +902,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -878,6 +914,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT applicantsLink 328x24 [FIXED/HUG] · fill color/brand/primary · mobile/body-medium · "3 applicants — view pool"
     TEXT withdrawNote 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Withdraw isn't available once a place is filled. To stop hiring, lower Workers needed in Edit posting; to end an engagement, cancel it from Engagements."
     FRAME spacer-grow 8x380 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 92x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Edit posting"
@@ -900,7 +937,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     FRAME materialChangeWarning 328x148 [FILL/HUG] · vertical pad 10/14/10/14 gap 4 · stroke color/state/urgent 1 · r10
       TEXT wTitle 296x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "1 worker is already engaged"
       TEXT wBody 296x100 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Changing pay, the start date or time, the location, the number of workers or the category asks each engaged worker to re-confirm. If they don't accept in time, that engagement moves into cancellation."
@@ -922,6 +959,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sat 29 Aug 2026, 7:00 AM"
     TEXT editedNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start time changed from 5:00 AM."
     FRAME spacer-grow 8x120 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review changes"
 ```
@@ -940,7 +978,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     FRAME materialChangeWarning 328x148 [FILL/HUG] · vertical pad 10/14/10/14 gap 4 · stroke color/state/urgent 1 · r10
       TEXT wTitle 296x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "1 worker is already engaged"
       TEXT wBody 296x100 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Changing pay, the start date or time, the location, the number of workers or the category asks each engaged worker to re-confirm. If they don't accept in time, that engagement moves into cancellation."
@@ -962,6 +1000,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sat 29 Aug 2026, 7:00 AM"
     TEXT editedNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start time changed from 5:00 AM."
     FRAME spacer-grow 8x120 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 125x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Review changes"
   FRAME scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
@@ -990,7 +1029,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -1003,6 +1042,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT changeNote 328x72 [FIXED/HUG] · fill color/brand/primary · mobile/body-medium · "Start time changed to 7:00 AM · Nethmi has until Fri 28 Aug 2026, 1:00 PM to re-confirm — see responses"
     TEXT pausedNote 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Editing is paused until the re-confirmation is answered. Withdraw isn't available once a place is filled — to end an engagement, cancel it from Engagements."
     FRAME spacer-grow 8x296 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
         TEXT label 92x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Edit posting"
@@ -1024,7 +1064,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Stage crew — Friday setup"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
@@ -1035,6 +1075,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 filled · Tharindu Silva · Starts Fri 28 Aug 2026, 8:00 AM"
     TEXT filledNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This posting is filled. Manage the work from Engagements."
     FRAME spacer-grow 8x440 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 130x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "See engagement"
@@ -1053,7 +1094,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 245x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event teardown — Sunday"
       INSTANCE Display/Badge 75x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Expired}
@@ -1064,6 +1105,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "0 of 2 filled · Expired 16 Aug 2026 — no one was selected before the start"
     TEXT expiredNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Expired postings can't be reopened."
     FRAME spacer-grow 8x460 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 112x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Post a new gig"
@@ -1111,7 +1153,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Grade 8 maths tutoring"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -1122,6 +1164,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "0 of 1 filled · Starts Mon 7 Sep 2026, 4:00 PM"
     TEXT applicantsNote 328x24 [FIXED/HUG] · fill color/text/secondary · mobile/body-medium · "No applicants yet"
     FRAME spacer-grow 8x448 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 92x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Edit posting"
@@ -1142,7 +1185,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Edit posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 30x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Title"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
@@ -1165,6 +1208,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Mon 7 Sep 2026, 4:00 PM"
     TEXT applyNote 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "No one is engaged yet, so changes apply as soon as you save. Save stays off until you change something; anyone who has applied is told what changed."
     FRAME spacer-grow 8x132 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 107x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save changes"
 ```
@@ -1182,7 +1226,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     FRAME titleRow 328x24 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT title 257x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Grade 8 maths tutoring"
       INSTANCE Display/Badge 63x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
@@ -1193,6 +1237,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT fill 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "0 of 1 filled · Starts Mon 7 Sep 2026, 4:00 PM"
     TEXT applicantsNote 328x24 [FIXED/HUG] · fill color/text/secondary · mobile/body-medium · "No applicants yet"
     FRAME spacer-grow 8x448 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 92x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Edit posting"
@@ -1361,21 +1406,23 @@ A new employer's empty list: `Feedback/EmptyState {Cause=NoneExist}` with "Post 
 **Reached from** entering a start less than 2 hours away on `2.8` — drawn as its own starting point  ·  **Leads to** `2.8` (the date field — a later time) — Review posting is disabled  ·  **Exits** back → `2.7`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
-  FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
-  TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
-  TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 7"
-  INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
-    TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
-    FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-      TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Today, 5:40 PM — in 40 minutes"
-      VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
-  INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
-    TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Gigs need at least 2 hours' notice. Please choose a later start time."
-  TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
-  FRAME spacer-grow 8x364 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
-    TEXT label 117x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Review posting"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
+    FRAME topBar 328x44 [FILL/HUG] · horizontal pad 0 gap 0 · [standard, see header]
+    TEXT screenTitle 58x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Start"
+    TEXT step 62x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 7 of 7"
+    INSTANCE Input/DateTimeField 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Filled}
+      TEXT label 112x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Start date & time"
+      FRAME field 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 292x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Today, 5:40 PM — in 40 minutes"
+        VECTOR calendar 12x12 [FIXED/FIXED] · stroke color/text/secondary 1.5
+    INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
+      TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "Gigs need at least 2 hours' notice. Please choose a later start time."
+    TEXT leadNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "At least 2 hours from now, so workers have time to apply."
+    FRAME spacer-grow 8x364 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 117x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Review posting"
 ```
 
 The start is 40 minutes away. FR-POST-05 **blocks** rather than warns, so Review posting is
@@ -1387,51 +1434,53 @@ date field) is the way out. The moment is undated on purpose — a failure has n
 **Reached from** "Post gig" on `2.9` with no connection  ·  **Leads to** `2.9e` ("Post gig", once reconnected)  ·  **Exits** back → `2.8`, ✕ → `2.10b`
 
 ```
-FRAME 360x800 · vertical pad 6/16/24/16 gap 10 · fill color/bg/default
-  FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
-  TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
-  TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
-  INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
-    TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "You're offline, so this couldn't be posted. Your details are still here — try again once you reconnect."
-  FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup crew (3 needed)"
-  FRAME rev-Description 328x80 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
-    TEXT revValue 220x80 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
-  FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup"
-  FRAME rev-Type 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "One-off gig"
-  FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 6,000 per worker"
-  FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 18,000 for 3 workers"
-  FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "23 Temple Road, Colombo 04"
-  FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Colombo 04 area"
-  FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Sat 29 Aug 2026, 5:00 AM"
-  FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Urgent — starts within 48 hours (set automatically)"
-  FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
-    TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "3"
-  FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
-    TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
-    TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Lanka Events (Pvt) Ltd — Business"
-  FRAME spacer-grow 8x10 [FIXED/FILL]
-  INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-    TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  FRAME content 360x716 [FILL/FILL] · vertical pad 6/16/0/16 gap 10
+    FRAME topBar 328x50 [FILL/HUG] · horizontal pad 0/0/6/0 gap 0 · [standard, see header]
+    TEXT screenTitle 236x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Review your posting"
+    TEXT reviewNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is the only place the whole posting is visible before it goes live."
+    INSTANCE formBanner 328x80 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · stroke color/border/error 1 · r8 · of Feedback/FormBanner · {Kind=Error}
+      TEXT message 296x60 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "You're offline, so this couldn't be posted. Your details are still here — try again once you reconnect."
+    FRAME rev-Title 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Title"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup crew (3 needed)"
+    FRAME rev-Description 328x80 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Description"
+      TEXT revValue 220x80 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
+    FRAME rev-Category 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Category"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Event setup"
+    FRAME rev-Type 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Type"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "One-off gig"
+    FRAME rev-Pay 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pay"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 6,000 per worker"
+    FRAME rev-Total 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Total"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Rs 18,000 for 3 workers"
+    FRAME rev-Address 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Address"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "23 Temple Road, Colombo 04"
+    FRAME rev-Area 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Area shown"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Colombo 04 area"
+    FRAME rev-Start 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Start"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Sat 29 Aug 2026, 5:00 AM"
+    FRAME rev-Urgency 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Urgency"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Urgent — starts within 48 hours (set automatically)"
+    FRAME rev-Workers 328x20 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Workers"
+      TEXT revValue 220x20 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "3"
+    FRAME rev-Posting as 328x40 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT revLabel 96x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Posting as"
+      TEXT revValue 220x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Lanka Events (Pvt) Ltd — Business"
+    FRAME spacer-grow 8x8 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 63x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post gig"
 ```
 
 Offline at the moment of posting. `Feedback/FormBanner {Kind=Error}` says the details are still
@@ -1443,7 +1492,7 @@ here; nothing was sent. Once the connection is back, Post gig goes through (`2.9
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  FRAME content 360x736 [FILL/FILL] · vertical pad 6/16/16/16 gap 16
+  FRAME content 360x664 [FILL/FILL] · vertical pad 6/16/4/16 gap 16
     FRAME topBarGhost 44x44 [FIXED/FIXED] · [standard, see header]
     TEXT screenTitle 115x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Post a gig"
     TEXT step 61x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Step 1 of 7"
@@ -1456,7 +1505,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT descLabel 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Description"
       INSTANCE descField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
         TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "Help set up staging and seating for a weekend event at a Colombo 04 venue. Gloves provided."
-    FRAME spacer-grow 8x248 [FIXED/FILL]
+    FRAME spacer-grow 8x252 [FIXED/FILL]
+  FRAME ctaBar 360x72 [FILL/HUG] · vertical pad 12/16/12/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Continue"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Employer} · [standard, see header]

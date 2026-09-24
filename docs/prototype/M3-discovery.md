@@ -101,7 +101,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Set your location"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+  FRAME content 360x660 [FILL/FILL] · vertical pad 24/16/4/16 gap 16
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Location is off. Pick your area to see gigs near you."
     INSTANCE Input/Select 328x74 [FIXED/HUG] · vertical pad 0 gap 6 · {State=Selected}
       TEXT label 31x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Area"
@@ -109,6 +109,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT value 294x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Homagama"
         VECTOR chevron 10x5 [FIXED/FIXED] · stroke color/text/secondary 1.8
     FRAME spacer-grow 8x486 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 80x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show gigs"
 ```
@@ -501,7 +502,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Filters"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT groupCat 65x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CATEGORY"
     FRAME categoryChips 328x148 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Input/Chip 65x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
@@ -530,6 +531,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE Action/Link 61x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 61x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Clear all"
     FRAME spacer-grow 8x218 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 99x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show results"
 ```
@@ -547,7 +549,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Filters"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT groupCat 65x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CATEGORY"
     FRAME categoryChips 328x148 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Input/Chip 65x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
@@ -574,6 +576,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         TEXT label 66x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Internship"
     TEXT sessionNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Filters reset when you close the app."
     FRAME spacer-grow 8x276 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 99x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show results"
 ```
@@ -806,7 +809,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Event setup crew (3 needed)"
     FRAME badges 74x24 [HUG/HUG] · horizontal pad 0 gap 8
       INSTANCE Display/Badge 74x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/state/urgent 1 · r999 · {Family=Urgent, Value=Default}
@@ -835,7 +838,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Event staffing across Colombo."
-    FRAME spacer-grow 8x162 [FIXED/FILL]
+    FRAME spacer-grow 8x160 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -854,7 +858,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Shop assistant — weekend"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Retail · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -878,7 +882,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Retail, Nugegoda."
-    FRAME spacer-grow 8x222 [FIXED/FILL]
+    FRAME spacer-grow 8x220 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -898,7 +903,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Café service crew — evenings"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Food service · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -922,7 +927,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Food service, Nugegoda."
-    FRAME spacer-grow 8x202 [FIXED/FILL]
+    FRAME spacer-grow 8x200 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -940,7 +946,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "House cleaning — Saturday"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -964,7 +970,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual/Household · Colombo 05."
-    FRAME spacer-grow 8x202 [FIXED/FILL]
+    FRAME spacer-grow 8x200 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -981,7 +988,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Delivery rider — mornings"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Delivery · Part-time job"
     FRAME factsCard 328x88 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -1005,7 +1012,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Delivery, Maharagama."
-    FRAME spacer-grow 8x206 [FIXED/FILL]
+    FRAME spacer-grow 8x204 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -1022,7 +1030,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Grade 8 maths tutoring"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Tutoring · Part-time job"
     FRAME factsCard 328x88 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -1046,7 +1054,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual/Household · Dehiwala."
-    FRAME spacer-grow 8x206 [FIXED/FILL]
+    FRAME spacer-grow 8x204 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -1063,7 +1072,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Office cleaning — Kirulapone"
     TEXT meta 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · One-off gig"
     FRAME factsCard 328x72 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r10
@@ -1087,7 +1096,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Property management, based in Kottawa."
-    FRAME spacer-grow 8x222 [FIXED/FILL]
+    FRAME spacer-grow 8x220 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 44x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Apply"
 ```
@@ -1106,7 +1116,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x612 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Data entry — work from home"
     FRAME badges 108x24 [HUG/HUG] · horizontal pad 0 gap 8
       INSTANCE Display/Badge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Case, Value=UnderReview}
@@ -1127,6 +1137,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT businessBio 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual · joined 30 Aug 2026 · no completed engagements"
     TEXT reportLink 328x16 [FILL/HUG] · fill color/brand/primary · mobile/caption · "Report this listing"
     FRAME spacer-grow 8x220 [FIXED/FILL]
+  FRAME ctaBar 360x132 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 44x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Apply"
     TEXT applyCaption 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Applications are paused while this posting is reviewed."
@@ -1153,7 +1164,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Gig"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     INSTANCE offlineBar 328x36 [FIXED/FIXED] · horizontal pad 8/12/8/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/OfflineBar
       TEXT message 302x20 [FILL/HUG] · fill color/text/primary · mobile/secondary · "Offline — showing gigs saved on your phone"
     TEXT title 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Event setup crew (3 needed)"
@@ -1184,7 +1195,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
           TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Event staffing across Colombo."
-    FRAME spacer-grow 8x116 [FIXED/FILL]
+    FRAME spacer-grow 8x114 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
       TEXT label 219x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Apply — needs a connection"
 ```

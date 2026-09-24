@@ -77,6 +77,13 @@ properties and the components; the pixel figures are there so you can check your
 **Mobile is 360×800, the dashboard 1440×900.** Dashboard screens omit the sidebar and header, which are
 identical everywhere — see `design-system.md` §6.
 
+**A `ctaBar` is pinned; the `content` above it scrolls.** The trees do not print scroll behaviour or
+effects, so read them from the pattern: on any mobile screen with a `ctaBar`, `content` scrolls vertically
+and clips at the bar's top edge, the bar stays fixed at the bottom (or on the tab bar or keyboard), and
+the bar casts `elevation/bar` only where the content is taller than the space above it. The full rule,
+and the screens that deliberately keep their action in the content, are in `design-system.md` §5,
+*Pinned action bar*.
+
 ## What is not here
 
 **The drawn screens are not the complete state set.** `design-system.md` §8 sets out the three layers —

@@ -119,7 +119,9 @@ at all. Setting a size and weight without a line height is not using the scale.
 | `elevation/bar` | drop shadow · blur 8 · offset (0, **−2**) · spread 0 · `#0f1729` at 10% |
 
 `elevation/bar` casts **upward** — it is for the tab bar and bottom-anchored bars, which throw their
-shadow onto the content above them.
+shadow onto the content above them. On a pinned action bar (§5, *Pinned action bar*) it appears **only
+where the content is taller than the space above the bar**, because the shadow's job is to say "there is
+more under here"; a bar over content that fits sits flush, the same colour as the screen.
 
 **The scrim.** Every dialog, bottom sheet and OS prompt sits over a `scrim`: a 360×800 (or 1440×900)
 rectangle, full-bleed, absolutely positioned at `@0,0`, filled with `color/overlay/scrim` at **40% node
@@ -248,6 +250,47 @@ position at all — which is the only thing a pager is for.
 that size so the header's layout does not shift between screens that have a back arrow and screens that
 do not.
 
+#### Pinned action bar — `ctaBar`
+
+**A screen's primary action never scrolls away.** When a mobile screen ends in its primary action — one
+`Action/Button`, two stacked buttons, or an `actions` row of two side by side — that action sits in
+`ctaBar`, a frame fixed to the bottom of the screen, and everything above it scrolls in its own region
+and passes *under* the bar. It is a layout frame, not a component set, so it appears in screen files by
+name. 180 of the 492 module-page frames carry one.
+
+| Part | Spec |
+| --- | --- |
+| Frame | `ctaBar` · vertical, gap 8 · `[FILL/HUG]` · fill = the screen's own fill (`color/bg/default` or `color/bg/subtle`), so the bar is invisible until something scrolls under it |
+| Padding | **12/16/24/16** at the bottom of the screen (360×84 with one button). **12/16/12/16** where the bar sits on the tab bar or the keyboard (360×72): those already provide the bottom inset |
+| Children | the button, the two stacked buttons, or the `actions` row, each `FILL` wide · optionally a trailing caption (`*Caption`, `mobile/secondary`) explaining a disabled button — at most **two lines** |
+| Order | `Chrome/ScreenHeader` (if any) → `content` → `ctaBar` → `Chrome/TabBar` (if any) |
+| `content` | vertical, `[FILL/FILL]`, **scrolls vertically and clips** · bottom padding `max(0, gap − 12)` so the last row clears the bar by the screen's usual gap · keeps `spacer-grow`, so short content still fills it |
+| Shadow | `elevation/bar`, **only when the content is taller than `content`** (§4) |
+| Keyboard | absolutely positioned 12 px above the keyboard's top edge — `1.4k`: `@0,468`, 360×72, keyboard at 540 |
+
+**What stays in the scrolling content:** text links (*Go to log in*, *Unable to confirm?*, *Report this
+listing*) — a link is secondary by definition, and pinning it would make it compete with the action.
+
+**Where the action is deliberately not pinned:**
+- **A single destructive commit** (`1.17`, `1.17b`, `1.17be`, `1.17bn`, `1.17p`, `5.6`, `5.7e`, `5.10`)
+  stays at the end of the content, so it is reached only after reading what it does.
+- **Centred success screens** (`2.9e`, `2.9et`, `4.2` and its variants, `5.8t`) keep their button with the
+  message: the whole screen is one short block, centred, and a bar would split it.
+- **Onboarding** (`0.2`–`0.4`) is absolutely positioned art with its button already fixed at `@16,728`.
+- **Dialogs and sheets** keep their buttons inside the overlay; a `ctaBar` under a scrim (`2.11dw`, `2.11e2`,
+  `2.11pw`, `4.9`, `4.9k`, `4.9t`, `5.14`, `8.1s`) belongs to the screen behind and is not interactive.
+
+**Limits when you build it:**
+- **Unpin when the bar grows past about a quarter of the visible height** (large text, a long caption, a
+  third button) — at that size it hides more than it helps, so let the actions scroll with the content.
+- **Add the Android gesture inset below the 24 px bottom padding**; the frames draw a device without one.
+- **One shadow per stack.** Above a tab bar the tab bar already casts `elevation/bar`. The five screens
+  where a bar sits on a tab bar (`2.1`, `2.1t`, `2.1n`, `2.1rst`, `8.2`) have content that fits, so only
+  the tab bar's shadow shows; if content ever runs under such a stack, give the shadow to `ctaBar` and turn
+  the tab bar's off, so the stack casts one shadow, from its top edge.
+- The 130% specimen `1.4x130` shows the bar holding at large text; its text carries no text styles because
+  each size was scaled by hand for the check.
+
 ### Desktop
 
 | Component | Variants | Size · layout | Children |
@@ -294,7 +337,7 @@ is the *only* unbound colour left anywhere — both on purpose.
 
 | Surface | Frame | Chrome |
 | --- | --- | --- |
-| Mobile | **360 × 800** | `Chrome/ScreenHeader` 56 tall at the top; `Chrome/TabBar` 64 tall at the bottom on the four tabbed screens only |
+| Mobile | **360 × 800** | `Chrome/ScreenHeader` 56 tall at the top; `Chrome/TabBar` 64 tall at the bottom on the four tabbed screens only; a pinned `ctaBar` above the bottom edge (or the tab bar) on screens that end in an action (§5) |
 | Dashboard | **1440 × 900** | `Desktop/DashSidebar` 240 wide on the left, full height; `Desktop/DashHeader` 1200 × 56 across the remaining width; content below it, pad 20/24/24/24, gap 14 |
 
 **Dashboard screens have no footer, deliberately** — an internal authenticated tool uses sidebar and

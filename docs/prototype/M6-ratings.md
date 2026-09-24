@@ -55,7 +55,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
     TEXT q 328x56 [FIXED/HUG] · fill color/text/primary · mobile/title · "How was working with Saman Stores?"
     INSTANCE Input/StarInput 172x56 [HUG/HUG] · vertical pad 0 gap 8 · {State=Selected}
@@ -68,13 +68,15 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT echo 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "3 of 5 stars"
     TEXT blindNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "They won't see your rating until you've both rated, or 14 days pass from when rating opened."
     FRAME spacer-grow 8x414 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 103x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit rating"
 ```
 
-`spacer-grow` is a zero-content frame at `[FIXED/FILL]` — it absorbs the remaining height so the button
-sits at the bottom of a vertical stack without absolute positioning. **The same pattern appears on almost
-every mobile screen in this product.**
+`spacer-grow` is a zero-content frame at `[FIXED/FILL]` inside `content` — it absorbs the remaining height
+so short content still fills the scrolling region. The button itself is in `ctaBar`, the pinned action bar
+under `content` ([design system](design-system.md) §5, *Pinned action bar*), so it stays on screen however
+long the content grows. **The same pattern appears on almost every mobile screen in this product.**
 
 ### `6.1e` — Rate this engagement · employer
 
@@ -89,7 +91,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Nethmi Jayasinghe"
     TEXT q 328x56 [FIXED/HUG] · fill color/text/primary · mobile/title · "How was working with Nethmi Jayasinghe?"
     INSTANCE Input/StarInput 172x56 [HUG/HUG] · vertical pad 0 gap 8 · {State=Selected}
@@ -102,6 +104,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT echo 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "3 of 5 stars"
     TEXT blindNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "They won't see your rating until you've both rated, or 14 days pass from when rating opened."
     FRAME spacer-grow 8x414 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 103x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit rating"
 ```
@@ -138,7 +141,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
     FRAME sentGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
@@ -146,6 +149,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
     TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 18 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
@@ -166,7 +170,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Nethmi Jayasinghe"
     FRAME sentGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
@@ -174,6 +178,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
     TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 12 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
@@ -193,7 +198,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Ratings"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend"
     FRAME rating-You rated Saman Stores 328x96 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       TEXT who 184x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "You rated Saman Stores"
@@ -215,6 +220,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT echo 65x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "5 of 5 stars"
     TEXT independence 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Each engagement is rated on its own."
     FRAME spacer-grow 8x368 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 180x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Write a public response"
 ```
@@ -230,7 +236,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Ratings"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend"
     FRAME rating-You rated Saman Stores 328x96 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       TEXT who 184x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "You rated Saman Stores"
@@ -253,6 +259,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT responseText 328x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Your public response — “Thanks — glad the weekend went smoothly.” Shown next to this rating."
     TEXT independence 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Each engagement is rated on its own."
     FRAME spacer-grow 8x296 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 143x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Edit your response"
 ```
@@ -307,12 +314,13 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Public response"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Responding to: Saman Stores rated you 5 of 5"
     INSTANCE responseField 328x96 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Thanks — glad the weekend went smoothly."
     TEXT visNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shown alongside the rating you received. Up to 300 characters."
     FRAME spacer-grow 8x452 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 110x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Post response"
 ```
@@ -335,13 +343,14 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: D. Munasinghe rated you 1 of 5"
     TEXT explainer 328x120 [FIXED/HUG] · fill color/text/primary · mobile/body · "If a rating breaks the rules — for example it rates an engagement that never happened — you can ask for it to be removed. Your request goes straight to a YouthLink admin."
     INSTANCE groundsField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "This engagement never took place — the job was a scam, and I reported it. The rating is fabricated."
     TEXT capNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Up to 300 characters."
     FRAME spacer-grow 8x332 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 111x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send to admin"
 ```
@@ -361,10 +370,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: D. Munasinghe rated you 1 of 5"
     TEXT explainer 328x72 [FIXED/HUG] · fill color/text/primary · mobile/body · "Sent — a YouthLink admin will review your request. The rating stays visible until they decide, and you'll see any change here."
     FRAME spacer-grow 8x522 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 136x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to the rating"
 ```
@@ -387,7 +397,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Cancelled"
     TEXT survivalNote 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "This engagement was cancelled, but you can still rate how it was handled."
     TEXT q 328x56 [FIXED/HUG] · fill color/text/primary · mobile/title · "How was working with Dilrukshi Herath?"
@@ -401,6 +411,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT echo 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "3 of 5 stars"
     TEXT blindNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "They won't see your rating until you've both rated, or 14 days pass from when rating opened."
     FRAME spacer-grow 8x352 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 103x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit rating"
 ```
@@ -424,7 +435,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Dilrukshi Herath"
     FRAME sentGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
@@ -432,6 +443,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
     TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 14 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
@@ -450,7 +462,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Dilrukshi Herath"
     FRAME sentGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
@@ -458,6 +470,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
     TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 13 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```
@@ -475,7 +488,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Cancelled"
     TEXT survivalNote 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "This engagement was cancelled, but you can still rate how it was handled."
     TEXT q 328x56 [FIXED/HUG] · fill color/text/primary · mobile/title · "How was working with Lanka Events (Pvt) Ltd?"
@@ -489,6 +502,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT echo 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "3 of 5 stars"
     TEXT blindNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "They won't see your rating until you've both rated, or 14 days pass from when rating opened."
     FRAME spacer-grow 8x352 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 103x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit rating"
 ```
@@ -508,7 +522,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+  FRAME content 360x660 [FILL/FILL] · vertical pad 20/16/2/16 gap 14
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Lanka Events (Pvt) Ltd"
     FRAME sentGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
@@ -516,6 +530,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
     TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 12 Sep 2026."
     FRAME spacer-grow 328x438 [FILL/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
 ```

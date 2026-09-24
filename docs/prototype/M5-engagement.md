@@ -52,7 +52,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -75,7 +75,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x300 [FIXED/FILL]
+    FRAME spacer-grow 8x298 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 135x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter arrival code"
 ```
@@ -101,7 +102,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm arrival"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
     INSTANCE Display/CodePanel 328x136 [FIXED/HUG] · vertical pad 16 gap 12 · fill color/bg/default · r8 · {View=Enterer}
       TEXT instruction 296x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Enter the code Saman Stores shows you when you arrive."
@@ -122,6 +123,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME spacer-grow 8x412 [FIXED/FILL]
     INSTANCE Action/Link 143x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 143x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Unable to confirm?"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 113x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Confirm arrival"
 ```
@@ -175,7 +177,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -198,7 +200,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x300 [FIXED/FILL]
+    FRAME spacer-grow 8x298 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 135x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter arrival code"
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
@@ -229,7 +232,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -252,7 +255,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x308 [FIXED/FILL]
+    FRAME spacer-grow 8x306 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter completion code"
 ```
@@ -270,7 +274,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm completion"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
     INSTANCE Display/CodePanel 328x136 [FIXED/HUG] · vertical pad 16 gap 12 · fill color/bg/default · r8 · {View=Enterer}
       TEXT instruction 296x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Enter the code Saman Stores shows you when the work is done."
@@ -291,6 +295,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME spacer-grow 8x412 [FIXED/FILL]
     INSTANCE Action/Link 143x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 143x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Unable to confirm?"
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 151x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Confirm completion"
 ```
@@ -308,14 +313,15 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Confirm completion"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x604 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
     FRAME successGlyph 48x48 [FIXED/FIXED]
       ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
       VECTOR Vector 22x16 [FIXED/FIXED] @13,16 · stroke color/state/success 3
     TEXT confTitle 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Completion confirmed"
     TEXT confBody 328x96 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Both of you can see the work is done. Next: payment — once the money is in your hand, Saman Stores enters your payment code."
-    FRAME spacer-grow 8x344 [FIXED/FILL]
+    FRAME spacer-grow 8x348 [FIXED/FILL]
+  FRAME ctaBar 360x140 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 183x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show my payment code"
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
@@ -337,7 +343,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -360,7 +366,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x32 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Your code — share it once you're paid"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x300 [FIXED/FILL]
+    FRAME spacer-grow 8x298 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 183x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show my payment code"
 ```
@@ -458,7 +465,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -482,7 +489,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x96 [FILL/HUG] · fill color/text/primary · mobile/body · "You opened a dispute on 31 Aug 2026: arrival could not be confirmed. Saman Stores has until Wed 2 Sep 2026 to respond."
-    FRAME spacer-grow 8x202 [FIXED/FILL]
+    FRAME spacer-grow 8x200 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Open the dispute case"
 ```
@@ -502,7 +510,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Cancellation request"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT who 328x48 [FIXED/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath asked to cancel this engagement."
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Part-time"
     FRAME reasonBox 328x60 [FILL/HUG] · vertical pad 10/12/10/12 gap 4 · fill color/bg/subtle · r8
@@ -513,6 +521,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     TEXT regime 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Regular-gig rules apply — fixed when the request was made, even if the posting changes."
     TEXT silent 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Accept — the engagement is cancelled, with no penalty to you. Don't agree — it stands as agreed. If you don't respond by then, the request resolves against you."
     FRAME spacer-grow 8x308 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 55x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Accept"
@@ -536,11 +545,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Cancellation request"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT who 328x48 [FIXED/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath asked to cancel this engagement."
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Part-time"
     TEXT outcome 328x72 [FIXED/HUG] · fill color/text/primary · mobile/body · "You accepted — this engagement is cancelled, with no penalty to you. Either of you can still rate it."
     FRAME spacer-grow 8x472 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 167x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagements"
 ```
@@ -584,11 +594,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Cancellation request"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT who 328x48 [FIXED/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath asked to cancel this engagement."
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Part-time"
     TEXT outcome 328x96 [FIXED/HUG] · fill color/text/primary · mobile/body · "You didn't agree — the engagement stands as agreed, and Dilrukshi Herath has been told. You can still discuss changes with them directly."
     FRAME spacer-grow 8x448 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 167x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagements"
 ```
@@ -859,7 +870,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting changed"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 12
     TEXT who 328x72 [FIXED/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath moved the start of Grade 8 maths tutoring. Check the change and re-confirm."
     FRAME changeBox 328x92 [FILL/HUG] · vertical pad 10/12/10/12 gap 6 · fill color/bg/subtle · r8
       TEXT changeLabel 70x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "START TIME"
@@ -869,6 +880,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT countdown 262x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Respond by Mon 31 Aug 2026, 6:00 PM"
     TEXT window 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "If you don't accept by then, or you can't make it, the engagement is cancelled — recorded as Dilrukshi's change, not against you."
     FRAME spacer-grow 8x352 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     FRAME actions 328x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 160x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
         TEXT label 116x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Accept change"
@@ -1051,7 +1063,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Cancel engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Grade 8 maths tutoring · Dilrukshi Herath"
     TEXT q 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Why are you cancelling?"
     FRAME reason-Schedule conflict 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · fill color/bg/subtle · r8
@@ -1065,7 +1077,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     FRAME reason-Other 328x48 [FILL/HUG] · horizontal pad 12 gap 0 · r8
       TEXT reasonLabel 43x24 [HUG/HUG] · fill color/text/primary · mobile/body · "Other"
     TEXT regimeNote 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "This is a regular gig: Dilrukshi Herath gets 48 hours to respond before the cancellation takes effect."
-    FRAME spacer-grow 8x230 [FIXED/FILL]
+    FRAME spacer-grow 8x228 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/default
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 199x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send cancellation request"
 ```
@@ -1690,7 +1703,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -1712,7 +1725,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x280 [FIXED/FILL]
+    FRAME spacer-grow 8x278 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 175x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show completion code"
 ```
@@ -1914,7 +1928,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME backHit 44x44 [FIXED/FIXED]
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+  FRAME content 360x660 [FILL/FILL] · vertical pad 16/16/0/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
       INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
@@ -1937,7 +1951,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x96 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera opened a dispute on 31 Aug 2026: arrival could not be confirmed. Respond by Wed 2 Sep 2026 — after that, review goes ahead without your side."
-    FRAME spacer-grow 8x202 [FIXED/FILL]
+    FRAME spacer-grow 8x200 [FIXED/FILL]
+  FRAME ctaBar 360x84 [FILL/HUG] · vertical pad 12/16/24/16 gap 8 · fill color/bg/subtle
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Open the dispute case"
 ```
