@@ -273,10 +273,16 @@ listing*) — a link is secondary by definition, and pinning it would make it co
 
 **Where the action is deliberately not pinned:**
 - **A single destructive commit** (`1.17`, `1.17b`, `1.17be`, `1.17bn`, `1.17p`, `5.6`, `5.7e`, `5.10`)
-  stays at the end of the content, so it is reached only after reading what it does.
+  stays at the end of the content, so it is reached only after reading what it does. While the content
+  fits, `spacer-grow` puts it at `@16,728`, the same place as a pinned button; it differs only when the
+  content grows, when it scrolls instead of staying in view.
 - **Centred success screens** (`2.9e`, `2.9et`, `4.2` and its variants, `5.8t`) keep their button with the
   message: the whole screen is one short block, centred, and a bar would split it.
 - **Onboarding** (`0.2`–`0.4`) is absolutely positioned art with its button already fixed at `@16,728`.
+- **A button that belongs to a component** stays in it. `Feedback/EmptyState`'s Secondary button is part of
+  the empty message, not the screen's action (`2.10z`, `3.10z`, `3.10ez`, `3.10vz`, `4.3z`, `4.5b`, `5.1z`,
+  `5.1ez`, `8.5z`). `Display/CodePanel {View=PaymentGate}` on `5.4b` asks *Have you been paid?* and answers
+  it in place, and `5.4c` shows the code in the same panel.
 - **Dialogs and sheets** keep their buttons inside the overlay; a `ctaBar` under a scrim (`2.11dw`, `2.11e2`,
   `2.11pw`, `4.9`, `4.9k`, `4.9t`, `5.14`, `8.1s`) belongs to the screen behind and is not interactive.
 
