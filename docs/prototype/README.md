@@ -16,10 +16,10 @@ than describing them, and that file is what the names mean. The two together are
 | Module | Screens | Frames on its page | File |
 | --- | --- | --- | --- |
 | **M0** First run | 4 | 4 | [`M0-first-run.md`](M0-first-run.md) |
-| **M1** Account | 94 | **95** | [`M1-account.md`](M1-account.md) |
+| **M1** Account | 100 | **101** | [`M1-account.md`](M1-account.md) |
 | **M2** Posting | 48 | 48 | [`M2-posting.md`](M2-posting.md) |
-| **M3** Discovery | 43 | 43 | [`M3-discovery.md`](M3-discovery.md) |
-| **M4** Applying and selection | 66 | 66 | [`M4-applying.md`](M4-applying.md) |
+| **M3** Discovery | 47 | 47 | [`M3-discovery.md`](M3-discovery.md) |
+| **M4** Applying and selection | 68 | 68 | [`M4-applying.md`](M4-applying.md) |
 | **M5** Engagement lifecycle | 57 | 57 | [`M5-engagement.md`](M5-engagement.md) |
 | **M6** Ratings | 14 | 14 | [`M6-ratings.md`](M6-ratings.md) |
 | **M7** Profile | 2 | 2 | [`M7-profile.md`](M7-profile.md) |
@@ -29,7 +29,7 @@ than describing them, and that file is what the names mean. The two together are
 | **M11** Staff dashboard | 67 | **68** | [`M11-dashboard.md`](M11-dashboard.md) |
 | **MHF** Help and FAQ | 5 | 5 | [`MHF-help.md`](MHF-help.md) |
 | **MNAV** Navigation shells | 3 | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
-| **Total** | **477** | **477** | |
+| **Total** | **489** | **489** | |
 
 **The two columns differ for four modules because a Figma prototype link must target a frame on the same
 page**, so four screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
@@ -97,7 +97,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | Requirement | Priority | Title | Screens |
 | --- | --- | --- | --- |
 | `FR-ACC-01` | Must | Account registration | [M1](M1-account.md) `1.1`, `1.2`, `1.4`, `1.4err2`, `1.4err3` |
-| `FR-ACC-02` | Must | Employer posting-as type | [M1](M1-account.md) `1.5`, `1.5b`, `1.10e` |
+| `FR-ACC-02` | Must | Employer posting-as type | [M1](M1-account.md) `1.5`, `1.5b`, `1.10e`, `1.15eb` |
 | `FR-ACC-03` | Must | Age gate | [M1](M1-account.md) `1.4`, `1.4err2` |
 | `FR-ACC-04` | Must | NIC field handling | [M1](M1-account.md) `1.13`, `1.4`, `1.4err1` |
 | `FR-ACC-05` | Must | Duplicate account prevention | [M1](M1-account.md) `1.12`, `1.4err1`, `1.8rec2` |
@@ -109,10 +109,10 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ACC-12` | Must | Phone number change | [M1](M1-account.md) `1.12`, `1.12err` |
 | `FR-ACC-13` | Must | NIC correction | [M1](M1-account.md) `1.13`, `1.4` |
 | `FR-ACC-14` | Must | Email add/change | [M1](M1-account.md) `1.14`, `1.9` |
-| `FR-ACC-15` | Should | Display name editing | [M1](M1-account.md) `1.15`, `1.18`, `1.19` · [M6](M6-ratings.md) `6.3` |
-| `FR-ACC-16` | Should | Posting-as type change | [M1](M1-account.md) `1.16`, `1.5` · [M2](M2-posting.md) `2.9` |
-| `FR-ACC-17` | Must | Account deletion | [M1](M1-account.md) `1.17`, `1.17b`, `1.17be`, `1.17d`, `1.17p` |
-| `FR-ACC-18` | Must | Unified Settings screen | [M1](M1-account.md) `1.10`, `1.10e`, `1.10v` |
+| `FR-ACC-15` | Should | Display name editing | [M1](M1-account.md) `1.15`, `1.15ed`, `1.15eg`, `1.15n`, `1.18`, `1.19` · [M6](M6-ratings.md) `6.3` |
+| `FR-ACC-16` | Should | Posting-as type change | [M1](M1-account.md) `1.16`, `1.16b`, `1.5` · [M2](M2-posting.md) `2.9` |
+| `FR-ACC-17` | Must | Account deletion | [M1](M1-account.md) `1.17`, `1.17b`, `1.17be`, `1.17bn`, `1.17d`, `1.17p` |
+| `FR-ACC-18` | Must | Unified Settings screen | [M1](M1-account.md) `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v` |
 | `FR-ACC-19` | Must | Terms of Service and Privacy Policy acceptance | [M1](M1-account.md) `1.20` |
 | `FR-ADM-01` | Must | Final dispute ruling | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1r`, `10.2`, `10.2b`, `10.3`, `10.3c`, `10.4`, `10.4e`, `10.5`, `10.5e`, `10.5p`, `10.5pe`, `10.5pr`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b` · [M6](M6-ratings.md) `6.1f` · [M9](M9-disputes.md) `9.2`, `9.2f` |
 | `FR-ADM-02` | Must | Payment-dispute ruling scope | [M10](M10-moderation.md) `10.5`, `10.5p`, `10.5pe`, `10.5pr` · [M9](M9-disputes.md) `9.2` |
@@ -131,7 +131,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-APPLY-08` | Should | Explicit decline | [M4](M4-applying.md) `4.9`, `4.9k`, `4.9t`, `4.9p`, `4.9pk`, `4.9pt`, `4.5d`, `4.5dk`, `4.5dt`, `4.3n` |
 | `FR-APPLY-09` | Must | Automatic not-selected notification | [M2](M2-posting.md) `2.11pw`, `2.11dw`, `2.11ex`, `2.11hx` · [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.3r`, `4.5x` |
 | `FR-APPLY-10` | Should | Pending-applicant notification on material change | [M2](M2-posting.md) `2.11pe`, `2.11e2` · [M3](M3-discovery.md) `3.10x`, `3.10pd` · [M4](M4-applying.md) `4.3e` |
-| `FR-APPLY-12` | Must | Worker's own application list | [M4](M4-applying.md) `4.3`, `4.3c`, `4.3cw`, `4.3d`, `4.3dw`, `4.3e`, `4.3h`, `4.3hw`, `4.3ldg`, `4.3n`, `4.3o`, `4.3ow`, `4.3r`, `4.3s`, `4.3sw`, `4.3t`, `4.3tw`, `4.3w`, `4.3z` |
+| `FR-APPLY-12` | Must | Worker's own application list | [M4](M4-applying.md) `4.3`, `4.3c`, `4.3cw`, `4.3d`, `4.3dw`, `4.3e`, `4.3h`, `4.3hw`, `4.3ldg`, `4.3n`, `4.3o`, `4.3ow`, `4.3r`, `4.3s`, `4.3sw`, `4.3t`, `4.3tw`, `4.3w`, `4.3z`, `4.3nj`, `4.3njc` |
 | `FR-DASH-01` | Must | Full postings visibility | [M11](M11-dashboard.md) `11.2`, `11.2f`, `11.2ff`, `11.2fw`, `11.2fe`, `11.2d`, `11.2d2`, `11.2d3`, `11.2d4`, `11.2a`, `11.2af`, `11.2aff`, `11.2afw`, `11.2afe`, `11.2ad`, `11.2ad2`, `11.2ad3`, `11.2ad4`, `11.2adx`, `11.2afx`, `11.2affx`, `11.2afwx`, `11.2afex` · [M3](M3-discovery.md) `3.12`, `3.13` |
 | `FR-DASH-02` | Must | Full user-account visibility | [M10](M10-moderation.md) `10.1`, `10.8` · [M11](M11-dashboard.md) `11.3L`, `11.3Ls`, `11.3`, `11.3Lm`, `11.3Lms`, `11.3m`, `11.7` |
 | `FR-DASH-03` | Must | Case queue | [M11](M11-dashboard.md) `11.4`, `11.4t`, `11.4x`, `11.4rr`, `11.4w`, `11.4e`, `11.4c`, `11.4r`, `11.4pe`, `11.4pw`, `11.4pce`, `11.4a`, `11.4ar`, `11.4rec` |
@@ -188,7 +188,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-MOD-04` | Must | Flagged content review | [M10](M10-moderation.md) `10.4`, `10.4e`, `10.4r`, `10.4rb` |
 | `FR-NOTIF-01` | Must | Urgent gig push notifications | [M2](M2-posting.md) `2.9e` · [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
 | `FR-NOTIF-02` | Must | Non-urgent gig notifications | [M2](M2-posting.md) `2.9et` · [M3](M3-discovery.md) `3.10` |
-| `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11`, `3.11e`, `3.11v` · [M1](M1-account.md) `1.10` |
+| `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11`, `3.11e`, `3.11n`, `3.11v` · [M1](M1-account.md) `1.10` |
 | `FR-NOTIF-04` | Must | Application-related notifications | [M3](M3-discovery.md) `3.10`, `3.10ea` · [M4](M4-applying.md) `4.3e`, `4.5`, `4.7`, `4.9` |
 | `FR-NOTIF-05` | Must | Engagement-related notifications | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` · [M5](M5-engagement.md) `5.11`, `5.14`, `5.9` |
 | `FR-NOTIF-06` | Must | Dispute/case notifications | [M3](M3-discovery.md) `3.10`, `3.13` · [M9](M9-disputes.md) `9.2` |
@@ -224,8 +224,8 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `NFR-PRIV-04` | Must | No general user directory | [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.2`, `11.3`, `11.4`, `11.6` · [M1](M1-account.md) `1.4k`, `1.6`, `1.7` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M8](M8-endorsement.md) `8.2`, `8.3` · [MHF](MHF-help.md) `HF.3` |
 | `NFR-PRIV-05` | Must | Report anonymity | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M9](M9-disputes.md) `9.1`, `9.2` |
 | `NFR-PRIV-06` | Could | Anonymized usage analytics | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
-| `FR-PROF-01` | Must | Profile display identity | [M1](M1-account.md) `1.15`, `1.15e`, `1.18`, `1.18e`, `1.18ed`, `1.18eg`, `1.19` · [M4](M4-applying.md) `4.6`, `4.6k`, `4.6t` · [M6](M6-ratings.md) `6.3` |
-| `FR-PROF-02` | Must | Verification badges | [M1](M1-account.md) `1.18`, `1.19` |
+| `FR-PROF-01` | Must | Profile display identity | [M1](M1-account.md) `1.15`, `1.15e`, `1.18`, `1.18e`, `1.18ed`, `1.18eg`, `1.18n`, `1.18nc`, `1.19` · [M4](M4-applying.md) `4.6`, `4.6k`, `4.6t` · [M6](M6-ratings.md) `6.3` |
+| `FR-PROF-02` | Must | Verification badges | [M1](M1-account.md) `1.18`, `1.18e`, `1.19` · [M3](M3-discovery.md) `3.12g` · [M5](M5-engagement.md) `5.2` |
 | `FR-PROF-03` | Should | Profile bio | [M1](M1-account.md) `1.11`, `1.16`, `1.18` · [M7](M7-profile.md) `7.1` |
 | `FR-PROF-04` | Should | Bio-to-application-note integration | [M1](M1-account.md) `1.11`, `1.16`, `1.18`, `1.4` · [M4](M4-applying.md) `4.1` · [M6](M6-ratings.md) `6.4` · [M7](M7-profile.md) `7.1` |
 | `FR-PROF-05` | Must | Contextual profile visibility | [M1](M1-account.md) `1.10`, `1.17`, `1.18`, `1.19`, `1.2`, `1.20`, `1.4k`, `1.6`, `1.7`, `1.8`, `1.9` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M4](M4-applying.md) `4.6` · [M8](M8-endorsement.md) `8.2`, `8.3` |

@@ -1,6 +1,6 @@
 # M4 — Applying and selection
 
-**Sixty-six screens.** Both sides of an application: the worker applying, following and withdrawing (Kavindu Perera, across Thursday 27 Aug, Friday and the weekend), and the employer choosing from the pool (Lanka Events' Event setup crew, 3 needed) — select, contact reveal, decline, and the pool after the posting closes.
+**Sixty-eight screens.** Both sides of an application: the worker applying, following and withdrawing (Kavindu Perera, across Thursday 27 Aug, Friday and the weekend), and the employer choosing from the pool (Lanka Events' Event setup crew, 3 needed) — select, contact reveal, decline, and the pool after the posting closes.
 
 **Read *Every screen shows one moment* at the end first.** Every application list is the same list at a later minute, and every date, count and state on it follows from the ones before.
 
@@ -1646,6 +1646,53 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 No row is pending, which is FR-APPLY-12's closing criterion. This is where the worker Applications tab goes
 from every established screen.
 
+### `4.3nj` — My applications · Nethmi Jayasinghe (Sat 29 Aug, before she cancels)
+
+**Reached from** the Applications tab on Nethmi's screens, Sat 29 Aug about 2 AM  ·  **Leads to** [M5](M5-engagement.md) `5.2n` (the row) in the demo
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 12
+    TEXT screenTitle 184x32 [HUG/HUG] · fill color/text/primary · mobile/display · "My applications"
+    FRAME app-Selected-E 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 210x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
+        INSTANCE Display/Badge 82x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Selected}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
+          TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Selected"
+      TEXT meta 201x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Contact shared — see engagement"
+    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**Nethmi's side of Thursday's selection.** Lanka Events selected her at about 8:40 AM on Thursday (`4.5s`),
+so her Event setup application is **Selected**, and like Kavindu's selected rows on `4.3r` it says
+*Contact shared — see engagement* and opens the engagement (`5.2n`), where a selected application's life
+continues. Nothing is pending, so there is no closing date to show.
+
+### `4.3njc` — My applications · Nethmi Jayasinghe, just after she cancels
+
+**Reached from** the Applications tab on Nethmi's screens just after she cancels  ·  **Leads to** [M5](M5-engagement.md) `5.2nc` (the row) in the demo
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 12
+    TEXT screenTitle 184x32 [HUG/HUG] · fill color/text/primary · mobile/display · "My applications"
+    FRAME app-Selected-E 328x94 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      FRAME topRow 300x48 [FILL/HUG] · horizontal pad 0 gap 8
+        TEXT title 210x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
+        INSTANCE Display/Badge 82x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Application, Value=Selected}
+          ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
+          TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Selected"
+      TEXT meta 284x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Engagement cancelled by you — see engagement"
+    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**The application stays Selected** — she was selected; what she cancelled is the engagement that followed,
+and the application states (`FR-APPLY-12`) have no *cancelled*. The meta line says so and points to where the
+cancellation lives: *Engagement cancelled by you — see engagement* (`5.2nc`).
+
 ### `4.3ldg` — My applications · loading
 
 **Reached from** the Applications tab while the list loads  ·  **Advances to** `4.3e` after 1.5 s †
@@ -1729,11 +1776,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -1746,11 +1793,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -1763,11 +1810,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -1808,11 +1855,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Endorsed by K. Rathnayake (Reliability) and M. Perera (Punctuality, Honesty)."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
       INSTANCE Display/StarsDisplay 152x24 [HUG/HUG] · horizontal pad 0 gap 6
@@ -1901,11 +1948,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 1 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x162 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -1913,11 +1960,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 73x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed ×2"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Selected — an engagement is created; contact shared both ways."
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -1930,11 +1977,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -1962,11 +2009,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Endorsed by K. Rathnayake (Reliability) and M. Perera (Punctuality, Honesty)."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
       INSTANCE Display/StarsDisplay 152x24 [HUG/HUG] · horizontal pad 0 gap 6
@@ -2010,11 +2057,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x162 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2022,11 +2069,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 73x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed ×2"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Declined — she has been told; kept here for your records."
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2039,11 +2086,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2070,11 +2117,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2087,11 +2134,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2104,11 +2151,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2142,11 +2189,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not endorsed yet — new to YouthLink."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
@@ -2224,11 +2271,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 1 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2241,11 +2288,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2258,11 +2305,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x132 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Selected — an engagement is created; contact shared both ways."
@@ -2282,11 +2329,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not endorsed yet — new to YouthLink."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
@@ -2327,11 +2374,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2344,11 +2391,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2361,11 +2408,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x132 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Declined — he has been told; kept here for your records."
@@ -2387,11 +2434,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2404,11 +2451,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2421,11 +2468,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2459,11 +2506,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 224x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 262x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 139x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Endorsed by Roshan Dias (Reliability, Punctuality)."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 232x24 [HUG/HUG] · horizontal pad 0 gap 8
@@ -2545,11 +2592,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 1 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2562,11 +2609,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2574,11 +2621,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 54x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Selected — an engagement is created; contact shared both ways."
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2603,11 +2650,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Applicant"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 224x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 262x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 139x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     TEXT endorsersNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Endorsed by Roshan Dias (Reliability, Punctuality)."
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 232x24 [HUG/HUG] · horizontal pad 0 gap 8
@@ -2651,11 +2698,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2668,11 +2715,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2680,11 +2727,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 54x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Declined — he has been told; kept here for your records."
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2711,11 +2758,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 0 of 3 filled"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x218 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2728,11 +2775,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x192 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2745,11 +2792,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         FRAME decline 82x48 [HUG/FIXED] · horizontal pad 0/16/0/16 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
           TEXT label 50x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Decline"
     INSTANCE Display/ApplicantRow 328x188 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Available all weekend — I've done two event setups."
@@ -2785,11 +2832,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT context 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · 1 of 3 filled · closed at its start, Sat 29 Aug 2026, 7:00 AM"
     TEXT tierNote 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Sorted by trust tier — history, endorsed, new."
     INSTANCE Display/ApplicantRow 328x162 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=true, Tier=History}
-      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 270x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 147x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 296x50 [FILL/HUG] · vertical pad 0 gap 6
         TEXT trust 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "4.6 from 12 ratings · 92% completion"
         INSTANCE endorsedBadge 108x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · of Display/Badge · {Family=Endorsed, Value=Default}
@@ -2797,11 +2844,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 73x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed ×2"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Selected — an engagement is created; contact shared both ways."
     INSTANCE Display/ApplicantRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=EndorsedNew}
-      FRAME nameRow 194x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Tharindu Silva"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 214x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
         INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/endorsed 1 · r999 · {Family=Endorsed, Value=Default}
@@ -2809,11 +2856,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           TEXT label 54x16 [HUG/HUG] · fill color/badge/endorsed · mobile/caption · "Endorsed"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Not selected — the posting closed at its start; they have been told."
     INSTANCE Display/ApplicantRow 328x132 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show endorsed=false, Tier=New}
-      FRAME nameRow 201x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME nameRow 239x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT displayName 116x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kavindu Perera"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME trustRow 117x20 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT trust 117x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New to YouthLink"
       TEXT note 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Not selected — the posting closed at its start; they have been told."
@@ -2837,6 +2884,7 @@ Each screen is one moment, and within each journey time only moves forward.
 | **Thu 27 Aug, ~8:40 AM onwards** | `4.5`, `4.6`–`4.9`, `4.5s`, `4.5d`, `4.9p`, and the `k` / `t` alternatives | Lanka Events opens the pool and selects Nethmi (the other selections and declines are alternative branches of the same decision) |
 | **Thu 27 Aug, 8 PM** | `4.3e`, then `4.1t`–`4.3t`, `4.1d`–`4.3d`, `4.1o`–`4.3o` (branches `4.4t`/`4.3tw`, `4.4d`/`4.3dw`, `4.4o`/`4.3ow`) | The start has moved to 7:00 AM; from the evening's history he applies for tutoring, Delivery rider and Office cleaning |
 | **Fri 28 Aug, morning** | `4.3n` | Three employers have declined him; the endorsement suggestion opens over the list |
+| **Sat 29 Aug, about 2 AM** | `4.3nj`, then `4.3njc` | Nethmi, selected for the Event setup crew, before and just after she cancels (a branch: on the main line she works the shift) |
 | **Sat 29 Aug, from 7:00 AM** | `4.3r`, `4.5x` | The Event setup crew has started and closed; every application is resolved |
 | **No date** | `4.1bnr`, `4.1rst`, `4.3ldg`, `4.3z` | The failure, loading and first-run states |
 
@@ -2896,7 +2944,8 @@ detail, confirmation and contact screens are the employer's and carry a `Chrome/
 
 **Tab destinations are not drawn on this page.** The demo routes the Applications tab per journey, so it
 always opens the list of the same moment: `4.3` on Thursday-morning screens, `4.3o` on Thursday-evening
-screens, `4.3n` on Friday's, `4.3r` everywhere after, and `4.3ldg` → `4.3e` in the loading journey.
+screens, `4.3n` on Friday's, `4.3r` everywhere after, and `4.3ldg` → `4.3e` in the loading journey. Nethmi's
+screens open her own list, `4.3nj` or `4.3njc`.
 
 ## States not drawn in this module
 
@@ -2911,6 +2960,11 @@ screens, `4.3n` on Friday's, `4.3r` everywhere after, and `4.3ldg` → `4.3e` in
 | The **worker's side of a selection** | The Selected row on `4.3r` and the engagement it opens (M5) |
 
 ## Open, and carried to the modules that own them
+
+- **Nethmi's list shows one application** (`4.3nj`, `4.3njc`), while she has twelve completed jobs, each
+  of which began as an application — and `FR-APPLY-12` lists every application a worker has submitted. The
+  earlier rows, all resolved, would sit below the fold; they are not drawn. Open for a decision: draw them,
+  or amend `FR-APPLY-12` to show resolved applications for a limited period.
 
 - *Closed in the M5 pass (2026-09-24):* the Shop assistant engagement no longer offers End Engagement, and
   `5.3t`, which M2's `2.11f` opens on Thursday, now shows the engagement before its start.

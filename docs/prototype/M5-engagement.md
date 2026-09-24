@@ -53,11 +53,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -75,7 +75,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x328 [FIXED/FILL]
+    FRAME spacer-grow 8x300 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 135x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter arrival code"
 ```
@@ -85,6 +85,11 @@ in `color/brand/primary`, with completion and payment *Not reached* — the chec
 as amended 2026-09-24). No code is ever exchanged on this engagement in the story that follows: this state holds
 from 8:00 AM Saturday until Kavindu opens a dispute on Monday. Rs 7,000 is the fixed total for the one-off job
 (M4 ruling). There is no *End engagement* here: End Engagement is part-time only (FR-ENG-12).
+
+**The top row wraps, on every engagement detail.** `topRow` has wrapping on (4 px between lines) and the
+counterparty's name a minimum width of the whole row, 328 px, so the name has the first line to itself and
+the *Phone verified* and state badges sit on the second — hence 328 × 56. With the badge's full label, a name
+and two badges no longer fit on one line, and without the minimum width the name broke across two.
 
 ### `5.5a` — Confirm arrival · entering Saman Stores' code
 
@@ -171,11 +176,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -193,7 +198,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x328 [FIXED/FILL]
+    FRAME spacer-grow 8x300 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 135x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter arrival code"
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
@@ -225,11 +230,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -247,7 +252,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x336 [FIXED/FILL]
+    FRAME spacer-grow 8x308 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Enter completion code"
 ```
@@ -333,11 +338,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -355,7 +360,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x32 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Your code — share it once you're paid"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x328 [FIXED/FILL]
+    FRAME spacer-grow 8x300 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 183x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Show my payment code"
 ```
@@ -454,11 +459,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 152x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 83x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Disputed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/urgent
         TEXT label 51x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Disputed"
@@ -477,7 +482,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x96 [FILL/HUG] · fill color/text/primary · mobile/body · "You opened a dispute on 31 Aug 2026: arrival could not be confirmed. Saman Stores has until Wed 2 Sep 2026 to respond."
-    FRAME spacer-grow 8x230 [FIXED/FILL]
+    FRAME spacer-grow 8x202 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Open the dispute case"
 ```
@@ -658,11 +663,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 140x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 95x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Completed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
         TEXT label 63x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Completed"
@@ -686,7 +691,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not yet rated"
         INSTANCE Action/Link 71x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
           TEXT label 71x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Rate now"
-    FRAME spacer-grow 8x298 [FIXED/FILL]
+    FRAME spacer-grow 8x270 [FIXED/FILL]
 ```
 
 **Completed by the ruling.** Arrival and completion read **"Settled by ruling · 4 Sep 2026"** —
@@ -708,11 +713,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 140x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 95x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Completed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
         TEXT label 63x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Completed"
@@ -736,7 +741,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Submitted — awaiting reveal"
         INSTANCE Action/Link 89x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
           TEXT label 89x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "View status"
-    FRAME spacer-grow 8x298 [FIXED/FILL]
+    FRAME spacer-grow 8x270 [FIXED/FILL]
 ```
 
 Rated: *"Submitted — awaiting reveal"*, *View status* opening M6's `6.2` (unlock 18 Sep 2026 — 14 days
@@ -809,11 +814,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 140x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Saman Stores"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 95x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Completed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
         TEXT label 63x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Completed"
@@ -837,7 +842,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Ratings revealed"
         INSTANCE Action/Link 86x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
           TEXT label 86x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "See ratings"
-    FRAME spacer-grow 8x298 [FIXED/FILL]
+    FRAME spacer-grow 8x270 [FIXED/FILL]
 ```
 
 Revealed: *See ratings* opens M6 `6.3`. The checkpoints still read *Settled by ruling*, and the payment
@@ -887,11 +892,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -909,7 +914,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
         TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x312 [FIXED/FILL]
+    FRAME spacer-grow 8x284 [FIXED/FILL]
     INSTANCE Action/Link 152x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 152x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel engagement"
 ```
@@ -960,10 +965,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1005,10 +1010,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1098,11 +1103,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -1121,7 +1126,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x120 [FILL/HUG] · fill color/text/primary · mobile/body · "Cancellation requested — Dilrukshi Herath has 48 hours to accept or reject. If she doesn't respond, the cancellation takes effect. Until then the engagement stays as agreed."
-    FRAME spacer-grow 8x236 [FIXED/FILL]
+    FRAME spacer-grow 8x208 [FIXED/FILL]
 ```
 
 The engagement stays as agreed while the request is open; if Dilrukshi does not respond, the cancellation takes effect.
@@ -1166,10 +1171,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1210,10 +1215,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1272,10 +1277,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -1373,10 +1378,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1460,11 +1465,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -1481,7 +1486,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not reached"
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
-    FRAME spacer-grow 8x332 [FIXED/FILL]
+    FRAME spacer-grow 8x304 [FIXED/FILL]
     INSTANCE Action/Link 152x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 152x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel engagement"
 ```
@@ -1562,11 +1567,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 146x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Tharindu Silva"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
         TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
@@ -1584,7 +1589,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x144 [FILL/HUG] · fill color/text/primary · mobile/body · "Cancelled by you on Thu 27 Aug 2026, 8:00 PM. The start was 12 hours away on an engagement booked well ahead, so it is a late cancellation. Tharindu Silva has been told, and the place on Stage crew reopened."
-    FRAME spacer-grow 8x240 [FIXED/FILL]
+    FRAME spacer-grow 8x212 [FIXED/FILL]
 ```
 
 *"Cancelled by you on Thu 27 Aug 2026, 8:00 PM. The start was 12 hours away on an engagement booked
@@ -1632,10 +1637,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 167x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 68x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Active}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/brand/primary
         TEXT label 36x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Active"
@@ -1722,10 +1727,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 140x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 95x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Completed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
         TEXT label 63x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Completed"
@@ -1765,10 +1770,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
     FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 140x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 95x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Completed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
         TEXT label 63x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Completed"
@@ -1855,11 +1860,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
-    FRAME topRow 328x28 [FILL/HUG] · horizontal pad 0 gap 8
-      TEXT counterparty 152x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       INSTANCE Display/Badge 83x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Disputed}
         ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/urgent
         TEXT label 51x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Disputed"
@@ -1877,7 +1882,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     INSTANCE Action/Link 196x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
       TEXT label 196x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "How check-in codes work"
     TEXT cancelNote 328x96 [FILL/HUG] · fill color/text/primary · mobile/body · "Kavindu Perera opened a dispute on 31 Aug 2026: arrival could not be confirmed. Respond by Wed 2 Sep 2026 — after that, review goes ahead without your side."
-    FRAME spacer-grow 8x230 [FIXED/FILL]
+    FRAME spacer-grow 8x202 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 173x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Open the dispute case"
 ```
@@ -2020,6 +2025,12 @@ Saturday 5 Sep; Nethmi's `5.1nw` / `5.1n` either side of her cancellation; and f
 | **Dilrukshi's employer screens** for the tutoring engagement | `5.1e`, `5.3t` and `5.12`'s patterns with her engagement; her incoming side of Kavindu's request is `5.9` with the roles swapped |
 
 ## Open, and carried to the modules that own them
+
+- **`5.2nc` offers no rating**, while `FR-RATE-05` keeps rating available on a cancelled engagement and
+  `5.11d` and `5.2tc` offer it (*Either of you can still rate this engagement*). Nethmi's late cancellation
+  is the case where Lanka Events most wants to record how it was handled. Open for a decision: add the
+  *Rating · Not yet rated · Rate now* row and its rating screen, or record why this cancellation is
+  different.
 
 - *Closed in the M1 pass (2026-09-24):* Dilrukshi's and R. Gunasekara's Notifications and Profile tabs open
   their own screens ([M3](M3-discovery.md) `3.10ed`/`3.10eg`, [M1](M1-account.md) `1.18ed`/`1.18eg`); their

@@ -4093,10 +4093,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Nethmi Jayasinghe — opened from Users. Also reachable from a case's parties, a posting's employer, or a name or phone search."
     INSTANCE Desktop/DetailPane 420x324 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678"
@@ -4142,10 +4142,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Nethmi Jayasinghe — opened from Users. Also reachable from a case's parties, a posting's employer, or a name or phone search."
     INSTANCE Desktop/DetailPane 420x324 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678"
@@ -4309,10 +4309,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Nethmi Jayasinghe — opened from Users. Also reachable from a case's parties, a posting's employer, or a name or phone search."
     INSTANCE Desktop/DetailPane 420x282 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Moderator}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678"
@@ -5213,10 +5213,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Account recovery request — Nethmi Jayasinghe · submitted 5 Sep 2026 · reviewed by an Admin only"
     INSTANCE Desktop/DetailPane 420x364 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x40 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x40 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678 · unreachable, reported lost"
@@ -5264,10 +5264,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Account recovery request — Nethmi Jayasinghe · submitted 5 Sep 2026 · reviewed by an Admin only"
     INSTANCE Desktop/DetailPane 420x364 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x40 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x40 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678 · unreachable, reported lost"
@@ -5322,10 +5322,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Account recovery — Nethmi Jayasinghe · approved 5 Sep 2026, recorded in the audit log"
     INSTANCE Desktop/DetailPane 420x364 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "Nethmi Jayasinghe"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x40 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x40 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 76 234 5678 · unreachable, reported lost"

@@ -1,6 +1,6 @@
 # M3 — Discovery
 
-**Forty-three screens.** This is where work is found. It is found two ways — **pulled** (Browse, filters, sort, search, saved gigs, the listing detail) and **pushed** (the notification history and its preferences). Both obey the same radius and the same urgency rule: 5 km by default, widening in 5 km steps when fewer than five gigs are found (FR-DISC-01); urgent means starting 48 hours or less away (FR-POST-07).
+**Forty-seven screens.** This is where work is found. It is found two ways — **pulled** (Browse, filters, sort, search, saved gigs, the listing detail) and **pushed** (the notification history and its preferences). Both obey the same radius and the same urgency rule: 5 km by default, widening in 5 km steps when fewer than five gigs are found (FR-DISC-01); urgent means starting 48 hours or less away (FR-POST-07).
 
 **Read *Every screen shows one moment* at the end first.** The histories are four snapshots of one worker's week (`3.10x` Thursday 27 Aug, `3.10q` 2 Sep, `3.10r` 4 Sep, `3.10` 5 Sep), and every date and relative time below is consistent with that table.
 
@@ -368,6 +368,129 @@ The 130% text-expansion specimen. Every text is scaled ×1.3 and carries **no te
 inside the card (the café title takes two lines), the chip row wraps (`controls` 328×108), and the tab
 labels truncate rather than collide. **Any bulk edit must skip a frame whose id ends `x130`.**
 
+### `3.1n` — Browse, radius results · Nethmi Jayasinghe (Sat 29 Aug, before she cancels)
+
+**Reached from** `3.10n` (Browse tab), and the Browse tab on Nethmi's screens, Sat 29 Aug about 2 AM  ·  **Leads to** `3.10n` (Notifications tab); the cards, search and chips open nothing — see below
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/80/16 gap 12
+    TEXT screenTitle 87x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Browse"
+    TEXT radiusLine 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Showing gigs within 5 km of Nugegoda"
+    FRAME searchBar 328x44 [FILL/FIXED] · fill color/bg/default · stroke color/border/default 1 · r12
+      ELLIPSE Ellipse 12x12 [FIXED/FIXED] @14,14 · stroke color/text/secondary 1.8
+      VECTOR Vector 4x4 [FIXED/FIXED] @25,25 · stroke color/text/secondary 1.8
+      TEXT Search gigs 78x20 [FIXED/FIXED] @36,14 · fill color/text/secondary · mobile/secondary · "Search gigs"
+    FRAME controls 328x44 [FILL/HUG] · horizontal pad 0 gap 8
+      INSTANCE Input/Chip 69x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 41x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Filters"
+      INSTANCE Input/Chip 140x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 112x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Sort: Urgent first"
+      INSTANCE Input/Chip 69x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 41x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Saved"
+    INSTANCE Display/ListingCard 328x164 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Urgent}
+      INSTANCE Display/Badge 74x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/state/urgent 1 · r999 · {Family=Urgent, Value=Default}
+        VECTOR triangle 10x9 [FIXED/FIXED] · fill color/state/urgent
+        TEXT label 39x16 [HUG/HUG] · fill color/state/urgent · mobile/caption · "Urgent"
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Office cleaning — Kirulapone"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · Kirulapone · 1.4 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 4,000 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Sun 7:00 AM"
+    INSTANCE Display/ListingCard 328x164 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Urgent}
+      INSTANCE Display/Badge 74x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/state/urgent 1 · r999 · {Family=Urgent, Value=Default}
+        VECTOR triangle 10x9 [FIXED/FIXED] · fill color/state/urgent
+        TEXT label 39x16 [HUG/HUG] · fill color/state/urgent · mobile/caption · "Urgent"
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Event setup · Colombo 04 · 4.5 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job · per worker"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 3 filled · Starts Sat 7:00 AM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 1.9 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · Colombo 05 · 3.1 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 4,500 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 5 Sep 2026, 8:00 AM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Delivery rider — mornings"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Delivery · Maharagama · 4.6 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 2,500 per day"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Mon 7 Sep 2026, 6:00 AM"
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**Nethmi Jayasinghe's Browse, Sat 29 Aug about 2 AM**, a few hours before the Event setup shift she is
+engaged on. She searches around Nugegoda too, so the gigs are the ones Kavindu sees, **as they stand on
+Saturday night**: Shop assistant and the tutoring job were filled on Friday and are no longer listed;
+Office cleaning — Kirulapone (posted Thursday afternoon) now starts in 29 hours, so it is urgent and, being
+nearer, sorts first; and Event setup reads **1 of 3 filled · Starts Sat 7:00 AM** — the one filled place is
+hers, and 7:00 AM is the start Lanka Events moved on Thursday evening. The other three cards are `3.1`'s.
+
+**Her Browse is a view, not a second copy of the discovery flow.** The cards, search, filters, sort and
+saved chips are drawn but open nothing, on this page or in the demo: the listings, filters and sort they
+would open are Kavindu's screens (`3.12` family, `3.5`–`3.8`) and would show another day's counts. Only the
+tab bar is live.
+
+### `3.1nc` — Browse, radius results · Nethmi Jayasinghe, just after she cancels
+
+**Reached from** `3.10n` (Browse tab, in the after-cancel journey), and the Browse tab on Nethmi's screens just after she cancels  ·  **Leads to** `3.10n` (Notifications tab)
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/80/16 gap 12
+    TEXT screenTitle 87x32 [HUG/HUG] · fill color/text/primary · mobile/display · "Browse"
+    TEXT radiusLine 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Showing gigs within 5 km of Nugegoda"
+    FRAME searchBar 328x44 [FILL/FIXED] · fill color/bg/default · stroke color/border/default 1 · r12
+      ELLIPSE Ellipse 12x12 [FIXED/FIXED] @14,14 · stroke color/text/secondary 1.8
+      VECTOR Vector 4x4 [FIXED/FIXED] @25,25 · stroke color/text/secondary 1.8
+      TEXT Search gigs 78x20 [FIXED/FIXED] @36,14 · fill color/text/secondary · mobile/secondary · "Search gigs"
+    FRAME controls 328x44 [FILL/HUG] · horizontal pad 0 gap 8
+      INSTANCE Input/Chip 69x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 41x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Filters"
+      INSTANCE Input/Chip 140x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 112x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Sort: Urgent first"
+      INSTANCE Input/Chip 69x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · fill color/bg/default · stroke color/border/default 1 · r999 · {Kind=Select, State=Default}
+        TEXT label 41x20 [HUG/HUG] · fill color/text/primary · mobile/secondary · "Saved"
+    INSTANCE Display/ListingCard 328x164 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Urgent}
+      INSTANCE Display/Badge 74x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/state/urgent 1 · r999 · {Family=Urgent, Value=Default}
+        VECTOR triangle 10x9 [FIXED/FIXED] · fill color/state/urgent
+        TEXT label 39x16 [HUG/HUG] · fill color/state/urgent · mobile/caption · "Urgent"
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Office cleaning — Kirulapone"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · Kirulapone · 1.4 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 4,000 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Sun 7:00 AM"
+    INSTANCE Display/ListingCard 328x164 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Urgent}
+      INSTANCE Display/Badge 74x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/state/urgent 1 · r999 · {Family=Urgent, Value=Default}
+        VECTOR triangle 10x9 [FIXED/FIXED] · fill color/state/urgent
+        TEXT label 39x16 [HUG/HUG] · fill color/state/urgent · mobile/caption · "Urgent"
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed)"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Event setup · Colombo 04 · 4.5 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job · per worker"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "0 of 3 filled · Starts Sat 7:00 AM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Café service crew — evenings"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Food service · Nugegoda · 1.9 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 6,000 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "House cleaning — Saturday"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Cleaning · Colombo 05 · 3.1 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 4,500 for the job"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "1 of 1 open · Starts Sat 5 Sep 2026, 8:00 AM"
+    INSTANCE Display/ListingCard 328x134 [FILL/HUG] · vertical pad 16 gap 6 · fill color/bg/default · r8 · {State=Default}
+      TEXT title 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Delivery rider — mornings"
+      TEXT meta 296x20 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Delivery · Maharagama · 4.6 km away"
+      TEXT pay 296x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Rs 2,500 per day"
+      TEXT fill 296x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "2 of 2 open · Starts Mon 7 Sep 2026, 6:00 AM"
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**Minutes later**: her cancellation has freed her place, so Event setup reads **0 of 3 filled** and is back
+among the gigs anyone nearby can apply for. Everything else is `3.1n`, inert in the same way.
+
 ### `3.5` — Filters
 
 **Reached from** `3.1`, `3.1f`, `3.1x130` (Filters)  ·  **Leads to** `3.1f` ("Show results"), `3.5c` ("Clear all")  ·  **Exits** back → history
@@ -706,11 +829,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Colombo 04 area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 258x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 296x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 173x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Lanka Events (Pvt) Ltd"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Event staffing across Colombo."
     FRAME spacer-grow 8x162 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -749,11 +872,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Nugegoda area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 192x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 230x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 107x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Saman Stores"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Retail, Nugegoda."
     FRAME spacer-grow 8x222 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -793,11 +916,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Nugegoda area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 209x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 247x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 124x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Green Leaf Café"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Food service, Nugegoda."
     FRAME spacer-grow 8x202 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -835,11 +958,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Colombo 05 area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 178x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 216x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 93x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "A. Wijeratne"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual/Household · Colombo 05."
     FRAME spacer-grow 8x202 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -876,11 +999,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Maharagama area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 266x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 304x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 181x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "FreshCart Maharagama"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Delivery, Maharagama."
     FRAME spacer-grow 8x206 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -917,11 +1040,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Dehiwala area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 208x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 246x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 123x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Dilrukshi Herath"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual/Household · Dehiwala."
     FRAME spacer-grow 8x206 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -958,11 +1081,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Kirulapone area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 277x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 315x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 192x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Kottawa Business Centre"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Property management, based in Kottawa."
     FRAME spacer-grow 8x222 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -996,8 +1119,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT fillStart 300x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Open · Posted 30 Aug 2026"
     TEXT description 328x60 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "Simple typing work from home. Registration fee Rs 1,000, refundable after your first payout. Message on WhatsApp to start today."
     FRAME employer 328x60 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 111x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 234x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 111x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "R. Gunasekara"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+          VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Individual · joined 30 Aug 2026 · no completed engagements"
     TEXT reportLink 328x16 [FILL/HUG] · fill color/brand/primary · mobile/caption · "Report this listing"
     FRAME spacer-grow 8x220 [FIXED/FILL]
@@ -1010,7 +1136,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 the posting is under a moderation case. `Action/Button {State=Disabled}` with `applyCaption` saying why.
 The report link is how Kavindu's report reaches M9. The meta and pay read "Retail · One-off gig" and
 "Rs 4,500 for the job" — what the form accepts — and the registration-fee description is what gives it
-away.
+away. **He carries *Phone verified*, like every account** (`FR-PROF-02`): the badge says only that
+his phone answered a code, which is exactly why it is not a trust signal — the joining date, the empty
+history and the fee are.
 
 *Open question, recorded rather than resolved:* whether a posting should carry a Case-family badge or a
 Posting-family `UnderReview` value of its own.
@@ -1050,11 +1178,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       ELLIPSE areaShape 180x110 [FIXED/FIXED] @74,25 · fill color/brand/primary · opacity 15%
       TEXT areaLabel 328x24 [FIXED/FIXED] @0,68 · fill color/text/primary · mobile/body-medium · align center · "Colombo 04 area"
     FRAME employer 328x44 [HUG/HUG] · vertical pad 0 gap 4
-      FRAME employerRow 258x24 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME employerRow 296x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT employerName 173x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Lanka Events (Pvt) Ltd"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       TEXT businessBio 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Business · Event staffing across Colombo."
     FRAME spacer-grow 8x116 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
@@ -1248,7 +1376,7 @@ The case view shows escalation instead ([M9](M9-disputes.md) `9.2e`).
 
 ### `3.10` — Notification history · after the reveal (5 Sep)
 
-**Reached from** the Notifications tab on 5 Sep, and back from [M6](M6-ratings.md) `6.3s`  ·  **Leads to** [M6](M6-ratings.md) `6.3`, [M5](M5-engagement.md) `5.2d` ("Rate your engagement"), [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.2tc` (both tutoring rows) · `3.11` · `3.1`
+**Reached from** the Notifications tab on 5 Sep  ·  **Leads to** [M6](M6-ratings.md) `6.3`, [M5](M5-engagement.md) `5.2d` ("Rate your engagement"), [M9](M9-disputes.md) `9.2f`, `9.2c`, [M5](M5-engagement.md) `5.2tc` (both tutoring rows) · `3.11` · `3.1`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1361,6 +1489,50 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ```
 
 A brand-new worker's history: `Feedback/EmptyState {Cause=NoneExist}` with a primary action. In the demo's first-run flow, "Browse gigs" goes to that user's own Browse (`3.2`); on this page it goes to `3.1`.
+
+### `3.10n` — Notification history · Nethmi Jayasinghe (Sat 29 Aug)
+
+**Reached from** the Notifications tab on Nethmi's screens, before and after she cancels  ·  **Leads to** `3.11n` (Preferences), `3.1n` (Browse tab); the rows open her engagement in [M5](M5-engagement.md) — `5.2n` before she cancels, `5.2nc` after — in the demo
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/80/16 gap 12
+    FRAME titleRow 328x44 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT screenTitle 225x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Notifications"
+      TEXT prefsLink 91x44 [FIXED/FIXED] · fill color/brand/primary · mobile/body · align right · "Preferences"
+    INSTANCE Display/NotificationRow 328x132 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x108 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Event setup crew (3 needed) changed"
+        TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "The start moved to Sat 29 Aug 2026, 7:00 AM · respond by Fri 28 Aug 2026, 1:00 PM"
+        TEXT time 38x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "1d ago"
+    INSTANCE Display/NotificationRow 328x132 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x108 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "You're selected for Event setup crew (3 needed)"
+        TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Starts Sat 29 Aug 2026, 5:00 AM · Lanka Events (Pvt) Ltd"
+        TEXT time 38x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "1d ago"
+    INSTANCE Display/NotificationRow 328x108 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x84 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Urgent gig near you"
+        TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Rs 6,000 for the job · 4.5 km · starts Sat 5:00 AM"
+        TEXT time 38x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "1d ago"
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Worker} · [standard, see header]
+```
+
+**Nethmi's history at about 2 AM on Sat 29 Aug**, newest first, all three from Thursday and so all *1d ago*:
+- **Event setup crew (3 needed) changed** — `MATERIAL_CHANGE`, sent at about 7 PM Thursday when Lanka Events
+  moved the start to 7:00 AM. She is engaged, not a pending applicant, so this is the re-confirmation type
+  with its deadline (`FR-ENG-09`), not `APPLICATION_TERMS_CHANGED` — Kavindu, still pending then, got that
+  one on `3.10x`.
+- **You're selected for Event setup crew (3 needed)** — `APPLICATION_SELECTED`, Thursday morning. Its body
+  gives the start **as it was when sent**, Sat 5:00 AM; the change row above it is what moved it.
+- **Urgent gig near you** — `URGENT_GIG`, Thursday at about 7 AM, the push that led her to apply.
+
+**A row opens the engagement as it stands now**, as on Kavindu's histories: `5.2n` before she cancels,
+`5.2nc` after. Cancelling sends her nothing — she is the one who cancelled — so one history serves both
+moments.
 
 ### `3.10ea` — Notification history · employer (Lanka Events), three new applicants (27 Aug)
 
@@ -1636,6 +1808,35 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 until the phone allows it.** Stored preferences are separate from the OS permission (FR-NOTIF-09); drawing
 them Off would contradict `3.10pd`, where an urgent row proves the opt-in.
 
+### `3.11n` — Notification preferences · Nethmi Jayasinghe
+
+**Reached from** `3.10n` (Preferences), and [M1](M1-account.md) `1.10n` (Notification preferences) in the demo  ·  **Leads to** `3.13`  ·  **Exits** back → `3.10n`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Notification preferences"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/Toggle 328x64 [FILL/HUG] · horizontal pad 8/0/8/0 gap 16 · {State=On}
+      TEXT label 268x48 [FILL/HUG] · fill color/text/primary · mobile/body · "Notify me about urgent gigs nearby"
+      FRAME track 44x24 [FIXED/FIXED] · fill color/brand/primary · r999
+        ELLIPSE knob 20x20 [FIXED/FIXED] @22,2 · fill color/bg/default
+    INSTANCE Input/Toggle 328x40 [FILL/HUG] · horizontal pad 8/0/8/0 gap 16 · {State=Off}
+      TEXT label 268x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notify me about new gigs nearby"
+      FRAME track 44x24 [FIXED/FIXED] · fill color/border/default · r999
+        ELLIPSE knob 20x20 [FIXED/FIXED] @2,2 · fill color/bg/default
+    TEXT capNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Urgent alerts are capped at 5 a day — extras arrive as one digest."
+    FRAME row-NotifAppearance 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · stroke color/border/default 1 · r10
+      TEXT How notifications look 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "How notifications look"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+```
+
+**Her own choices: urgent alerts On, new-gig alerts Off.** The On is proved by her history — an urgent push
+reached her on Thursday — and nothing on `3.10n` is a new-gig row, so Off is the choice that fits. Kavindu's
+`3.11` has both On; the screen is per person because the toggles are.
+
 ### `3.11e` — Notification preferences · employer
 
 **Reached from** `3.10e`, `3.10ea`, `3.10ez`, `3.10ed`, `3.10eg`, and [M1](M1-account.md) `1.10e`  ·  **Leads to** nothing  ·  **Exits** back → `3.10e`
@@ -1673,7 +1874,7 @@ The verifier's version of `3.11e`: one sentence on what a verifier is told about
 
 ### `3.13` — OS-level notification appearance
 
-**Reached from** `3.11`, `3.11pd` ("How notifications look")  ·  **Exits** back → history
+**Reached from** `3.11`, `3.11pd`, `3.11n` ("How notifications look")  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 66/16/24/16 gap 12 · fill color/bg/default
@@ -1719,6 +1920,7 @@ on different dates; within a journey, time only moves forward.
 | **Thu 27 Aug, ~8:40 AM** | `3.10ea` | Lanka Events' three applications have arrived (the employer's side of the same morning) |
 | **Thu 27 Aug, about 6 PM** | `3.10ed` | Dilrukshi Herath has just posted the tutoring job; nobody has applied |
 | **Thu 27 Aug, 8 PM** | `3.10x`, `3.10pd`, `3.11`, `3.11pd` | Office cleaning posted at ~3 PM, tutoring at ~6 PM; the Event setup start moved at ~7 PM; the morning's urgent push |
+| **Sat 29 Aug, about 2 AM** | `3.1n`, `3.10n`, `3.11n`, then `3.1nc` | Nethmi, engaged on Event setup crew, before and just after she cancels (a branch: on the main line she works the shift) |
 | **Mon 31 Aug – Thu 3 Sep, before 4:10 PM** | `3.10eg` | R. Gunasekara's posting is hidden pending review; two warnings recorded so far |
 | **Mon 31 Aug on** | `3.8`, `3.12g` | The scam posting has appeared and been reported; Event setup has run |
 | **Wed 2 Sep** | `3.10q` | The moderator's question |
@@ -1740,7 +1942,9 @@ table gives that type. Bodies carry the content A11 names in whatever words fit.
 
 | Row title | Type | Where | Opens |
 | --- | --- | --- | --- |
-| Urgent gig near you | `URGENT_GIG` | `3.10x`, `3.10pd` | the listing |
+| Urgent gig near you | `URGENT_GIG` | `3.10x`, `3.10pd`, `3.10n` | the listing; on `3.10n`, Nethmi's engagement ([M5](M5-engagement.md) `5.2n` / `5.2nc`) — she has already been selected for it |
+| You're selected for Event setup crew (3 needed) | `APPLICATION_SELECTED` | `3.10n` | [M5](M5-engagement.md) `5.2n` / `5.2nc` |
+| Event setup crew (3 needed) changed | `MATERIAL_CHANGE` | `3.10n` | [M5](M5-engagement.md) `5.2n` / `5.2nc` — the re-confirmation is past; the engagement as it stands |
 | New gig near you | `NEW_GIG` | `3.10x`, `3.10pd` | the listing |
 | Question about your case | `CLARIFICATION_REQUEST` | `3.10`, `3.10q`, `3.10r` | [M9](M9-disputes.md) `9.2c` |
 | Your case is resolved | `DISPUTE_RESOLVED` | `3.10`, `3.10r` | [M9](M9-disputes.md) `9.2f` |
@@ -1771,12 +1975,13 @@ Marked † in the navigation lines above. The timeout is in seconds.
 - **`Notification badge`** is `true` on the Browse screens and `false` on the history screens you are
   already looking at.
 - **`Role`** is Worker, Employer or Verifier. That property alone says which history (`3.10*`,
-  `3.10e`/`3.10ea`/`3.10ez`/`3.10ed`/`3.10eg`, `3.10v`/`3.10vz`) a screen belongs to.
+  `3.10e`/`3.10ea`/`3.10ez`/`3.10ed`/`3.10eg`, `3.10v`/`3.10vz`) a screen belongs to — except Nethmi's
+  `3.10n`, which is a worker's like Kavindu's; its heading says whose it is.
 
 **Tab destinations are not drawn on this page.** The demo routes them per role and per journey, so from
 Thursday's Browse the Notifications tab opens Thursday's history. Where this page does wire a tab — the
 Browse screens' Notifications tab (→ `3.10x`) and the histories' Browse tab (→ `3.1`) — it follows the
-same rule.
+same rule. Nethmi's screens wire her own pair: `3.1n`/`3.1nc` → `3.10n` and back.
 
 ## States not drawn in this module
 

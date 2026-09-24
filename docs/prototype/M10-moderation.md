@@ -1295,10 +1295,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Search: “+94 71 987 6543” — 1 match · reached from the flagged listing's owner"
     INSTANCE Desktop/DetailPane 420x344 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 71 987 6543"
@@ -1363,10 +1363,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Search: “+94 71 987 6543” — 1 match · reached from the flagged listing's owner"
     INSTANCE Desktop/DetailPane 420x344 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 71 987 6543"
@@ -1614,10 +1614,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
     TEXT searchContext 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Search: “+94 71 987 6543” — 1 match · reached from the flagged listing's owner"
     INSTANCE Desktop/DetailPane 420x344 [FIXED/HUG] · vertical pad 20 gap 10 · fill color/bg/default · r8 · {Role=Admin}
       FRAME nameRow 380x26 [FILL/HUG] · horizontal pad 0 gap 8
-        TEXT userName 295x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
-        INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        TEXT userName 257x26 [FILL/HUG] · fill color/text/primary · desktop/title · "R. Gunasekara"
+        INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
           VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-          TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+          TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
       FRAME field-Phone 380x20 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Phone"
         TEXT fieldValue 248x20 [FILL/HUG] · fill color/text/primary · desktop/body · "+94 71 987 6543"

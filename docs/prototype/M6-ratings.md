@@ -30,9 +30,15 @@ engagement**, never an average carried between them.
 | `6.6b` | `FR-RATE-04`, `FR-RATE-05` |
 | `6.6d` | `FR-ENG-09`, `FR-RATE-02`, `FR-RATE-05` |
 
-**Sample content is Sri Lankan and consistent across the prototype.** *Saman Stores*, *Nethmi Jayasinghe*,
-*R. Gunasekara* and *Dilrukshi Herath* are the same people on every screen that names them. Keep the names
+**Sample content is Sri Lankan and consistent across the prototype.** *Saman Stores*, *Nethmi Jayasinghe* and
+*Dilrukshi Herath* are the same people on every screen that names them. Keep the names
 when reproducing a screen for review; replace them with real data in the product.
+
+**`6.3s`, `6.5`, `6.5b` and `6.1f` are a later branch, dated mid-October 2026**, after the story the other
+modules tell. Their scam employer, *S. Karunaratne*, and the part-time *Parcel packing — from home* job are
+invented for this branch and appear nowhere else: no one in the main story fits (Kavindu never engaged with
+R. Gunasekara, whose Data entry posting he reported before applying — M3 `3.12g`), and a one-sided reveal
+needs the 14-day window to have closed. Ruled on 2026-09-24.
 
 ---
 
@@ -113,7 +119,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Shop assistant — weekend · Saman Stores"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Parcel packing — from home · S. Karunaratne"
     TEXT q 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Rating is closed"
     TEXT closedBody 328x96 [FIXED/HUG] · fill color/text/secondary · mobile/body · "The reveal date passed, so ratings for this engagement are final. Submitting now — after you can see their rating — wouldn't be fair to either of you."
     FRAME spacer-grow 8x518 [FIXED/FILL]
@@ -252,14 +258,16 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ### `6.3s` — Revealed ratings · scam engagement, one-sided reveal
 
 **The case `FR-RATE-02` and `FR-RATE-06` exist for.** One party never rated, the window closed, and the
-other party's rating stands — on an engagement that never happened. The first card shows *no stars at
+other party's rating stands — on an engagement where no work ever happened: S. Karunaratne selected Kavindu
+for a part-time job that turned out to be a scam, ended the engagement before any work, and rated him 1 of
+5. Kavindu reported the posting and did not rate, so when the 14 days ran out only the fabricated rating was revealed. The first card shows *no stars at
 all*, not zero stars, because "didn't rate" and "rated badly" must not look alike.
 
 The removal route is an `Action/Link`, **not a button**: it is an exceptional path to an Admin, and giving
 it a primary button's weight would invite it as an ordinary disagreement route, which `FR-RATE-06`
 forbids.
 
-**Reached from** `6.1f`  ·  **Leads to** `6.5`  ·  **Exits** back → `3.10`
+**Reached from** `6.1f`  ·  **Leads to** `6.5`  ·  **Exits** back → history (in the demo the branch opens here; no history of that date is drawn)
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -268,12 +276,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Ratings"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Data entry — work from home · R. Gunasekara"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Parcel packing — from home · S. Karunaratne"
     FRAME rating-you-none 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       TEXT who 244x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "You didn't rate this engagement"
       TEXT echo 158x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Submission closed at reveal"
-    FRAME rating-R. Gunasekara rated you 328x96 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
-      TEXT who 188x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "R. Gunasekara rated you"
+    FRAME rating-counterparty 328x96 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
+      TEXT who 190x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "S. Karunaratne rated you"
       FRAME stars 124x20 [HUG/HUG] · horizontal pad 0 gap 6
         STAR star1 20x20 [FIXED/FIXED] · fill color/badge/rating
         STAR star2 20x20 [FIXED/FIXED] · fill color/border/default
@@ -326,10 +334,10 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: R. Gunasekara rated you 1 of 5"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: S. Karunaratne rated you 1 of 5"
     TEXT explainer 328x120 [FIXED/HUG] · fill color/text/primary · mobile/body · "If a rating breaks the rules — for example it rates an engagement that never happened — you can ask for it to be removed. Your request goes straight to a YouthLink admin."
     INSTANCE groundsField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
-      TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "This engagement never took place — the posting was a scam, which I reported. The rating is fabricated."
+      TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "This engagement never took place — the job was a scam, and I reported it. The rating is fabricated."
     TEXT capNote 328x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Up to 300 characters."
     FRAME spacer-grow 8x332 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -352,7 +360,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: R. Gunasekara rated you 1 of 5"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: S. Karunaratne rated you 1 of 5"
     TEXT explainer 328x72 [FIXED/HUG] · fill color/text/primary · mobile/body · "Sent — a YouthLink admin will review your request. The rating stays visible until they decide, and you'll see any change here."
     FRAME spacer-grow 8x522 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}

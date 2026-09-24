@@ -1,10 +1,10 @@
 # M1 — Account
 
-**Ninety-five frames on this page; ninety-four M1 screens and one from M8.** `8.6`, the bio prompt, is an M8 dialog drawn here because it opens over this page's profile and a Figma prototype link cannot cross pages.
+**A hundred and one frames on this page; a hundred M1 screens and one from M8.** `8.6`, the bio prompt, is an M8 dialog drawn here because it opens over this page's profile and a Figma prototype link cannot cross pages.
 
 This is everything about the account itself: registering for each of the three self-serve roles, logging in by password or by code, getting back in when the password is forgotten — and, when neither the phone nor an email can reach the person, recovery by an Admin — the person's own profile, one Settings screen, the contact-detail forms and account deletion. **A contact change is pending until confirmed; deletion is blocked while an engagement runs; a suspended account is refused on every path.**
 
-**Read *Who is who* and *Every screen shows one moment* at the end first.** Kavindu Perera (worker), Lanka Events (employer, Business) and Sunil Bandara (verifier) each have their own copy of every screen that shows personal data; the recovery is Nethmi Jayasinghe's, the suspended account R. Gunasekara's.
+**Read *Who is who* and *Every screen shows one moment* at the end first.** Kavindu Perera (worker), Lanka Events (employer, Business) and Sunil Bandara (verifier) each have their own copy of every screen that shows personal data; so do Dilrukshi Herath, R. Gunasekara and Nethmi Jayasinghe for their profile, Settings, sign-out and display name. The contact forms behind Settings are shared and show nobody's data. The recovery is Nethmi's, the suspended account R. Gunasekara's.
 
 Read `README.md` for the notation and `design-system.md` for the tokens and components. **Two pieces of chrome repeat, so they read `[standard, see header]`** — the registration top bar and the tab bar. *What the collapsed chrome hides*, at the end, spells both out.
 
@@ -1118,7 +1118,7 @@ links disappear, because neither would get the person in (`FR-ADM-03`).
 
 ### `1.6emp` — Login, password path · empty
 
-**Reached from** in the demo `1.9`  ·  **Leads to** `1.6` (the phone field (typing)), `1.7` ("Log in with a code instead"), `1.8` ("Forgot password?"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.1`
+**Reached from** `1.10sed`, `1.10seg`, `1.10sn` · in the demo `1.9`  ·  **Leads to** `1.6` (the phone field (typing)), `1.7` ("Log in with a code instead"), `1.8` ("Forgot password?"), [HF](MHF-help.md) `HF.5` ("Trouble getting in? Get help")  ·  **Exits** back → `1.1`
 
 ```
 FRAME 360x800 · vertical pad 6/16/24/16 gap 16 · fill color/bg/default
@@ -1928,7 +1928,7 @@ that explains why the reset cannot be automatic. The button becomes **Recover my
 
 ### `1.8rec2` — Account recovery · confirm your identity
 
-**Reached from** `1.11r4`, `1.8bnr`  ·  **Leads to** `1.8rec3` ("Submit request")  ·  **Exits** back → history, ✕ → `1.6emp`
+**Reached from** `1.8bnr`  ·  **Leads to** `1.8rec3` ("Submit request")  ·  **Exits** back → history, ✕ → `1.6emp`
 
 ```
 FRAME 360x800 · vertical pad 6/16/24/16 gap 8 · fill color/bg/default
@@ -2021,11 +2021,11 @@ named in Settings. `1.19` is the other direction — a profile seen by someone t
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x56 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
@@ -2051,11 +2051,11 @@ endorsement section says what to do about being empty — share the code.
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
@@ -2094,11 +2094,11 @@ beside *New to YouthLink*, and the endorsement row quotes Sunil's relationship l
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
@@ -2147,11 +2147,11 @@ opens over this page's profile.
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 232x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
@@ -2189,11 +2189,11 @@ prompt.
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 232x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 147x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Kavindu Perera"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
       INSTANCE Display/StarsDisplay 136x24 [HUG/HUG] · horizontal pad 0 gap 6
         STAR star 16x16 [FIXED/FIXED] · fill color/badge/rating
@@ -2233,11 +2233,11 @@ eligibility for endorsement closed permanently when his first rating landed (`FR
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 303x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT displayName 218x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x56 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
@@ -2258,11 +2258,11 @@ what `1.5b` entered. *New to YouthLink*, no location line and no history.
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 303x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
       TEXT displayName 218x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
       INSTANCE Display/StarsDisplay 155x24 [HUG/HUG] · horizontal pad 0 gap 6
         STAR star 16x16 [FIXED/FIXED] · fill color/badge/rating
@@ -2277,52 +2277,157 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ```
 
 **Lanka Events, established**: *4.8 from 23 ratings · 23 engagements completed*, shown under its
-business name (`FR-PROF-01` as amended). Its bio is the one it registered with.
+business name (`FR-PROF-01` as amended). Its bio is the one it registered with. **The name row wraps**: the
+business name and the *Phone verified* badge do not fit on one 328 px line, so `nameRow` fills the width
+with wrapping on (4 px between lines) and the badge sits beneath the name — hence 328 × 56.
 
 ### `1.18ed` — Own profile · employer (Dilrukshi Herath)
 
-**Reached from** the Profile tab on Dilrukshi Herath's screens (Thu 27 Aug)  ·  **Leads to** nothing
+**Reached from** the Profile tab on Dilrukshi Herath's screens (Thu 27 Aug)  ·  **Leads to** `1.10ed` ("Settings")
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 241x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 279x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 156x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Dilrukshi Herath"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x56 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
+    FRAME row-Settings 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT Settings 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Settings"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Employer} · [standard, see header]
 ```
 
 **Dilrukshi Herath, Thu 27 Aug** — an individual employer, so her profile shows her legal name. *New
 to YouthLink*: her only posting before Thursday, House move helpers, expired unfilled on 12 Aug. No bio.
-**No Settings row**: her Settings are not drawn (see *States not drawn*), so the row is left out rather than
-leading to Lanka Events' Settings.
+*Settings* opens her own `1.10ed`.
 
 ### `1.18eg` — Own profile · employer (R. Gunasekara)
 
-**Reached from** the Profile tab on R. Gunasekara's screens (31 Aug – 3 Sep)  ·  **Leads to** nothing
+**Reached from** the Profile tab on R. Gunasekara's screens (31 Aug – 3 Sep)  ·  **Leads to** `1.10eg` ("Settings")
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 225x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 263x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 140x28 [HUG/HUG] · fill color/text/primary · mobile/title · "R. Gunasekara"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x56 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 135x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 135x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "New to YouthLink"
+    FRAME row-Settings 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT Settings 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Settings"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Employer} · [standard, see header]
 ```
 
 **R. Gunasekara, 31 Aug – 3 Sep** — the same shape as `1.18ed`. His warnings are not on his own
 profile: moderation records are staff-facing (M10, M11), and he is told about each warning by notification
-(M3 `3.10eg`). No Settings row, for the same reason.
+(M3 `3.10eg`). *Settings* opens his own `1.10eg`.
+
+### `1.18n` — Own profile · worker (Nethmi Jayasinghe)
+
+**Reached from** the Profile tab on Nethmi Jayasinghe's screens, Sat 29 Aug about 2 AM, before she cancels  ·  **Leads to** `1.10n` ("Settings"), [M8](M8-endorsement.md) `8.1b` ("My endorsement code · closed")
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
+    FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
+      TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
+    INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
+      INSTANCE Display/StarsDisplay 152x24 [HUG/HUG] · horizontal pad 0 gap 6
+        STAR star 16x16 [FIXED/FIXED] · fill color/badge/rating
+        TEXT avg 25x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "4.6"
+        TEXT count 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "from 12 ratings"
+      TEXT completion 165x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "92% completion · 12 jobs"
+    TEXT sectionEndorsements 99x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ENDORSEMENTS"
+    INSTANCE Display/EndorsementRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show revoke=false, State=Default}
+      FRAME nameRow 109x24 [HUG/HUG] · horizontal pad 0 gap 8
+        TEXT endorserName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "K. Rathnayake"
+      TEXT relationship 294x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Worked together at a Kandy hotel — 3 years"
+      FRAME attributes 92x44 [HUG/HUG] · horizontal pad 0 gap 8
+        INSTANCE Input/Chip 92x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 64x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Reliability"
+    INSTANCE Display/EndorsementRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show revoke=false, State=Default}
+      FRAME nameRow 73x24 [HUG/HUG] · horizontal pad 0 gap 8
+        TEXT endorserName 73x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "M. Perera"
+      TEXT relationship 157x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Neighbour for ten years"
+      FRAME attributes 194x44 [HUG/HUG] · horizontal pad 0 gap 8
+        INSTANCE Input/Chip 102x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 74x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Punctuality"
+        INSTANCE Input/Chip 84x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 56x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Honesty"
+    FRAME row-EndorsementCode 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT EndorsementCode 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "My endorsement code · closed"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Settings 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT Settings 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Settings"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**Nethmi Jayasinghe's own profile, Sat 29 Aug about 2 AM**, before she cancels (M5 `5.2n`). The same
+record Lanka Events saw on Thursday in `1.19` — *4.6 from 12 ratings · 92% completion · 12 jobs*, K.
+Rathnayake's and M. Perera's endorsements, no bio — because nothing has completed since. *My endorsement
+code · closed*: she has rating history, so eligibility closed long ago (`FR-ENDORSE-05`); it opens M8
+`8.1b`. *Settings* opens `1.10n`.
+
+### `1.18nc` — Own profile · worker (Nethmi Jayasinghe), after her late cancellation
+
+**Reached from** the Profile tab on Nethmi Jayasinghe's screens just after she cancels  ·  **Leads to** `1.10n` ("Settings"), [M8](M8-endorsement.md) `8.1b` ("My endorsement code · closed")
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
+    FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
+      TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
+    INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
+      INSTANCE Display/StarsDisplay 152x24 [HUG/HUG] · horizontal pad 0 gap 6
+        STAR star 16x16 [FIXED/FIXED] · fill color/badge/rating
+        TEXT avg 25x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "4.6"
+        TEXT count 99x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "from 12 ratings"
+      TEXT completion 165x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "80% completion · 12 jobs"
+    TEXT sectionEndorsements 99x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ENDORSEMENTS"
+    INSTANCE Display/EndorsementRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show revoke=false, State=Default}
+      FRAME nameRow 109x24 [HUG/HUG] · horizontal pad 0 gap 8
+        TEXT endorserName 109x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "K. Rathnayake"
+      TEXT relationship 294x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Worked together at a Kandy hotel — 3 years"
+      FRAME attributes 92x44 [HUG/HUG] · horizontal pad 0 gap 8
+        INSTANCE Input/Chip 92x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 64x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Reliability"
+    INSTANCE Display/EndorsementRow 328x136 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Show revoke=false, State=Default}
+      FRAME nameRow 73x24 [HUG/HUG] · horizontal pad 0 gap 8
+        TEXT endorserName 73x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "M. Perera"
+      TEXT relationship 157x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Neighbour for ten years"
+      FRAME attributes 194x44 [HUG/HUG] · horizontal pad 0 gap 8
+        INSTANCE Input/Chip 102x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 74x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Punctuality"
+        INSTANCE Input/Chip 84x44 [HUG/HUG] · horizontal pad 12/14/12/14 gap 0 · stroke color/badge/endorsed 1 · r999 · {Kind=Display, State=Default}
+          TEXT label 56x20 [HUG/HUG] · fill color/badge/endorsed · mobile/secondary · "Honesty"
+    FRAME row-EndorsementCode 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT EndorsementCode 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "My endorsement code · closed"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Settings 328x52 [FILL/HUG] · horizontal pad 14 gap 8 · fill color/bg/default · r10
+      TEXT Settings 286x24 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "Settings"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
+```
+
+**Minutes later, after she cancels** (M5 `5.2nc`): *80% completion*. The cancellation came under 6
+hours before the start, so it is late and weighs twice — 12 completed out of 15 counted, where it was 12
+out of 13. Ratings and jobs are unchanged. The rest is `1.18n`.
 
 ### `1.18vz` — Own profile · verifier, first run
 
@@ -2333,11 +2438,11 @@ profile: moderation records are staff-facing (M10, M11), and he is told about ea
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 218x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 256x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 133x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Sunil Bandara"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 148x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
@@ -2360,11 +2465,11 @@ Sunil Bandara on the day he registered: *Vouching since today · nobody yet*.
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 16
-    FRAME nameRow 218x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 256x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 133x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Sunil Bandara"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=ZeroHistory}
       FRAME headline 148x24 [HUG/HUG] · horizontal pad 0 gap 8
         TEXT headline 148x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Community Verifier"
@@ -2395,11 +2500,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
     FRAME interactionContext 328x36 [FILL/HUG] · horizontal pad 8/12/8/12 gap 0 · fill color/bg/subtle · r8
       TEXT contextLine 267x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Applied to: Event setup crew (3 needed)"
-    FRAME nameRow 270x28 [HUG/HUG] · horizontal pad 0 gap 8
+    FRAME nameRow 308x28 [HUG/HUG] · horizontal pad 0 gap 8
       TEXT displayName 185x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Nethmi Jayasinghe"
-      INSTANCE Display/Badge 77x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
         VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
-        TEXT label 44x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Verified"
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
     INSTANCE Display/ProfileTrustBlock 328x84 [FIXED/HUG] · vertical pad 16 gap 8 · fill color/bg/default · r8 · {Tier=History}
       INSTANCE Display/StarsDisplay 152x24 [HUG/HUG] · horizontal pad 0 gap 6
         STAR star 16x16 [FIXED/FIXED] · fill color/badge/rating
@@ -2433,12 +2538,14 @@ back chevron uses history, since the profile can be opened from more than one po
 ## Settings
 
 **One screen** for everything about the account (`FR-ACC-18`): security, contact details,
-display name, posting-as for an employer, notification preferences, help, sign-out and deletion. Each role
-has its own copy because each shows its own contact details.
+display name, posting-as for an employer, notification preferences, help, sign-out and deletion. **Each
+person who has a profile has their own copy**, because it shows their own contact details, and so does the
+sign-out dialog over it: Kavindu, Lanka Events, Sunil Bandara, Dilrukshi Herath, R. Gunasekara and Nethmi
+Jayasinghe. The forms the contact rows open are shared (next section).
 
 ### `1.10` — Settings, unified
 
-**Reached from** `1.10s`, `1.11`, `1.11r1`, `1.12b`, `1.13`, `1.14b`, `1.15`, `1.18`, `1.18b`, `1.18bio` · back from [HF](MHF-help.md) `HF.1` · in the demo `1.18z`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15` ("Display name"), `1.10s` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18`
+**Reached from** `1.10s`, `1.11`, `1.11r1`, `1.12b`, `1.14b`, `1.15`, `1.18`, `1.18b`, `1.18bio` · back from [HF](MHF-help.md) `HF.1` · in the demo `1.18z`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15` ("Display name"), `1.10s` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -2552,7 +2659,7 @@ Sign out, confirmed: other devices stay signed in, and the way back in is named.
 
 ### `1.10e` — Settings, unified · employer (Lanka Events)
 
-**Reached from** `1.10se`, `1.12be`, `1.13e`, `1.14be`, `1.15e`, `1.16`, `1.18e` · in the demo `1.18ez`, `1.11`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13e` ("NIC"), `1.14e` ("Email"), `1.15e` ("Display name"), `1.16` ("Posting as"), `1.10se` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11e` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18e`
+**Reached from** `1.10se`, `1.15e`, `1.15eb`, `1.16`, `1.18e` · in the demo `1.18ez`, `1.11`, `1.12b`, `1.14b`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15e` ("Display name"), `1.15eb` ("Business name & bio"), `1.16` ("Posting as"), `1.10se` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11e` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18e`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -2608,9 +2715,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ```
 
 **Lanka Events' Settings.** *Display name* is the account holder's **legal name**, Ruwan Jayasuriya;
-the business is shown by **Business name & bio** (*Lanka Events (Pvt) Ltd*), a separate row whose edit
-screen is not drawn. *Posting as · Business* opens `1.16`. Notification preferences opens M3 `3.11e`, the
-employer's role note.
+the business is shown by **Business name & bio** (*Lanka Events (Pvt) Ltd*), a separate row that opens
+`1.15eb`. *Posting as · Business* opens `1.16`. Notification preferences opens M3 `3.11e`, the employer's
+role note.
 
 ### `1.10se` — Settings · Sign out? (dialog, employer)
 
@@ -2680,9 +2787,367 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 
 The employer's sign-out confirmation, over `1.10e`.
 
+### `1.10ed` — Settings, unified · employer (Dilrukshi Herath)
+
+**Reached from** `1.10sed`, `1.15ed`, `1.18ed` · in the demo `1.11`, `1.12b`, `1.14b`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15ed` ("Display name"), `1.16b` ("Posting as"), `1.10sed` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11e` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18ed`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 183x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 115x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 77 318 2046"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 230x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 68x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 2231"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 95x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 203x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "dilrukshi.herath@example.com"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 192x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 106x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Dilrukshi Herath"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-PostingAs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 234x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Posting as"
+      TEXT rowValue 64x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Individual"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+```
+
+**Dilrukshi Herath's Settings, Thu 27 Aug.** Her own contact details — +94 77 318 2046, NIC ending
+2231, `dilrukshi.herath@example.com` — and her legal name as display name. She posts as
+**Individual/Household**, so there is no *Business name & bio* row, and *Posting as · Individual* opens
+`1.16b`, the switch in the other direction.
+
+### `1.10sed` — Settings · Sign out? (dialog, Dilrukshi Herath)
+
+**Opens over** `1.10ed`  ·  **Cancel returns to** `1.10ed`  ·  **Confirm** → `1.6emp` ("Sign out")
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 183x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 115x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 77 318 2046"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 230x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 68x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 2231"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 95x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 203x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "dilrukshi.herath@example.com"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 192x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 106x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Dilrukshi Herath"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-PostingAs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 234x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Posting as"
+      TEXT rowValue 64x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Individual"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
+    TEXT title 217x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Sign out of YouthLink?"
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Other devices stay signed in. Sign back in any time with your phone and password, or a one-time code."
+    FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
+      INSTANCE Action/Button 101x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
+        TEXT label 53x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Cancel"
+      INSTANCE Action/Button 112x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+        TEXT label 64x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Sign out"
+```
+
+Her sign-out confirmation, over `1.10ed`. Sign out lands on the empty login `1.6emp`: a login
+screen with her number filled in is not drawn.
+
+### `1.10eg` — Settings, unified · employer (R. Gunasekara)
+
+**Reached from** `1.10seg`, `1.15eg`, `1.18eg` · in the demo `1.11`, `1.12b`, `1.14b`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15eg` ("Display name"), `1.16b` ("Posting as"), `1.10seg` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11e` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18eg`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 184x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 114x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 71 987 6543"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 228x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 70x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 5678"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 232x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 66x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Add email"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 202x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 96x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "R. Gunasekara"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-PostingAs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 234x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Posting as"
+      TEXT rowValue 64x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Individual"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+```
+
+**R. Gunasekara's Settings, 31 Aug – 3 Sep**: +94 71 987 6543, NIC ending 5678 (the number the
+dashboard shows in full, M10 `10.6`), and **no email** — the row reads *Add email*. Individual/Household, as
+`1.10ed`. Settings shows nothing of his warnings or the review; those reach him by notification.
+
+### `1.10seg` — Settings · Sign out? (dialog, R. Gunasekara)
+
+**Opens over** `1.10eg`  ·  **Cancel returns to** `1.10eg`  ·  **Confirm** → `1.6emp` ("Sign out")
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 184x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 114x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 71 987 6543"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 228x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 70x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 5678"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 232x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 66x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Add email"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 202x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 96x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "R. Gunasekara"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-PostingAs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 234x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Posting as"
+      TEXT rowValue 64x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Individual"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
+    TEXT title 217x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Sign out of YouthLink?"
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Other devices stay signed in. Sign back in any time with your phone and password, or a one-time code."
+    FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
+      INSTANCE Action/Button 101x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
+        TEXT label 53x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Cancel"
+      INSTANCE Action/Button 112x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+        TEXT label 64x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Sign out"
+```
+
+His sign-out confirmation, over `1.10eg`; Sign out → `1.6emp`.
+
+### `1.10n` — Settings, unified · worker (Nethmi Jayasinghe)
+
+**Reached from** `1.10sn`, `1.15n`, `1.18n`, `1.18nc` · in the demo `1.12b`, `1.14b`, `1.11r1`, `1.11`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15n` ("Display name"), `1.10sn` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11n` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18n`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 182x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 116x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 76 234 5678"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 230x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 68x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 9012"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 232x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 66x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Add email"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 171x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 127x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Nethmi Jayasinghe"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+```
+
+**Nethmi Jayasinghe's Settings, Sat 29 Aug about 2 AM** — the same before and after she cancels,
+since cancelling changes nothing here. +94 76 234 5678, NIC ending 9012, and **no email**: the row reads
+*Add email*, which is why her signed-in reset ends on `1.11r4` and why, a week later with her phone lost, she
+needs account recovery (`1.8rec1`). A worker, so no posting-as row.
+
+### `1.10sn` — Settings · Sign out? (dialog, Nethmi Jayasinghe)
+
+**Opens over** `1.10n`  ·  **Cancel returns to** `1.10n`  ·  **Confirm** → `1.6emp` ("Sign out")
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Settings"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 4
+    TEXT group-SECURITY 59x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SECURITY"
+    FRAME row-Change password 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Change password"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-CONTACT 58x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CONTACT"
+    FRAME row-Phone 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 182x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Phone"
+      TEXT rowValue 116x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "+94 76 234 5678"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-NIC 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 230x24 [FILL/HUG] · fill color/text/primary · mobile/body · "NIC"
+      TEXT rowValue 68x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "•••• 9012"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Email 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 232x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Email"
+      TEXT rowValue 66x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Add email"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-DisplayName 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 171x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Display name"
+      TEXT rowValue 127x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Nethmi Jayasinghe"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-NOTIFICATIONS 92x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "NOTIFICATIONS"
+    FRAME row-NotifPrefs 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Notification preferences"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-SUPPORT 57x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "SUPPORT"
+    FRAME row-Help 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Help — how YouthLink works"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    TEXT group-ACCOUNT 60x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "ACCOUNT"
+    FRAME row-Sign out 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Sign out"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+    FRAME row-Delete account 328x48 [FILL/HUG] · horizontal pad 12/0/12/0 gap 12
+      TEXT rowLabel 310x24 [FILL/HUG] · fill color/state/danger · mobile/body · "Delete account"
+      VECTOR Vector 6x12 [FIXED/FIXED] · stroke color/text/secondary 1.8
+  RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
+  INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
+    TEXT title 217x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Sign out of YouthLink?"
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Other devices stay signed in. Sign back in any time with your phone and password, or a one-time code."
+    FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
+      INSTANCE Action/Button 101x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
+        TEXT label 53x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Cancel"
+      INSTANCE Action/Button 112x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+        TEXT label 64x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Sign out"
+```
+
+Her sign-out confirmation, over `1.10n`; Sign out → `1.6emp`.
+
 ### `1.10v` — Settings, unified · verifier (Sunil Bandara)
 
-**Reached from** `1.10sv`, `1.12bv`, `1.13v`, `1.14bv`, `1.15v`, `1.18v` · in the demo `1.18vz`, `1.11`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13v` ("NIC"), `1.14v` ("Email"), `1.15v` ("Display name"), `1.10sv` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11v` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18v`
+**Reached from** `1.10sv`, `1.15v`, `1.18v` · in the demo `1.18vz`, `1.11`, `1.12b`, `1.14b`  ·  **Leads to** `1.11` ("Change password"), `1.12` ("Phone"), `1.13` ("NIC"), `1.14` ("Email"), `1.15v` ("Display name"), `1.10sv` ("Sign out"), `1.17` ("Delete account"), [M3](M3-discovery.md) `3.11v` ("Notification preferences"), [HF](MHF-help.md) `HF.1` ("Help — how YouthLink works")  ·  **Exits** back → `1.18v`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -2794,14 +3259,15 @@ The verifier's sign-out confirmation, over `1.10v`.
 ## Changing the password
 
 Current password, then the new one twice (`FR-ACC-11`). Forgetting the
-current one while signed in is a reset, not a change: it goes by email when there is a verified address,
-and to account recovery when there is not.
+current one while signed in is a reset, not a change: it goes by email when there is a verified address.
+When there is not, the person is still signed in and can add one, so the screen offers that rather than
+account recovery, which is for someone who cannot get in at all.
 
 ### `1.11` — Change password
 
-**Reached from** `1.10`, `1.10e`, `1.10v`  ·  **Leads to** `1.10` ("Change password")  ·  **Exits** back → `1.10`
+**Reached from** `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v`  ·  **Leads to** `1.10` ("Change password")  ·  **Exits** back → `1.10`
 
-*In the demo:* the employer's and verifier's copies return to `1.10e` / `1.10v`; the error walk continues to `1.11r1`.
+*In the demo:* every person's copy returns to their own Settings; Kavindu's and Nethmi's walks continue to `1.11r1`.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -2844,6 +3310,8 @@ stated before the button, not after.
 ### `1.11r1` — Change password · forgotten current password
 
 **Reached from** in the demo `1.11`  ·  **Leads to** `1.11r2` ("Forgotten your current password?"), `1.10` ("Change password")  ·  **Exits** back → `1.10`
+
+*In the demo:* in Nethmi's Settings, *Forgotten your current password?* → `1.11r4` — she has no email to reset by.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -2909,7 +3377,7 @@ Kavindu has a verified email, so the reset goes there: *kavindu@example.com*.
 
 **Reached from** `1.11r2`  ·  **Leads to** nothing  ·  **Exits** back → `1.10`
 
-*In the demo:* Done → `1.11r4` in the error walk, to show the no-email branch beside the email one.
+*In the demo:* Done → Kavindu's Settings `1.10`.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -2930,7 +3398,9 @@ Sent — an `Info` banner naming the address and where to look. The person can k
 
 ### `1.11r4` — Reset by email · no verified email on file
 
-**Reached from** in the demo `1.11r3`  ·  **Leads to** `1.8rec2` ("Recover my account")  ·  **Exits** back → `1.10`
+**Reached from** in the demo `1.11r1`  ·  **Leads to** `1.14` ("Add an email")  ·  **Exits** back → `1.10`
+
+*In the demo:* Add an email → `1.14` inside Nethmi's Settings walk, and back → `1.10n`.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -2941,15 +3411,17 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
   FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
     INSTANCE formBanner 328x60 [FILL/HUG] · horizontal pad 10/12/10/12 gap 0 · fill color/bg/subtle · stroke color/border/default 1 · r8 · of Feedback/FormBanner · {Kind=Info}
       TEXT message 296x40 [FIXED/HUG] · fill color/text/primary · mobile/secondary · "There's no verified email on this account, so we can't send a reset link."
-    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "You can add an email from Settings if you still have access, or recover the account by confirming your identity."
-    FRAME spacer-grow 8x480 [FIXED/FILL]
+    TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Add an email address — no password needed — then reset your password by email."
+    FRAME spacer-grow 8x500 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 156x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Recover my account"
+      TEXT label 99x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Add an email"
 ```
 
-**The branch for an account with no verified email** — the same shared screen for someone who never
-added one. The email reset is impossible, and the screen offers the two ways out: add an email while still
-signed in, or recover the account (`1.8rec2`).
+**The branch for an account with no verified email** — in the demo, Nethmi on Sat 29 Aug, signed in
+and never having added one. The email reset is impossible, so the screen offers the way that works while
+signed in: **Add an email** opens `1.14` — no password needed — and the reset can go there once the address
+is confirmed. Account recovery (`1.8rec2`) is for someone who cannot get in at all, so it is not offered
+here.
 
 ## Contact details and name
 
@@ -2958,11 +3430,17 @@ Phone, NIC, email and display name, each on its own short form
 address stays active until the new one proves itself — so the forms land on a pending state with a way to
 cancel, not on a success message.
 
+**The phone, NIC and email forms are shared by everyone and show nobody's data** (ruled on 2026-09-24): the
+pending phone change does not name the number it replaces, the NIC form opens empty, and adding an email and
+changing one are the same screen with a sample address that belongs to no one. A person's current values are
+on their own Settings. The display-name form, which does show the name, has a copy per person; so does the
+business name and bio.
+
 ### `1.12` — Change phone number
 
-**Reached from** `1.10`, `1.10e`, `1.10v`  ·  **Leads to** `1.12b` ("Send code to new number")  ·  **Exits** back → `1.10`
+**Reached from** `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v`  ·  **Leads to** `1.12b` ("Send code to new number")  ·  **Exits** back → `1.10`
 
-*In the demo:* the employer's and verifier's copies continue to `1.12be` / `1.12bv`; the error walk to `1.12err`.
+*In the demo:* every person's walk continues to `1.12b` and returns to their own Settings; the error walk goes to `1.12err`.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -2991,50 +3469,15 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       TEXT label 201x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send code to new number"
 ```
 
-Password first, then the new number — **+94 76 555 0199**, the same sample on all three roles' change,
-because this input screen is shared. The note says the current number stays active until the new one is
+Password first, then the new number — **+94 76 555 0199**, the same sample for everyone, because
+this input screen is shared. The note says the current number stays active until the new one is
 verified.
 
 ### `1.12b` — Change phone number · pending confirmation
 
 **Reached from** `1.12`  ·  **Leads to** `1.10` ("Cancel this change")  ·  **Exits** back → `1.10`
 
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change phone number"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-        FRAME eye 24x24 [FIXED/FIXED]
-          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-      TEXT Phone number 130x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New phone number"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "76 555 0199"
-    FRAME pendingChangeRow 328x184 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
-      TEXT prTitle 296x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm +94 76 555 0199"
-      TEXT prBody 296x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your number is still +94 77 123 4567 until the new one is confirmed by SMS code. If the code expires or you cancel, nothing changes."
-      INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-        TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
-    TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is verified."
-    FRAME spacer-grow 8x264 [FIXED/FILL]
-```
-
-**Pending**: *confirm +94 76 555 0199*, and the body names the number that is still in force — +94 77
-123 4567 — until the SMS code is entered. *Cancel this change* abandons it and nothing changes.
-
-### `1.12be` — Change phone number · pending confirmation (employer)
-
-**Reached from** in the demo `1.12`  ·  **Leads to** `1.10e` ("Cancel this change")  ·  **Exits** back → `1.10e`
+*In the demo:* back and Cancel this change → the Settings of whoever is walking it.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -3059,50 +3502,16 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
           TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "76 555 0199"
     FRAME pendingChangeRow 328x184 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
       TEXT prTitle 296x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm +94 76 555 0199"
-      TEXT prBody 296x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your number is still +94 11 234 5678 until the new one is confirmed by SMS code. If the code expires or you cancel, nothing changes."
+      TEXT prBody 296x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is confirmed by SMS code. If the code expires or you cancel, nothing changes."
       INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
     TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is verified."
     FRAME spacer-grow 8x264 [FIXED/FILL]
 ```
 
-Lanka Events' pending change: the landline stays in force.
-
-### `1.12bv` — Change phone number · pending confirmation (verifier)
-
-**Reached from** in the demo `1.12`  ·  **Leads to** `1.10v` ("Cancel this change")  ·  **Exits** back → `1.10v`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Change phone number"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-        FRAME eye 24x24 [FIXED/FIXED]
-          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-    INSTANCE Input/PhoneField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default}
-      TEXT Phone number 130x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "New phone number"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8
-        FRAME prefix 56x48 [HUG/FILL] · horizontal pad 0/12/0/12 gap 0 · fill color/bg/subtle
-          TEXT +94 32x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "+94"
-        FRAME val 107x48 [HUG/FILL] · horizontal pad 0/0/0/12 gap 0
-          TEXT 7X XXX XXXX 95x24 [HUG/HUG] · fill color/text/primary · mobile/body · "76 555 0199"
-    FRAME pendingChangeRow 328x184 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
-      TEXT prTitle 296x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm +94 76 555 0199"
-      TEXT prBody 296x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your number is still +94 71 456 7890 until the new one is confirmed by SMS code. If the code expires or you cancel, nothing changes."
-      INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-        TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
-    TEXT note 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Your current number stays active until the new one is verified."
-    FRAME spacer-grow 8x264 [FIXED/FILL]
-```
-
-Sunil Bandara's pending change.
+**Pending**: *confirm +94 76 555 0199*. The body says the **current** number stays active until the
+SMS code is entered, without naming it — the screen is shared, and the number in force differs per person.
+*Cancel this change* abandons it and nothing changes.
 
 ### `1.12err` — Change phone number · password doesn't match
 
@@ -3144,7 +3553,9 @@ and invites another try.
 
 ### `1.13` — NIC correction
 
-**Reached from** `1.10`  ·  **Leads to** `1.10` ("Save NIC")  ·  **Exits** back → `1.10`
+**Reached from** `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v`  ·  **Leads to** nothing  ·  **Exits** back → `1.10`
+
+*In the demo:* back → the Settings of whoever is walking it.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -3160,84 +3571,26 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
         FRAME eye 24x24 [FIXED/FIXED]
           ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
           ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
       TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "200412345678"
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "Enter your NIC"
     TEXT nicHelp 328x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits followed by V or X. Stored as entered — only the shape is checked, never a registry."
     FRAME spacer-grow 8x380 [FIXED/FILL]
-    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save NIC"
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 70x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save NIC"
 ```
 
-Kavindu's NIC, correctable with the same low ceremony as registration (`FR-ACC-13`), and the same
-shape-only rule.
-
-### `1.13e` — NIC correction · employer
-
-**Reached from** `1.10e`  ·  **Leads to** `1.10e` ("Save NIC")  ·  **Exits** back → `1.10e`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Correct NIC"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-        FRAME eye 24x24 [FIXED/FIXED]
-          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "198512345678"
-    TEXT nicHelp 328x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits followed by V or X. Stored as entered — only the shape is checked, never a registry."
-    FRAME spacer-grow 8x380 [FIXED/FILL]
-    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save NIC"
-```
-
-Ruwan Jayasuriya's NIC, 198512345678.
-
-### `1.13v` — NIC correction · verifier
-
-**Reached from** `1.10v`  ·  **Leads to** `1.10v` ("Save NIC")  ·  **Exits** back → `1.10v`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Correct NIC"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Secure}
-      TEXT label 65x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Password"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 272x24 [FILL/HUG] · fill color/text/primary · mobile/body · "••••••••••"
-        FRAME eye 24x24 [FIXED/FIXED]
-          ELLIPSE Ellipse 20x12 [FIXED/FIXED] @2,6 · stroke color/text/secondary 1.5
-          ELLIPSE Ellipse 7x7 [FIXED/FIXED] @9,9 · fill color/text/secondary
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 25x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "NIC"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "195512349012"
-    TEXT nicHelp 328x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "12 digits, or 9 digits followed by V or X. Stored as entered — only the shape is checked, never a registry."
-    FRAME spacer-grow 8x380 [FIXED/FILL]
-    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 70x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save NIC"
-```
-
-Sunil Bandara's NIC, 195512349012.
+**Opens empty**: the field shows its placeholder, *Enter your NIC*, and *Save NIC* is
+`{State=Disabled}` until something is typed. The current NIC is on the person's Settings, masked to its
+last four; the form is shared, so it shows nobody's. Correctable with the same low ceremony as registration
+(`FR-ACC-13`), and the same shape-only rule.
 
 ### `1.14` — Email add or change
 
-**Reached from** `1.10` · in the demo `1.12err`, `1.14err`  ·  **Leads to** `1.14b` ("Send confirmation link")  ·  **Exits** back → `1.10`
+**Reached from** `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v`, `1.11r4` · in the demo `1.12err`, `1.14err`  ·  **Leads to** `1.14b` ("Send confirmation link")  ·  **Exits** back → `1.10`
 
-*In the demo:* the error walk: Send confirmation link → `1.14err`.
+*In the demo:* the error walk: Send confirmation link → `1.14err`; in every other walk back → the walker's own Settings.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -3249,19 +3602,22 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "kavindu.perera@example.com"
-    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Your current address stays active until the new one is confirmed."
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "new.address@example.com"
+    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Nothing on your account changes until the new address is confirmed."
     FRAME spacer-grow 8x468 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
 ```
 
-**A change of address**, not a first one: Kavindu already has `kavindu@example.com` and types
-`kavindu.perera@example.com`. The current address stays active until the new one is confirmed.
+**One screen for adding an email and for changing one**, shared by everyone: the sample
+`new.address@example.com` belongs to no one. *Nothing on your account changes until the new address is
+confirmed* holds either way — whether there was an address before or not.
 
 ### `1.14b` — Email add or change · pending confirmation
 
 **Reached from** `1.14`  ·  **Leads to** `1.10` ("Cancel this change")  ·  **Exits** back → `1.10`
+
+*In the demo:* back and Cancel this change → the Settings of whoever is walking it.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -3273,112 +3629,16 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
       TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "kavindu.perera@example.com"
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "new.address@example.com"
     FRAME pendingChangeRow 328x188 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
-      TEXT prTitle 296x48 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm kavindu.perera@example.com"
-      TEXT prBody 296x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a confirmation link. Your current address stays active until the new one is confirmed."
+      TEXT prTitle 296x48 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm new.address@example.com"
+      TEXT prBody 296x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a confirmation link. Nothing on your account changes until the new address is confirmed."
       INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
     FRAME spacer-grow 8x404 [FIXED/FILL]
 ```
 
 Pending, with the new address in the title and a cancel link.
-
-### `1.14e` — Email add or change · employer
-
-**Reached from** `1.10e`  ·  **Leads to** `1.14be` ("Send confirmation link")  ·  **Exits** back → `1.10e`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "bookings@lankaevents.lk"
-    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Your current address stays active until the new one is confirmed."
-    FRAME spacer-grow 8x468 [FIXED/FILL]
-    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
-```
-
-Lanka Events changes `hello@lankaevents.lk` to `bookings@lankaevents.lk`.
-
-### `1.14be` — Email add or change · pending confirmation (employer)
-
-**Reached from** `1.14e`  ·  **Leads to** `1.10e` ("Cancel this change")  ·  **Exits** back → `1.10e`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "bookings@lankaevents.lk"
-    FRAME pendingChangeRow 328x188 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
-      TEXT prTitle 296x48 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm bookings@lankaevents.lk"
-      TEXT prBody 296x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a confirmation link. Your current address stays active until the new one is confirmed."
-      INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-        TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
-    FRAME spacer-grow 8x404 [FIXED/FILL]
-```
-
-Pending — *confirm bookings@lankaevents.lk*.
-
-### `1.14v` — Email add or change · verifier
-
-**Reached from** `1.10v`  ·  **Leads to** `1.14bv` ("Send confirmation link")  ·  **Exits** back → `1.10v`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "sunil.bandara@example.com"
-    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Your current address stays active until the new one is confirmed."
-    FRAME spacer-grow 8x468 [FIXED/FILL]
-    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
-      TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
-```
-
-Sunil Bandara changes `sunil.b@example.com` to `sunil.bandara@example.com`.
-
-### `1.14bv` — Email add or change · pending confirmation (verifier)
-
-**Reached from** `1.14v`  ·  **Leads to** `1.10v` ("Cancel this change")  ·  **Exits** back → `1.10v`
-
-```
-FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
-  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
-    FRAME backHit 44x44 [FIXED/FIXED]
-      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
-    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Email"
-  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
-    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
-      TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
-      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "sunil.bandara@example.com"
-    FRAME pendingChangeRow 328x188 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · stroke color/border/default 1 · r10
-      TEXT prTitle 296x48 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Pending — confirm sunil.bandara@example.com"
-      TEXT prBody 296x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We sent a confirmation link. Your current address stays active until the new one is confirmed."
-      INSTANCE Action/Link 145x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
-        TEXT label 145x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Cancel this change"
-    FRAME spacer-grow 8x404 [FIXED/FILL]
-```
-
-Pending — *confirm sunil.bandara@example.com*.
 
 ### `1.14err` — Email add or change · already on another account
 
@@ -3396,16 +3656,18 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
     INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Error, Type=Text}
       TEXT label 93x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Email address"
       FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/error 1 · r8
-        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "k.perera@example.com"
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "new.address@example.com"
     INSTANCE fieldError 296x40 [HUG/HUG] · horizontal pad 0 gap 0 · of Feedback/FieldError
       TEXT error 296x40 [FIXED/HUG] · fill color/state/danger · mobile/secondary · "This email is already on another account. Try a different address."
-    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Your current address stays active until the new one is confirmed."
+    TEXT note 328x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "We'll send a confirmation link. Nothing on your account changes until the new address is confirmed."
     FRAME spacer-grow 8x412 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
       TEXT label 171x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Send confirmation link"
 ```
 
-The new address is already on another account (`FR-ACC-05`). The message does not say whose.
+The new address is already on another account (`FR-ACC-05`). The message does not say whose. The
+field keeps the address typed on `1.14` — the same shared sample — so the error reads as the result of that
+screen's Send.
 
 ### `1.15` — Display name
 
@@ -3429,7 +3691,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 Kavindu's display name — his legal name (`FR-PROF-01`).
 
-### `1.15e` — Display name · employer
+### `1.15e` — Display name · employer (Lanka Events)
 
 **Reached from** `1.10e`  ·  **Leads to** `1.10e` ("Save")  ·  **Exits** back → `1.10e`
 
@@ -3450,7 +3712,102 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 ```
 
 **Ruwan Jayasuriya**, the legal name of the person behind Lanka Events. Changing the business name is
-the separate *Business name & bio* row on `1.10e`.
+the separate *Business name & bio* row on `1.10e`, which opens `1.15eb`.
+
+### `1.15eb` — Business name & bio · employer (Lanka Events)
+
+**Reached from** `1.10e`  ·  **Leads to** `1.10e` ("Save")  ·  **Exits** back → `1.10e`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Business name & bio"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 100x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Lanka Events (Pvt) Ltd"
+    TEXT label 151x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business bio (optional)"
+    INSTANCE bioField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
+      TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "Event staffing across Colombo — weddings, corporate events and concerts."
+    TEXT counter 48x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "72 / 300"
+    TEXT helper 328x20 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Shown on your profile and on your postings."
+    FRAME spacer-grow 8x326 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
+```
+
+**Lanka Events' business name and bio**, the row on `1.10e`. The two fields registration asked for
+(`1.5b`, `FR-ACC-02`): the name, required, 100 characters; the bio, optional, now in a text area with its
+count (*72 / 300*). The helper says where they appear. Save returns to `1.10e`.
+
+### `1.15ed` — Display name · employer (Dilrukshi Herath)
+
+**Reached from** `1.10ed`  ·  **Leads to** `1.10ed` ("Save")  ·  **Exits** back → `1.10ed`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Dilrukshi Herath"
+    FRAME spacer-grow 8x544 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
+```
+
+Dilrukshi Herath — her legal name, as for every Individual employer.
+
+### `1.15eg` — Display name · employer (R. Gunasekara)
+
+**Reached from** `1.10eg`  ·  **Leads to** `1.10eg` ("Save")  ·  **Exits** back → `1.10eg`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "R. Gunasekara"
+    FRAME spacer-grow 8x544 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
+```
+
+R. Gunasekara.
+
+### `1.15n` — Display name · worker (Nethmi Jayasinghe)
+
+**Reached from** `1.10n`  ·  **Leads to** `1.10n` ("Save")  ·  **Exits** back → `1.10n`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Display name"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/TextField 328x72 [FIXED/HUG] · vertical pad 0 gap 4 · {State=Filled, Type=Text}
+      TEXT label 89x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Display name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/primary · mobile/body · "Nethmi Jayasinghe"
+    FRAME spacer-grow 8x544 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 38x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Save"
+```
+
+Nethmi Jayasinghe.
 
 ### `1.15v` — Display name · verifier
 
@@ -3500,6 +3857,44 @@ The posting-as switch (`FR-ACC-16`), shown mid-change to `Individual/Household`.
 consequence before Save: switching from Business clears the business name and bio, and past postings keep
 the details they were posted with.
 
+### `1.16b` — Posting-as change · switching to Business
+
+**Reached from** `1.10ed`, `1.10eg`  ·  **Leads to** nothing  ·  **Exits** back → `1.10ed`
+
+*In the demo:* back → `1.10ed` or `1.10eg`, whichever employer opened it.
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Posting as"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    INSTANCE Input/SegmentedControl 328x44 [FILL/HUG] · horizontal pad 2 gap 2 · fill color/bg/subtle · r8 · {Selected=Business}
+      FRAME segment 208x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · r6
+        TEXT label 162x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "Individual/Household"
+      FRAME segment 115x40 [FIXED/HUG] · horizontal pad 8/16/8/16 gap 0 · fill color/brand/primary · r6
+        TEXT label 69x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Business"
+    INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 100x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business name"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT value 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "Enter your business name"
+    INSTANCE Input/TextField 328x72 [FILL/HUG] · vertical pad 0 gap 4 · {State=Default, Type=Text}
+      TEXT label 151x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Business bio (optional)"
+      FRAME input 328x48 [FILL/FIXED] · horizontal pad 0/12/0/12 gap 8 · fill color/bg/default · stroke color/border/default 1 · r8
+        TEXT businessBio 304x24 [FILL/HUG] · fill color/text/secondary · mobile/body · "What your business does (optional)"
+    TEXT note 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Switching to Business shows the business name and bio on your profile and your postings. Postings you've already published keep the name they were posted under."
+    FRAME spacer-grow 8x300 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Primary, State=Disabled}
+      TEXT label 38x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Save"
+```
+
+**The switch the other way**, for an Individual employer — Dilrukshi's or R. Gunasekara's *Posting as ·
+Individual*. `Business` selected, and the two fields it unlocks, empty (*Enter your business name*, *What
+your business does (optional)*); Save stays `{State=Disabled}` until a business name is entered. The note says
+the name and bio will show on the profile and postings, and that postings already published keep the name
+they were posted under. It shows nobody's data, so one copy serves both.
+
 ## Account deletion
 
 Permanent removal of the identifying details; ratings stay, attributed to an
@@ -3508,9 +3903,9 @@ engagement is active**, and it takes two steps: a warning, then the password.
 
 ### `1.17` — Account deletion
 
-**Reached from** `1.10`, `1.10e`, `1.10v`  ·  **Leads to** `1.17b` ("Delete account")  ·  **Exits** back → `1.10`
+**Reached from** `1.10`, `1.10e`, `1.10ed`, `1.10eg`, `1.10n`, `1.10v`  ·  **Leads to** `1.17b` ("Delete account")  ·  **Exits** back → `1.10`
 
-*In the demo:* the employer's copy → `1.17be` (blocked) and back → `1.10e`; the verifier's → `1.17p`.
+*In the demo:* Delete account → `1.17be` (blocked) for Lanka Events and `1.17bn` for Nethmi before she cancels, `1.17p` for everyone else; back → each person's own Settings.
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -3575,6 +3970,29 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 Lanka Events, blocked by Event setup crew (3 needed) with Nethmi Jayasinghe — true from her selection on
 Thursday until the engagement completes on Saturday.
 
+### `1.17bn` — Account deletion · blocked by an active engagement (Nethmi Jayasinghe)
+
+**Reached from** in the demo `1.17`  ·  **Leads to** nothing  ·  **Exits** back → `1.10n`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Delete account"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 24/16/24/16 gap 16
+    TEXT whatIsRemoved 328x120 [FIXED/HUG] · fill color/text/primary · mobile/body · "You can't delete your account while an engagement is active — Event setup crew (3 needed) with Lanka Events (Pvt) Ltd is still running. It has to be completed or cancelled first."
+    TEXT whatIsKept 328x80 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Deletion is available again after that. It removes your NIC, phone, email and password permanently; ratings you gave and received stay under an anonymised reference."
+    TEXT twoStepNote 328x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "You'll be asked to confirm and re-enter your password."
+    FRAME spacer-grow 8x344 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Destructive, State=Disabled}
+      TEXT label 116x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Delete account"
+```
+
+**The same engagement from Nethmi's side**, Sat 29 Aug about 2 AM: blocked by Event setup crew (3
+needed) with Lanka Events (Pvt) Ltd. Once she cancels, nothing is running, and her Delete account goes on to
+`1.17p` in the demo.
+
 ### `1.17p` — Account deletion · confirm with your password
 
 **Reached from** in the demo `1.17`  ·  **Leads to** `1.17d` ("Delete my account")  ·  **Exits** back → `1.17`
@@ -3631,14 +4049,17 @@ replace them with real data in the product.
 | **Kavindu Perera** | worker | +94 77 123 4567 | 200412345678 | 2004-03-14 | `kavindu@example.com` (added after registering) |
 | **Lanka Events (Pvt) Ltd** — Ruwan Jayasuriya | employer, Business | +94 11 234 5678 | 198512345678 | 1985-06-20 | `hello@lankaevents.lk` |
 | **Sunil Bandara** | Community Verifier | +94 71 456 7890 | 195512349012 | 1955-05-03 | `sunil.b@example.com` |
-| **Nethmi Jayasinghe** | worker | +94 76 234 5678 (lost) | 200156789012 | 2001-03-08 | none |
-| **R. Gunasekara** | employer, Individual | +94 71 987 6543 | — | — | — |
-| **Dilrukshi Herath** | employer, Individual | — | — | — | — |
+| **Nethmi Jayasinghe** | worker | +94 76 234 5678 (lost on 5 Sep) | 200156789012 | 2001-03-08 | none |
+| **R. Gunasekara** | employer, Individual | +94 71 987 6543 | 198712345678 | — | none |
+| **Dilrukshi Herath** | employer, Individual | +94 77 318 2046 | ends 2231 | — | `dilrukshi.herath@example.com` |
+
+Settings shows a NIC masked to its last four; the full number appears only where staff see it (M10, M11)
+or where the person typed it. A dash means no screen shows the value.
 
 **Sample one-time codes are distinct**, so no screen can be mistaken for another's step: registration
 `371582` (Kavindu), `506294` (Lanka Events), `813706` (Sunil); code login `904627` (Kavindu), `268153`
-(Lanka Events), `740931` (Sunil), `639208` (Gunasekara). The phone-change sample `+94 76 555 0199` is shared
-by the three roles because `1.12` is one shared input screen.
+(Lanka Events), `740931` (Sunil), `639208` (Gunasekara). The shared contact forms use samples that belong to
+nobody — the new number `+94 76 555 0199` and the address `new.address@example.com`.
 
 ## Every screen shows one moment
 
@@ -3650,11 +4071,13 @@ dates only the screens that could be wrong on another day.
 | --- | --- | --- |
 | **Thu 27 Aug, before 7:00 AM** | `1.1`–`1.4`, `1.18z` | Kavindu registers, no endorsement yet |
 | **Thu 27 Aug** | `1.19` | Nethmi as Lanka Events sees her in the pool |
-| **Thu 27 Aug, about 6 PM** | `1.18ed` | Dilrukshi posts the tutoring job; nobody has applied |
+| **Thu 27 Aug, about 6 PM** | `1.18ed`, `1.10ed`, `1.10sed` | Dilrukshi posts the tutoring job; nobody has applied |
 | **Thu 27 – Sat 29 Aug** | `1.17be` | Lanka Events' Event setup crew with Nethmi is running |
 | **Fri 28 Aug** | `1.18`, `8.6`, `1.18bio` | Kavindu has been vouched for, has no history, and adds his bio |
 | **Fri 28 – Sun 30 Aug** | `1.17b` | The Shop assistant engagement is running, before the dispute |
-| **Mon 31 Aug – Thu 3 Sep** | `1.18eg` | R. Gunasekara's posting is hidden pending review; two warnings so far |
+| **Sat 29 Aug, about 2 AM** | `1.18n`, `1.10n`, `1.10sn`, `1.17bn` | Nethmi is engaged on Event setup crew and about to cancel |
+| **Sat 29 Aug, just after** | `1.18nc` | She has cancelled, late; her Settings are unchanged |
+| **Mon 31 Aug – Thu 3 Sep** | `1.18eg`, `1.10eg`, `1.10seg` | R. Gunasekara's posting is hidden pending review; two warnings so far |
 | **Fri 4 Sep, after 3:38 PM** | `1.6sus`, `1.7sus` | Gunasekara's account is suspended |
 | **Sat 5 Sep, morning** | `1.8rec1`, `1.8bnr`, `1.8rec2`, `1.8rec3` | Nethmi asks for her account back |
 | **Sat 5 Sep, after 10:15 AM** | `1.8rec4` | The Admin has approved it |
@@ -3683,25 +4106,23 @@ Dilrukshi Herath's and R. Gunasekara's.
 
 **Tab destinations are not drawn on this page.** The demo routes them per role and per journey — which is
 how Dilrukshi's and Gunasekara's Profile tabs reach `1.18ed` and `1.18eg`, and their Notifications tabs M3
-`3.10ed` and `3.10eg`, rather than Lanka Events' screens.
+`3.10ed` and `3.10eg`, rather than Lanka Events' screens; and how Nethmi's four tabs reach her own Browse,
+Applications, Notifications and Profile (M3 `3.1n`, M4 `4.3nj`, M3 `3.10n`, `1.18n`, and their after-cancel
+copies).
+
+**The badge is labelled *Phone verified*** (`FR-PROF-02`): it states the one thing that was checked. Where a
+name and the badge do not fit on one line, the row wraps and the badge goes beneath the name (`1.18e`).
 
 ## States not drawn in this module
 
 | Not drawn | Build it from |
 | --- | --- |
-| **Business name & bio** editing (the row on `1.10e`) | `1.15e`'s form with two fields — Business name (required, 100 characters) and Business bio (optional, 300) — as on `1.5b`; Save returns to `1.10e` |
-| **Dilrukshi Herath's and R. Gunasekara's Settings** | `1.10e` without *Business name & bio* and *Posting as · Business* (both are Individual/Household), with their own contact details |
 | A **rejected** recovery request | `1.8rec3`'s layout with an `Info` banner saying the details did not match and naming the next step (contact support); the staff side is M11's |
-| **Confirming** a phone or email change (the SMS code, the link landing) | the code step is `1.3`'s layout with the new number; the link lands on `1.10` with the new address and a success banner |
-| **Posting-as changed** to Business from Individual | `1.16` with `Business` selected and `1.5b`'s two fields beneath |
+| **Confirming** a phone or email change (the SMS code, the link landing) | the code step is `1.3`'s layout with the new number; the link lands on the person's Settings with the new address and a success banner |
 | The **deletion refused by a wrong password** | `1.17p` with the field `{State=Error}` and `1.12err`'s message |
 | A **code-login** code that is wrong or expired | `1.3err2` / `1.3err1` on the `1.7` layout |
+| A **login screen with the number remembered** for Dilrukshi, Gunasekara or Nethmi | `1.6` with their number; their sign-outs land on the empty `1.6emp` instead |
 
 ## Open, and carried to the modules that own them
 
-- **The verification badge is labelled *Verified*** on every profile; it means the phone was verified and
-  nothing more (`FR-PROF-02`). It is relabelled *Phone verified* in the next pass, across every module that
-  shows it.
-- **M6: R. Gunasekara's rating of a worker** (`6.3s`) implies an engagement on the Data entry posting, while
-  his Engagements tab (M5 `5.1ez`) and his notifications (M3 `3.10eg`) show none for 31 Aug – 3 Sep. The
-  engagement's dates belong to M6's scam-engagement branch; settled when that branch is dated.
+Nothing is open in this module.

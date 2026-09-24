@@ -35,7 +35,7 @@ to today, and the indirection is what lets a colour change in one place.
 | `color/state/danger` | `red/600` | `#dc2626` | destructive actions, error text |
 | `color/state/urgent` | `orange/700` | `#c2410c` | the urgency badge and urgent-gig accents |
 | `color/state/success` | `green/700` | `#15803d` | confirmed checkpoints, success states |
-| `color/badge/verified` | `teal/700` | `#0f766e` | the Verified badge |
+| `color/badge/verified` | `teal/700` | `#0f766e` | the *Phone verified* badge |
 | `color/badge/endorsed` | `purple/700` | `#7e22ce` | the Endorsed badge |
 | `color/badge/rating` | `amber/700` | `#b45309` | stars and rating figures |
 | `color/overlay/scrim` | `gray/900` | `#111827` | modal backdrop — **at reduced opacity**, see §4 |
@@ -181,7 +181,7 @@ distinction exists to prevent.
 
 | Component | Variants | Size · layout | Children |
 | --- | --- | --- | --- |
-| `Display/Badge` | `Family`: Verified · Endorsed · Urgent · Posting · Application · Engagement · Case<br>`Value`: 19 values — Default, Count, Open, Filled, Withdrawn, Expired, Pending, Selected, Declined, NotSelected, Active, Completed, Cancelled, Ended, Disputed, AwaitingResponse, UnderReview, Escalated, Resolved | 77×24 · horizontal, pad 4/10, gap 5, centred · r999 | `check` vector 8×6 · `label` |
+| `Display/Badge` | `Family`: Verified · Endorsed · Urgent · Posting · Application · Engagement · Case<br>`Value`: 19 values — Default, Count, Open, Filled, Withdrawn, Expired, Pending, Selected, Declined, NotSelected, Active, Completed, Cancelled, Ended, Disputed, AwaitingResponse, UnderReview, Escalated, Resolved | 115×24 for `Verified`, whose label reads *Phone verified*; other families hug their label · horizontal, pad 4/10, gap 5, centred · r999 | `check` vector 8×6 · `label` |
 | `Display/StarsDisplay` | — | 152×24 · horizontal, gap 6, centred | `star` 16×16 · `avg` · `count` |
 | `Display/CountdownText` | `Format`: Cooldown · Deadline | 99×20 | `countdown` text |
 | `Display/ListingCard` | `State`: Default · Urgent | 328×134 · vertical, pad 16, gap 6 · r8 | `title` · `meta` · `pay` · `fill` — all four **FILL width and wrap** (296 at 100%) |
@@ -206,6 +206,13 @@ ran past the card's edge, and two tab labels collided. `3.1x130` is the specimen
 behaviour — card text wraps inside the card, the Browse chip row (`controls`, FILL, wrap, 8 row gap)
 drops `Saved` to a second line, and tab labels truncate rather than overlap. A notification row's title
 and body wrap for the same reason: A11's titles include a posting title, so their length is not bounded.
+
+**The verification badge reads *Phone verified*, not *Verified*** (`FR-PROF-02`): it states the one thing
+checked — the phone answered a code — and every account carries it, a scam employer's included. At 115 px it
+no longer fits beside every name, so **a row that holds a name and badges wraps rather than squeezing the
+name**: the row has wrapping on with 4 px between lines, and where it holds more than one badge the name takes
+a minimum width of the whole row, so the badges move to the second line together (`1.18e`, every engagement
+detail in M5). A name is never broken across lines to make room for a badge.
 
 **The urgent digest (`Type=Digest`) is specified but not drawn on any screen.** Its sample text is the A11
 form — title *"{n} more urgent gigs today"*, body *the top title plus a count* — and it expands in place to
