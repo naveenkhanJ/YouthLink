@@ -117,7 +117,7 @@ One account per NIC, one per verified phone, one per verified email (`FR-ACC-05`
 
 A profile is visible **only in the context of a specific interaction** (`FR-PROF-05`) — an applicant's profile while an employer reviews applications, an employer's profile while a worker views their listing. There is deliberately **no browsable directory of users**, because one would enable targeted harassment for no functional gain.
 
-A profile shows: legal name (`FR-PROF-01`), verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
+A profile shows: legal name (`FR-PROF-01`) — for a Business employer, its business name, with the legal name kept on the account (amended 2026-09-24) — verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
 
 The bio does double duty: it **pre-fills the note on every application** the worker submits, editable per application without changing the stored bio (`FR-PROF-04`). Both caps are 300 characters precisely so the bio can never overflow the note it populates.
 
@@ -164,7 +164,7 @@ Pay is always stated — there are no "negotiable" postings. Currency is always 
 
 ### What the system computes, and the employer cannot set
 
-**Urgency** (`FR-POST-07`) is derived purely from whether the start time falls within 24–48 hours of posting. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
+**Urgency** (`FR-POST-07`) is derived purely from whether the start time is 48 hours away or less, with no lower bound. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
 
 **Public location precision** (`FR-POST-08`). The precise address is stored but never shown publicly. Browsing and applying workers see a coarse, suburb-level area on a map. Full precision is released only to a worker who has actually been selected, and only to them.
 
@@ -202,6 +202,8 @@ Together those two rules are what make `FR-APPLY-12`'s promise real: no applicat
 Fill status displays plainly throughout — "2 of 3 filled" (`FR-POST-14`).
 
 **Editing** (`FR-POST-11`): unrestricted before any slot fills. After a slot fills, a _material_ change requires the affected worker's re-confirmation; a _minor_ change doesn't. See §6.
+
+**Stopping hiring after a slot fills** (`FR-POST-12`, amended 2026-09-23): Withdraw is gone once any slot fills. To take no one else, the employer lowers workers needed to the number already filled — the posting becomes Filled, the remaining applicants are resolved, and the engaged worker re-confirms, because crew size is a material change. Ending a committed worker's engagement is a cancellation, never a side effect of closing the posting.
 
 **No drafts.** A posting is completed in one sitting or not submitted (`FR-POST-15`).
 
@@ -295,13 +297,17 @@ The holder deliberately **flips** at the payment step. The party best positioned
 
 This confirms payment _occurred_, not that the _amount_ was right — the stated pay figure is the reference point for an amount dispute. And it's cooperative, so it's not bulletproof: either party can refuse to share or enter a code. That's what the fallback is for.
 
+The checkpoints run **in order** — completion can only be entered once arrival is confirmed, and payment once completion is — and each Engagement has **one** set of three codes, including a part-time one, whose arrival checkpoint is its first session (`FR-ENG-01`, amended 2026-09-24).
+
 **"Unable to confirm"** is available at any checkpoint and routes into dispute resolution rather than leaving the engagement stuck (`FR-ENG-03`).
 
 ### Cancelling before work starts
 
-**Regular engagements** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A cancellation inside 24 hours of start is classified **Late**.
+Which rule applies is decided **at the moment of cancelling**, by how far away the start is then — not by how the posting was labelled when it was published (`FR-ENG-05/06`, amended 2026-09-24).
 
-**Urgent engagements** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. Late threshold scales down to 6 hours.
+**More than 48 hours to the start** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A request made this far ahead is never Late.
+
+**48 hours or less to the start** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. It is **Late** within 6 hours of the start — or within 24 hours, if the engagement was agreed more than 48 hours ahead.
 
 Late cancellations weigh more heavily against the completion-rate stat than early ones (`FR-ENG-07`).
 
@@ -309,7 +315,7 @@ Cancellation is scoped to one Engagement: it reopens that one slot and leaves ev
 
 ### Changing an engagement's terms
 
-**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours** (fixed 2026-08-27); if they don't accept by the window's close, that Engagement routes into the cancellation flow (`FR-ENG-09`).
+**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours or half the time left before the start, whichever is shorter** (48 hours fixed 2026-08-27; capped 2026-09-23, because urgent gigs start sooner than 48 hours); if they don't accept by the window's close — or say they can't make it, which cancels at once — that Engagement is cancelled as the employer's change (`FR-ENG-09`), without counting against the worker's completion rate, and either party may still rate it. No material change is allowed in the last 2 hours before the start, and a posting can't be edited again while a re-confirmation is pending.
 
 **Minor** — title or description text only. No re-confirmation; nothing the worker committed to has changed.
 
@@ -323,7 +329,7 @@ The sequence: End Engagement → "did something go wrong?" → **yes** opens a d
 
 ### Stalled engagements
 
-For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
+For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. It offers two things: dismiss it (still running — nothing changes), or go to the earliest unresolved checkpoint, where the code can still be entered or "unable to confirm" opens a dispute. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
 
 The trigger is anchored to **start** time because no end time or duration is collected anywhere in the posting flow. The accepted trade-off is that a Gig genuinely running longer than 24 hours gets a slightly early prompt — harmless, since neither party is obliged to act.
 
@@ -460,13 +466,15 @@ Three outcomes, not two (`FR-ADM-01`): ruled for the party who raised it, ruled 
 
 **What a ruling can actually change** (`FR-ADM-02`): since no money ever moves through the app, a payment-dispute ruling is a **reputational and record-keeping outcome only**. Admin cannot issue a refund or force a transaction. It affects the responsible party's completion-rate stat, and repeat or severe cases can lead to suspension.
 
-**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, the normal double-blind rating step opens. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
+**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, any arrival or completion checkpoint that was never confirmed is marked **settled by ruling**, the engagement becomes Completed, and the normal double-blind rating step opens. The payment checkpoint stays open — the ruling says the work happened, not that it was paid — so the worker still shares their payment code once paid. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
 
 Admin aims to resolve escalated cases within **3–5 business days** — an operational target, not a system-enforced rule (`NFR-OPS-03`).
 
 ### Suspension and removal
 
 **Suspension takes effect immediately** (`FR-ADM-03`, `NFR-REL-02`) — on the account's very next request, not at next login. A suspended account can't apply, post, or endorse.
+
+**A suspension records its grounds** (amended 2026-09-24). The violation it rests on — three warnings in 90 days, a ruled report — is stored with it and shown on the confirmation; an account with nothing recorded against it cannot be suspended. Suspension is the most consequential thing an Admin does to a user, and a reason is what makes it reviewable afterwards.
 
 **Suspension does not cascade.** Existing, already-agreed Engagements with uninvolved parties are **not** auto-cancelled — they resolve normally through completion, cancellation, or dispute. Voiding them would punish someone who did nothing wrong.
 
@@ -480,13 +488,13 @@ Admin aims to resolve escalated cases within **3–5 business days** — an oper
 
 Moderator handles volume; Admin handles consequence. Splitting them costs nothing when the same people hold both roles, but means the permission model doesn't need retrofitting when junior moderation help arrives without full account-termination power.
 
-Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`).
+Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`). **The dashboard does not offer them to a Moderator at all** (amended 2026-09-24) — no disabled button, no "ask an Admin" dialog; the server rejects the call if it arrives anyway. The audit log and staff management are likewise absent from a Moderator's navigation.
 
 ### Accounts
 
 Admin/Moderator accounts are **entirely separate** from any consumer account for the same person (`FR-ADM-07`) — not a flag on a `User` row. This avoids edge cases like an Admin account applying to its own posting.
 
-**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard — into either role directly; there is no ladder, and only Admins grant.
+**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard's Staff accounts page (the one entry point, amended 2026-09-24) — into either role directly; there is no ladder, and only Admins grant.
 
 **A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin.
 
