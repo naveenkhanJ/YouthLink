@@ -373,7 +373,7 @@ drawing decision** — raise it rather than inventing a glyph.
 section exists to prevent.** The prototype draws decision-carrying states and lets the component library
 plus composition rules carry the rest. That was a deliberate ruling, and coverage sits in three layers.
 
-**Layer 1 — drawn.** 464 frames. Every screen's typical state, every flow-completion confirmation, and
+**Layer 1 — drawn.** 492 frames. Every screen's typical state, every flow-completion confirmation, and
 one showcase per mechanism a reader could not guess at.
 
 **Layer 2 — the component variants above.** `Input/TextField` has five `State` values; a screen normally

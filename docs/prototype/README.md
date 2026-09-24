@@ -273,7 +273,7 @@ Ruled as having nothing to draw, with the reason. **Not gaps.**
 | `NFR-REL-04` | engagement-deletion integrity — server-side |
 | `NFR-SEC-01` | password hashing — server-side, nothing to draw |
 | `NFR-SEC-02` | login rate-limiting — the USER-facing half is drawn (1.6bnr2/1.6bnr3, 11.1w/11.1L); the limit itself is server-side |
-| `NFR-USE-02` | low data usage — satisfied by CONSTRUCTION across the whole file rather than by one screen: zero IMAGE fills in 462 frames (every visual is drawn vector), MD2's flat-vector map ruling ('no imagery, honest about not being a real map'), and a 25-glyph drawn icon set. Same shape as NFR-LOC-04 — there is no screen that could show it, because every screen shows it |
+| `NFR-USE-02` | low data usage — satisfied by CONSTRUCTION across the whole file rather than by one screen: zero IMAGE fills in 492 frames (every visual is drawn vector), MD2's flat-vector map ruling ('no imagery, honest about not being a real map'), and a 25-glyph drawn icon set. Same shape as NFR-LOC-04 — there is no screen that could show it, because every screen shows it |
 | `FR-ADM-01` | 10.3b |
 | `FR-ENDORSE-03` | 5.5c |
 | `FR-ENDORSE-05` | 5.5c |
