@@ -245,18 +245,18 @@ do not.
 
 | Component | Variants | Size · layout | Children |
 | --- | --- | --- | --- |
-| `Desktop/DashSidebar` | `Role`: Admin · Moderator<br>`Active`: Case queue · All postings · Users · Metrics · Audit log · Staff | 240×640 · vertical, pad 20/12, gap 4 | `Brand/Wordmark` · `surface` · `roleChip` · spacer · six 216×36 nav rows, pad 8/10 |
+| `Desktop/DashSidebar` | `Role`: Admin · Moderator<br>`Active`: Case queue · All postings · Users · Metrics · Audit log · Staff (the last two Admin only) | 240×640 · vertical, pad 20/12, gap 4 | `Brand/Wordmark` · `surface` · `roleChip` · spacer · 216×36 nav rows, pad 8/10 — six for Admin, four for Moderator (`nav-Audit log` and `nav-Staff` hidden: those surfaces are not offered to a Moderator) |
 | `Desktop/DashHeader` | `Role`: Admin · Moderator | 1200×56 · horizontal, pad 0/24, gap 16, centred | `pageTitle` · `userSearch` 256×32 · `identity` · `signOut` |
 | `Desktop/DataTable` | — | 1152×220 · vertical | `filterRow` 1152×60 · `headerRow` 1152×34 on `bg/brand-tint` · data rows 1152×42, pad 10/16, gap 16 |
 | `Desktop/TableRow` | `Kind`: Header · Row<br>`Cols`: 5 · 4 | 1152×40 · horizontal, pad 0/16, gap 16, centred | up to five column texts, `desktop/table` |
-| `Desktop/DetailPane` | `Role`: Admin · Moderator | 420×304 · vertical, pad 20, gap 10 · r8 | `nameRow` · six `field-*` rows 380×20 · `actions` |
+| `Desktop/DetailPane` | `Role`: Admin · Moderator | 420×304 · vertical, pad 20, gap 10 · r8 | `nameRow` · six `field-*` rows 380×20 · `actions` (Admin) — the Moderator variant has no `field-NIC` and no `actions`, and ends in `routedNote` |
 | `Desktop/DashDialog` | — | 440×198 · vertical, pad 20/24, gap 12 · r12 | `title` · `body` · `actions`, right-aligned |
 | `Desktop/SectionCard` | — | 1152×152 · vertical, pad 14/16, gap 8 · r8 | `cardTitle` · `row1`–`row4` |
 | `Desktop/OptionRow` | `State`: Default · Selected | 1120×40 · horizontal, pad 10/14, gap 10, centred · r8 | radio ellipse 16×16 · `optLabel` |
 | `Desktop/OptionGroup` | — | 1152×198 · vertical, pad 14/16, gap 10 · r10 | `groupTitle` · three `Desktop/OptionRow` |
 | `Desktop/StatCard` | — | 272×116 · vertical, pad 14/16, gap 4 · r8 | `statValue` · `statLabel` · `statSub` |
 | `Desktop/DashBadge` | `Family`: Case · Posting<br>`Value`: AwaitingResponse · UnderReview · Escalated · Resolved · Open · Filled · Withdrawn · Expired | 139×22 · horizontal, pad 2/8, gap 5, centred · r999 | `dot` ellipse 5×5 · `label` |
-| `Desktop/Pagination` | `Page`: First · Middle · Last · Single | 1152×44 · horizontal, pad 12/16, space-between · `color/bg/default`, border `color/border/default` | `countText` `desktop/body` · `pager` frame, gap 16, with `prevLink` / `position` / `nextLink`; the live link is `color/brand/primary`, the dead one `color/text/secondary` |
+| `Desktop/Pagination` | `Page`: First · Middle · Last · Single | 1152×44 · horizontal, pad 12/16, space-between · `color/bg/default`, border `color/border/default` | `countText` `desktop/body` · `pager` frame, gap 16, with `prevLink` / `position` / `nextLink`; the live link is `color/brand/primary`, the dead one `color/text/secondary`. A **table footer**: radius 0, no effect, top border only — the rounded, raised look comes from the table container it sits in, so it is not used under a list of cards |
 
 **`Desktop/SectionCard` and `Desktop/TableRow` carry more slots than most uses need**, and the unused ones
 are switched off rather than emptied. A hidden `row3` still reads `"Row 3 text"` in the file — that is the

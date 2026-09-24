@@ -1758,6 +1758,10 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 - Given Admin suspends an account, when that account's current session makes its next request, then the request is rejected.
 - Given a suspended account attempts to apply to a gig, post a gig, or submit an endorsement, when attempted, then the action is blocked.
 - Given a suspended account has existing, already-agreed Engagements with uninvolved parties, when checked, then those Engagements are not automatically cancelled — they proceed through normal resolution mechanisms.
+- Given an Admin opens the suspension of an account with no recorded violation, when the confirmation shows, then it states there are no grounds to record and the suspension cannot be confirmed.
+- Given an account with recorded grounds (for example, three warnings in 90 days), when an Admin suspends it, then the grounds are recorded with the suspension and shown on the confirmation.
+
+> **Amended 2026-09-24 (M11 review) — a suspension records its grounds.** "For policy violations" was the requirement's only condition, and nothing made the violation part of the act. The prototype's Admin tour suspended an account with a clean record and no stated reason. A suspension now records the violation it rests on (`User.suspensionReason`, which the schema already carries), shows it on the confirmation, and cannot be confirmed without one.
 
 #### FR-ADM-04 — Verification-document review (future-contingent)
 
@@ -1814,7 +1818,9 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 >
 > Every action on this surface is a privileged action under `NFR-SEC-06` and is recorded in the audit log with the acting account.
 >
-> **Acceptance criteria added:** Given an Admin opens the staff surface, when it loads, then every staff account is listed with its role and sign-in state, and no consumer account appears. · Given a Moderator navigates to it, when they do, then access is denied. · Given an Admin resets a staff account's password, when the reset is issued, then that account's current password stops working immediately and a one-time code is sent to its own phone. · Given an Admin removes a staff account's access, when the next dashboard request is made by that account, then it is rejected, and the account's audit entries and case history remain intact.
+> **Acceptance criteria added:** Given an Admin opens the staff surface, when it loads, then every staff account is listed with its role and sign-in state, and no consumer account appears. · Given a Moderator is signed in, when the dashboard navigation renders, then the staff surface is not offered, and a request for it from a Moderator account is rejected *(amended 2026-09-24, as NFR-OPS-01)*. · Given an Admin resets a staff account's password, when the reset is issued, then that account's current password stops working immediately and a one-time code is sent to its own phone. · Given an Admin removes a staff account's access, when the next dashboard request is made by that account, then it is rejected, and the account's audit entries and case history remain intact.
+
+> **Amended 2026-09-24 (M11 review) — where promotion starts.** Promotion starts from the Staff accounts page (*Promote user*, then search the registered user), not from a user's record. One entry point: a record-level Promote duplicated it, and the prototype's version opened the flow for a different person.
 
 #### FR-ADM-07 — Separate Admin/Moderator accounts
 
@@ -1863,7 +1869,10 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given a Moderator or Admin is on the dashboard, when they search or filter postings by status, category, arrangement type, employer, or date, then matching results return regardless of report status.
-- Given a Moderator attempts to remove a posting directly from this view, when they act, then the system blocks the action and requires escalation to Admin instead.
+- Given a Moderator views a posting, when the view renders, then no removal action is offered to them; the way forward is escalating the report to Admin.
+- Given a removal request arrives from a Moderator account by any other route, when the server receives it, then it is rejected.
+
+> **Amended 2026-09-24 (M11 review).** The second criterion used to read *"the system blocks the action and requires escalation"*, which the prototype drew as a Remove button that opened a "blocked" dialog. An action the role can never take is not offered at all — the dashboard's rule since M10 is that the boundary between Moderator and Admin is **which controls exist, not which are disabled** — and the server still refuses the call, which is where the security actually lives (NFR-SEC-05). The same wording change applies to FR-DASH-02 and NFR-OPS-01.
 
 #### FR-DASH-02 — Full user-account visibility
 
@@ -1876,7 +1885,10 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given either role opens a user account from the dashboard, when viewed, then verification status, rating/completion history, endorsement activity, and full case history (not just currently active cases) are all visible.
-- Given a Moderator attempts to suspend an account or approve verification directly from this view, when they act, then the system blocks the action and requires Admin instead.
+- Given a Moderator views an account, when the view renders, then no suspend, promote or verification-approval action is offered to them.
+- Given such a request arrives from a Moderator account by any other route, when the server receives it, then it is rejected.
+
+> **Amended 2026-09-24 (M11 review).** As FR-DASH-01: not offered in the interface, rejected by the server.
 
 #### FR-DASH-03 — Case queue
 
@@ -2397,7 +2409,9 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 **Acceptance Criteria:**
 
 - Given any Admin or Moderator performs a logged action, when any Admin account opens the audit log, then that action appears regardless of which account performed it.
-- Given a Moderator account attempts to open the audit log, when they navigate to it, then access is denied.
+- Given a Moderator is signed in, when the dashboard navigation renders, then the audit log is not offered; a request for it from a Moderator account is rejected by the server.
+
+> **Amended 2026-09-24 (M11 review).** The Moderator's navigation no longer lists the audit log (or Staff accounts) and leads to an "access denied" page; both surfaces are simply absent for the role, as FR-DASH-01/02's actions are, and the server refuses the request.
 
 #### NFR-OPS-02 — Metrics dashboard export
 

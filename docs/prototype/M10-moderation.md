@@ -1,6 +1,6 @@
 # M10 — Moderation
 
-**Thirty-nine frames on this page; forty-one screens by id.** Three M10 screens live on [M11](M11-dashboard.md) (`10.6n`, `10.6nb`, `10.7`) and one frame here (`11.3g`) belongs to M11 by number — each sits where its click-through is a *same-page* edge, because a Figma prototype link cannot cross pages. The README's module table carries both counts for that reason.
+**Thirty-nine frames on this page; forty screens by id.** Two M10 screens live on [M11](M11-dashboard.md) (`10.6n`, `10.7`) and one frame here (`11.3g`) belongs to M11 by number — each sits where its click-through is a *same-page* edge, because a Figma prototype link cannot cross pages. The README's module table carries both counts for that reason.
 
 This is the staff side of the product: the web dashboard where a case stops being a notification and becomes a decision. The module's organising idea is stated inside it, on `10.8` — **Moderator handles volume** (triage, warnings, escalation), **Admin handles consequence** (rulings, suspension, removal). Twenty-six frames are Moderator and thirteen are Admin, and the boundary between them is enforced by which buttons *exist* rather than by which are disabled.
 
@@ -25,7 +25,7 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Response window closes 2 Sep 2026 — Saman Stores has 48 hours from case open."
     INSTANCE Desktop/SectionCard 1152x74 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 102x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Evidence so far"
-      TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "No party statements yet — the response window is open."
+      TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Raiser's statement in — Kavindu Perera, 31 Aug 2026 · the response window is open for Saman Stores."
     INSTANCE Desktop/SectionCard 1152x126 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 156x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Code-exchange history"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Arrival — no code entered"
@@ -96,8 +96,8 @@ compare `10.1` — and `Close with warning` and `Escalate to Admin` are both `{S
 far` is now **126** and holds three rows: the raiser, the respondent, and the clarification answer.
 
 **`Request clarification` stays `{State=Disabled}`,** because `FR-MOD-03` allows one request per case and
-this case has spent it. `clarifyLock` says so in the screen. This is the `promoteLock` idiom from `10.6` —
-a note explaining why *one* control is dead while its neighbours work — rather than `10.1`'s
+this case has spent it. `clarifyLock` says so in the screen — a note explaining why *one* control is dead
+while its neighbours work — rather than `10.1`'s
 `disabledReason`, which explains why *all three* are. **A disabled control carries no reaction anywhere in
 this module**, so there is no edge from here to `10.2`.
 
@@ -562,7 +562,7 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Response window closes 2 Sep 2026 — Saman Stores has 48 hours from case open."
     INSTANCE Desktop/SectionCard 1152x74 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 102x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Evidence so far"
-      TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "No party statements yet — the response window is open."
+      TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Raiser's statement in — Kavindu Perera, 31 Aug 2026 · the response window is open for Saman Stores."
     INSTANCE Desktop/SectionCard 1152x126 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 156x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Code-exchange history"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Arrival — no code entered"
@@ -914,7 +914,7 @@ Escalate for removal. The body carries the consequence a Moderator most needs to
 **stays hidden** while the Admin queue has it, so escalating is not a reprieve for the owner.
 
 **Its Confirm has no destination, and cannot have one.** Removal is decided on [M11](M11-dashboard.md) at
-`11.2ad` → `10.7` → `11.2x`, and Figma's prototype links cannot cross pages — see *Transitions that are not
+`11.2ad` → `10.7` → `11.2adx`, and Figma's prototype links cannot cross pages — see *Transitions that are not
 clicks*.
 
 ### `10.4r` — Flagged content · restore listing? (dialog)
@@ -946,7 +946,7 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
         TEXT label 156x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Escalate for removal"
     TEXT authorityNote 1100x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Removal itself is an Admin action — escalating hands this listing to the Admin queue."
   FRAME scrim 1440x900 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
-  INSTANCE Desktop/DashDialog 440x218 [FIXED/HUG] @500,351 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
+  INSTANCE Desktop/DashDialog 440x218 [FIXED/HUG] @500,341 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
     TEXT title 135x26 [HUG/HUG] · fill color/text/primary · desktop/title · "Restore listing?"
     TEXT body 392x80 [FIXED/HUG] · fill color/text/secondary · desktop/body · "The listing returns to browse for everyone. The three reports stay on record and nobody learns who reported. The restore is recorded in the audit log under your account."
     FRAME actions 392x48 [FILL/HUG] · horizontal pad 0 gap 8
@@ -1317,20 +1317,17 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       FRAME field-Case history 380x60 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Case history"
         TEXT fieldValue 248x60 [FILL/HUG] · fill color/text/primary · desktop/body · "3 reports on current posting · 3 warnings in 90 days — auto-escalated"
-      FRAME actions 303x48 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME actions 182x48 [HUG/HUG] · horizontal pad 0 gap 8
         INSTANCE Action/Button 182x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/state/danger · r8 · {Style=Destructive, State=Default}
           TEXT label 134x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Suspend account"
-        INSTANCE Action/Button 113x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
-          TEXT label 65x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Promote"
-    TEXT promoteLock 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Promotion is unavailable while a suspension review is open."
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 463x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Case history — the aggregate-only rule's stated exception (staff only)"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "3 open reports on “Data entry — work from home” · escalated for removal 31 Aug 2026"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "No resolved disputes · third warning recorded 3 Sep 2026 by Shalini Weerasinghe (Moderator) — auto-escalated for suspension review"
   FRAME scrim 1440x900 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
-  INSTANCE Desktop/DashDialog 440x198 [FIXED/HUG] @500,351 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
+  INSTANCE Desktop/DashDialog 440x238 [FIXED/HUG] @500,331 · vertical pad 20/24/20/24 gap 12 · fill color/bg/default · r12
     TEXT title 306x26 [HUG/HUG] · fill color/text/primary · desktop/title · "Suspend R. Gunasekara's account?"
-    TEXT body 392x60 [FIXED/HUG] · fill color/text/secondary · desktop/body · "Suspension takes effect on their next request. Existing engagements with uninvolved parties are untouched. The action is recorded in the audit log under your account."
+    TEXT body 392x100 [FIXED/HUG] · fill color/text/secondary · desktop/body · "Grounds: three warnings in 90 days, the third on 3 Sep 2026, and a listing escalated for removal. Suspension takes effect on their next request; engagements with uninvolved parties are untouched. Recorded in the audit log under your account."
     FRAME actions 392x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 101x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 53x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Cancel"
@@ -1338,7 +1335,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
         TEXT label 134x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Suspend account"
 ```
 
-The suspension dialog over `11.3g`. `FR-ADM-03` requires immediate effect, and the body states the
+The suspension dialog over `11.3g`. **The body opens with the grounds** — *"three warnings in 90 days,
+the third on 3 Sep 2026, and a listing escalated for removal"* — because a suspension records the violation
+it rests on (`FR-ADM-03` as amended 2026-09-24); compare [M11](M11-dashboard.md) `10.6n`, where an account with
+nothing on record cannot be suspended at all. `FR-ADM-03` also requires immediate effect, and the body states the
 mechanism precisely — *"takes effect on their next request"* — rather than "immediately", which would be
 ambiguous about in-progress sessions.
 
@@ -1356,7 +1356,7 @@ only destructive variant used anywhere in this module.
 FRAME 1440x900 · absolute · fill color/bg/subtle
   INSTANCE Desktop/DashSidebar 240x900 [FIXED/FIXED] @0,0 · vertical pad 20/12/20/12 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Role=Admin, Active=Users} · [standard, see header]
   INSTANCE Desktop/DashHeader 1200x56 [FIXED/FIXED] @240,0 · horizontal pad 0/24/0/24 gap 16 · fill color/bg/default · stroke color/border/default mixed · {Role=Admin} · [standard, see header]
-  FRAME content 1200x654 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
+  FRAME content 1200x622 [FIXED/HUG] @240,56 · vertical pad 20/24/24/24 gap 14
     INSTANCE Desktop/SectionCard 1152x74 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 388x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Account suspended — 4 Sep 2026 by Kasun Jayawardena"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Takes effect on their next request. Existing engagements with uninvolved parties are untouched. Recorded in the audit log."
@@ -1385,22 +1385,18 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       FRAME field-Case history 380x60 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Case history"
         TEXT fieldValue 248x60 [FILL/HUG] · fill color/text/primary · desktop/body · "3 reports on current posting · 3 warnings in 90 days — auto-escalated"
-      FRAME actions 256x48 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME actions 135x48 [HUG/HUG] · horizontal pad 0 gap 8
         INSTANCE Action/Button 135x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/subtle · stroke color/border/default 1 · r8 · {Style=Destructive, State=Disabled}
           TEXT label 87x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Suspended"
-        INSTANCE Action/Button 113x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
-          TEXT label 65x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Promote"
-    TEXT promoteLock 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Promotion is unavailable while the account is suspended."
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 463x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Case history — the aggregate-only rule's stated exception (staff only)"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "3 open reports on “Data entry — work from home” · escalated for removal 31 Aug 2026"
       TEXT row2 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "No resolved disputes · third warning recorded 3 Sep 2026 by Shalini Weerasinghe (Moderator) — auto-escalated for suspension review"
 ```
 
-Suspended. `Suspend account` becomes a `{Style=Destructive, State=Disabled}` *"Suspended"*,
-`promoteLock`'s reason changes from *"while a suspension review is open"* to *"while the account is
-suspended"*, and a 74-tall outcome card is inserted **above** `searchContext` — the only card in the module
-placed above the search-context line.
+Suspended. `Suspend account` becomes a `{Style=Destructive, State=Disabled}` *"Suspended"*, and a
+74-tall outcome card is inserted **above** `searchContext` — the only card in the module placed above the
+search-context line.
 
 ### `10.7b` — Remove posting · removed
 
@@ -1440,9 +1436,9 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
           TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Removed"
           TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "30 Aug 2026"
         FRAME dataRow 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Event setup crew (3 needed)"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Lanka Events (Pvt) Ltd"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Event setup"
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Grade 8 maths tutoring"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Dilrukshi Herath"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Tutoring"
           FRAME statusCell 140x22 [FIXED/FIXED]
             INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
               ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/state/success
@@ -1450,6 +1446,46 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
           TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
           TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "27 Aug 2026"
         FRAME dataRow 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Office cleaning — Kirulapone"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Kottawa Business Centre"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Cleaning"
+          FRAME statusCell 140x22 [FIXED/FIXED]
+            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
+              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
+          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "27 Aug 2026"
+        FRAME dataRow4 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Event setup crew (3 needed)"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Lanka Events (Pvt) Ltd"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Event setup"
+          FRAME statusCell 140x22 [FIXED/FIXED]
+            INSTANCE Desktop/DashBadge 73x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Expired}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/text/secondary
+              TEXT label 47x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Expired"
+          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "27 Aug 2026"
+        FRAME dataRow05 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Warehouse packing — night shift"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Ceylon Logistics"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Delivery"
+          FRAME statusCell 140x22 [FIXED/FIXED]
+            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
+              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
+          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "26 Aug 2026"
+        FRAME dataRow06 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "House cleaning — Saturday"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "A. Wijeratne"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Cleaning"
+          FRAME statusCell 140x22 [FIXED/FIXED]
+            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/state/success
+              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Open"
+          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "26 Aug 2026"
+        FRAME dataRow07 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
           TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Shop assistant — weekend"
           TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Saman Stores"
           TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Retail"
@@ -1459,57 +1495,27 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
               TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
           TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
           TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "25 Aug 2026"
-        FRAME dataRow4 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "House move helpers"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Dilrukshi Herath"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Moving"
-          FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 73x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Expired}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/text/secondary
-              TEXT label 47x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Expired"
-          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "12 Aug 2026"
-        FRAME dataRow05 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Café service crew — evenings"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Green Leaf Café"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Hospitality"
-          FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
-              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
-          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "10 Aug 2026"
-        FRAME dataRow06 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Maths tutoring — O/L"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Dilrukshi Herath"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Tutoring"
-          FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
-              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
-          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "8 Aug 2026"
-        FRAME dataRow07 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Office cleaning — weekly"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "A. Wijeratne"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Cleaning"
-          FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 93x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Withdrawn}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/text/secondary
-              TEXT label 67x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Withdrawn"
-          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "6 Aug 2026"
         FRAME dataRow08 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Delivery rider — weekends"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "FreshCart"
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Delivery rider — mornings"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "FreshCart Maharagama"
           TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Delivery"
           FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
-              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
+            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/state/success
+              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Open"
           TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "4 Aug 2026"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "25 Aug 2026"
         FRAME dataRow09 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
+          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Café service crew — evenings"
+          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Green Leaf Café"
+          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Food service"
+          FRAME statusCell 140x22 [FIXED/FIXED]
+            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Open}
+              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/state/success
+              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Open"
+          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "24 Aug 2026"
+        FRAME dataRow10 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
           TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Stage crew — Friday setup"
           TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Lanka Events (Pvt) Ltd"
           TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Event setup"
@@ -1518,17 +1524,7 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
               ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/text/secondary
               TEXT label 47x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Expired"
           TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "2 Aug 2026"
-        FRAME dataRow10 1152x42 [FILL/HUG] · horizontal pad 10/16/10/16 gap 16 · stroke color/border/default mixed
-          TEXT cell 300x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Event teardown — Sunday"
-          TEXT cell 210x18 [FIXED/HUG] · fill color/text/primary · desktop/table · "Kottawa Business Centre"
-          TEXT cell 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Event setup"
-          FRAME statusCell 140x22 [FIXED/FIXED]
-            INSTANCE Desktop/DashBadge 59x22 [HUG/HUG] @0,0 · horizontal pad 2/8/2/8 gap 5 · fill color/bg/subtle · r999 · {Family=Posting, Value=Filled}
-              ELLIPSE dot 5x5 [FIXED/FIXED] · fill color/brand/primary
-              TEXT label 33x18 [HUG/HUG] · fill color/text/primary · desktop/table · "Filled"
-          TEXT cell 180x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "—"
-          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "30 Jul 2026"
+          TEXT cell 90x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "20 Aug 2026"
       INSTANCE pagination 1152x44 [FILL/FIXED] · horizontal pad 12/16/12/16 gap 0 · fill color/bg/default · stroke color/border/default mixed · of Desktop/Pagination · {Page=First}
         TEXT countText 128x20 [HUG/HUG] · fill color/text/secondary · desktop/body · "Showing 1–10 of 85"
         FRAME pager 131x20 [HUG/HUG] · horizontal pad 0 gap 16
@@ -1543,9 +1539,10 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
 **The only `Desktop/DataTable` in this module**, and the widest surface in the specification.
 
 Each row's status is a `Desktop/DashBadge` whose `{Value=…}` drives the dot colour: `Open` →
-`color/state/success`, `Filled` → `color/brand/primary`, `Withdrawn` and `Expired` → `color/text/secondary`.
-**Five rows had a `Value` that disagreed with their own label** and were corrected on 2026-09-22; four of
-them rendered a "Filled" row with the grey Expired dot. Build from the variant, not the label text.
+`color/state/success`, `Filled` → `color/brand/primary`, `Withdrawn` and `Expired` → `color/text/secondary`,
+and the label names the `Value` — build from the variant. **This is the table after the removal:** *Data
+entry — work from home* is Withdrawn with *Removed* in the Moderation column, and the other nine rows are the
+first page of [M11](M11-dashboard.md)'s postings table unchanged.
 
 `scopeNote` is the requirement: every posting **regardless of report status**, including content hidden
 pending review. An Admin who could only see un-reported postings could not find the one to remove.
@@ -1553,7 +1550,7 @@ pending review. An Admin who could only see un-reported postings could not find 
 
 ### `10.8` — Promote a user
 
-**Reached from** [M11](M11-dashboard.md) users  ·  **Leads to** `10.8b`
+**Reached from** [M11](M11-dashboard.md) staff accounts (`11.7`, *Promote user*)  ·  **Leads to** `10.8b`
 
 ```
 FRAME 1440x900 · absolute · fill color/bg/subtle
@@ -1639,12 +1636,9 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
       FRAME field-Case history 380x60 [FILL/HUG] · horizontal pad 0 gap 12
         TEXT fieldLabel 120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Case history"
         TEXT fieldValue 248x60 [FILL/HUG] · fill color/text/primary · desktop/body · "3 reports on current posting · 3 warnings in 90 days — auto-escalated"
-      FRAME actions 303x48 [HUG/HUG] · horizontal pad 0 gap 8
+      FRAME actions 182x48 [HUG/HUG] · horizontal pad 0 gap 8
         INSTANCE Action/Button 182x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/state/danger · r8 · {Style=Destructive, State=Default}
           TEXT label 134x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Suspend account"
-        INSTANCE Action/Button 113x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/border/default 1.5 · r8 · {Style=Secondary, State=Disabled}
-          TEXT label 65x24 [HUG/HUG] · fill color/text/secondary · mobile/body-medium · "Promote"
-    TEXT promoteLock 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "Promotion is unavailable while a suspension review is open."
     INSTANCE Desktop/SectionCard 1152x100 [FILL/HUG] · vertical pad 14/16/14/16 gap 8 · fill color/bg/default · r8
       TEXT cardTitle 463x20 [HUG/HUG] · fill color/text/primary · desktop/body · "Case history — the aggregate-only rule's stated exception (staff only)"
       TEXT row1 1120x18 [FIXED/HUG] · fill color/text/secondary · desktop/table · "3 open reports on “Data entry — work from home” · escalated for removal 31 Aug 2026"
@@ -1655,9 +1649,9 @@ FRAME 1440x900 · absolute · fill color/bg/subtle
 that `11.3g → 10.6` is a same-page edge rather than a cross-page one, which Figma cannot express. The frame
 name records that reason.
 
-It is the base `10.6` and `10.6b` are drawn over, and is now byte-identical to `10.6` minus the scrim and
-dialog — `promoteLock` had drifted to `1152 [FILL]` on `10.6`/`10.6b` against this frame's `1120 [FIXED]`
-and was corrected on 2026-09-22.
+It is the base `10.6` and `10.6b` are drawn over, and is byte-identical to `10.6` minus the scrim and dialog.
+**Its one action is Suspend account**: Promote, and the note explaining why it was unavailable, were removed on
+2026-09-24 — promotion starts from the Staff page ([M11](M11-dashboard.md) `11.7`), not from a user record.
 
 `Case history` on the `Desktop/DetailPane`, and the `SectionCard` beneath it, are the **stated exception to
 the aggregate-only rule** — staff see individual case detail that no ordinary user can. The card title says
@@ -1683,6 +1677,11 @@ with the case text — `10.5` is *"escalated by Shalini Weerasinghe"*, `10.5r` i
 Jayawardena"*, `10.3c` is *"recorded … by Shalini Weerasinghe (Moderator)"* — so the cast is load-bearing,
 not decoration.
 
+**The sidebar differs by role, too** (amended 2026-09-24): a Moderator's shows four items — Case queue, All
+postings, Users, Metrics — and an Admin's adds Audit log and Staff. The audit log and staff management are not
+offered to a Moderator at all. The sidebar's destinations are M11 screens, on another page, so on this page
+the sidebar carries no links.
+
 ## Transitions that are not clicks
 
 Three screens advance on a **frame-level `AFTER_TIMEOUT` of 2s** rather than on a button, because what moves
@@ -1702,7 +1701,7 @@ top-level frame **on the same page**:
 
 | From | To | Why it is not wired |
 | --- | --- | --- |
-| `10.4e` Confirm | [M11](M11-dashboard.md) `11.2ad` → `10.7` → `11.2x` | removal is an Admin action on another page (`NFR-SEC-05`) |
+| `10.4e` Confirm | [M11](M11-dashboard.md) `11.2ad` → `10.7` → `11.2adx` | removal is an Admin action on another page (`NFR-SEC-05`) |
 | `Back to queue` on `10.3c`, `10.3pb`, `10.3sb`, `10.4rb`, `10.5pr`, `10.5r` | the case list on [M11](M11-dashboard.md) | the queue lives on another page |
 
 `Back to case` on `10.2b` and `10.2pb` stays inside this module, which is why those two *are* wired and the

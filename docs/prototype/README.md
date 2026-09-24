@@ -25,14 +25,14 @@ than describing them, and that file is what the names mean. The two together are
 | **M7** Profile | 2 | 2 | [`M7-profile.md`](M7-profile.md) |
 | **M8** Endorsement | 20 | **19** | [`M8-endorsement.md`](M8-endorsement.md) |
 | **M9** Disputes | 14 | 14 | [`M9-disputes.md`](M9-disputes.md) |
-| **M10** Moderation | 41 | **39** | [`M10-moderation.md`](M10-moderation.md) |
-| **M11** Staff dashboard | 68 | **70** | [`M11-dashboard.md`](M11-dashboard.md) |
+| **M10** Moderation | 40 | **39** | [`M10-moderation.md`](M10-moderation.md) |
+| **M11** Staff dashboard | 67 | **68** | [`M11-dashboard.md`](M11-dashboard.md) |
 | **MHF** Help and FAQ | 5 | 5 | [`MHF-help.md`](MHF-help.md) |
 | **MNAV** Navigation shells | 3 | 3 | [`MNAV-shells.md`](MNAV-shells.md) |
-| **Total** | **475** | **475** | |
+| **Total** | **473** | **473** | |
 
 **The two columns differ for four modules because a Figma prototype link must target a frame on the same
-page**, so five screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
+page**, so four screens are drawn on a neighbour's page to keep their click-through same-page. A screen is
 counted under the module its **number** belongs to, and documented in the file for the **page** it sits on.
 
 | Screen | Numbered | Drawn on | Documented in | Why it sits there |
@@ -40,7 +40,6 @@ counted under the module its **number** belongs to, and documented in the file f
 | `8.6` | M8 | M1 Account | [`M1-account.md`](M1-account.md) | opens over the M1 account screen it belongs to |
 | `10.7` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | the removal dialog over `11.2ad` |
 | `10.6n` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | the suspend dialog reached from `11.3` |
-| `10.6nb` | M10 | M11 Dashboard | [`M11-dashboard.md`](M11-dashboard.md) | its outcome, reached from `10.6n` |
 | `11.3g` | M11 | M10 Moderation | [`M10-moderation.md`](M10-moderation.md) | the base `10.6` is drawn over |
 
 ## How to read a screen
@@ -104,8 +103,8 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ACC-05` | Must | Duplicate account prevention | [M1](M1-account.md) `1.12`, `1.4err1`, `1.8rec2` |
 | `FR-ACC-07` | Must | Login | [M1](M1-account.md) `1.6`, `1.6bnr3`, `1.6sus`, `1.7`, `1.7sus` · [M11](M11-dashboard.md) `11.1` |
 | `FR-ACC-08` | Must | OTP mechanism | [M1](M1-account.md) `1.2`, `1.3`, `1.3err1`, `1.3err2`, `1.6sus`, `1.7`, `1.7sus` |
-| `FR-ACC-09` | Must | Password security | [M1](M1-account.md) `1.6bnr1`, `1.6bnr3` · [M11](M11-dashboard.md) `11.1L` |
-| `FR-ACC-10` | Must | Password reset | [M1](M1-account.md) `1.11`, `1.8`, `1.8bnr`, `1.8rec2`, `1.8rec3`, `1.9` |
+| `FR-ACC-09` | Must | Password security | [M1](M1-account.md) `1.6bnr1`, `1.6bnr3` · [M11](M11-dashboard.md) `11.1w`, `11.1L`, `11.1p` |
+| `FR-ACC-10` | Must | Password reset | [M1](M1-account.md) `1.11`, `1.8`, `1.8bnr`, `1.8rec2`, `1.8rec3`, `1.9` · [M11](M11-dashboard.md) `11.4rec`, `11.8rec1`, `11.8rec2`, `11.8rec3`, `11.6rec` |
 | `FR-ACC-11` | Must | Password change | [M1](M1-account.md) `1.11` |
 | `FR-ACC-12` | Must | Phone number change | [M1](M1-account.md) `1.12`, `1.12err` |
 | `FR-ACC-13` | Must | NIC correction | [M1](M1-account.md) `1.13`, `1.4` |
@@ -117,10 +116,10 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ACC-19` | Must | Terms of Service and Privacy Policy acceptance | [M1](M1-account.md) `1.20` |
 | `FR-ADM-01` | Must | Final dispute ruling | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1r`, `10.2`, `10.2b`, `10.3`, `10.3c`, `10.4`, `10.4e`, `10.5`, `10.5e`, `10.5p`, `10.5pe`, `10.5pr`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b` · [M6](M6-ratings.md) `6.1f` · [M9](M9-disputes.md) `9.2`, `9.2f` |
 | `FR-ADM-02` | Must | Payment-dispute ruling scope | [M10](M10-moderation.md) `10.5`, `10.5p`, `10.5pe`, `10.5pr` · [M9](M9-disputes.md) `9.2` |
-| `FR-ADM-03` | Must | Account suspension | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18`, `1.6bnr3`, `1.6sus`, `1.7sus` · [M10](M10-moderation.md) `10.1`, `10.2`, `10.3`, `10.4`, `10.5`, `10.6`, `10.7`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
-| `FR-ADM-05` | Must | Posting removal | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1r`, `10.2`, `10.3`, `10.4`, `10.5`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
-| `FR-ADM-06` | Must | Admin/Moderator account bootstrapping | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.3`, `11.7` |
-| `FR-ADM-07` | Must | Separate Admin/Moderator accounts | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.1`, `11.3`, `11.7`, `11.7d`, `11.7ds`, `11.7m`, `11.7r`, `11.7rs` |
+| `FR-ADM-03` | Must | Account suspension | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18`, `1.6bnr3`, `1.6sus`, `1.7sus` · [M10](M10-moderation.md) `10.1`, `10.2`, `10.3`, `10.4`, `10.5`, `10.6`, `10.7`, `10.8` · [M11](M11-dashboard.md) `11.4a`, `11.3`, `10.6n` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
+| `FR-ADM-05` | Must | Posting removal | [M0](M0-first-run.md) `0.4` · [M1](M1-account.md) `1.18` · [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1r`, `10.2`, `10.3`, `10.4`, `10.5`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8` · [M11](M11-dashboard.md) `11.2ad`, `10.7`, `11.2adx` · [M9](M9-disputes.md) `9.1`, `9.3`, `9.4` |
+| `FR-ADM-06` | Must | Admin/Moderator account bootstrapping | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.7`, `11.1f`, `11.1fb`, `11.1p`, `11.4t` |
+| `FR-ADM-07` | Must | Separate Admin/Moderator accounts | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.1`, `11.3L`, `11.3Lm`, `11.7`, `11.7r`, `11.7rs`, `11.7rd`, `11.7rds`, `11.7d`, `11.7ds` |
 | `FR-ADM-08` | Must | Dispute ruling's effect on the rating step | [M10](M10-moderation.md) `10.5` · [M5](M5-engagement.md) `5.1c`, `5.2b`, `5.2c`, `5.2d` · [M6](M6-ratings.md) `6.1` · [M9](M9-disputes.md) `9.2` |
 | `FR-APPLY-01` | Must | Listing detail view | [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
 | `FR-APPLY-02` | Must | Apply action | [M4](M4-applying.md) `4.1`, `4.1c`, `4.1d`, `4.1h`, `4.1o`, `4.1s`, `4.1t`, `4.2`, `4.2c`, `4.2d`, `4.2h`, `4.2o`, `4.2s`, `4.2t` |
@@ -133,12 +132,12 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-APPLY-09` | Must | Automatic not-selected notification | [M2](M2-posting.md) `2.11pw`, `2.11dw`, `2.11ex`, `2.11hx` · [M3](M3-discovery.md) `3.10` · [M4](M4-applying.md) `4.3r`, `4.5x` |
 | `FR-APPLY-10` | Should | Pending-applicant notification on material change | [M2](M2-posting.md) `2.11pe`, `2.11e2` · [M3](M3-discovery.md) `3.10x`, `3.10pd` · [M4](M4-applying.md) `4.3e` |
 | `FR-APPLY-12` | Must | Worker's own application list | [M4](M4-applying.md) `4.3`, `4.3c`, `4.3cw`, `4.3d`, `4.3dw`, `4.3e`, `4.3h`, `4.3hw`, `4.3ldg`, `4.3n`, `4.3o`, `4.3ow`, `4.3r`, `4.3s`, `4.3sw`, `4.3t`, `4.3tw`, `4.3w`, `4.3z` |
-| `FR-DASH-01` | Must | Full postings visibility | [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6` · [M3](M3-discovery.md) `3.12`, `3.13` |
-| `FR-DASH-02` | Must | Full user-account visibility | [M10](M10-moderation.md) `10.1`, `10.8` · [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6`, `11.7`, `11.7d`, `11.7ds`, `11.7m`, `11.7r`, `11.7rs` |
-| `FR-DASH-03` | Must | Case queue | [M11](M11-dashboard.md) `11.4` |
-| `FR-DASH-04` | Should | Metrics dashboard | [M10](M10-moderation.md) `10.1`, `10.5`, `10.6`, `10.7`, `10.8` · [M11](M11-dashboard.md) `11.1`, `11.2`, `11.3`, `11.4`, `11.5`, `11.6` |
-| `FR-DASH-05` | Must | Mobile/dashboard case-surface split | [M11](M11-dashboard.md) `11.2x`, `11.3x` |
-| `FR-DASH-06` | Must | Dashboard authentication | [M11](M11-dashboard.md) `11.1`, `11.1b`, `11.4`, `11.5`, `11.6` |
+| `FR-DASH-01` | Must | Full postings visibility | [M11](M11-dashboard.md) `11.2`, `11.2f`, `11.2ff`, `11.2fw`, `11.2fe`, `11.2d`, `11.2d2`, `11.2d3`, `11.2d4`, `11.2a`, `11.2af`, `11.2aff`, `11.2afw`, `11.2afe`, `11.2ad`, `11.2ad2`, `11.2ad3`, `11.2ad4`, `11.2adx`, `11.2afx`, `11.2affx`, `11.2afwx`, `11.2afex` · [M3](M3-discovery.md) `3.12`, `3.13` |
+| `FR-DASH-02` | Must | Full user-account visibility | [M10](M10-moderation.md) `10.1`, `10.8` · [M11](M11-dashboard.md) `11.3L`, `11.3Ls`, `11.3`, `11.3Lm`, `11.3Lms`, `11.3m`, `11.7` |
+| `FR-DASH-03` | Must | Case queue | [M11](M11-dashboard.md) `11.4`, `11.4t`, `11.4x`, `11.4rr`, `11.4w`, `11.4e`, `11.4c`, `11.4r`, `11.4pe`, `11.4pw`, `11.4pce`, `11.4a`, `11.4ar`, `11.4rec` |
+| `FR-DASH-04` | Should | Metrics dashboard | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
+| `FR-DASH-05` | Must | Mobile/dashboard case-surface split | [M11](M11-dashboard.md) `11.4`, `11.2d` |
+| `FR-DASH-06` | Must | Dashboard authentication | [M11](M11-dashboard.md) `11.1`, `11.1b`, `11.1w`, `11.1L`, `11.1f`, `11.1fb`, `11.1p` |
 | `FR-DISC-01` | Must | Radius-based browsing | [M3](M3-discovery.md) `3.1`, `3.12`, `3.2` |
 | `FR-DISC-02` | Must | Manual location fallback | [M3](M3-discovery.md) `3.3`, `3.4`, `3.9` |
 | `FR-DISC-03` | Should | Category and arrangement-type filters | [M3](M3-discovery.md) `3.5` |
@@ -159,11 +158,11 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ENDORSE-04` | Must | Vouch action | [M8](M8-endorsement.md) `8.4` |
 | `FR-ENDORSE-05` | Must | Eligibility window | [M1](M1-account.md) `1.12b` · [M10](M10-moderation.md) `10.3c`, `10.5`, `10.5e` · [M6](M6-ratings.md) `6.1f` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.2`, `8.3d` · [M9](M9-disputes.md) `9.2f` |
 | `FR-ENDORSE-06` | Must | Endorsement coverage across applications | [M4](M4-applying.md) `4.5`, `4.6t` |
-| `FR-ENDORSE-07` | Should | Endorsement revocation | [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.7rd`, `11.7rds` · [M1](M1-account.md) `1.18`, `1.19` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.1s`, `8.2`, `8.3`, `8.3d`, `8.3m`, `8.4`, `8.4e`, `8.5`, `8.5c`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK`, `8.7` |
+| `FR-ENDORSE-07` | Should | Endorsement revocation | [M10](M10-moderation.md) `10.3s`, `10.3sb` · [M1](M1-account.md) `1.18`, `1.19` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.1`, `8.1b`, `8.1s`, `8.2`, `8.3`, `8.3d`, `8.3m`, `8.4`, `8.4e`, `8.5`, `8.5c`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK`, `8.7` |
 | `FR-ENDORSE-08` | Should | Uncapped endorsements per worker | [M4](M4-applying.md) `4.5`, `4.6` |
 | `FR-ENDORSE-09` | Should | Endorsement notification to worker | [M3](M3-discovery.md) `3.10` · [M8](M8-endorsement.md) `8.4` |
-| `FR-ENDORSE-10` | Must | Endorsement display | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6`, `4.6t` · [M11](M11-dashboard.md) `11.3`, `11.3m`, `11.3x` · [M8](M8-endorsement.md) `8.5` |
-| `FR-ENDORSE-11` | Must | Verifier track record | [M10](M10-moderation.md) `10.3s`, `10.3sb`, `10.6n`, `10.6nb` · [M11](M11-dashboard.md) `11.3`, `11.5`, `11.7rd`, `11.7rds` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.5`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK` |
+| `FR-ENDORSE-10` | Must | Endorsement display | [M1](M1-account.md) `1.18`, `1.19` · [M4](M4-applying.md) `4.5`, `4.6`, `4.6t` · [M11](M11-dashboard.md) `11.3`, `11.3m`, `11.8rec1` · [M8](M8-endorsement.md) `8.5` |
+| `FR-ENDORSE-11` | Must | Verifier track record | [M10](M10-moderation.md) `10.3s`, `10.3sb` · [M3](M3-discovery.md) `3.5c` · [M6](M6-ratings.md) `6.1e`, `6.2e` · [M8](M8-endorsement.md) `8.5`, `8.5cI`, `8.5cK`, `8.5d`, `8.5dI`, `8.5dK` |
 | `FR-ENDORSE-12` | Should | Endorsement payoff notification | [M3](M3-discovery.md) `3.10v` |
 | `FR-ENDORSE-13` | Could | Bio prompt for zero-history workers | [M1](M1-account.md) `1.11`, `1.16`, `1.18`, `1.4` · [M6](M6-ratings.md) `6.2` · [M7](M7-profile.md) `7.1`, `7.1d` · [M8](M8-endorsement.md) `8.6` |
 | `FR-ENDORSE-14` | Could | Endorsement-seeking suggestion | [M4](M4-applying.md) `4.3n` · [M8](M8-endorsement.md) `8.7` |
@@ -199,8 +198,8 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-NOTIF-10` | Should | Distinct treatment for urgent vs. regular notifications | [M3](M3-discovery.md) `3.10`, `3.13` |
 | `FR-NOTIF-11` | Should | Rating notifications | [M3](M3-discovery.md) `3.10`, `3.10r` |
 | `FR-NOTIF-12` | Must | Dispute-lifecycle notifications to the parties | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r` |
-| `NFR-OPS-01` | Must | Audit log visibility | [M11](M11-dashboard.md) `11.2`, `11.2a`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3m`, `11.4`, `11.4a`, `11.5`, `11.5m`, `11.5x`, `11.5xm`, `11.6`, `11.6m` |
-| `NFR-OPS-02` | Should | Metrics dashboard export | [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6` |
+| `NFR-OPS-01` | Must | Audit log visibility | [M11](M11-dashboard.md) `11.6`, `11.6rec`, `11.4` |
+| `NFR-OPS-02` | Should | Metrics dashboard export | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
 | `NFR-PERF-01` | Must | Direct-manipulation response time | [M0](M0-first-run.md) `0.1` · [M3](M3-discovery.md) `3.5` |
 | `NFR-PERF-02` | Must | Common-action response time | [M1](M1-account.md) `1.12` · [M3](M3-discovery.md) `3.5` · [MHF](MHF-help.md) `HF.3` |
 | `NFR-PERF-03` | Should | Search-radius auto-expansion as one continuous operation | [M3](M3-discovery.md) `3.13`, `3.2`, `3.5` |
@@ -224,7 +223,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-POST-18` | Must | Posting status computation (Open/Filled) | [M2](M2-posting.md) `2.10`, `2.11f` |
 | `NFR-PRIV-04` | Must | No general user directory | [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.2`, `11.3`, `11.4`, `11.6` · [M1](M1-account.md) `1.4k`, `1.6`, `1.7` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.7`, `3.8` · [M8](M8-endorsement.md) `8.2`, `8.3` · [MHF](MHF-help.md) `HF.3` |
 | `NFR-PRIV-05` | Must | Report anonymity | [M1](M1-account.md) `1.19` · [M2](M2-posting.md) `2.10g`, `2.11g` · [M3](M3-discovery.md) `3.12` · [M9](M9-disputes.md) `9.1`, `9.2` |
-| `NFR-PRIV-06` | Could | Anonymized usage analytics | [M11](M11-dashboard.md) `11.1`, `11.2`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3x`, `11.4`, `11.5`, `11.5x`, `11.5xm`, `11.6` |
+| `NFR-PRIV-06` | Could | Anonymized usage analytics | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
 | `FR-PROF-01` | Must | Profile display identity | [M1](M1-account.md) `1.15`, `1.18`, `1.19` · [M4](M4-applying.md) `4.6`, `4.6k`, `4.6t` · [M6](M6-ratings.md) `6.3` |
 | `FR-PROF-02` | Must | Verification badges | [M1](M1-account.md) `1.18`, `1.19` |
 | `FR-PROF-03` | Should | Profile bio | [M1](M1-account.md) `1.11`, `1.16`, `1.18` · [M7](M7-profile.md) `7.1` |
@@ -240,10 +239,10 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `NFR-REL-01` | Must | Stalled-engagement resolution integrity | [M5](M5-engagement.md) `5.14` |
 | `NFR-REL-02` | Must | Immediate suspension effect | [M10](M10-moderation.md) `10.6` |
 | `NFR-SEC-02` | Must | Login rate-limiting | [M3](M3-discovery.md) `3.12` |
-| `NFR-SEC-03` | Must | NIC data protection | [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.2`, `11.2a`, `11.2d`, `11.2f`, `11.2x`, `11.3`, `11.3m`, `11.4`, `11.4a`, `11.5`, `11.5m`, `11.5x`, `11.5xm`, `11.6`, `11.6m` |
-| `NFR-SEC-04` | Must | Dashboard two-factor authentication | [M11](M11-dashboard.md) `11.1`, `11.1b`, `11.3`, `11.4`, `11.5`, `11.6` |
-| `NFR-SEC-05` | Must | Role-based access control | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1er`, `10.1r`, `10.4`, `10.4e`, `10.4r`, `10.5`, `10.5e`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8`, `10.8b` |
-| `NFR-SEC-06` | Must | Audit logging of privileged actions | [M11](M11-dashboard.md) `11.6` |
+| `NFR-SEC-03` | Must | NIC data protection | [M10](M10-moderation.md) `10.1` · [M11](M11-dashboard.md) `11.3`, `11.3m`, `11.8rec1` |
+| `NFR-SEC-04` | Must | Dashboard two-factor authentication | [M11](M11-dashboard.md) `11.1`, `11.1b`, `11.1fb` |
+| `NFR-SEC-05` | Must | Role-based access control | [M10](M10-moderation.md) `10.1`, `10.1a`, `10.1c`, `10.1e`, `10.1er`, `10.1r`, `10.4`, `10.4e`, `10.4r`, `10.5`, `10.5e`, `10.5r`, `10.6`, `10.6b`, `10.7`, `10.7b`, `10.8`, `10.8b` · [M11](M11-dashboard.md) `11.2d`, `11.3m`, `11.3Lm`, `11.4a` |
+| `NFR-SEC-06` | Must | Audit logging of privileged actions | [M11](M11-dashboard.md) `11.6`, `11.6rec` |
 | `NFR-USE-01` | Should | Offline tolerance | [M1](M1-account.md) `1.3err1` · [M2](M2-posting.md) `2.9bnr`, `2.1rst` · [M3](M3-discovery.md) `3.1`, `3.12`, `3.12ofl`, `3.1ofl` · [M4](M4-applying.md) `4.1bnr` |
 | `NFR-USE-03` | Should | Static Help/FAQ content | [M1](M1-account.md) `1.18` · [M5](M5-engagement.md) `5.2`, `5.6` · [M8](M8-endorsement.md) `8.4` · [M9](M9-disputes.md) `9.1` · [MHF](MHF-help.md) `HF.1`, `HF.2`, `HF.3`, `HF.4` |
 

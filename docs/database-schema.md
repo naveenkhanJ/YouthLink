@@ -61,6 +61,8 @@ The single identity table for all three self-selected actor types (Youth Job-See
 
 **On deletion (FR-ACC-17, NFR-PRIV-03):** the row is not removed. `phone`, `email`, `nicEncrypted`, `legalName`, `passwordHash` are overwritten with anonymized placeholders and `deletedAt` is set — every `Rating`, `CompletionRecord`, and `Engagement` referencing this `id` stays intact, satisfying "preserve engagement history under an anonymized reference." Deletion is blocked at the application layer while any `Engagement.status = ACTIVE` exists (NFR-REL-04, FR-ACC-17).
 
+**A suspension records its grounds (FR-ADM-03, amended 2026-09-24).** `suspensionReason` is set whenever `suspendedAt` is — an application-layer rule; the column stays nullable so an unsuspended account carries none.
+
 **Suspension must not cascade (FR-ADM-03).** Setting `suspendedAt` blocks the account's _new_ actions — applying, posting, endorsing — and takes effect on the very next request (NFR-REL-02). It must **not** touch that person's existing `Engagement` rows: those belong to uninvolved counterparties who did nothing wrong, and they resolve normally through completion, cancellation, or dispute. No cascade, no bulk status update, no automatic cancellation.
 
 **Verification badges (FR-PROF-02)** are computed at read time — "Phone verified" from `phoneVerifiedAt IS NOT NULL`, business presence from `businessName IS NOT NULL`. No badge field is stored, and deliberately no NIC/PCC badge exists at all, since neither is actually verified.

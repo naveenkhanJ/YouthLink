@@ -474,6 +474,8 @@ Admin aims to resolve escalated cases within **3–5 business days** — an oper
 
 **Suspension takes effect immediately** (`FR-ADM-03`, `NFR-REL-02`) — on the account's very next request, not at next login. A suspended account can't apply, post, or endorse.
 
+**A suspension records its grounds** (amended 2026-09-24). The violation it rests on — three warnings in 90 days, a ruled report — is stored with it and shown on the confirmation; an account with nothing recorded against it cannot be suspended. Suspension is the most consequential thing an Admin does to a user, and a reason is what makes it reviewable afterwards.
+
 **Suspension does not cascade.** Existing, already-agreed Engagements with uninvolved parties are **not** auto-cancelled — they resolve normally through completion, cancellation, or dispute. Voiding them would punish someone who did nothing wrong.
 
 **Posting removal** (`FR-ADM-05`) stops new applications but does **not** void Engagements already in progress on that posting. Those continue to normal resolution unless the violation is severe enough to warrant reviewing them individually through the normal dispute process.
@@ -486,13 +488,13 @@ Admin aims to resolve escalated cases within **3–5 business days** — an oper
 
 Moderator handles volume; Admin handles consequence. Splitting them costs nothing when the same people hold both roles, but means the permission model doesn't need retrofitting when junior moderation help arrives without full account-termination power.
 
-Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`).
+Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`). **The dashboard does not offer them to a Moderator at all** (amended 2026-09-24) — no disabled button, no "ask an Admin" dialog; the server rejects the call if it arrives anyway. The audit log and staff management are likewise absent from a Moderator's navigation.
 
 ### Accounts
 
 Admin/Moderator accounts are **entirely separate** from any consumer account for the same person (`FR-ADM-07`) — not a flag on a `User` row. This avoids edge cases like an Admin account applying to its own posting.
 
-**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard — into either role directly; there is no ladder, and only Admins grant.
+**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard's Staff accounts page (the one entry point, amended 2026-09-24) — into either role directly; there is no ladder, and only Admins grant.
 
 **A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin.
 
