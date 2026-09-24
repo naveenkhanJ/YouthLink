@@ -4,9 +4,11 @@
 // docs/requirements.md; see the design document for the reasoning behind each
 // table, and for what is deliberately NOT modelled.
 //
-// Note: three PARTIAL unique indexes (User.phone, User.email, User.nicEncrypted)
-// cannot be expressed in Prisma schema syntax and live as raw SQL in the initial
-// migration. Do not "fix" them by adding @unique here — that would be wrong.
+// Note: four PARTIAL unique indexes cannot be expressed in Prisma schema syntax and
+// live as raw SQL in migrations: User.phone, User.email and User.nicEncrypted in the
+// initial migration, and Endorsement(endorserId, workerId) where revokedAt is null in
+// 20260925001500_prototype_spec_batch. Do not "fix" them by adding @unique or
+// @@unique here — that would be wrong.
 
 generator client {
   provider = "prisma-client-js"
@@ -461,6 +463,10 @@ model Endorsement {
   endorser User @relation("EndorsementEndorser", fields: [endorserId], references: [id])
   worker   User @relation("EndorsementWorker", fields: [workerId], references: [id])
 
+  // One ACTIVE endorsement per endorser per worker (FR-ENDORSE-08 as amended
+  // 2026-09-24): a partial unique index on (endorserId, workerId) where revokedAt
+  // is null, raw SQL in 20260925001500_prototype_spec_batch. Not @@unique — a
+  // revoked endorsement may be replaced while the worker is still eligible.
   @@index([workerId, revokedAt])
   @@index([endorserId, revokedAt])
 }
@@ -734,6 +740,12 @@ enum CheckpointStatus {
   PENDING
   CONFIRMED
   UNABLE_TO_CONFIRM
+  // Added 2026-09-25 for FR-ADM-08 as amended: an arrival or completion checkpoint
+  // that was never confirmed, settled by a dispute ruling that the engagement
+  // happened and was completed. Distinct from CONFIRMED, which means a code was
+  // exchanged. The matching …ConfirmedAt holds the ruling time. The payment
+  // checkpoint is not settled by a ruling and stays open.
+  SETTLED_BY_RULING
 }
 
 enum CancellationReason {
@@ -876,4 +888,12 @@ enum NotificationType {
   DISPUTE_OPENED
   DISPUTE_RESOLVED
   FLAGGED_CONTENT_OUTCOME
+  // Added 2026-09-25, from the prototype specification pass. APPLICATION_TERMS_CHANGED
+  // tells a pending applicant that the posting they applied to changed (FR-APPLY-10);
+  // WARNING_RECORDED tells a party a warning was recorded against them (FR-NOTIF-12),
+  // and its history rows are kept 90 days rather than 30 (FR-NOTIF-08);
+  // ENDORSEMENT_REVOKED tells a worker an endorsement was revoked (FR-ENDORSE-07).
+  APPLICATION_TERMS_CHANGED
+  WARNING_RECORDED
+  ENDORSEMENT_REVOKED
 }

@@ -52,7 +52,7 @@ Three surfaces: `backend/` (Node.js + Express, **ES modules**), `mobile/` (React
 
 **The database URL lives in `backend/prisma.config.ts`, not in `schema.prisma`.** Prisma 7 moved it. The datasource block having no `url` line is correct.
 
-**Three partial unique indexes exist only as raw SQL** in the initial migration — `User.phone`, `User.email`, `User.nicEncrypted`. Prisma's schema syntax can't express them. Do not "fix" this by adding `@unique`; that would be wrong and would change the semantics.
+**Four partial unique indexes exist only as raw SQL** — `User.phone`, `User.email` and `User.nicEncrypted` in the initial migration, and `Endorsement(endorserId, workerId)` where `revokedAt` is null (one active endorsement per endorser per worker) in `20260925001500_prototype_spec_batch`. Prisma's schema syntax can't express them. Do not "fix" this by adding `@unique` or `@@unique`; that would be wrong and would change the semantics.
 
 **`User.nicEncrypted` requires deterministic encryption.** The unique index enforcing FR-ACC-05 only fires when identical NIC values produce identical ciphertext. Random-IV AES-GCM — the normal correct default — would let duplicate accounts through with no visible symptom. See the note in [`docs/database-schema.md`](docs/database-schema.md) under the User indexes.
 
