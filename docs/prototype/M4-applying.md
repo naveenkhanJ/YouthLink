@@ -2914,5 +2914,5 @@ screens, `4.3n` on Friday's, `4.3r` everywhere after, and `4.3ldg` → `4.3e` in
 
 - *Closed in the M5 pass (2026-09-24):* the Shop assistant engagement no longer offers End Engagement, and
   `5.3t`, which M2's `2.11f` opens on Thursday, now shows the engagement before its start.
-- **M1, M3: Dilrukshi's and R. Gunasekara's Notifications and Profile tabs** still open Lanka Events'
-  screens — carried from M2. Their Engagements tab now opens the empty employer list (M5 `5.1ez`).
+- *Closed in the M1 pass (2026-09-24):* Dilrukshi's and R. Gunasekara's Notifications and Profile tabs open
+  their own screens ([M3](M3-discovery.md) `3.10ed`/`3.10eg`, [M1](M1-account.md) `1.18ed`/`1.18eg`).

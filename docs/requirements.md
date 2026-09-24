@@ -419,6 +419,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given any user-facing surface displays a person's identity, when rendered, then it shows their full legal name as entered at signup or subsequently edited (FR-ACC-15), never a chosen handle.
 
+> **Amended 2026-09-24 (M1 review) — a Business employer is shown by its business name.** FR-ACC-02 makes the business name part of every posting from a Business account, and FR-DISC-02 shows it to the worker, so the requirement as written put two names on one account: the business name on its postings and the account holder's legal name on its profile, applicant pools and ratings. A worker who applied to *Lanka Events (Pvt) Ltd* would then be rated by, and see the profile of, a person whose name appeared nowhere in the listing. **A Business employer is shown to other parties by its business name** — profile, postings, engagements, ratings and contact reveal. The legal name stays on the account: it is what Settings shows and edits (FR-ACC-15), and what staff see on the dashboard. Individual/Household employers, workers and verifiers are unchanged: their legal name is their display name. Switching posting-as type (FR-ACC-02) switches which name is shown. The ban on handles stands — a business name is a registered or trading name the employer declares, not a username. In the prototype, Settings carries a *Business name & bio* row beside the legal name; its edit screen is not drawn.
+
 #### FR-PROF-02 — Verification badges
 
 | Actor(s)        | Priority |
@@ -2080,6 +2082,7 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 > | `RATING_WINDOW_OPEN` | Rate your engagement | counterparty · closes in 14 days | rating screen |
 > | `RATING_REVEALED` | Ratings are in | both ratings now visible | revealed ratings |
 > | `NO_APPLICANT_NUDGE` | No applicants yet on {title} | consider widening details | own posting |
+> | `WARNING_RECORDED` | A warning was recorded on your account | why (the kind of case) · how many in 90 days, and that a third leads to a suspension review | — *(no target; added 2026-09-24, FR-NOTIF-12)* |
 
 #### FR-NOTIF-09 — Notification permission handling
 
@@ -2143,8 +2146,11 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 - Given a Moderator requests clarification from a party, when sent, then that party is notified with the 24-hour window.
 - Given a case reaches its outcome, when recorded, then both parties are notified.
 - Given auto-hidden content completes review, when the Moderator restores or Admin removes it, then the content's owner is notified of the outcome — and deliberately **not** at the moment the third report fired.
+- Given a Moderator records a warning against a party (FR-MOD-02, FR-MOD-04), when it is recorded, then that party is notified that a warning was recorded, why, and what a third warning inside 90 days leads to.
 
 > **Added 2026-08-27 (batch A25).** The baseline's only dispute notification was FR-NOTIF-06, to staff — FR-DISPUTE-04 proceeded to review on the silence of a respondent who was never told the case existed. `DISPUTE_OPENED`, `DISPUTE_RESOLVED` and `FLAGGED_CONTENT_OUTCOME` join the enum (schema batch); `CLARIFICATION_REQUEST` already existed with nothing firing it. Threshold-silence on auto-hide is deliberate: notifying at report #3 reveals the threshold moment and, in small pools, helps identify reporters (NFR-PRIV-05).
+
+> **Amended 2026-09-24 (M1 review) — the warned party is told.** A warning is recorded against an account, and three inside a rolling 90 days auto-escalate it for suspension review (FR-MOD-02). Nothing notified the party it was recorded against: `DISPUTE_RESOLVED` reaches only the two parties of a dispute, and `FLAGGED_CONTENT_OUTCOME` carries only *restored* or *removed*. So an employer warned twice over reported postings could be escalated, and suspended, on warnings they never knew existed — the same defect batch A25 closed for dispute respondents. **`WARNING_RECORDED`** (*"A warning was recorded on your account"*) goes to the warned party whenever a warning is recorded, whatever case produced it, with the reason and the 90-day consequence in its body. It has no tap target: the message is the whole outcome, and the reporters stay anonymous (NFR-PRIV-05). The enum value joins the schema batch.
 
 ## 4. Non-Functional Requirements
 

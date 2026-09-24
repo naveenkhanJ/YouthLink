@@ -117,7 +117,7 @@ One account per NIC, one per verified phone, one per verified email (`FR-ACC-05`
 
 A profile is visible **only in the context of a specific interaction** (`FR-PROF-05`) — an applicant's profile while an employer reviews applications, an employer's profile while a worker views their listing. There is deliberately **no browsable directory of users**, because one would enable targeted harassment for no functional gain.
 
-A profile shows: legal name (`FR-PROF-01`), verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
+A profile shows: legal name (`FR-PROF-01`) — for a Business employer, its business name, with the legal name kept on the account (amended 2026-09-24) — verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
 
 The bio does double duty: it **pre-fills the note on every application** the worker submits, editable per application without changing the stored bio (`FR-PROF-04`). Both caps are 300 characters precisely so the bio can never overflow the note it populates.
 

@@ -5468,5 +5468,5 @@ Ruled on 2026-09-24, after the findings were checked by an independent review.
 
 ## Open, and carried to the module that owns it
 
-- **M1: the worker's side of the recovery** (`1.8rec*`) still shows the old requester; it becomes Nethmi
-  Jayasinghe's request of Sat 5 Sep, matching `11.8rec1`–`11.8rec3`.
+- *Closed in the M1 pass (2026-09-24):* the worker's side of the recovery ([M1](M1-account.md) `1.8rec1`–`1.8rec4`,
+  `1.8bnr`) is Nethmi Jayasinghe's request of Sat 5 Sep, matching `11.8rec1`–`11.8rec3`.

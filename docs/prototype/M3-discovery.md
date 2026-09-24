@@ -1,6 +1,6 @@
 # M3 — Discovery
 
-**Forty-one screens.** This is where work is found. It is found two ways — **pulled** (Browse, filters, sort, search, saved gigs, the listing detail) and **pushed** (the notification history and its preferences). Both obey the same radius and the same urgency rule: 5 km by default, widening in 5 km steps when fewer than five gigs are found (FR-DISC-01); urgent means starting 48 hours or less away (FR-POST-07).
+**Forty-three screens.** This is where work is found. It is found two ways — **pulled** (Browse, filters, sort, search, saved gigs, the listing detail) and **pushed** (the notification history and its preferences). Both obey the same radius and the same urgency rule: 5 km by default, widening in 5 km steps when fewer than five gigs are found (FR-DISC-01); urgent means starting 48 hours or less away (FR-POST-07).
 
 **Read *Every screen shows one moment* at the end first.** The histories are four snapshots of one worker's week (`3.10x` Thursday 27 Aug, `3.10q` 2 Sep, `3.10r` 4 Sep, `3.10` 5 Sep), and every date and relative time below is consistent with that table.
 
@@ -1466,6 +1466,65 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 
 A new employer's empty history, with "Post a gig" as its action.
 
+### `3.10ed` — Notification history · employer (Dilrukshi Herath)
+
+**Reached from** the Notifications tab on Dilrukshi Herath's screens (Thu 27 Aug)  ·  **Leads to** [M2](M2-posting.md) `2.11hx` (the row) · `3.11e` (Preferences)
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 12
+    FRAME titleRow 328x44 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT screenTitle 225x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Notifications"
+      TEXT prefsLink 91x44 [FIXED/FIXED] · fill color/brand/primary · mobile/body · align right · "Preferences"
+    INSTANCE Display/NotificationRow 328x132 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x108 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "No applicants yet on House move helpers"
+        TEXT body 286x40 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "Still no applicants after 24 hours. Consider reviewing the pay or details."
+        TEXT time 66x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "2 Aug 2026"
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Employer} · [standard, see header]
+```
+
+**Dilrukshi Herath, Thu 27 Aug, about 6 PM** — just after she posts the tutoring job, before anyone applies.
+Her only earlier posting, House move helpers, went live on 1 Aug and drew no applicants, so the one row is
+its **no-applicant nudge** (`NO_APPLICANT_NUDGE`, `FR-POST-17`), sent 24 hours after it went live. The row
+is dated rather than relative: *2 Aug 2026*. It opens the expired posting (M2 `2.11hx`). Her Notifications
+tab on Thursday's screens opens this history instead of Lanka Events'.
+
+### `3.10eg` — Notification history · employer (R. Gunasekara)
+
+**Reached from** the Notifications tab on R. Gunasekara's screens (31 Aug – 3 Sep)  ·  **Leads to** `3.11e` (Preferences); the rows open nothing
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  FRAME content 360x736 [FILL/FILL] · vertical pad 66/16/16/16 gap 12
+    FRAME titleRow 328x44 [FILL/HUG] · horizontal pad 0 gap 12
+      TEXT screenTitle 225x32 [FILL/HUG] · fill color/text/primary · mobile/display · "Notifications"
+      TEXT prefsLink 91x44 [FIXED/FIXED] · fill color/brand/primary · mobile/body · align right · "Preferences"
+    INSTANCE Display/NotificationRow 328x152 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x128 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "A warning was recorded on your account"
+        TEXT body 286x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "After a review of reports on your posting. This is your second warning in 90 days — a third leads to a suspension review."
+        TEXT time 74x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "28 Aug 2026"
+    INSTANCE Display/NotificationRow 328x152 [FILL/HUG] · horizontal pad 12 gap 10 · fill color/bg/default · r8 · {Type=Standard}
+      ELLIPSE unreadDot 8x8 [FIXED/FIXED] · fill color/brand/primary
+      FRAME content 286x128 [FILL/HUG] · vertical pad 0 gap 2
+        TEXT title 286x48 [FILL/HUG] · fill color/text/primary · mobile/body-medium · "A warning was recorded on your account"
+        TEXT body 286x60 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "After a review of reports on your posting. Three warnings within 90 days lead to a suspension review."
+        TEXT time 66x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "14 Jul 2026"
+  INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=false, Role=Employer} · [standard, see header]
+```
+
+**R. Gunasekara, Mon 31 Aug – Thu 3 Sep, before 4:10 PM.** Two rows, one per warning already recorded against
+him: 14 Jul and 28 Aug. **`WARNING_RECORDED`** is the type added on 2026-09-24 (`FR-NOTIF-12` as amended): the
+warned party is told, with the reason and what a third warning inside 90 days leads to. Both of his came from
+reviews of reports on earlier postings — his staff record reads *No resolved disputes* (M10), so these are
+not *Your case is resolved* rows. The rows have **no target**: the message is the whole outcome, and the
+reporters stay anonymous. Nothing yet about the Data entry posting hidden on 31 Aug — the owner is told only
+when a review ends (restored or removed), never when the third report hides it. The window closes at 4:10 PM
+on 3 Sep, when the third warning is recorded.
+
 ### `3.10v` — Notification history · verifier (Sunil Bandara)
 
 **Reached from** the verifier's Notifications tab  ·  **Leads to** [M8](M8-endorsement.md) `8.5` ×2 (rows) · `3.11v` (Preferences)
@@ -1517,7 +1576,7 @@ A new verifier's empty history, with "Vouch for someone" as its action.
 
 ### `3.11` — Notification preferences
 
-**Reached from** `3.10`, `3.10x`, `3.10q`, `3.10r` (Preferences)  ·  **Leads to** `3.13`  ·  **Exits** back → history
+**Reached from** `3.10`, `3.10x`, `3.10q`, `3.10r` (Preferences), and [M1](M1-account.md) `1.10` (Notification preferences)  ·  **Leads to** `3.13`  ·  **Exits** back → history
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -1543,8 +1602,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 FR-NOTIF-03's two toggles: urgent-gig alerts (opt-in) and new-gig alerts (opt-out).
 **Urgent is On** because the same worker's history already holds an urgent push, and FR-NOTIF-01 sends
 those only to opted-in users. `capNote` states the cap and the digest rule. FR-NOTIF-03 places this
-section inside Settings (FR-ACC-18); M1's `1.10` holds the same two toggles, and the two are reconciled in
-the M1 pass.
+section inside Settings (FR-ACC-18); M1's `1.10` reaches it through a *Notification preferences* row rather
+than repeating the toggles.
 
 ### `3.11pd` — Notification preferences · push notifications denied
 
@@ -1579,7 +1638,7 @@ them Off would contradict `3.10pd`, where an urgent row proves the opt-in.
 
 ### `3.11e` — Notification preferences · employer
 
-**Reached from** `3.10e`, `3.10ea`, `3.10ez`  ·  **Leads to** nothing  ·  **Exits** back → `3.10e`
+**Reached from** `3.10e`, `3.10ea`, `3.10ez`, `3.10ed`, `3.10eg`, and [M1](M1-account.md) `1.10e`  ·  **Leads to** nothing  ·  **Exits** back → `3.10e`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -1598,7 +1657,7 @@ gone too — it explains the urgent and regular gig channels (FR-NOTIF-10), whic
 
 ### `3.11v` — Notification preferences · verifier
 
-**Reached from** `3.10v`, `3.10vz`  ·  **Leads to** nothing  ·  **Exits** back → `3.10v`
+**Reached from** `3.10v`, `3.10vz`, and [M1](M1-account.md) `1.10v`  ·  **Leads to** nothing  ·  **Exits** back → `3.10v`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
@@ -1658,7 +1717,9 @@ on different dates; within a journey, time only moves forward.
 | **Thu 27 Aug, before 7:00 AM** | `3.9`, `3.3` | Kavindu registers; the two prompts follow (A10) |
 | **Thu 27 Aug, ~7:45 AM** | `3.1` family, `3.5`–`3.8`\*, `3.12` family | Five gigs within 5 km; only Event setup is urgent — Lanka Events posted it at about 7:00 AM and nobody has applied yet, so it reads 0 of 3 filled. The first-run user, in Homagama, sees `3.4` → `3.2` the same morning |
 | **Thu 27 Aug, ~8:40 AM** | `3.10ea` | Lanka Events' three applications have arrived (the employer's side of the same morning) |
+| **Thu 27 Aug, about 6 PM** | `3.10ed` | Dilrukshi Herath has just posted the tutoring job; nobody has applied |
 | **Thu 27 Aug, 8 PM** | `3.10x`, `3.10pd`, `3.11`, `3.11pd` | Office cleaning posted at ~3 PM, tutoring at ~6 PM; the Event setup start moved at ~7 PM; the morning's urgent push |
+| **Mon 31 Aug – Thu 3 Sep, before 4:10 PM** | `3.10eg` | R. Gunasekara's posting is hidden pending review; two warnings recorded so far |
 | **Mon 31 Aug on** | `3.8`, `3.12g` | The scam posting has appeared and been reported; Event setup has run |
 | **Wed 2 Sep** | `3.10q` | The moderator's question |
 | **Fri 4 Sep** | `3.10r` | The ruling, and the rating window it opens |
@@ -1690,6 +1751,8 @@ table gives that type. Bodies carry the content A11 names in whatever words fit.
 | Event setup crew (3 needed) changed | `APPLICATION_TERMS_CHANGED` | `3.10x`, `3.10pd` | [M4](M4-applying.md) `4.3e` |
 | New applicant for Event setup crew (3 needed) | `APPLICATION_RECEIVED` | `3.10ea` ×3, `3.10e` ×3 | [M4](M4-applying.md) `4.5` (from `3.10ea`), `4.5x` (from `3.10e`) |
 | Your endorsement paid off | `ENDORSEMENT_PAYOFF` | `3.10v` ×2 | [M8](M8-endorsement.md) `8.5` |
+| No applicants yet on House move helpers | `NO_APPLICANT_NUDGE` | `3.10ed` | [M2](M2-posting.md) `2.11hx` |
+| A warning was recorded on your account | `WARNING_RECORDED` | `3.10eg` ×2 | nothing — the type has no target |
 
 Row links into other modules cross pages, so they are wired in the demo rather than on this page. **A row opens the engagement as it stands on its snapshot's date**, not as it stood when the notification was sent (ruled for M5 on 2026-09-24): on 2 Sep the tutoring engagement's live item is Dilrukshi's pending request, so both tutoring rows open `5.9`; by 4 Sep it is cancelled, so they open `5.2tc`; and on 5 Sep the rating the *Rate your engagement* row announced has been given and revealed, so that row opens the engagement (`5.2d`).
 
@@ -1708,7 +1771,7 @@ Marked † in the navigation lines above. The timeout is in seconds.
 - **`Notification badge`** is `true` on the Browse screens and `false` on the history screens you are
   already looking at.
 - **`Role`** is Worker, Employer or Verifier. That property alone says which history (`3.10*`,
-  `3.10e`/`3.10ea`/`3.10ez`, `3.10v`/`3.10vz`) a screen belongs to.
+  `3.10e`/`3.10ea`/`3.10ez`/`3.10ed`/`3.10eg`, `3.10v`/`3.10vz`) a screen belongs to.
 
 **Tab destinations are not drawn on this page.** The demo routes them per role and per journey, so from
 Thursday's Browse the Notifications tab opens Thursday's history. Where this page does wire a tab — the
@@ -1729,8 +1792,8 @@ same rule.
 
 ## Open, and carried to the modules that own them
 
-- **M1's Settings (`1.10`) holds the same two toggles as `3.11`, drawn Off.** FR-NOTIF-03 puts them in
-  Settings; one of the two screens has to go or defer to the other. This is settled when M1 is specified.
+- *Closed in the M1 pass (2026-09-24):* M1's Settings no longer repeats the toggles. Each role's Settings
+  has one *Notification preferences* row, opening `3.11`, `3.11e` or `3.11v`.
 - **One notification has no type.** M8's revocation promises "the person is told", but there is no
   `NotificationType` or A11 row for it — a requirements gap, not a prototype one. (FR-APPLY-10's notice to
   pending applicants was the other; it became `APPLICATION_TERMS_CHANGED` on 2026-09-23.)

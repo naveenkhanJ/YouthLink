@@ -187,7 +187,7 @@ distinction exists to prevent.
 | `Display/ListingCard` | `State`: Default · Urgent | 328×134 · vertical, pad 16, gap 6 · r8 | `title` · `meta` · `pay` · `fill` — all four **FILL width and wrap** (296 at 100%) |
 | `Display/ApplicantRow` | `Tier`: History · EndorsedNew · New<br>`Show endorsed`: boolean | 328×188 · vertical, pad 16, gap 8 · r8 | `nameRow` · `trustRow` · `note` · `Action/ListRowAction` |
 | `Display/EngagementRow` | `Action`: Required · None | 328×116 · vertical, pad 16, gap 8 · r8 | `topRow` · `posting` · `nextAction` |
-| `Display/NotificationRow` | `Type`: Standard · Digest | 328×108 · horizontal, pad 12, gap 10 · r8 | `unreadDot` 8×8 · `content` frame, **FILL**, vertical, gap 2 — `title` and `body` wrap at 286; `time` hugs |
+| `Display/NotificationRow` | `Type`: Standard · Digest | 328×108 · horizontal, pad 12, gap 10 · r8 | `unreadDot` 8×8 · `content` frame, **FILL**, vertical, gap 2 — `title` and `body` wrap at 286; `time` hugs. `time` is relative up to seven days (*2h ago*, *7d ago*) and a date with its year beyond that (*2 Aug 2026*) |
 | `Display/EndorsementRow` | `State`: Default · Revoked<br>`Show revoke`: boolean | 328×124 · vertical, pad 16, gap 8 · r8 | `nameRow` · `relationship` · `attributes` · `revokeAction` |
 | `Display/ProfileTrustBlock` | `Tier`: ZeroHistory · History | 328×84 · vertical, pad 16, gap 8 · r8 | `headline` · `endorsedBy` |
 | `Display/CodePanel` | `View`: Holder · Enterer · PaymentGate | 328×132 · vertical, pad 16, gap 12 · r8 | `codeBox` 132×48 · `instruction` |
@@ -330,7 +330,7 @@ different screen, so they are stated here as rules rather than enumerated:
 
 | State | Compose it as |
 | --- | --- |
-| A field is invalid | the same screen with that `Input/*` at `State=Error`, and `Feedback/FieldError` directly beneath it |
+| A field is invalid | the same screen with that `Input/*` at `State=Error`, and `Feedback/FieldError` directly beneath it. **Hide the field's own built-in error line** (`TextField`, `PhoneField`, `DateTimeField`, `CodeInputNumeric` each carry one, with generic copy such as *Required*): the `FieldError` carries the message for the situation, and showing both prints two messages that can contradict each other. A value the person typed keeps `color/text/primary` in the `Error` state |
 | The whole submission fails | as above, plus `Feedback/FormBanner {Kind=Error}` at the top of the content area |
 | A list has nothing to show | `Feedback/EmptyState` replacing the list — `Cause=NoneExist` when there is genuinely nothing, `Cause=FiltersExclude` when filters are hiding it. The two differ: one offers to widen the search, the other to clear filters |
 | Content is being fetched | `Feedback/LoadingState` in place of the content, for any operation that can exceed the perceptible threshold (`NFR-PERF-01`) |

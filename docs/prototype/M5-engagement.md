@@ -2021,5 +2021,6 @@ Saturday 5 Sep; Nethmi's `5.1nw` / `5.1n` either side of her cancellation; and f
 
 ## Open, and carried to the modules that own them
 
-- **M1, M3: Dilrukshi's and R. Gunasekara's Notifications and Profile tabs** still open Lanka Events'
-  screens. Their Engagements tab now opens the empty employer list (`5.1ez`), which is true for both.
+- *Closed in the M1 pass (2026-09-24):* Dilrukshi's and R. Gunasekara's Notifications and Profile tabs open
+  their own screens ([M3](M3-discovery.md) `3.10ed`/`3.10eg`, [M1](M1-account.md) `1.18ed`/`1.18eg`); their
+  Engagements tab opens `5.1ez`, which is true for both.
