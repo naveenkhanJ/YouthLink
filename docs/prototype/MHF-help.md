@@ -99,24 +99,31 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
   FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 12
     TEXT pageTitle 328x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "How endorsement works"
     TEXT lead 328x80 [FILL/HUG] · fill color/text/primary · mobile/secondary · "Someone new has no ratings, and no ratings means no work — which is how they stay new. An endorsement lends them somebody else's standing until they have their own."
-    TEXT step 328x120 [FILL/HUG] · fill color/text/primary · (no style) · "Who can vouch — a verified member of the community who actually knows the person — a former teacher, a neighbour, someone they have worked for. They vouch using the person's endorsement code, or by searching their phone number."
+    TEXT step 328x120 [FILL/HUG] · fill color/text/primary · (no style) · "Who can vouch — someone registered as a Community Verifier who actually knows the person — a former teacher, a neighbour, someone they have worked for. They vouch using the person's endorsement code, or by searching their phone number."
       · run mobile/secondary-medium "Who can vouch"
-      · run mobile/secondary " — a verified member of the community who actually knows the person — a former teacher, a neighbour, someone they have worked for. They vouch using the person's endorsement code, or by searching their phone number."
+      · run mobile/secondary " — someone registered as a Community Verifier who actually knows the person — a former teacher, a neighbour, someone they have worked for. They vouch using the person's endorsement code, or by searching their phone number."
     TEXT step 328x120 [FILL/HUG] · fill color/text/primary · (no style) · "What it shows — the endorsement appears on the profile and beside the name in an employer's applicant list, naming the voucher and the traits they vouched for. Employers see applicants ordered by trust: rating history first, then endorsed, then new."
       · run mobile/secondary-medium "What it shows"
       · run mobile/secondary " — the endorsement appears on the profile and beside the name in an employer's applicant list, naming the voucher and the traits they vouched for. Employers see applicants ordered by trust: rating history first, then endorsed, then new."
-    TEXT step 328x80 [FILL/HUG] · fill color/text/primary · (no style) · "When it ends — an endorsement closes the moment the person receives their first rating. From then on their own record speaks for them, and their endorsement code stops working."
+    TEXT step 328x120 [FILL/HUG] · fill color/text/primary · (no style) · "When it ends — the chance to be vouched for closes the moment the person receives their first rating: no one new can vouch for them, by code or by phone search, and their own record comes first from then on. Endorsements they already have stay on their profile."
       · run mobile/secondary-medium "When it ends"
-      · run mobile/secondary " — an endorsement closes the moment the person receives their first rating. From then on their own record speaks for them, and their endorsement code stops working."
-    TEXT footnote 328x100 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "A voucher can withdraw an endorsement at any time before it closes, and the person is told. An endorsement is a starting push, not a guarantee — it never overrides what someone's own ratings say."
+      · run mobile/secondary " — the chance to be vouched for closes the moment the person receives their first rating: no one new can vouch for them, by code or by phone search, and their own record comes first from then on. Endorsements they already have stay on their profile."
+    TEXT footnote 328x80 [FILL/HUG] · fill color/text/secondary · mobile/secondary · "A voucher can revoke an endorsement at any time, and the person is told. An endorsement is a starting push, not a guarantee — it never overrides what someone's own ratings say."
 ```
 
 **"No ratings means no work — which is how they stay new"** is the cold-start problem stated plainly, and
 it is the reason the whole endorsement mechanism exists. The lead is the product's argument, not filler.
 
-**The endorsement closes on the first rating, and the code stops working.** That is a state transition to
-build, not a policy to remember: `FR-ENDORSE-05`'s eligibility window ends at the first rating, so the
-code must be rejected after it.
+**The chance to be vouched for closes on the first rating — not the endorsements already given.** That is
+a state transition to build, not a policy to remember: `FR-ENDORSE-05`'s eligibility window ends at the first
+rating, so the code and the phone search must both refuse new vouches after it, while existing endorsements
+keep showing (`FR-ENDORSE-10`, as amended 2026-09-24 — M1 `1.18n` shows Nethmi's two beside her twelve
+ratings). Until 2026-09-24 the page said the endorsement itself closed, and that a voucher could withdraw
+only *before it closes*; neither was true.
+
+**Who can vouch** is *someone registered as a Community Verifier*, not "a verified member of the community":
+`FR-ENDORSE-01` puts no vetting on the role beyond the 18+ gate, so "verified" promised a check that does not
+exist. **Revoking** uses the product's one verb, and *the person is told* is now backed by `ENDORSEMENT_REVOKED`.
 
 ### `HF.4` — How disputes are resolved
 

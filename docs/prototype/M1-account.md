@@ -4122,6 +4122,7 @@ name and the badge do not fit on one line, the row wraps and the badge goes bene
 | The **deletion refused by a wrong password** | `1.17p` with the field `{State=Error}` and `1.12err`'s message |
 | A **code-login** code that is wrong or expired | `1.3err2` / `1.3err1` on the `1.7` layout |
 | A **login screen with the number remembered** for Dilrukshi, Gunasekara or Nethmi | `1.6` with their number; their sign-outs land on the empty `1.6emp` instead |
+| **Ratings received, listed** — opened from the rating summary on the own profile (`FR-ENG-14` as amended 2026-09-24: a rating stays reachable after its engagement leaves the Engagements list) | M6 `6.3`'s rating cards for every engagement, newest first, each with *Write a public response* / *Request removal* as on `6.3` and `6.3s`; the summary line (`avg` · `count`) becomes the link |
 
 ## Open, and carried to the modules that own them
 

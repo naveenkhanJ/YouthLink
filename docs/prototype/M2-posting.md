@@ -1497,6 +1497,7 @@ start inside the coming week and writes the date out for anything later.
 | **Re-confirmation window** (FR-ENG-09, amended 2026-09-23) | 48 hours or half the time left before the start, whichever is shorter — `2.11e2` and `2.11c` state Nethmi's deadline. One pending re-confirmation at a time, so `2.11c` disables Edit |
 | **The minimum lead time blocks** (FR-POST-05) | `2.8err`: Review posting disabled until the start is 2 hours away or more |
 | **A hidden posting's owner sees the status, not the count** (FR-DISPUTE-02, A25) | `2.10g`, `2.11g` |
+| **A closed posting stays on its owner's list for 30 days after it closes; an Open one always shows** (FR-POST-13, as amended 2026-09-24) | Every `2.10*` — which is why Lanka Events' list holds only its recent postings despite 23 completed engagements: everything it closed before the end of July has left the list |
 | **A form is kept on the device, never on the server** (FR-POST-15 as amended for E9) | `2.9bnr`, `2.1rst`, and the Post a Gig tab on `2.10b` / `2.10db` returning to the kept form |
 
 ## What the collapsed chrome hides

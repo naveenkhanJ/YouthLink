@@ -287,7 +287,7 @@ Minor changes (title/description only) create no row — no re-confirmation requ
 | `note`         | String(300)               | nullable          | Pre-filled from `User.bio`, editable per application, never writing back to the bio (FR-APPLY-02, FR-PROF-04) |
 | `status`       | Enum(`ApplicationStatus`) | default `PENDING` | FR-APPLY-02/03/08/09                                                                                          |
 | `appliedAt`    | DateTime                  |                   |                                                                                                               |
-| `decidedAt`    | DateTime                  | nullable          |                                                                                                               |
+| `decidedAt`    | DateTime                  | nullable          | Set for every decided state — Selected, Declined and Not selected, including FR-APPLY-09's automatic closure. Anchors FR-APPLY-12's 30-day list window (amended 2026-09-24) |
 | `withdrawnAt`  | DateTime                  | nullable          | FR-APPLY-03                                                                                                   |
 
 App-level constraint: at most one `Application` per (`gigPostingId`, `workerId`) in status `PENDING` or `SELECTED` — a withdrawn applicant may reapply while the posting is still Open (FR-APPLY-03 AC), so a plain composite unique key would be wrong. No cap on pool size (FR-APPLY-11).
@@ -433,7 +433,13 @@ Completion rate is computed at query time; no stored aggregate.
 
 **`attributes` is an enum array, not free text, and it is optional.** Added 2026-08-27 for FR-ENDORSE-04's amendment. A fixed list (`PUNCTUALITY`, `HONESTY`, `RELIABILITY`, `SPECIFIC_SKILL`, `LENGTH_OF_ACQUAINTANCE`) rather than free text, because the value is in an employer being able to compare like with like across endorsements — free text would not be comparable and would duplicate what `reason` already does. An empty array is valid and must stay valid: the requirement's single-action principle means a Verifier can vouch without selecting anything. **Display rule with a real failure mode:** only selected attributes may be shown. Rendering the unselected ones greyed out, or as an implied "not attested" list, would turn an optional field into a negative signal about the worker — the opposite of what the endorsement exists to do.
 
-**No unique constraint on (`endorserId`, `workerId`)** and no per-worker cap — FR-ENDORSE-08 explicitly allows unlimited endorsers per worker.
+**No per-worker cap** — FR-ENDORSE-08 allows unlimited endorsers per worker — **but one active endorsement per endorser per worker** (FR-ENDORSE-08 as amended 2026-09-24): a repeated vouch would count twice in "Endorsed ×n" and in the endorser's track record. A plain composite unique key would be wrong, because a revoked endorsement may be replaced while the worker is still eligible, so the constraint is partial:
+
+```
+UNIQUE INDEX ON Endorsement(endorserId, workerId) WHERE revokedAt IS NULL
+```
+
+Prisma cannot declare a partial index, so it is created in a raw-SQL migration, like the `User` indexes above. The application also checks before submit and maps the constraint failure (two devices submitting at once) to the same refusal.
 
 **One endorsement covers every application** made while the worker is still zero-history (FR-ENDORSE-06) — so nothing links an `Endorsement` to an `Application`. Tier-2 placement in the applicant pool is computed from "an active endorsement exists," not from a per-application record.
 
@@ -573,6 +579,8 @@ Indexed on (`userId`, `readAt`) and (`adminAccountId`, `readAt`).
 
 The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counting `type = URGENT_GIG` rows with a non-null `pushSentAt` in the trailing 24 hours — no counter column, so it can't drift out of sync.
 
+**History retention** (FR-NOTIF-08 as amended 2026-09-24) is a query window, not a column: the history shows rows with `createdAt` in the last 30 days, and `WARNING_RECORDED` rows for 90 days. The same shape bounds the worker's application list (FR-APPLY-12, from `Application.decidedAt`/`withdrawnAt`) and the engagements list (FR-ENG-14, from the end of the rating window). Whether old rows are also purged is an operational choice; the lists never show them.
+
 **Preferences** live on `User` as two booleans, not a separate table — FR-NOTIF-03 defines exactly two toggles.
 
 **Urgent vs. regular channel separation** (FR-NOTIF-10) is a send-time decision driven by `type`; the enum already carries the distinction, so no extra column is needed.
@@ -611,7 +619,7 @@ The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counti
 | `AuditAction`               | `CASE_REVIEW_OPENED`, `CLARIFICATION_REQUESTED`, `WARNING_RECORDED`, `CASE_CLOSED_NO_ACTION`, `CASE_ESCALATED`, `DISPUTE_RULED`, `CONTENT_RESTORED`, `CONTENT_ESCALATED`, `POSTING_REMOVED`, `RATING_REMOVED`, `ACCOUNT_SUSPENDED`, `USER_PROMOTED`, `STAFF_PASSWORD_RESET`, `STAFF_ACCESS_REMOVED`, `METRICS_EXPORTED`, `ACCOUNT_RECOVERY_APPROVED`, `ACCOUNT_RECOVERY_REJECTED` — batch A29 (2026-08-27), **corrected 2026-09-20 against the actions the dashboard actually performs.** A closed enum is only safe when it is closed over the vocabulary that exists; A29's ten values were derived from "one per Module 10 acting surface", and the audit log is a Module 11 surface that also receives staff-administration and metrics actions. Six values were missing outright, and `CASE_WARNING_CLOSED` was renamed — recording a warning against a **user** and closing a case against a **report** are two acts, not one |
 | `AuditTargetType`           | `USER`, `POSTING`, `RATING`, `DISPUTE_CASE`, `REPORT`, `ADMIN_ACCOUNT`, `PLATFORM_METRICS` — batch A29; `PLATFORM_METRICS` added 2026-09-20 as the target of a metrics export (`FR-DASH-04`, `NFR-OPS-02`), which none of the other six covers |
 | `AccountRecoveryStatus`     | `AWAITING_REVIEW`, `APPROVED`, `REJECTED` — added 2026-09-20 (batch E8). Three values and no more: the review offers exactly two actions, and there is no Moderator stage for a request to be under review for |
-| `NotificationType`          | `URGENT_GIG`, `NEW_GIG`, `URGENT_DIGEST`, `APPLICATION_RECEIVED`, `APPLICATION_SELECTED`, `APPLICATION_DECLINED`, `APPLICATION_NOT_SELECTED`, `APPLICATION_TERMS_CHANGED`, `MATERIAL_CHANGE`, `CANCELLATION_REQUEST`, `END_ENGAGEMENT`, `STALLED_ENGAGEMENT_PROMPT`, `NEW_DISPUTE_CASE`, `CLARIFICATION_REQUEST`, `ENDORSEMENT_RECEIVED`, `ENDORSEMENT_PAYOFF`, `NO_APPLICANT_NUDGE`, `CANCELLATION_RESOLVED`, `RATING_WINDOW_OPEN`, `RATING_REVEALED`, `DISPUTE_OPENED`, `DISPUTE_RESOLVED`, `FLAGGED_CONTENT_OUTCOME`, `WARNING_RECORDED` *(six added 2026-08-27, batches A18/A23/A25; `APPLICATION_TERMS_CHANGED` added 2026-09-23 for FR-APPLY-10; `WARNING_RECORDED` added 2026-09-24 for FR-NOTIF-12)* |
+| `NotificationType`          | `URGENT_GIG`, `NEW_GIG`, `URGENT_DIGEST`, `APPLICATION_RECEIVED`, `APPLICATION_SELECTED`, `APPLICATION_DECLINED`, `APPLICATION_NOT_SELECTED`, `APPLICATION_TERMS_CHANGED`, `MATERIAL_CHANGE`, `CANCELLATION_REQUEST`, `END_ENGAGEMENT`, `STALLED_ENGAGEMENT_PROMPT`, `NEW_DISPUTE_CASE`, `CLARIFICATION_REQUEST`, `ENDORSEMENT_RECEIVED`, `ENDORSEMENT_PAYOFF`, `NO_APPLICANT_NUDGE`, `CANCELLATION_RESOLVED`, `RATING_WINDOW_OPEN`, `RATING_REVEALED`, `DISPUTE_OPENED`, `DISPUTE_RESOLVED`, `FLAGGED_CONTENT_OUTCOME`, `WARNING_RECORDED`, `ENDORSEMENT_REVOKED` *(six added 2026-08-27, batches A18/A23/A25; `APPLICATION_TERMS_CHANGED` added 2026-09-23 for FR-APPLY-10; `WARNING_RECORDED` added 2026-09-24 for FR-NOTIF-12; `ENDORSEMENT_REVOKED` added 2026-09-24 for FR-ENDORSE-07)* |
 
 ---
 

@@ -678,6 +678,10 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-27 (batch A9) — implementation note.** Expiry is specified and schema-backed but unimplemented: `GigPosting.expiresAt` exists, `posting.service.js` never sets it, and no expiry job exists. Since the 2026-08-27 lifecycle rewiring made this requirement one of the three load-bearing guarantees that every application reaches a definite outcome (with FR-APPLY-09 and FR-APPLY-12), implementation is required before Sprint 3 features build on it.
 
+> **Amended 2026-09-24 (prototype completion review) — how long a closed posting stays on its owner's list.** "Archive" said where an expired posting goes but not how long its owner still sees it, and no requirement bounded the employer's own postings list. **An Open posting always shows on its owner's list; a closed one (Filled, expired, withdrawn, removed) shows for 30 days after it closed**, the same window as the worker's application list (FR-APPLY-12) and the engagements list (FR-ENG-14). Its engagements continue in Engagements under their own rule.
+>
+> **Acceptance Criteria (added 2026-09-24):** Given a posting closed more than 30 days ago, when its owner opens their postings list, then it is not shown.
+
 #### FR-POST-14 — Slot-fill status display
 
 | Actor(s) | Priority |
@@ -1003,7 +1007,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 **Acceptance Criteria:**
 
-- Given a worker has submitted applications, when they open their application list, then every application they have submitted appears with its current state.
+- Given a worker has submitted applications, when they open their application list, then every pending application, and every decided or withdrawn one from the last 30 days, appears with its current state.
 - Given an application is Pending, when displayed, then its posting's expiry date is shown alongside it.
 - Given an application is Pending on a multi-slot posting, when displayed, then the posting's fill status is shown as well.
 - Given a posting closes for any reason — Filled, expired, or withdrawn — when the list is next rendered, then no application on that posting is still shown as Pending (FR-APPLY-09).
@@ -1016,6 +1020,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 
 > **Amended 2026-08-27 (batch A13) — implementation alignment, requirement unchanged.** `getMyApplications()` predates this requirement (written 19 August; requirement added 27 August): it orders by `appliedAt: "desc"` and returns neither the posting-expiry date nor fill status. The query changes to order by soonest posting expiry and return both fields — the code is wrong here, not the requirement.
+
+> **Amended 2026-09-24 (prototype completion review) — how long a resolved application stays.** "Every application they have submitted" was unbounded: a worker with a year of history would scroll past dozens of outcomes they learned long ago to find the one that matters, and no drawn list could be true for anyone established. **A pending application always shows; a decided (Selected, Declined, Not selected — including the automatic closure of FR-APPLY-09) or withdrawn application shows for 30 days after it resolved, then leaves the list.** The purpose this requirement was added for — every application reaches a definite, visible outcome — is untouched: the outcome is on the list for 30 days, and a Selected application's work continues in Engagements (FR-ENG-14). The list states the rule in its footer. No schema change: the window runs from `Application.decidedAt` or `withdrawnAt`.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given an application was decided or withdrawn more than 30 days ago, when the worker opens the list, then it is not shown; a pending application is shown however old it is.
 
 ### 3.6 FR-ENG — Engagement Lifecycle
 
@@ -1264,7 +1274,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 
 **Acceptance Criteria:**
 
-- Given a user has one or more Engagements in any state, when they open their engagements list, then every Engagement they are party to appears with counterparty, posting, status, and next required action.
+- Given a user has one or more Engagements in any state, when they open their engagements list, then every Engagement they are party to that is still running or owes them an action, and every finished one within the window below, appears with counterparty, posting, status, and next required action.
 - Given an Engagement requires something of the viewing party (a code entry, a re-confirmation, a cancellation response, an unclaimed rating), when the list renders, then that Engagement surfaces the required action rather than only a status label.
 
 > **Added 2026-08-27 (batch A14).** FR-ENG previously specified thirteen state transitions and no container — every engagement screen hung off a list no requirement described, while `Engagement`'s `@@index([workerId, status])` and `@@index([employerId, status])` already encoded exactly this query. FR-APPLY-12 was added for precisely the same reason on the applications side.
@@ -1275,6 +1285,13 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 
 - Given an Engagement where only the other party owes an action, when the viewer's list renders, then the row shows its status and no action line.
 - Given an Engagement with an open cancellation request, when the list renders, then its status reads Active and the responding party's row carries the response and its deadline as the action.
+
+> **Amended 2026-09-24 (prototype completion review) — how long a finished engagement stays.** "Every Engagement they are party to" was unbounded, so no established account's list could be drawn truthfully — an employer with 23 completed engagements would see them all above today's work. **An Active or Disputed Engagement, and any Engagement where the viewer still owes an enforced action (a code, a re-confirmation, a cancellation response, an enforced rating), always shows. A finished Engagement (Completed, Cancelled, Ended) with nothing left for the viewer shows until 30 days after its rating window closes** — at reveal, or 14 days after rating opened (FR-RATE-02); for a no-show ruling that skips rating (FR-ADM-08), 30 days after the ruling. A cancelled Engagement's optional rating (FR-RATE-05) opens at the cancellation, so the same window applies without making the rating an owed action. After that the engagement leaves the list; the profile keeps the aggregate record (ratings, completion, jobs), and **a rating received stays reachable from the profile's rating summary**, so a public response or a removal request (FR-RATE-06) has no time limit. No schema change — the window is computed from `ratingOpenedAt`, the reveal, and the case record.
+
+**Acceptance Criteria (added 2026-09-24, retention):**
+
+- Given a finished Engagement whose rating window closed more than 30 days ago and which owes the viewer nothing, when the list renders, then it is not shown.
+- Given an Engagement that has left the list, when the viewer opens their profile's rating summary, then any rating received on it is still reachable, with its response and removal actions.
 
 ### 3.7 FR-RATE — Ratings & Reputation
 
@@ -1454,6 +1471,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a Verifier revokes an endorsement, when the revocation is submitted, then the endorsement badge no longer displays on the worker's profile going forward; any hire that already occurred while it was active is unaffected.
+- Given a Verifier revokes an endorsement, when the revocation is submitted, then the worker is notified (`ENDORSEMENT_REVOKED`, FR-NOTIF-07); no reason is given, because none is recorded. *(Added 2026-09-24: the help content promised that the person is told, and no notification type could tell them. A zero-history worker drops from the endorsed tier to the new tier of every applicant pool when an endorsement goes, so silence would leave them wondering why.)*
 
 #### FR-ENDORSE-08 — Uncapped endorsements per worker
 
@@ -1466,6 +1484,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a worker already has one active endorsement, when a second Verifier submits a vouch for the same worker, then it is accepted alongside the first.
+- Given a Verifier already has an active endorsement of a worker, when they try to vouch for the same worker again, then the second vouch is refused; after revoking, they may vouch again while the worker is still eligible (FR-ENDORSE-05). *(Added 2026-09-24: the cap is on Verifiers, not on one Verifier's vouches — a repeated vouch would count twice in the applicant pool's "Endorsed ×n" and in the Verifier's own track record, FR-ENDORSE-11. Enforced by a partial unique index on active endorsements.)*
 
 #### FR-ENDORSE-09 — Endorsement notification to worker
 
@@ -1478,6 +1497,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a vouch is submitted via either FR-ENDORSE-02 or FR-ENDORSE-03, when it completes, then the endorsed worker receives a notification.
+- Given an endorsement is revoked, when the revocation completes, then the worker is notified as well (FR-ENDORSE-07, added 2026-09-24).
 
 #### FR-ENDORSE-10 — Endorsement display
 
@@ -1491,6 +1511,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 
 - Given an active endorsement is displayed on a worker's profile or applicant card, when rendered, then the endorsing Verifier's real name is shown alongside it.
 
+- Given a worker's endorsement eligibility has closed (FR-ENDORSE-05), when their profile renders, then their active endorsements still display; only new vouches are refused. *(Added 2026-09-24: eligibility governs who can be vouched for, not how long an endorsement shows.)*
 
 > **Amended 2026-08-27 (batch A24).** Reconciled with FR-ENDORSE-08's uncapped count: five endorsers cannot render five names on an applicant-pool card. Never-anonymous is preserved where it matters — every name and its attributes present at the detail surface — while the card carries badge + count. The previous AC required the name alongside the badge wherever rendered, which was written before anyone multiplied it by an uncapped N.
 
@@ -2036,12 +2057,13 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 | --------------------------------------------- | -------- |
 | Youth Job-Seeker, Community Verifier/Endorser | Should   |
 
-**Requirement:** The system shall notify a worker when they receive an endorsement (FR-ENDORSE-09) and notify a Verifier when their endorsement "pays off" (FR-ENDORSE-12).
+**Requirement:** The system shall notify a worker when they receive an endorsement (FR-ENDORSE-09) or one is revoked (FR-ENDORSE-07), and notify a Verifier when their endorsement "pays off" (FR-ENDORSE-12).
 
 **Acceptance Criteria:**
 
 - Given an endorsement is submitted, when it completes, then the worker is notified.
 - Given an endorsed worker's first rated Engagement reaches ≥4.0, when finalized, then the Verifier is notified.
+- Given a Verifier revokes an endorsement, when it completes, then the worker is notified (`ENDORSEMENT_REVOKED`, added 2026-09-24).
 
 #### FR-NOTIF-08 — In-app notification history
 
@@ -2054,6 +2076,10 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given a user dismisses or misses a push notification, when they open the notification history screen, then that notification's content is still retrievable there.
+
+> **Amended 2026-09-24 (prototype completion review) — how long the history keeps a row.** Unbounded retention made every drawn history untrue for an established account. **The history keeps a row for 30 days; a `WARNING_RECORDED` row stays for 90 days**, the window warnings count in (FR-MOD-02), so the warned party can see every warning that still counts. 30 days covers every action a row can lead to — rating windows (14 days), dispute and clarification windows, re-confirmations — and the outcome of an application stays on its own list for the same 30 days (FR-APPLY-12).
+>
+> **Acceptance Criteria (added 2026-09-24):** Given a row older than 30 days (90 for `WARNING_RECORDED`), when the history renders, then it is not shown.
 
 
 > **Amended 2026-08-27 (batch A11).** Per-type presentation defined — `NotificationType` has 22 values (after batch additions) rendering from an untyped `Json` payload, and nothing previously stated what any history row contains. Row = title · one body line · tap target. Staff-directed `NEW_DISPUTE_CASE` renders on the dashboard queue, never here. The urgent **digest row expands** in place to its batched children (`batchedDigestId`), a notification containing notifications.
@@ -2083,6 +2109,9 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 > | `RATING_REVEALED` | Ratings are in | both ratings now visible | revealed ratings |
 > | `NO_APPLICANT_NUDGE` | No applicants yet on {title} | consider widening details | own posting |
 > | `WARNING_RECORDED` | A warning was recorded on your account | why (the kind of case) · how many in 90 days, and that a third leads to a suspension review | — *(no target; added 2026-09-24, FR-NOTIF-12)* |
+> | `ENDORSEMENT_REVOKED` | {name} revoked their endorsement | {name}'s endorsement no longer shows on your profile · work you already got isn't affected | own profile *(added 2026-09-24, FR-ENDORSE-07)* |
+>
+> *Count corrected 2026-09-24:* with `APPLICATION_TERMS_CHANGED`, `WARNING_RECORDED` and `ENDORSEMENT_REVOKED`, `NotificationType` has **25** values; the "22" above is the count when this table was written.
 
 #### FR-NOTIF-09 — Notification permission handling
 

@@ -1,6 +1,6 @@
 # M6 — Ratings
 
-Fourteen screens. Read [`design-system.md`](design-system.md) first — this file names components and text
+Sixteen screens. Read [`design-system.md`](design-system.md) first — this file names components and text
 styles rather than describing them, and that file is what the names mean.
 
 **Requirements this module serves:** `FR-RATE-01` · `FR-RATE-02` · `FR-RATE-03` · `FR-RATE-04` ·
@@ -29,13 +29,15 @@ engagement**, never an average carried between them.
 | `6.6` | `FR-RATE-03`, `FR-RATE-04`, `FR-RATE-05`, `FR-RATE-06` |
 | `6.6b` | `FR-RATE-04`, `FR-RATE-05` |
 | `6.6d` | `FR-ENG-09`, `FR-RATE-02`, `FR-RATE-05` |
+| `6.6n` | `FR-RATE-03`, `FR-RATE-04`, `FR-RATE-05`, `FR-RATE-06` |
+| `6.6nb` | `FR-RATE-02`, `FR-RATE-05` |
 
 **Sample content is Sri Lankan and consistent across the prototype.** *Saman Stores*, *Nethmi Jayasinghe* and
 *Dilrukshi Herath* are the same people on every screen that names them. Keep the names
 when reproducing a screen for review; replace them with real data in the product.
 
 **`6.3s`, `6.5`, `6.5b` and `6.1f` are a later branch, dated mid-October 2026**, after the story the other
-modules tell. Their scam employer, *S. Karunaratne*, and the part-time *Parcel packing — from home* job are
+modules tell. Their scam employer, *D. Munasinghe*, and the part-time *Envelope stuffing — from home* job are
 invented for this branch and appear nowhere else: no one in the main story fits (Kavindu never engaged with
 R. Gunasekara, whose Data entry posting he reported before applying — M3 `3.12g`), and a one-sided reveal
 needs the 14-day window to have closed. Ruled on 2026-09-24.
@@ -119,7 +121,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Parcel packing — from home · S. Karunaratne"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Envelope stuffing — from home · D. Munasinghe"
     TEXT q 328x28 [FIXED/HUG] · fill color/text/primary · mobile/title · "Rating is closed"
     TEXT closedBody 328x96 [FIXED/HUG] · fill color/text/secondary · mobile/body · "The reveal date passed, so ratings for this engagement are final. Submitting now — after you can see their rating — wouldn't be fair to either of you."
     FRAME spacer-grow 8x518 [FIXED/FILL]
@@ -258,7 +260,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 ### `6.3s` — Revealed ratings · scam engagement, one-sided reveal
 
 **The case `FR-RATE-02` and `FR-RATE-06` exist for.** One party never rated, the window closed, and the
-other party's rating stands — on an engagement where no work ever happened: S. Karunaratne selected Kavindu
+other party's rating stands — on an engagement where no work ever happened: D. Munasinghe selected Kavindu
 for a part-time job that turned out to be a scam, ended the engagement before any work, and rated him 1 of
 5. Kavindu reported the posting and did not rate, so when the 14 days ran out only the fabricated rating was revealed. The first card shows *no stars at
 all*, not zero stars, because "didn't rate" and "rated badly" must not look alike.
@@ -276,12 +278,12 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Ratings"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 12
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Parcel packing — from home · S. Karunaratne"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Envelope stuffing — from home · D. Munasinghe"
     FRAME rating-you-none 328x70 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
       TEXT who 244x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "You didn't rate this engagement"
       TEXT echo 158x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Submission closed at reveal"
     FRAME rating-counterparty 328x96 [FILL/HUG] · vertical pad 12/14/12/14 gap 6 · fill color/bg/default · r8
-      TEXT who 190x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "S. Karunaratne rated you"
+      TEXT who 190x24 [HUG/HUG] · fill color/text/primary · mobile/body-medium · "D. Munasinghe rated you"
       FRAME stars 124x20 [HUG/HUG] · horizontal pad 0 gap 6
         STAR star1 20x20 [FIXED/FIXED] · fill color/badge/rating
         STAR star2 20x20 [FIXED/FIXED] · fill color/border/default
@@ -334,7 +336,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: S. Karunaratne rated you 1 of 5"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: D. Munasinghe rated you 1 of 5"
     TEXT explainer 328x120 [FIXED/HUG] · fill color/text/primary · mobile/body · "If a rating breaks the rules — for example it rates an engagement that never happened — you can ask for it to be removed. Your request goes straight to a YouthLink admin."
     INSTANCE groundsField 328x98 [FILL/HUG] · vertical pad 12 gap 0 · fill color/bg/default · stroke color/border/default 1 · r8 · of Input/TextArea · {State=Filled}
       TEXT value 302x72 [FILL/HUG] · fill color/text/primary · mobile/body · "This engagement never took place — the job was a scam, and I reported it. The rating is fabricated."
@@ -360,7 +362,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
     TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Request removal"
   FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
-    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: S. Karunaratne rated you 1 of 5"
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "About: D. Munasinghe rated you 1 of 5"
     TEXT explainer 328x72 [FIXED/HUG] · fill color/text/primary · mobile/body · "Sent — a YouthLink admin will review your request. The rating stays visible until they decide, and you'll see any change here."
     FRAME spacer-grow 8x522 [FIXED/FILL]
     INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
@@ -463,6 +465,65 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 Added 2026-09-24. The same screen as `6.6b` for the other tutoring branch: Kavindu declined Dilrukshi's start-time
 change on Sun 30 Aug 2026, which cancels at once (FR-ENG-09 rule 5) and opens rating then, so the date is
 **13 Sep 2026**. A separate frame because the date and the engagement it returns to (`5.11dr`) differ.
+### `6.6n` — Rate cancelled engagement · Nethmi Jayasinghe (Event setup crew)
+
+**Reached from** [M5](M5-engagement.md) `5.2nc` ("Rate now")  ·  **Leads to** `6.6nb`  ·  **Exits** back → `5.2nc`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rate"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Cancelled"
+    TEXT survivalNote 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "This engagement was cancelled, but you can still rate how it was handled."
+    TEXT q 328x56 [FIXED/HUG] · fill color/text/primary · mobile/title · "How was working with Lanka Events (Pvt) Ltd?"
+    INSTANCE Input/StarInput 172x56 [HUG/HUG] · vertical pad 0 gap 8 · {State=Selected}
+      FRAME stars 172x28 [HUG/HUG] · horizontal pad 0 gap 8
+        STAR star1 28x28 [FIXED/FIXED] · fill color/badge/rating
+        STAR star2 28x28 [FIXED/FIXED] · fill color/badge/rating
+        STAR star3 28x28 [FIXED/FIXED] · fill color/badge/rating
+        STAR star4 28x28 [FIXED/FIXED] · fill color/border/default
+        STAR star5 28x28 [FIXED/FIXED] · fill color/border/default
+      TEXT echo 76x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "3 of 5 stars"
+    TEXT blindNote 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "They won't see your rating until you've both rated, or 14 days pass from when rating opened."
+    FRAME spacer-grow 8x352 [FIXED/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 103x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Submit rating"
+```
+
+Added 2026-09-24. `6.6` for Nethmi's cancelled engagement: she cancelled it herself, late, and can still rate
+how Lanka Events handled it — the start-time change, the re-confirmation — because rating a cancelled
+engagement does not depend on who cancelled (`FR-RATE-05`). `survivalNote` and `blindNote` are `6.6`'s,
+unchanged; three stars chosen, so *Submit rating* is live.
+
+### `6.6nb` — Rate cancelled engagement · Nethmi's rating submitted, awaiting reveal
+
+**Reached from** `6.6n`, [M5](M5-engagement.md) `5.2ncr` ("View status")  ·  **Leads to** [M5](M5-engagement.md) `5.2ncr` ("Back to engagement")  ·  **Exits** back → history
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Rating"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 20/16/24/16 gap 14
+    TEXT context 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Event setup crew (3 needed) · Lanka Events (Pvt) Ltd"
+    FRAME sentGlyph 48x48 [FIXED/FIXED]
+      ELLIPSE Ellipse 48x48 [FIXED/FIXED] @0,0 · stroke color/state/success 2.5
+      VECTOR Vector 22x16 [FIXED/FIXED] @13,17 · stroke color/state/success 3
+    TEXT selfState 328x32 [FIXED/HUG] · fill color/text/primary · mobile/display · "Your rating is in"
+    TEXT unlockLine 328x48 [FIXED/HUG] · fill color/text/secondary · mobile/body · "Ratings unlock when both of you have rated, or on 12 Sep 2026."
+    FRAME spacer-grow 328x438 [FILL/FILL]
+    INSTANCE Action/Button 328x48 [FILL/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/brand/primary · r8 · {Style=Primary, State=Default}
+      TEXT label 158x24 [HUG/HUG] · fill color/text/inverse · mobile/body-medium · "Back to engagement"
+```
+
+Added 2026-09-24. Rating opened at the cancellation, Sat 29 Aug 2026, so it unlocks on **12 Sep 2026** unless
+Lanka Events rates first — the same date as her completed shift on the main line, because both open on the
+same day.
+
 ---
 
 ## States not drawn in this module

@@ -1960,6 +1960,12 @@ table gives that type. Bodies carry the content A11 names in whatever words fit.
 
 Row links into other modules cross pages, so they are wired in the demo rather than on this page. **A row opens the engagement as it stands on its snapshot's date**, not as it stood when the notification was sent (ruled for M5 on 2026-09-24): on 2 Sep the tutoring engagement's live item is Dilrukshi's pending request, so both tutoring rows open `5.9`; by 4 Sep it is cancelled, so they open `5.2tc`; and on 5 Sep the rating the *Rate your engagement* row announced has been given and revealed, so that row opens the engagement (`5.2d`).
 
+**How long a row stays** (`FR-NOTIF-08`, as amended 2026-09-24): **30 days**, and **90 days for
+`WARNING_RECORDED`**, the window warnings count in. That is what makes every history here true for an
+established account: Nethmi's `3.10n` holds only Thursday's rows because everything earlier — her July
+dispute ruling, her last ratings — is more than 30 days old, while Gunasekara's `3.10eg` still shows his
+14 Jul warning on 31 Aug–3 Sep, because it still counts.
+
 ## Transitions that are not clicks
 
 | Frame | Fires | After | To |
@@ -1994,11 +2000,11 @@ same rule. Nethmi's screens wire her own pair: `3.1n`/`3.1nc` → `3.10n` and ba
 | Filters and search **offline** | Inert, as on `3.1ofl`: both need the server |
 | **Application decision** rows (selected, declined, not selected) | A11 rows `APPLICATION_SELECTED` / `_DECLINED` / `_NOT_SELECTED`. They belong to 28 Aug–1 Sep, below the fold of every history drawn here |
 | **Endorsement received** (`ENDORSEMENT_RECEIVED`) | A11's row: *"{name} vouched for you"*, opening the worker's own profile |
+| **Endorsement revoked** (`ENDORSEMENT_REVOKED`, added 2026-09-24) | A11's row: *"{name} revoked their endorsement"*, body *"{name}'s endorsement no longer shows on your profile · work you already got isn't affected"*, opening the worker's own profile. No reason is shown — none is recorded (`FR-ENDORSE-07`) |
 
 ## Open, and carried to the modules that own them
 
 - *Closed in the M1 pass (2026-09-24):* M1's Settings no longer repeats the toggles. Each role's Settings
   has one *Notification preferences* row, opening `3.11`, `3.11e` or `3.11v`.
-- **One notification has no type.** M8's revocation promises "the person is told", but there is no
-  `NotificationType` or A11 row for it — a requirements gap, not a prototype one. (FR-APPLY-10's notice to
-  pending applicants was the other; it became `APPLICATION_TERMS_CHANGED` on 2026-09-23.)
+- *Closed 2026-09-24:* the revocation notice has a type, `ENDORSEMENT_REVOKED` (`FR-ENDORSE-07`, `FR-NOTIF-07`,
+  A11), specified in *States not drawn* above.

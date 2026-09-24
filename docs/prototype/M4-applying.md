@@ -72,7 +72,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT meta 192x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Sat 29 Aug 2026, 8:00 AM"
       INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -80,7 +80,8 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 the state, and the date the posting expires — a one-off gig expires at its start (FR-POST-13), so
 "Closes Sat 29 Aug 2026, 8:00 AM". A one-slot posting carries no fill count; multi-slot ones do.
 `orderNote` states the order, which is the requirement's: pending first, soonest closing first, resolved
-applications after.
+applications after — and how long a resolved one stays: **30 days after it was decided or withdrawn**
+(`FR-APPLY-12` as amended 2026-09-24). A pending application never leaves the list.
 
 **Every application list in this module is the same list at a later minute.** Each submission adds a row,
 and nothing already on it changes unless something happened to it. Until 2026-09-23 each application had
@@ -103,7 +104,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT meta 192x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Sat 29 Aug 2026, 8:00 AM"
       INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x180 [FIXED/HUG] @16,310 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -134,7 +135,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -206,7 +207,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT meta 253x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Fri 4 Sep 2026, 6:00 PM · 0 of 2 filled"
       INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -238,7 +239,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT meta 253x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Closes Fri 4 Sep 2026, 6:00 PM · 0 of 2 filled"
       INSTANCE Action/Link 73x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
         TEXT label 73x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Withdraw"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -277,7 +278,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -358,7 +359,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -397,7 +398,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x180 [FIXED/HUG] @16,310 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -443,7 +444,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -534,7 +535,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -584,7 +585,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -639,7 +640,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -738,7 +739,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -843,7 +844,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -901,7 +902,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -965,7 +966,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1071,7 +1072,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1139,7 +1140,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -1212,7 +1213,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1327,7 +1328,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1404,7 +1405,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
@@ -1486,7 +1487,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1555,7 +1556,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1628,7 +1629,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1661,7 +1662,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
           TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Selected"
       TEXT meta 201x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Contact shared — see engagement"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -1669,6 +1670,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 so her Event setup application is **Selected**, and like Kavindu's selected rows on `4.3r` it says
 *Contact shared — see engagement* and opens the engagement (`5.2n`), where a selected application's life
 continues. Nothing is pending, so there is no closing date to show.
+
+**One row is the whole list.** Nethmi has twelve completed jobs, each of which began as an application, but
+all of them — and the earlier cancellation behind her completion rate — resolved before the end of July,
+more than 30 days ago, so they have left the list (`FR-APPLY-12` as amended 2026-09-24; the footer says
+so). Their record is on her profile (M1 `1.18n`).
 
 ### `4.3njc` — My applications · Nethmi Jayasinghe, just after she cancels
 
@@ -1685,7 +1691,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/state/success
           TEXT label 50x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Selected"
       TEXT meta 284x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Engagement cancelled by you — see engagement"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
 ```
 
@@ -2900,7 +2906,7 @@ Rs 6,000 for the job — since 2026-09-23; both used to quote a daily rate.
 | Rule | Where it shows |
 | --- | --- |
 | **One confirmation screen, optional note** (FR-APPLY-02) | Every `4.1*`; the note is pre-filled from the bio when there is one (FR-PROF-04) — Kavindu has none on Thursday |
-| **The list shows every application with its state; pending ones with their closing date, and fill status on multi-slot postings** (FR-APPLY-12) | Every `4.3*` |
+| **The list shows every pending application, and every decided or withdrawn one for 30 days, with its state; pending ones with their closing date, and fill status on multi-slot postings** (FR-APPLY-12, as amended 2026-09-24) | Every `4.3*`; the window is stated in `orderNote` |
 | **Pending first, soonest closing first** (FR-APPLY-12) | `orderNote` on every list; resolved rows follow |
 | **Withdraw any pending application** (FR-APPLY-03) | Every pending row's Withdraw; `4.3cw` is the one taken |
 | **Pool tiers: history, endorsed, new** (FR-APPLY-04, earliest application first within tiers 2 and 3 as amended 2026-09-23) | `4.5` and every pool after it |
@@ -2961,10 +2967,8 @@ screens open her own list, `4.3nj` or `4.3njc`.
 
 ## Open, and carried to the modules that own them
 
-- **Nethmi's list shows one application** (`4.3nj`, `4.3njc`), while she has twelve completed jobs, each
-  of which began as an application — and `FR-APPLY-12` lists every application a worker has submitted. The
-  earlier rows, all resolved, would sit below the fold; they are not drawn. Open for a decision: draw them,
-  or amend `FR-APPLY-12` to show resolved applications for a limited period.
+- *Closed 2026-09-24:* Nethmi's one-row list is true — `FR-APPLY-12` now keeps a decided or withdrawn
+  application for 30 days, and every list's footer says so.
 
 - *Closed in the M5 pass (2026-09-24):* the Shop assistant engagement no longer offers End Engagement, and
   `5.3t`, which M2's `2.11f` opens on Thursday, now shows the engagement before its start.

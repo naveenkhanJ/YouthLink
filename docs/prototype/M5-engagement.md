@@ -1,6 +1,6 @@
 # M5 — Engagement lifecycle
 
-**Fifty-seven screens.** Everything after a selection: the engagements list for both parties, the check-in codes, cancellation under both regimes, re-confirming a changed gig, the stalled-engagement prompt, and the path into a dispute and back out of it after the ruling.
+**Fifty-eight screens.** Everything after a selection: the engagements list for both parties, the check-in codes, cancellation under both regimes, re-confirming a changed gig, the stalled-engagement prompt, and the path into a dispute and back out of it after the ruling.
 
 **Read *Every screen shows one moment* at the end first.** Kavindu Perera's Shop assistant engagement with Saman Stores follows one story — no code exchanged, an arrival dispute on Monday 31 Aug, the ruling on Friday 4 Sep — and the code-exchange path is a labelled branch beside it. Lanka Events' engagements (Nethmi Jayasinghe, Tharindu Silva) and Dilrukshi Herath's part-time tutoring job run alongside.
 
@@ -1368,7 +1368,7 @@ Her list after cancelling: *Cancelled*.
 
 ### `5.2nc` — Engagement detail · Nethmi's cancelled engagement
 
-**Reached from** `5.1n`  ·  **Leads to** nothing  ·  **Exits** back → `5.1n`
+**Reached from** `5.1n`, and in the demo [M4](M4-applying.md) `4.3njc` and [M3](M3-discovery.md) `3.10n` (the rows)  ·  **Leads to** [M6](M6-ratings.md) `6.6n` ("Rate now")  ·  **Exits** back → `5.1n`
 
 ```
 FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
@@ -1396,12 +1396,67 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
     FRAME cp-Payment 328x44 [FILL/HUG] · horizontal pad 10/12/10/12 gap 10 · fill color/bg/subtle · r8
       TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Payment"
       TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "—"
-    TEXT cancelNote 328x120 [FILL/HUG] · fill color/text/primary · mobile/body · "Cancelled by you on 29 Aug 2026, under 6 hours before the start — a late cancellation. It weighs twice on your completion rate, and Lanka Events has been told."
-    FRAME spacer-grow 8x270 [FIXED/FILL]
+    TEXT cancelNote 328x144 [FILL/HUG] · fill color/text/primary · mobile/body · "Cancelled by you on 29 Aug 2026, under 6 hours before the start — a late cancellation. It weighs twice on your completion rate, and Lanka Events has been told. Either of you can still rate this engagement."
+    FRAME cp-Rating 328x84 [FILL/HUG] · horizontal pad 10/12/10/12 gap 12 · fill color/bg/subtle · r8
+      TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Rating"
+      FRAME cpRatingRight 202x64 [FILL/HUG] · vertical pad 0 gap 4
+        TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Not yet rated"
+        INSTANCE Action/Link 71x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+          TEXT label 71x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "Rate now"
+    FRAME spacer-grow 8x152 [FIXED/FILL]
 ```
 
 *"Cancelled by you on 29 Aug 2026, under 6 hours before the start — a late cancellation."* It was
 dated 28 Aug until 2026-09-24, and `5.1n` used to call it Lanka Events' late cancellation.
+
+**Rating stays available** (`FR-RATE-05`): *Either of you can still rate this engagement*, and the *Rating*
+row offers *Rate now* → M6 `6.6n`, exactly as on `5.11d`. It is not chased — no `RATING_WINDOW_OPEN` is sent
+for a cancelled engagement — but `RATING_REVEALED` still reaches both at reveal (`FR-NOTIF-11`). The rating
+opened at the cancellation, so it unlocks on **12 Sep 2026**. Who cancelled does not matter: either party may
+rate how the cancellation was handled. The row was drawn hidden until 2026-09-24.
+
+### `5.2ncr` — Engagement detail · Nethmi's cancelled engagement, rated
+
+**Reached from** [M6](M6-ratings.md) `6.6nb` ("Back to engagement")  ·  **Leads to** [M6](M6-ratings.md) `6.6nb` ("View status")  ·  **Exits** back → `5.1n`
+
+```
+FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
+  INSTANCE Chrome/ScreenHeader 360x56 [FILL/FIXED] · horizontal pad 0/4/0/4 gap 4 · fill color/bg/default · stroke color/border/default mixed · {Action=None}
+    FRAME backHit 44x44 [FIXED/FIXED]
+      VECTOR back 8x16 [FIXED/FIXED] @18,14 · stroke color/text/primary 2
+    TEXT title 304x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Engagement"
+  FRAME content 360x744 [FILL/FILL] · vertical pad 16/16/24/16 gap 10
+    FRAME topRow 328x56 [FILL/HUG] · horizontal pad 0 gap 8
+      TEXT counterparty 328x28 [FILL/HUG] · fill color/text/primary · mobile/title · "Lanka Events (Pvt) Ltd"
+      INSTANCE Display/Badge 115x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 5 · stroke color/badge/verified 1 · r999 · {Family=Verified, Value=Default}
+        VECTOR check 8x6 [FIXED/FIXED] · stroke color/badge/verified 1.8
+        TEXT label 82x16 [HUG/HUG] · fill color/badge/verified · mobile/caption · "Phone verified"
+      INSTANCE Display/Badge 89x24 [HUG/HUG] · horizontal pad 4/10/4/10 gap 6 · fill color/bg/subtle · r999 · {Family=Engagement, Value=Cancelled}
+        ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
+        TEXT label 57x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Cancelled"
+    TEXT posting 328x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Event setup crew (3 needed) · Rs 6,000 for the job"
+    TEXT cpHeader 66x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "CHECK-INS"
+    FRAME cp-Arrival 328x44 [FILL/HUG] · horizontal pad 10/12/10/12 gap 10 · fill color/bg/subtle · r8
+      TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Arrival"
+      TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "—"
+    FRAME cp-Completion 328x44 [FILL/HUG] · horizontal pad 10/12/10/12 gap 10 · fill color/bg/subtle · r8
+      TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Completion"
+      TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "—"
+    FRAME cp-Payment 328x44 [FILL/HUG] · horizontal pad 10/12/10/12 gap 10 · fill color/bg/subtle · r8
+      TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Payment"
+      TEXT cpState 204x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "—"
+    TEXT cancelNote 328x144 [FILL/HUG] · fill color/text/primary · mobile/body · "Cancelled by you on 29 Aug 2026, under 6 hours before the start — a late cancellation. It weighs twice on your completion rate, and Lanka Events has been told. Either of you can still rate this engagement."
+    FRAME cp-Rating 328x84 [FILL/HUG] · horizontal pad 10/12/10/12 gap 12 · fill color/bg/subtle · r8
+      TEXT cpLabel 90x24 [FIXED/HUG] · fill color/text/primary · mobile/body-medium · "Rating"
+      FRAME cpRatingRight 202x64 [FILL/HUG] · vertical pad 0 gap 4
+        TEXT cpState 202x16 [FILL/HUG] · fill color/text/secondary · mobile/caption · "Submitted — awaiting reveal"
+        INSTANCE Action/Link 89x44 [HUG/HUG] · horizontal pad 10/0/10/0 gap 0
+          TEXT label 89x24 [HUG/HUG] · fill color/brand/primary · mobile/body · "View status"
+    FRAME spacer-grow 8x152 [FIXED/FILL]
+```
+
+Added 2026-09-24. After she rates Lanka Events — *"Submitted — awaiting reveal"*, *View status* opening M6
+`6.6nb` (unlock 12 Sep 2026). The pair to `5.11dr`.
 
 ### `5.1e` — My engagements · Lanka Events, Thursday evening
 
@@ -1940,7 +1995,7 @@ decision sit side by side, and every frame on a branch is true on its own.
 | --- | --- | --- |
 | **Thu 27 Aug** | `5.1z` (Kavindu) · `5.1e`, `5.12`, `5.3t`, `5.7e`, `5.1ex`, `5.3x` (Lanka Events, evening) | Nobody has selected Kavindu yet. Lanka Events moved the Event setup start at 7:00 PM (Nethmi re-confirms by Fri 1:00 PM) and cancels Tharindu's Stage crew at 8:00 PM |
 | **Fri 28 Aug, afternoon** | — (M4) | Saman Stores and Dilrukshi select Kavindu |
-| **Sat 29 Aug, ~2:00 AM** | `5.1nw`, `5.2n`, `5.10`, `5.1n`, `5.2nc` | *Branch:* Nethmi cancels, late |
+| **Sat 29 Aug, ~2:00 AM** | `5.1nw`, `5.2n`, `5.10`, `5.1n`, `5.2nc`, `5.2ncr` | *Branch:* Nethmi cancels, late, and rates how Lanka Events handled the engagement |
 | **Sat 29 Aug, from 7:00 AM** | `5.1eu`, `5.3`, `5.4`, then `5.1ec`, `5.3b`, `5.3c`, `5.1ecr` | Nethmi works the Event setup shift; every code is exchanged; Lanka Events rates her |
 | **Sat 29 Aug, from 8:00 AM** | `5.1w`, `5.2`, `5.5a`, `5.11` | Kavindu's Shop assistant shift starts; the arrival code is never confirmed. Dilrukshi moves the tutoring start |
 | **Sat 29 – Sun 30 Aug** | `5.2h`, `5.5`, `5.5b`, `5.2p`, `5.4b`, `5.4c` | *Branch:* the codes are exchanged — ends at the payment code |
@@ -1952,7 +2007,8 @@ decision sit side by side, and every frame on a branch is true on its own.
 | **No date** | `5.1ez`, `5.4b` / `5.4c` (whenever shown) | First run; the payment code |
 
 **Ratings unlock** 14 days after rating opened, unless both rate first (FR-RATE-02): Saman Stores 18 Sep ·
-Nethmi 12 Sep · tutoring, cancelled on request, 14 Sep · tutoring, change declined, 13 Sep (M6).
+Nethmi 12 Sep — both on the main line (completed) and on the branch where she cancels (the rating opens at the
+cancellation, 29 Aug) · tutoring, cancelled on request, 14 Sep · tutoring, change declined, 13 Sep (M6).
 
 ## Engagement rules this module follows
 
@@ -1970,7 +2026,8 @@ Nethmi 12 Sep · tutoring, cancelled on request, 14 Sep · tutoring, change decl
 | **The stalled prompt: dismiss, or go to the unresolved checkpoint** (FR-ENG-13 as amended) | `5.14` |
 | **Status and owed action are separate; the action is the viewer's** (FR-ENG-14 as amended) | every list; `5.1` beside `5.1es` |
 | **A ruling that it happened settles unreached checkpoints and opens rating; payment stays open** (FR-ADM-08 as amended) | `5.2b`, `5.2c`, `5.2d` |
-| **Rating opens when a gig completes by codes; available but not chased after a cancellation** (FR-RATE-05) | `5.1ec`, `5.3b` · `5.2tc`, `5.11d` |
+| **Rating opens when a gig completes by codes; available but not chased after a cancellation** (FR-RATE-05) | `5.1ec`, `5.3b` · `5.2tc`, `5.11d`, `5.2nc` |
+| **A finished engagement stays on the list until 30 days after its rating window closes; anything running or owing the viewer an action always shows** (FR-ENG-14, as amended 2026-09-24) | every `5.1*` list — which is why Nethmi's and Lanka Events' lists hold only this week's engagements: their earlier ones closed their rating windows before the end of July |
 
 ## Rulings this module follows
 
@@ -2018,6 +2075,7 @@ Saturday 5 Sep; Nethmi's `5.1nw` / `5.1n` either side of her cancellation; and f
 | The **employer's stalled prompt** (FR-ENG-13 prompts both parties) | `5.14`'s `promptCard` over `5.3` |
 | A **wrong code** (recorded, never locked — FR-ENG-01 batch A17) | `5.5a` with `Feedback/FieldError` under the code input; the attempt is counted for the moderator's history |
 | An **unpaid internship's** engagement (FR-ENG-02) | any detail with the `cp-Payment` row removed |
+| **Lanka Events rating Nethmi's cancelled engagement** (the employer's side of `5.2nc`) | `5.3x`'s layout for the cancelled engagement with a *Rating · Not yet rated · Rate now* row, opening an employer copy of M6 `6.6n` (*How was working with Nethmi Jayasinghe?*); unlock 12 Sep 2026 |
 | The **completion dispute's later states** on the branch | M9's `9.2u` → `9.2f` pattern, with `9.2k`'s trigger line |
 | **Nethmi's re-confirmation** of the Event setup start (the worker's side of `5.12`) | `5.11` with Lanka Events' change — *Was: Sat 29 Aug 2026, 5:00 AM · Now: 7:00 AM*, respond by Fri 28 Aug 2026, 1:00 PM |
 | A **multi-worker** change-responses list (FR-ENG-11) | `5.12` with a `slot-` row per selected worker, each with its own state |
@@ -2026,11 +2084,9 @@ Saturday 5 Sep; Nethmi's `5.1nw` / `5.1n` either side of her cancellation; and f
 
 ## Open, and carried to the modules that own them
 
-- **`5.2nc` offers no rating**, while `FR-RATE-05` keeps rating available on a cancelled engagement and
-  `5.11d` and `5.2tc` offer it (*Either of you can still rate this engagement*). Nethmi's late cancellation
-  is the case where Lanka Events most wants to record how it was handled. Open for a decision: add the
-  *Rating · Not yet rated · Rate now* row and its rating screen, or record why this cancellation is
-  different.
+- *Closed 2026-09-24:* `5.2nc` offers the rating `FR-RATE-05` keeps available (→ M6 `6.6n`, `6.6nb`, then `5.2ncr`).
+- *Closed 2026-09-24:* Nethmi's and Lanka Events' short lists are true — `FR-ENG-14` now keeps a finished
+  engagement until 30 days after its rating window closes.
 
 - *Closed in the M1 pass (2026-09-24):* Dilrukshi's and R. Gunasekara's Notifications and Profile tabs open
   their own screens ([M3](M3-discovery.md) `3.10ed`/`3.10eg`, [M1](M1-account.md) `1.18ed`/`1.18eg`); their

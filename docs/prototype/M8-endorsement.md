@@ -466,9 +466,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x180 [FIXED/HUG] @16,310 · vertical pad 20 gap 12 · fill color/bg/default · r12
+  INSTANCE Feedback/ConfirmDialog 328x200 [FIXED/HUG] @16,300 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 257x28 [HUG/HUG] · fill color/text/primary · mobile/title · "Revoke this endorsement?"
-    TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened. They'll be told."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 87x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 39x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Keep"
@@ -531,9 +531,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] @16,296 · vertical pad 20 gap 12 · fill color/bg/default · r12
+  INSTANCE Feedback/ConfirmDialog 328x228 [FIXED/HUG] @16,286 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 288x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Revoke your endorsement of Ishara Fernando?"
-    TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened. They'll be told."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 87x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 39x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Keep"
@@ -593,9 +593,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
       TEXT relationship 118x20 [HUG/HUG] · fill color/text/secondary · mobile/secondary · "Former classmate"
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Verifier} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
-  INSTANCE Feedback/ConfirmDialog 328x208 [FIXED/HUG] @16,296 · vertical pad 20 gap 12 · fill color/bg/default · r12
+  INSTANCE Feedback/ConfirmDialog 328x228 [FIXED/HUG] @16,286 · vertical pad 20 gap 12 · fill color/bg/default · r12
     TEXT title 288x56 [FILL/HUG] · fill color/text/primary · mobile/title · "Revoke your endorsement of Kavindu Perera?"
-    TEXT body 288x40 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened."
+    TEXT body 288x60 [FIXED/HUG] · fill color/text/secondary · mobile/secondary · "Revoking stops future display but doesn't undo a hire that already happened. They'll be told."
     FRAME actions 288x48 [FILL/HUG] · horizontal pad 0 gap 8
       INSTANCE Action/Button 87x48 [HUG/FIXED] · horizontal pad 0/24/0/24 gap 8 · fill color/bg/default · stroke color/brand/primary 1.5 · r8 · {Style=Secondary, State=Default}
         TEXT label 39x24 [HUG/HUG] · fill color/brand/primary · mobile/body-medium · "Keep"
@@ -834,7 +834,7 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
           ELLIPSE dot 6x6 [FIXED/FIXED] · fill color/text/secondary
           TEXT label 62x16 [HUG/HUG] · fill color/text/primary · mobile/caption · "Withdrawn"
       TEXT meta 277x16 [HUG/HUG] · fill color/text/secondary · mobile/caption · "Withdrawn by you — the employer has been told"
-    TEXT orderNote 328x16 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first."
+    TEXT orderNote 328x32 [FIXED/HUG] · fill color/text/secondary · mobile/caption · "Pending first, soonest closing first. Decided and withdrawn applications show for 30 days."
   INSTANCE Chrome/TabBar 360x64 [FILL/FIXED] · horizontal pad 0 gap 0 · fill color/bg/default · {Notification badge=true, Role=Worker} · [standard, see header]
   RECTANGLE scrim 360x800 [FIXED/FIXED] @0,0 · fill color/overlay/scrim · opacity 40%
   FRAME promptCard 328x196 [HUG/HUG] @16,302 · vertical pad 20/20/16/20 gap 12 · fill color/bg/default · r12
@@ -891,6 +891,6 @@ the two named cases. **Build one dialog with the name interpolated**; do not bui
 | --- | --- |
 | A code that does not match | `Input/CodeInputAlpha {State=Error}` on `8.2`, whose helper becomes *"That code didn't work. Check it with the person who shared it."* — the string is in the component |
 | A code whose window has closed | the same error state. **Do not say the window closed**: that would confirm the account exists, which `NFR-PRIV-04` forbids on an unauthenticated lookup |
-| Vouching for someone who already has your endorsement | not drawn. `FR-ENDORSE-05` allows one endorsement per pair, so the second attempt must be refused — decide whether at `8.3m` or at `8.4` |
-| The endorsed person's view of a revocation | not drawn. `HF.3` promises *"the person is told"*, so a notification exists; its row belongs to [M3](M3-discovery.md)'s notification list |
+| Vouching for someone who already has your endorsement | not drawn. `FR-ENDORSE-08` (as amended 2026-09-24) allows one **active** endorsement per verifier per worker. By code: `8.2` checks eligibility first, so a closed code still gets the generic error above; an eligible code for someone you already vouch for is refused on `8.2` with *"You already vouch for them."* By phone search: `8.3m` shows the match with *You already vouch for them* and no Vouch button — this leaks nothing, because they are already in your My endorsements. `8.4` maps the database refusal (two devices at once) to the same message. After revoking, vouching again is allowed while the person is still eligible |
+| The endorsed person's view of a revocation | not drawn. The notification is `ENDORSEMENT_REVOKED` (`FR-ENDORSE-07`, `FR-NOTIF-07`, added 2026-09-24) — *"{name} revoked their endorsement"*, opening their own profile, where the badge is gone; its row is specified in [M3](M3-discovery.md)'s *States not drawn*. The revoke dialogs (`8.5c`, `8.5cI`, `8.5cK`) now say *They'll be told* |
 | Offline vouching | not drawn, and it should fail rather than queue: an endorsement is live on submit, so an optimistic local one would show on a profile it had never reached |
