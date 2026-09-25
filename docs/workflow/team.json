@@ -1,5 +1,5 @@
 {
-  "$comment": "Single source for who is who, which modules each person owns, and which paths are shared. Read by the git hooks and scripts/*.mjs, and by AI agents at session start. Human-readable scope and story lists stay in docs/module-ownership.md. Only the shared-components owner edits this file; update 'modules' when a sprint assigns new slices.",
+  "$comment": "Single source for who is who, which modules each person owns, and which paths are shared. Read by the git hooks and scripts/*.mjs, and by AI agents at session start. Human-readable scope and story lists stay in docs/module-ownership.md. Only the shared-components owner edits this file; update 'modules' when a sprint assigns new slices. 'moduleBranches' lets one slice that spans two modules keep one branch (module -> epic segment of the branch it lives on).",
   "version": 1,
   "timezone": "Asia/Colombo",
   "members": [
@@ -30,6 +30,7 @@
       "role": "member",
       "emails": ["harithapawan12@gmail.com"],
       "modules": ["discovery", "notification"],
+      "moduleBranches": { "notification": "discovery-search" },
       "acceptedBranches": [],
       "ignoredBranches": ["feature/Radius-based-browsing"]
     },
