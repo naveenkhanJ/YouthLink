@@ -189,4 +189,6 @@ for (const id of ids) {
 }
 
 process.stdout.write(out.join("\n"));
-process.exit(missing ? 1 : 0);
+// exitCode, not process.exit(): exiting immediately truncates output still flowing into a pipe
+// (an agent's shell, PowerShell's >), silently, at 64 KB.
+process.exitCode = missing ? 1 : 0;

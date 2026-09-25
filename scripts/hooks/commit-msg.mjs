@@ -12,7 +12,7 @@
  * not a security control.
  */
 import { readFileSync } from "node:fs";
-import { loadTeam, commitSubjectRegex, paint } from "../lib/common.mjs";
+import { loadTeam, commitSubjectRegex, isGitGeneratedSubject, paint } from "../lib/common.mjs";
 
 const file = process.argv[2];
 if (!file) process.exit(0);
@@ -30,7 +30,7 @@ const lines = readFileSync(file, "utf8").split(/\r?\n/).filter((l) => !l.startsW
 const subject = (lines.find((l) => l.trim() !== "") || "").trim();
 
 // Git-generated subjects that are correct as they are.
-if (/^Merge (branch|remote-tracking branch|pull request|commit|tag) /.test(subject) || /^Revert "/.test(subject)) {
+if (isGitGeneratedSubject(subject)) {
   process.exit(0);
 }
 
@@ -59,6 +59,10 @@ if (!match) {
 }
 
 const [, type, , description, ids] = match;
+if (!ids && /\[\s*(?:fr|nfr)-/i.test(subject)) {
+  fail("the requirement IDs are not in the expected form, so they would not be found by git log --grep.",
+       "Put them in one pair of brackets at the very end, upper-case, separated by comma and space: [FR-DISC-01, FR-DISC-02].");
+}
 if (/^[A-Z]/.test(description) && !/^[A-Z]{2,}/.test(description)) {
   console.error(paint.yellow(`commit-msg: note — descriptions start lower-case in this repo ("${description.slice(0, 30)}…").`));
 }

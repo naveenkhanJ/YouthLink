@@ -39,11 +39,35 @@ export function loadTeam(root = repoRoot()) {
   if (!existsSync(file)) {
     throw new Error(`docs/workflow/team.json not found — merge develop into your branch first.`);
   }
+  let team;
   try {
-    return JSON.parse(readFileSync(file, "utf8"));
+    team = JSON.parse(readFileSync(file, "utf8"));
   } catch (err) {
     throw new Error(`docs/workflow/team.json is not valid JSON: ${err.message}`);
   }
+  // Fail with a readable message rather than a TypeError deep inside a hook.
+  const arrays = ["members", "modulePaths", "mountFiles", "protectedPaths", "dependencyFiles", "neverCommit",
+    "branchTypes", "commitTypes", "commitSurfaces", "integrationBranches"];
+  const missing = arrays.filter((k) => !Array.isArray(team[k]));
+  if (!team.modules || typeof team.modules !== "object") missing.push("modules");
+  if (missing.length) throw new Error(`docs/workflow/team.json is missing or malformed: ${missing.join(", ")}`);
+  return team;
+}
+
+/**
+ * Paths from a `git diff --name-only`, NUL-separated so that spaces and
+ * non-ASCII names arrive unquoted, with renames split into their two sides
+ * (--no-renames) so the path a file came FROM is checked as well.
+ */
+export function diffPaths(args) {
+  const out = gitOr(["-c", "core.quotePath=false", "diff", "--name-only", "--no-renames", "-z", ...args]);
+  return out.split("\0").filter(Boolean);
+}
+
+/** Subjects git writes itself (merge, revert, reapply) — correct as they are. */
+export function isGitGeneratedSubject(subject) {
+  return /^Merge (branch|remote-tracking branch|pull request|commit|tag|branches) /.test(subject) ||
+    /^(Revert|Reapply) "/.test(subject);
 }
 
 /** The configured git author email, lower-cased ("" if unset). */

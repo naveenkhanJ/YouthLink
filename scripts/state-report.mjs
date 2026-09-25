@@ -39,8 +39,49 @@ const say = (s = "") => out.push(s);
 // ---------------------------------------------------------------- helpers ---
 const DEVELOP = "origin/develop";
 const short = (sha) => (sha || "").slice(0, 7);
-const stripComments = (src) =>
-  src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
+/**
+ * Remove // and /* *\/ comments while leaving string contents alone, so a route
+ * like "/files/*" or a URL like "http://x" is not mistaken for a comment.
+ * (A regex literal containing quotes can still confuse it; route files don't use them.)
+ */
+function stripComments(src) {
+  let out = "";
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (c === '"' || c === "'" || c === "`") {
+      let j = i + 1;
+      while (j < src.length && src[j] !== c) j += src[j] === "\\" ? 2 : 1;
+      out += src.slice(i, j + 1);
+      i = j;
+    } else if (c === "/" && src[i + 1] === "/") {
+      while (i < src.length && src[i] !== "\n") i++;
+      out += "\n";
+    } else if (c === "/" && src[i + 1] === "*") {
+      const end = src.indexOf("*/", i + 2);
+      const body = src.slice(i, end === -1 ? src.length : end + 2);
+      out += body.replace(/[^\n]/g, ""); // keep line count
+      i = end === -1 ? src.length : end + 1;
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+
+/** The text between the parenthesis at `open` and its partner (string-aware). */
+function balancedArgs(code, open) {
+  let depth = 0;
+  for (let i = open; i < code.length; i++) {
+    const c = code[i];
+    if (c === '"' || c === "'" || c === "`") {
+      let j = i + 1;
+      while (j < code.length && code[j] !== c) j += code[j] === "\\" ? 2 : 1;
+      i = j;
+    } else if (c === "(") depth++;
+    else if (c === ")" && --depth === 0) return code.slice(open + 1, i);
+  }
+  return code.slice(open + 1);
+}
 const meaningfulLines = (src) => stripComments(src).split("\n").filter((l) => l.trim() !== "").length;
 const unique = (xs) => [...new Set(xs)];
 const idsIn = (src) => unique(src.match(/\b(?:FR|NFR)-[A-Z]+-\d+\b/g) || []);
@@ -75,11 +116,32 @@ function mountPrefixes(appSrc) {
 /** Route lines from a *.routes.js file. */
 function routesIn(src) {
   const code = stripComments(src);
-  const globalAuth = /router\.use\(\s*requireAuth\b/.test(code);
+  // router.use(requireAuth) protects only the routes registered after it.
+  const authFrom = code.search(/router\.use\(\s*requireAuth\b/);
   const routes = [];
-  for (const m of code.matchAll(/router\.(get|post|put|patch|delete)\(\s*(['"`])([^'"`]*)\2\s*,([\s\S]*?)\)\s*;/g)) {
-    const handlers = m[4].replace(/\s+/g, " ").trim();
-    routes.push({ method: m[1].toUpperCase(), path: m[3], auth: globalAuth || /\brequireAuth\b/.test(handlers), handlers });
+  const add = (method, path, argText, at) => {
+    const handlers = argText.replace(/\s+/g, " ").trim();
+    routes.push({ method: method.toUpperCase(), path, auth: (authFrom !== -1 && at > authFrom) || /\brequireAuth\b/.test(handlers), handlers });
+  };
+  for (const m of code.matchAll(/router\.(get|post|put|patch|delete)\(/g)) {
+    const args = balancedArgs(code, m.index + m[0].length - 1);
+    const p = args.match(/^\s*(['"`])([^'"`]*)\1\s*,?([\s\S]*)$/);
+    if (p) add(m[1], p[2], p[3], m.index);
+  }
+  // router.route("/x").get(...).post(...)
+  for (const m of code.matchAll(/router\.route\(\s*(['"`])([^'"`]*)\1\s*\)/g)) {
+    let rest = code.slice(m.index + m[0].length);
+    let offset = m.index + m[0].length;
+    for (;;) {
+      const c = rest.match(/^\s*\.(get|post|put|patch|delete)\(/);
+      if (!c) break;
+      const open = offset + c[0].length - 1;
+      const args = balancedArgs(code, open);
+      add(c[1], m[2], args, m.index);
+      const consumed = c[0].length + args.length + 1;
+      rest = rest.slice(consumed);
+      offset += consumed;
+    }
   }
   return routes;
 }

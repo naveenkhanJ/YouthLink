@@ -44,7 +44,9 @@ for (const line of input) {
     // Is what the remote has an ancestor of what we are sending? If not, this rewrites history.
     const known = gitOr(["cat-file", "-t", remoteSha]) === "commit";
     if (!known) {
-      console.error(paint.yellow(`pre-push: warning — cannot check '${remoteBranch}' for a history rewrite (run git fetch first).`));
+      // The remote has a commit this clone has never seen (e.g. GitHub's "Update branch"). A normal
+      // push would be rejected there anyway; only a force push gets through, and it would destroy it.
+      blocks.push(`'${remoteBranch}' on the remote has commits you don't have. Run git fetch, then git merge origin/${remoteBranch}, then push.`);
     } else if (gitOr(["merge-base", "--is-ancestor", remoteSha, localSha], "no") === "no") {
       blocks.push(`'${localRef}' → '${remoteBranch}' rewrites history already on the remote (force push). ` +
         `Merge instead: git fetch, then git merge origin/${remoteBranch}.`);
@@ -56,6 +58,5 @@ if (blocks.length) {
   console.error(paint.red(paint.bold("\n✖ Push blocked by the repository's local checks")));
   for (const x of blocks) console.error(`  • ${x}`);
   console.error("");
-  process.exit(1);
+  process.exitCode = 1;
 }
-process.exit(0);
