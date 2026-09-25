@@ -101,6 +101,13 @@ Also absent by design: anything about behaviour beyond navigation, which lives i
 Which screens demonstrate each requirement. **Use this to find your starting point** — open the
 requirement in `requirements.md` for the rule, then the screens here for the interface.
 
+**Screen ownership follows this index:** a screen is built by the owner of the requirement it is
+listed under. Corrected 2026-09-25: `FR-APPLY-01`, `FR-DISC-05` and `FR-NOTIF-01` had each been mapped
+to all thirteen main M3 screens, and `FR-DISC-01` listed the listing detail `3.12` as well. Each now
+lists only the screens that show it — which makes `3.12` Applying & Selection's (`FR-APPLY-01`), not
+Discovery's. Variants of a listed screen (`3.12s`, `3.1ldg`, …) go with it; `scripts/card-context.mjs`
+lists them.
+
 | Requirement | Priority | Title | Screens |
 | --- | --- | --- | --- |
 | `FR-ACC-01` | Must | Account registration | [M1](M1-account.md) `1.1`, `1.2`, `1.4`, `1.4err2`, `1.4err3` |
@@ -128,7 +135,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-ADM-06` | Must | Admin/Moderator account bootstrapping | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.7`, `11.1f`, `11.1fb`, `11.1p`, `11.4t` |
 | `FR-ADM-07` | Must | Separate Admin/Moderator accounts | [M10](M10-moderation.md) `10.8` · [M11](M11-dashboard.md) `11.1`, `11.3L`, `11.3Lm`, `11.7`, `11.7r`, `11.7rs`, `11.7rd`, `11.7rds`, `11.7d`, `11.7ds` |
 | `FR-ADM-08` | Must | Dispute ruling's effect on the rating step | [M10](M10-moderation.md) `10.5` · [M5](M5-engagement.md) `5.1c`, `5.2b`, `5.2c`, `5.2d` · [M6](M6-ratings.md) `6.1` · [M9](M9-disputes.md) `9.2` |
-| `FR-APPLY-01` | Must | Listing detail view | [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
+| `FR-APPLY-01` | Must | Listing detail view | [M3](M3-discovery.md) `3.12` |
 | `FR-APPLY-02` | Must | Apply action | [M4](M4-applying.md) `4.1`, `4.1c`, `4.1d`, `4.1h`, `4.1o`, `4.1s`, `4.1t`, `4.2`, `4.2c`, `4.2d`, `4.2h`, `4.2o`, `4.2s`, `4.2t` |
 | `FR-APPLY-03` | Should | Application withdrawal | [M4](M4-applying.md) `4.4`, `4.4c`, `4.4d`, `4.4h`, `4.4o`, `4.4s`, `4.4t`, `4.3cw`, `4.3dw`, `4.3hw`, `4.3ow`, `4.3sw`, `4.3tw`, `4.3w` |
 | `FR-APPLY-04` | Must | Applicant pool sort order | [M4](M4-applying.md) `4.5`, `4.5d`, `4.5dk`, `4.5dt`, `4.5s`, `4.5sk`, `4.5st`, `4.5x` |
@@ -145,11 +152,11 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-DASH-04` | Should | Metrics dashboard | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
 | `FR-DASH-05` | Must | Mobile/dashboard case-surface split | [M11](M11-dashboard.md) `11.4`, `11.2d` |
 | `FR-DASH-06` | Must | Dashboard authentication | [M11](M11-dashboard.md) `11.1`, `11.1b`, `11.1w`, `11.1L`, `11.1f`, `11.1fb`, `11.1p` |
-| `FR-DISC-01` | Must | Radius-based browsing | [M3](M3-discovery.md) `3.1`, `3.12`, `3.2` |
+| `FR-DISC-01` | Must | Radius-based browsing | [M3](M3-discovery.md) `3.1`, `3.2` |
 | `FR-DISC-02` | Must | Manual location fallback | [M3](M3-discovery.md) `3.3`, `3.4`, `3.9` |
 | `FR-DISC-03` | Should | Category and arrangement-type filters | [M3](M3-discovery.md) `3.5` |
 | `FR-DISC-04` | Could | Keyword search | [M3](M3-discovery.md) `3.7` |
-| `FR-DISC-05` | Must | Sort order | [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
+| `FR-DISC-05` | Must | Sort order | [M3](M3-discovery.md) `3.1`, `3.6` |
 | `FR-DISC-06` | Could | Saved/favorited gigs | [M3](M3-discovery.md) `3.8` |
 | `FR-DISC-07` | Could | Filter and sort persistence | [M3](M3-discovery.md) `3.5`, `3.5c` |
 | `FR-DISPUTE-01` | Must | Report action | [M9](M9-disputes.md) `9.1`, `9.2` |
@@ -193,7 +200,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-MOD-02` | Must | Warning threshold and auto-escalation | [M10](M10-moderation.md) `10.2b`, `10.3`, `10.3c`, `10.5`, `10.5e`, `10.8b` · [M1](M1-account.md) `1.1`, `1.12b`, `1.17`, `1.18`, `1.6`, `1.8`, `1.9` · [M3](M3-discovery.md) `3.1`, `3.4`, `3.5`, `3.7` · [M6](M6-ratings.md) `6.1f`, `6.5b` · [M7](M7-profile.md) `7.1d` · [M8](M8-endorsement.md) `8.1b`, `8.3d`, `8.4e`, `8.5` · [M9](M9-disputes.md) `9.1d`, `9.2f`, `9.3e`, `9.4` |
 | `FR-MOD-03` | Should | Mid-review clarification request | [M10](M10-moderation.md) `10.1pca`, `10.1pce`, `10.2` · [M9](M9-disputes.md) `9.2`, `9.4` |
 | `FR-MOD-04` | Must | Flagged content review | [M10](M10-moderation.md) `10.4`, `10.4e`, `10.4r`, `10.4rb` |
-| `FR-NOTIF-01` | Must | Urgent gig push notifications | [M2](M2-posting.md) `2.9e` · [M3](M3-discovery.md) `3.1`, `3.10`, `3.11`, `3.12`, `3.13`, `3.2`, `3.3`, `3.4`, `3.5`, `3.6`, `3.7`, `3.8`, `3.9` |
+| `FR-NOTIF-01` | Must | Urgent gig push notifications | [M2](M2-posting.md) `2.9e` · [M3](M3-discovery.md) `3.10x`, `3.11`, `3.13` |
 | `FR-NOTIF-02` | Must | Non-urgent gig notifications | [M2](M2-posting.md) `2.9et` · [M3](M3-discovery.md) `3.10` |
 | `FR-NOTIF-03` | Must | Notification preferences | [M3](M3-discovery.md) `3.11`, `3.11e`, `3.11n`, `3.11v` · [M1](M1-account.md) `1.10` |
 | `FR-NOTIF-04` | Must | Application-related notifications | [M3](M3-discovery.md) `3.10`, `3.10ea` · [M4](M4-applying.md) `4.3e`, `4.5`, `4.7`, `4.9` |
@@ -207,7 +214,7 @@ requirement in `requirements.md` for the rule, then the screens here for the int
 | `FR-NOTIF-12` | Must | Dispute-lifecycle notifications to the parties | [M3](M3-discovery.md) `3.10`, `3.10q`, `3.10r`, `3.10eg` |
 | `NFR-OPS-01` | Must | Audit log visibility | [M11](M11-dashboard.md) `11.6`, `11.6rec`, `11.4` |
 | `NFR-OPS-02` | Should | Metrics dashboard export | [M11](M11-dashboard.md) `11.5`, `11.5x`, `11.5m`, `11.5xm` |
-| `NFR-PERF-01` | Must | Direct-manipulation response time | [M0](M0-first-run.md) `0.1` · [M3](M3-discovery.md) `3.5` |
+| `NFR-PERF-01` | Must | Direct-manipulation response time | [M0](M0-first-run.md) `0.1` · [M3](M3-discovery.md) `3.5`, `3.1ldg`, `3.10ldg` |
 | `NFR-PERF-02` | Must | Common-action response time | [M1](M1-account.md) `1.12` · [M3](M3-discovery.md) `3.5` · [MHF](MHF-help.md) `HF.3` |
 | `NFR-PERF-03` | Should | Search-radius auto-expansion as one continuous operation | [M3](M3-discovery.md) `3.13`, `3.2`, `3.5` |
 | `FR-POST-01` | Must | Posting field sequence | [M2](M2-posting.md) `2.1`, `2.2`, `2.3`, `2.4`, `2.6`, `2.7`, `2.8`, `2.9` |
