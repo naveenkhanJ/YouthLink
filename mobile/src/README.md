@@ -20,4 +20,4 @@ src/
 
 **Call the API through `src/api/<module>.js`, not `fetch` directly.** The base URL, the auth token and the error shape are handled once in `api/client.js`.
 
-**On the Android emulator, `localhost` is the emulator, not your computer.** `src/config/index.js` uses `10.0.2.2`, which is the emulator's alias for the host machine. On a physical device, replace it with your machine's LAN IP.
+**The backend address comes from `mobile/.env`, never from code.** Copy `mobile/.env.example` to `mobile/.env` and set `EXPO_PUBLIC_API_URL`. On the Android emulator, `localhost` is the emulator, not your computer — use `http://10.0.2.2:3000`, the emulator's alias for the host (also the fallback when no `.env` exists). On a physical phone, use your computer's LAN IP. Never commit an address in `src/config/index.js`: it only works on the network it was written on.
