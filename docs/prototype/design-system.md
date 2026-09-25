@@ -417,3 +417,30 @@ them looks like a defect to a checker, and each has been ruled once already.
 
 **If a state you need is in none of the three layers, it is a gap — raise it.** The layers are meant to be
 exhaustive, and a state that falls through them is a finding rather than something to improvise.
+
+## 9. Pay strings — one format everywhere
+
+**Added 2026-09-25.** Pay is copy, and copy is specification — but the screens draw only gigs and
+day-rate part-time jobs, so a builder meeting a weekly rate, a stipend or an unpaid internship would
+otherwise have to invent the wording. This section states the pattern the drawn screens already follow,
+and extends it to the undrawn cases. **Drawn** rows are verbatim from the screens cited; **derived** rows
+apply the same pattern and were not drawn — if a designer later draws one differently, the drawing wins
+and this row is corrected.
+
+**Amount:** `Rs` + a space + the amount with thousands separators and no decimals — `Rs 6,000`, `Rs 1,800`
+(`NFR-LOC-04`). The figure is always **per worker** (`FR-POST-04`); a total across workers appears only
+where a row is labelled *Total*.
+
+| `payKind` · unit | Worker-facing — card, row, detail `pay` | Detail `payBasis` (only when workers needed > 1) | Employer review — *Pay* | Employer review — *Total* | Source |
+| --- | --- | --- | --- | --- | --- |
+| `FIXED_TOTAL` | `Rs 6,000 for the job` | `per worker` — on a card it joins the line: `Rs 6,000 for the job · per worker` | `Rs 6,000 per worker` | `Rs 18,000 for 3 workers` | drawn — `3.1`, `3.12`, `2.9` |
+| `RATE` · `DAY` | `Rs 1,800 per day` | `per worker` | `Rs 1,800 per day` | `Rs 1,800 per day · ongoing` (1 worker) | drawn — `3.12t`, `3.12d`, `2.9t` |
+| `RATE` · `WEEK` / `MONTH` | `Rs 9,000 per week` · `Rs 35,000 per month` | `per worker` | `Rs 9,000 per week` | `Rs 9,000 per week · ongoing` | derived |
+| `RATE`, more than one worker | as above | `per worker` | as above | `Rs 5,400 per day for 3 workers · ongoing` | derived |
+| `PAID` (internship) | as `RATE` with its unit, or as `FIXED_TOTAL` when it has none | as above | as above | as above | derived — `FR-POST-04`: "with rate or total, as applicable" |
+| `STIPEND` (internship) | `Rs 15,000 stipend per month` · with no unit `Rs 15,000 stipend` | `per intern` is **not** used — `per worker`, as everywhere | `Rs 15,000 stipend per month` | `Rs 15,000 stipend per month · ongoing` | derived |
+| `UNPAID` (internship) | `Unpaid` | none | `Unpaid` | `Unpaid` | derived — no amount is collected (`FR-POST-04` amendment A7) |
+
+**Never** abbreviate (`/day`, `pd`), never show decimals, and never split the figure across slots.
+Styles are the screen's: `mobile/body-medium` on a card's `pay`, `mobile/display-number` on the detail
+`pay` with `payBasis` in `mobile/secondary`.
