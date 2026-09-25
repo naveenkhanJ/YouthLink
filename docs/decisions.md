@@ -210,3 +210,39 @@ sprint picks it up. Full detail — the specific infrastructure
 interruptions, the Lahiru Gig Posting Done-without-frontend call — is in
 the SPM project's own Scrum Events Log, outside this repo; this entry is
 the short version so the reasoning has at least one record inside it.
+
+## How we work from Sprint 3 (2026-09-25)
+
+**The code is the ground truth for what is built.** Jira, progress notes, documents
+and people's recollections all drift; the code on `develop` does not. So work
+starts by establishing what the code contains, and where a card's status and the
+code disagree, the code wins. This replaced the earlier line in
+[`module-ownership.md`](module-ownership.md) that made Jira authoritative on
+status. The evidence order is in [`workflow/agent-protocol.md`](workflow/agent-protocol.md) §2.
+
+**UI must match the prototype specification exactly** (DoD clause 5, changed from
+"functionally matches the wireframe"). The wireframes were approximate; the
+prototype specification in [`prototype/`](prototype/README.md) now gives every
+screen's components, tokens and copy, so there is nothing left to approximate.
+
+**The end-to-end clause stays, and is recorded rather than enforced by blocking.**
+Not everyone can build and run the app yet, so each pull request states its
+end-to-end level (self, integration, pending) and a card reaches Done once it has
+actually been run. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#definition-of-done).
+
+**No member's work waits on another member's.** Cross-module needs go through a
+function the called module exposes, a no-op on the caller's side until it lands,
+and a shared seed script. Only shared components come from one person. See
+[`workflow/agent-protocol.md`](workflow/agent-protocol.md) §4.4.
+
+**Enforcement is local, because server-side branch protection isn't available.**
+Git hooks installed by `npm install`, agent refusals, and review. The hooks can be
+bypassed on purpose; they exist to catch slips. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#local-checks).
+
+**Every endpoint requires sign-in unless it exists to sign someone in**, and role
+checks follow each requirement's actor table. See the cross-cutting authentication
+section of [`module-ownership.md`](module-ownership.md#cross-cutting-authentication).
+
+**The workflow serves the person using it.** An agent following the protocol
+declines to break the team's rules, but it records progress only in the
+developer's own git-ignored `.worklog/` and never reports on them.

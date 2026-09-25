@@ -4,7 +4,7 @@ Who builds what, and exactly which requirements each slice covers. Every module 
 
 ## About this document
 
-**Jira remains the system of record for status.** This document is the stable reference for _scope and ownership_ — what a slice contains and who owns it. Day-to-day progress, status transitions, and assignment changes live on the board, and cards still get moved as work progresses. If the two ever disagree about status, Jira is right.
+**Jira is where status is tracked; the code is what status means.** This document is the stable reference for _scope and ownership_ — what a slice contains and who owns it. Day-to-day progress, status transitions, and assignment changes live on the board, and cards get moved as work progresses. But what is actually built is whatever the code on `develop` contains: if a card's status and the code disagree, the code is right, and the work goes on from what the code shows (see [`workflow/agent-protocol.md`](workflow/agent-protocol.md) §2). This document and Jira agree with each other about scope and ownership; where they differ, raise it with the team.
 
 **Every requirement links to its full specification.** Story titles below link into [`requirements.md`](requirements.md), where each requirement has its normative statement and Given/When/Then acceptance criteria. Those acceptance criteria are the first clause of the Definition of Done — a story isn't Done until they're met. They're deliberately not duplicated here, so there's only ever one copy to keep correct.
 
@@ -45,7 +45,7 @@ Sprint 2 — Engagement Lifecycle, Ratings & Reputation, Profile & Trust
 Signals, Community Endorsement — are deferred, not owned by anyone yet;
 see the deferred-scope section below.
 
-Use the same short name as your branch-name segment, so ownership and git history line up: `afham`, `lahiru`, `pawan`, `naveenkhan` (see [`CONTRIBUTING.md`](../CONTRIBUTING.md)).
+Use the same short name as your branch-name segment, so ownership and git history line up: `afham`, `lahiru`, `pawan`, `naveenkhan` (see [`CONTRIBUTING.md`](../CONTRIBUTING.md)). Each person's git addresses, accepted branch names and module folders are in [`workflow/team.json`](workflow/team.json), which the local git hooks read. **Afham also owns every shared component** — the UI kit and design tokens, navigation shells, Help/FAQ, shared middleware, the seed script, the schema and the shared development build.
 
 ### What these slices do and don't cover
 
@@ -72,7 +72,11 @@ The system uses **stateless JWTs** — there is no `Session` or `RefreshToken` t
 
 Phone verification at signup and OTP login goes through **Firebase Phone Authentication**; the backend trusts a phone number only after validating the Firebase ID token server-side. The system's own `OtpCode` mechanism covers password reset, phone change, and dashboard admin login (see FR-ACC-08).
 
-Slice A has built the middleware (see `backend/src/README.md`'s auth note for its current merge status) — build your endpoints assuming an authenticated `req.user` will be provided.
+The middleware is on `develop` at `backend/src/middleware/requireAuth.js`. Apply it in your module's routes file to every endpoint that needs a signed-in user, and read the user from `req.user`.
+
+**Which endpoints need it — ruled 2026-09-25.** Every endpoint requires sign-in, **except** the ones that exist to get a person signed in — registration, both login paths, password reset (`FR-ACC-10`) and the account-recovery request, whose requester is unauthenticated by definition — and the `/health` check, which carries no data. There is no signed-out use of the app: first run leads only to account creation (`M0` → `1.1`), and Browse first appears right after registration (`3.9`). So Browse and every other Discovery endpoint require sign-in, which is also what lets `FR-POST-08` decide how precisely to show a location.
+
+**Role checks follow the actor table.** Where a requirement's *Actor(s)* names who may act, the endpoint refuses every other role with 403 — for example, only a Local Business/Employer creates a posting (`FR-POST-01`), and only a Youth Job-Seeker applies (`FR-APPLY-02`). A route that checks the token but not the role lets anyone signed in do everything.
 
 ---
 
@@ -156,6 +160,64 @@ The apply flow, the three-tier applicant sort, Employer selection, bidirectional
 | [FR-APPLY-08 — Explicit decline](requirements.md#fr-apply-08--explicit-decline)                                                                   | Should   | 1   | – Add Decline action with immediate applicant notification                                                                                                                                    |
 | [FR-APPLY-09 — Automatic not-selected notification](requirements.md#fr-apply-09--automatic-not-selected-notification)                             | Must     | 2   | – Resolve Pending applicants whenever a posting stops accepting applications — Filled, expired, or withdrawn (broadened 2026-08-27, was Filled-only)<br>– Set each to Not selected and notify |
 | [FR-APPLY-10 — Pending-applicant notification on material change](requirements.md#fr-apply-10--pending-applicant-notification-on-material-change) | Should   | 1   | – Add material-change notification trigger for Pending applicants                                                                                                                             |
+
+---
+
+## Sprint 3 — carry-over first
+
+**Sprint 3's own slices are not assigned yet.** They will be added here, with the sprint dates, and in [`workflow/team.json`](workflow/team.json). Until then, this carry-over is each owner's whole queue, in this order ([`workflow/agent-protocol.md`](workflow/agent-protocol.md) §4.1). **Nobody waits on another member:** each item below can be done by its owner alone, and the only shared dependency is on the shared components.
+
+### 1. Sprint 1 work onto `develop`
+
+Any Sprint 1 slice code that is not yet merged into `develop` comes first: merge `origin/develop` into your branch, adapt the code to the current schema and shared code, run it, and open a pull request. No card is Done while its code is unmerged (DoD clause 2). `node scripts/state-report.mjs` shows whether one of your branches carries module code that `develop` lacks. The cards' status in Jira is left as it is.
+
+Edits your branch made to shared files — `mobile/src/screens/HomeScreen.js` above all, since three branches each rewrote it — come out before the pull request: restore `develop`'s copy (`git checkout origin/develop -- <file>`). Reaching your screens is then the job of the shared home entry (item 4, first in Afham's queue); until it lands, record end to end as pending with that reason.
+
+**Slice C is one slice across two modules**, so Discovery and core Notifications share one branch, `feature/discovery-search-pawan` (`moduleBranches` in [`workflow/team.json`](workflow/team.json)).
+
+### 2. Follow-on cards
+
+Requirements amended after Sprint 1 closed changed stories that were already Done. Those Done cards are left as they are; each amendment is its own follow-on card, owned by the Sprint 1 owner of that slice. The requirement entry — including the dated amendment note — is the specification; `node scripts/card-context.mjs <FR-ID>` prints it with its screens.
+
+| Owner | Card | Follow-on to | Requirement | What the amendment adds |
+| --- | --- | --- | --- | --- |
+| Afham | YL-163 | YL-29 | [FR-ACC-01](requirements.md#fr-acc-01--account-registration) | Legal-name counter at the 100-character cap |
+| Afham | YL-164 | YL-31 | [FR-ACC-04](requirements.md#fr-acc-04--nic-field-handling) | NIC format validation |
+| Afham | YL-165 | YL-32 | [FR-ACC-05](requirements.md#fr-acc-05--duplicate-account-prevention) | Phone and email availability checked at entry |
+| Afham | YL-166 | YL-33 | [FR-ACC-07](requirements.md#fr-acc-07--login) | One return-to-login for every ended session |
+| Afham | YL-167 | YL-34 | [FR-ACC-08](requirements.md#fr-acc-08--otp-mechanism) | App-enforced 5-minute window on Firebase codes |
+| Afham | YL-168 | YL-35 | [FR-ACC-09](requirements.md#fr-acc-09--password-security) | Password length rule, remaining attempts, the lockout's way out |
+| Lahiru | YL-169 | YL-39 | [FR-POST-04](requirements.md#fr-post-04--pay-format-by-arrangement-type) | Pay amount and rate unit conditional on pay kind |
+| Lahiru | YL-170 | YL-42 | [FR-POST-07](requirements.md#fr-post-07--urgency-computation) | Urgent means 48 hours or less, with no lower bound |
+| Pawan | YL-171 | YL-45 | [FR-DISC-01](requirements.md#fr-disc-01--radius-based-browsing) | Pay figure and basis on every browse result |
+| Pawan | YL-172 | YL-46 | [FR-DISC-02](requirements.md#fr-disc-02--manual-location-fallback) | The location permission ask, and permanent denial |
+| Pawan | YL-178 | YL-45 | [FR-DISC-01](requirements.md#fr-disc-01--radius-based-browsing) | Record each browse's centre as the worker's last browse location (needs the schema change of 2026-09-25) |
+| Naveenkhan | YL-173 | YL-55 | [FR-APPLY-04](requirements.md#fr-apply-04--applicant-pool-sort-order) | Earliest application first within tiers 2 and 3 |
+| Naveenkhan | YL-174 | YL-60 | [FR-APPLY-09](requirements.md#fr-apply-09--automatic-not-selected-notification) | Resolve Pending applicants on expiry and withdrawal |
+| Naveenkhan | YL-175 | YL-61 | [FR-APPLY-10](requirements.md#fr-apply-10--pending-applicant-notification-on-material-change) | Send `APPLICATION_TERMS_CHANGED` to Pending applicants |
+
+**YL-174 and YL-175 cross into Gig Posting without waiting on it.** Applying & Selection exposes the functions — resolve a posting's Pending applicants with a reason; notify them of a material change — and builds and verifies them against seeded data. Gig Posting calls them from its own flows (withdrawal and expiry, `FR-POST-12`/`FR-POST-13`; material changes) when those are built. Until then the calls don't exist, and nothing is blocked.
+
+### 3. UI conformance for Sprint 1 screens
+
+Every Sprint 1 screen was built before the prototype specification existed. Each owner brings their own screens to it — DoD clause 5 — using the shared UI kit and tokens once they are on `develop`. The screens are the ones the prototype's [requirement index](prototype/README.md#requirement-index) maps to each requirement, **limited to the screens your module builds** — by screen number, with the listing detail `3.12` belonging to Applying & Selection (see *Who builds a screen* in the prototype README). Where another module's screen shows your requirement, you supply the data through your API; you don't edit their screen.
+
+| Owner | Requirements whose screens to bring to the specification |
+| --- | --- |
+| Afham | FR-ACC-01, FR-ACC-03, FR-ACC-04, FR-ACC-05, FR-ACC-07, FR-ACC-08, FR-ACC-09, FR-ACC-19 |
+| Lahiru | FR-POST-01, FR-POST-02, FR-POST-04, FR-POST-05, FR-POST-06, FR-POST-07, FR-POST-08, FR-POST-09 |
+| Pawan | FR-DISC-01, FR-DISC-02, FR-DISC-03, FR-DISC-05, FR-NOTIF-01, FR-NOTIF-02, FR-NOTIF-03 |
+| Naveenkhan | FR-APPLY-01 through FR-APPLY-10 |
+
+### 4. Shared prerequisites — Afham
+
+The pieces everyone else builds on, first in Afham's queue so nobody is held up by them, in this order:
+
+- **A neutral home entry** that reaches every module's screens through the manifests, so no module branch needs to touch `HomeScreen.js` — the first thing each member's Sprint 1 pull request depends on.
+- **Design tokens and the core UI kit** — the components `design-system.md` §5 names (buttons, text fields, the app bar, the pinned action bar, skeletons, empty and error states), bound to the §1–§4 tokens. They replace the module-local `theme.js` files; until they land, module code uses the token names exactly, so switching is a rename.
+- **The navigation shells** (`NAV.1`–`NAV.3`), replacing the neutral entry; Help/FAQ (`HF.1`–`HF.4`) follows.
+- **A shared seed script**, so each module runs against realistic data from the others without waiting for them.
+- **The shared development build** — an Android APK sent to the team, rebuilt whenever a native dependency changes.
 
 ---
 

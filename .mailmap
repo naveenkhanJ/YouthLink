@@ -1,0 +1,12 @@
+# Maps every name/address each of us has committed under to one identity, so
+# `git shortlog -sn` and `git log --use-mailmap` count one person once.
+# Local display only: it does not change how GitHub attributes commits — that
+# depends on the address being verified on your GitHub account.
+# Format: Proper Name <proper@address> [Commit Name] <commit@address>
+Afham <mohamed_afham@outlook.com> Mohamed Afham <mohamed_afham@outlook.com>
+Afham <mohamed_afham@outlook.com> Afham <mohamed_afham@outlook.com>
+Lahiru <lahirulakmal893@gmail.com> lahirulakmal23 <lahirulakmal893@gmail.com>
+Lahiru <lahirulakmal893@gmail.com> <145210689+lahirulakmal23@users.noreply.github.com>
+Pawan <harithapawan12@gmail.com> Pawan <harithapawan12@gmail.com>
+Naveenkhan <it23812826@my.sliit.lk> naveenkhanJ <it23812826@my.sliit.lk>
+Naveenkhan <it23812826@my.sliit.lk> <167011572+naveenkhanJ@users.noreply.github.com>

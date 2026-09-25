@@ -1,0 +1,92 @@
+{
+  "$comment": "Single source for who is who, which modules each person owns, and which paths are shared. Read by the git hooks and scripts/*.mjs, and by AI agents at session start. Human-readable scope and story lists stay in docs/module-ownership.md. Only the shared-components owner edits this file; update 'modules' when a sprint assigns new slices. 'moduleBranches' lets one slice that spans two modules keep one branch (module -> epic segment of the branch it lives on).",
+  "version": 1,
+  "timezone": "Asia/Colombo",
+  "members": [
+    {
+      "id": "afham",
+      "name": "M. I. M. Afham",
+      "scrumRole": "Scrum Master",
+      "role": "shared-owner",
+      "emails": ["mohamed_afham@outlook.com"],
+      "modules": ["account"],
+      "acceptedBranches": ["chore/shared/project-scaffolding-afham"],
+      "ignoredBranches": ["demo/integration-showcase"]
+    },
+    {
+      "id": "lahiru",
+      "name": "P. M. L. Lakmal (Lahiru)",
+      "scrumRole": "Developer",
+      "role": "member",
+      "emails": ["lahirulakmal893@gmail.com", "145210689+lahirulakmal23@users.noreply.github.com"],
+      "modules": ["posting"],
+      "acceptedBranches": ["feature/gig-posting"],
+      "ignoredBranches": []
+    },
+    {
+      "id": "pawan",
+      "name": "H. P. Weliwitigoda (Pawan)",
+      "scrumRole": "Developer",
+      "role": "member",
+      "emails": ["harithapawan12@gmail.com"],
+      "modules": ["discovery", "notification"],
+      "moduleBranches": { "notification": "discovery-search" },
+      "acceptedBranches": [],
+      "ignoredBranches": ["feature/Radius-based-browsing"]
+    },
+    {
+      "id": "naveenkhan",
+      "name": "J. Naveenkhan",
+      "scrumRole": "Product Owner",
+      "role": "member",
+      "emails": ["it23812826@my.sliit.lk", "167011572+naveenkhanJ@users.noreply.github.com"],
+      "modules": ["application"],
+      "acceptedBranches": [],
+      "ignoredBranches": []
+    }
+  ],
+  "modules": {
+    "account": { "epic": "account-management", "requirements": ["FR-ACC"] },
+    "profile": { "epic": "profile-trust-signals", "requirements": ["FR-PROF"] },
+    "posting": { "epic": "gig-posting", "requirements": ["FR-POST"] },
+    "discovery": { "epic": "discovery-search", "requirements": ["FR-DISC"] },
+    "application": { "epic": "applying-selection", "requirements": ["FR-APPLY"] },
+    "engagement": { "epic": "engagement-lifecycle", "requirements": ["FR-ENG"] },
+    "rating": { "epic": "ratings-reputation", "requirements": ["FR-RATE"] },
+    "endorsement": { "epic": "community-endorsement", "requirements": ["FR-ENDORSE"] },
+    "dispute": { "epic": "disputes-reporting", "requirements": ["FR-DISPUTE"] },
+    "moderation": { "epic": "moderator-functions", "requirements": ["FR-MOD"] },
+    "admin": { "epic": "admin-functions", "requirements": ["FR-ADM"] },
+    "dashboard": { "epic": "dashboard-infrastructure", "requirements": ["FR-DASH"] },
+    "notification": { "epic": "notifications", "requirements": ["FR-NOTIF"] }
+  },
+  "modulePaths": [
+    "backend/src/modules/<module>/",
+    "mobile/src/screens/<module>/",
+    "mobile/src/api/<module>.js",
+    "mobile/src/api/<module>.api.js",
+    "dashboard/src/pages/<module>/"
+  ],
+  "mountFiles": ["backend/src/app.js"],
+  "protectedPaths": ["backend/prisma/schema.prisma", "backend/prisma/migrations/"],
+  "dependencyFiles": [
+    "backend/package.json", "backend/package-lock.json",
+    "mobile/package.json", "mobile/package-lock.json",
+    "dashboard/package.json", "dashboard/package-lock.json"
+  ],
+  "neverCommit": [
+    "(^|/)\\.env$",
+    "(^|/)\\.env\\.(?!example$)[^/]+$",
+    "firebase-adminsdk[^/]*\\.json$",
+    "(^|/)serviceAccountKey\\.json$",
+    "(^|/)google-services\\.json$",
+    "(^|/)GoogleService-Info\\.plist$",
+    "\\.(jks|keystore|p8|p12|key|pem)$",
+    "\\.local\\.js$",
+    "^\\.worklog/"
+  ],
+  "branchTypes": ["feature", "fix", "chore", "refactor", "docs", "test"],
+  "commitTypes": ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "revert"],
+  "commitSurfaces": ["backend", "mobile", "dashboard", "shared"],
+  "integrationBranches": ["develop", "main"]
+}

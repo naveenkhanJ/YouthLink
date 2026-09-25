@@ -273,8 +273,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/subtle
 
 The loading skeleton — `Feedback/LoadingState` ×3 below the real header, search and chips, so
 the page's shape arrives before its data. **Advances by itself after 1.5 s** (a frame reaction, not a
-tap). The E10 note in the name records that no requirement yet governs loading states; amendment E10
-proposes one.
+tap). Required by `NFR-PERF-01` as amended 2026-09-16 (batch E10): any operation that can exceed the
+perceptible threshold shows a loading or skeleton state. The *[against E10]* in the frame's name
+dates from before that amendment was adopted; the requirement now exists.
 
 ### `3.1ofl` — Browse, radius results · offline, cached
 
