@@ -20,7 +20,7 @@
  * specification (docs/workflow/agent-protocol.md §2).
  */
 import { repoRoot } from "./lib/common.mjs";
-import { loadRequirements, loadScreenIndex, findScreenBlock, loadSchemaBlocks } from "./lib/spec.mjs";
+import { loadRequirements, loadScreenIndex, findScreenBlock, loadSchemaBlocks, listScreens } from "./lib/spec.mjs";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -38,6 +38,7 @@ const root = repoRoot();
 const requirements = loadRequirements(root);
 const index = loadScreenIndex(root);
 const schema = loadSchemaBlocks(root);
+const allScreens = listScreens(root);
 const designSystem = readFileSync(join(root, "docs", "prototype", "design-system.md"), "utf8").replace(/\r\n/g, "\n").split("\n");
 const out = [];
 const say = (s = "") => out.push(s);
@@ -66,6 +67,11 @@ for (const id of ids) {
     say(`**Named in this entry:** ${related.join(", ")}. If the text says to implement them together, or depends on their rule, run this script on them too.`);
     say();
   }
+  const namedBy = [...requirements.values()].filter((o) => o.id !== id && new RegExp(`\\b${id}\\b`).test(o.text));
+  if (namedBy.length) {
+    say(`**Requirements that name ${id}:** ${namedBy.map((o) => `${o.id} (${o.title})`).join("; ")}. Read any that constrain how this one is built — non-functional requirements especially.`);
+    say();
+  }
 
   const groups = index.get(id) || [];
   const screenIds = groups.flatMap((g) => g.ids.map((sid) => ({ sid, file: g.file })));
@@ -91,10 +97,23 @@ for (const id of ids) {
       say(`<!-- from docs/prototype/${block.file} -->`);
       say(block.text);
       say();
-      for (const m of block.text.matchAll(/ of ([A-Za-z]+(?:\/[A-Za-z0-9 ]+)?)/g)) components.set(m[1].trim(), (components.get(m[1].trim()) || 0) + 1);
-      for (const m of block.text.matchAll(/INSTANCE ([\w/]+) /g)) components.set(m[1], (components.get(m[1]) || 0) + 1);
+      // Component names always contain a slash (Input/TextField): either the instance's own
+      // name, or "· of Input/TextArea" when the layer was renamed. Copy strings never match.
+      for (const m of block.text.matchAll(/· of ([A-Za-z]+\/[A-Za-z0-9]+(?:[ -][A-Za-z0-9]+)*)/g)) components.set(m[1], (components.get(m[1]) || 0) + 1);
+      for (const m of block.text.matchAll(/INSTANCE ([A-Za-z]+\/[\w/]+) /g)) components.set(m[1], (components.get(m[1]) || 0) + 1);
       for (const m of block.text.matchAll(/\b((?:color|space|radius|elevation)\/[\w/-]+|(?:mobile|desktop)\/[\w-]+)\b/g)) tokens.set(m[1], (tokens.get(m[1]) || 0) + 1);
     }
+  }
+
+  // Variants drawn for these screens but indexed under other requirements (loading, offline,
+  // text-expansion specimens…): 3.1ldg is a variant of 3.1, 3.10 is not.
+  const mapped = new Set(screenIds.map((s) => s.sid));
+  const variants = allScreens.filter((s) => !mapped.has(s.id) && [...mapped].some((m) => s.id.startsWith(m) && /^[a-z]/.test(s.id.slice(m.length))));
+  if (variants.length) {
+    say("**Other drawn variants of these screens** — indexed under other requirements (often an NFR). Check each: if it applies to what you are building, it is part of the specification too.");
+    say();
+    for (const v of variants) say(`- \`${v.id}\` — ${v.title} (docs/prototype/${v.file}) → \`node scripts/card-context.mjs\` on its requirement, or open the file`);
+    say();
   }
 
   if (!NO_SCREENS && (components.size || tokens.size)) {

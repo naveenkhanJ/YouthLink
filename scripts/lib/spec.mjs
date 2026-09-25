@@ -100,6 +100,18 @@ export function findScreenBlock(root, id, preferFile) {
   return null;
 }
 
+/** Every screen heading in the prototype files: [{ id, title, file }]. */
+export function listScreens(root) {
+  const out = [];
+  for (const f of screenFiles(root)) {
+    for (const line of read(f).split("\n")) {
+      const m = line.match(/^### `([^`]+)` — (.+)$/);
+      if (m) out.push({ id: m[1], title: m[2].trim(), file: f.split(/[\\/]/).pop() });
+    }
+  }
+  return out;
+}
+
 /** Map of model/enum name → block text from schema.prisma. */
 export function loadSchemaBlocks(root) {
   const file = join(root, "backend", "prisma", "schema.prisma");

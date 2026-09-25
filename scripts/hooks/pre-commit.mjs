@@ -112,7 +112,8 @@ if (!merging && me) {
     if (mod) {
       const holder = team.members.find((m) => m.modules.includes(mod));
       if (me.modules.includes(mod)) {
-        if (b.valid && b.module && b.module !== mod) warnings.push(`${path} — ${mod} work on a '${b.epic}' branch; each epic has its own branch.`);
+        const sliceBranch = me.moduleBranches?.[mod] === b.epic; // e.g. notification work on the discovery-search branch
+        if (b.valid && b.module && b.module !== mod && !sliceBranch) warnings.push(`${path} — ${mod} work on a '${b.epic}' branch; each epic has its own branch.`);
         if (b.valid && b.shared) warnings.push(`${path} — module work on a shared branch; it belongs on your epic branch.`);
       } else if (b.valid && b.type === "fix" && b.module === mod) {
         warnings.push(`${path} — a fix in ${holder ? holder.id + "'s" : "an unassigned"} module on a fix/ branch: tell the owner before it merges.`);
