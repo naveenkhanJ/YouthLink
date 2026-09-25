@@ -434,7 +434,7 @@ where a row is labelled *Total*.
 | `payKind` · unit | Worker-facing — card, row, detail `pay` | Detail `payBasis` (only when workers needed > 1) | Employer review — *Pay* | Employer review — *Total* | Source |
 | --- | --- | --- | --- | --- | --- |
 | `FIXED_TOTAL` | `Rs 6,000 for the job` | `per worker` — on a card it joins the line: `Rs 6,000 for the job · per worker` | `Rs 6,000 per worker` | `Rs 18,000 for 3 workers` | drawn — `3.1`, `3.12`, `2.9` |
-| `RATE` · `DAY` | `Rs 1,800 per day` | `per worker` | `Rs 1,800 per day` | `Rs 1,800 per day · ongoing` (1 worker) | drawn — `3.12t`, `3.12d`, `2.9t` |
+| `RATE` · `DAY` | `Rs 1,800 per day` | `per worker` (derived — every drawn day-rate listing needs one worker) | `Rs 1,800 per day` | `Rs 1,800 per day · ongoing` (1 worker) | drawn — `3.12t`, `3.12d`, `2.9t`, except the `payBasis` cell |
 | `RATE` · `WEEK` / `MONTH` | `Rs 9,000 per week` · `Rs 35,000 per month` | `per worker` | `Rs 9,000 per week` | `Rs 9,000 per week · ongoing` | derived |
 | `RATE`, more than one worker | as above | `per worker` | as above | `Rs 5,400 per day for 3 workers · ongoing` | derived |
 | `PAID` (internship) | as `RATE` with its unit, or as `FIXED_TOTAL` when it has none | as above | as above | as above | derived — `FR-POST-04`: "with rate or total, as applicable" |

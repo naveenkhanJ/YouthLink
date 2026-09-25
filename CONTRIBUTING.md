@@ -100,7 +100,7 @@ A branch that lives for weeks drifts from `develop`, and the longer you leave it
 
 **Open several pull requests from the same branch over time.** A branch is not one pull request. When a coherent chunk of your epic is finished and working, open a PR, get it reviewed, merge it, and carry on committing to the same branch. This matters: the Definition of Done requires work to be merged into `develop`, so a card cannot be Done while it sits unmerged. Merging a few times per sprint is what lets cards close as you finish them instead of all at once at the end.
 
-**A `feature/` branch holds fixes to its own epic too.** Don't open `fix/account-management-afham` alongside it — the type reflects what the branch is for, not what every commit does. Use `fix/` only for a correction outside your own epic work — a bug in someone else's epic goes on `fix/<their-epic>-<yourname>`, which your name keeps distinct from their branch, and a repo-wide fix goes on `fix/shared-<area>-<yourname>`.
+**A `feature/` branch holds fixes to its own epic too.** Don't open `fix/account-management-afham` alongside it — the type reflects what the branch is for, not what every commit does. Use `fix/` only for a correction outside your own epic work — a bug in someone else's epic goes on `fix/<their-epic>-<yourname>`, which your name keeps distinct from their branch, **once the owner has agreed to it** (usually it's simpler to tell them and let them fix it). Shared files — anything outside every module — are changed by the shared-components owner, so a repo-wide fix is something to raise with them rather than a branch of your own.
 
 > **Watch the one asymmetry:** branches spell the type out — `feature/…` — while commits use the Conventional Commits abbreviation, `feat(…)`. Two conventions sitting next to each other, deliberately kept as they read best in each place.
 
@@ -198,7 +198,7 @@ git config --get core.hooksPath      # → .githooks
 | `pre-commit` | committing on `develop` or `main`, on an off-convention branch or someone else's; an address not in `team.json`; secrets and local-only files; files in another member's module; and, for members, the schema, migrations, dependency files and shared files — those go through the shared-components owner |
 | `pre-push` | pushing to `develop` or `main`, deleting a remote branch, force-pushing over history already on the remote |
 
-Merging `develop` into your branch is always allowed — those files come from `develop`, not from you. The hooks are Node scripts behind a small shell wrapper, so they behave the same on Windows (including GitHub Desktop), macOS and Linux; if Node isn't on the PATH the hook warns and lets the commit through. **They can be skipped with `--no-verify`. Don't:** they are what stands between a slip and `develop`'s history.
+Merging `develop` into your branch is always allowed — files taken unchanged from either side aren't yours to own; anything you edit while resolving the merge is checked as usual. So is restoring your own earlier edit of a shared file to `develop`'s version. `git cherry-pick` doesn't run `pre-commit` (a git limitation), so `pr-check` is what catches a cherry-picked mistake. The hooks are Node scripts behind a small shell wrapper, so they behave the same on Windows (including GitHub Desktop), macOS and Linux; if Node isn't on the PATH the hook warns and lets the commit through. **They can be skipped with `--no-verify`. Don't:** they are what stands between a slip and `develop`'s history.
 
 Four scripts, all read-only apart from `git fetch` (and `state-report --save`, which writes one file into your git-ignored `.worklog/state/`):
 
@@ -284,7 +284,8 @@ git checkout -b feature/gig-posting-yourname
 
 # every time after that — the branch already exists, just go back to it
 git checkout feature/gig-posting-yourname
-git fetch && git merge origin/develop   # stay current with everyone else's merges
+git fetch                         # then:
+git merge origin/develop          # stay current with everyone else's merges
 
 # commit
 git commit -m "feat(backend): add posting creation endpoint [FR-POST-01]"

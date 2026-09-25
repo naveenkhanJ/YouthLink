@@ -117,7 +117,7 @@ No member waits for another member's work.
 - **Data another module creates** (postings for Applying, ratings for the applicant sort): build against `develop`'s schema and the shared seed script, never against another member's branch.
 - **A call into another module** (posting creation should trigger a notification): the called module exposes a function; the calling module calls it. If the function is not on `develop` yet, the caller ships a clearly marked no-op in its own module and the card notes the dependency. Neither side waits.
 - **A missing contract, seed data, or shared component:** escalate (§8.3) to the shared-components owner, park the card, and move to the next one.
-- **Shared files edited on a member's branch** (the home screen, navigation, a lockfile): restore `develop`'s version before the pull request (`git checkout origin/develop -- <file>`; the hooks allow it). If that leaves a screen unreachable until the shared home entry lands, record end to end as pending with that reason — don't keep the shared edit.
+- **Shared files edited on a member's branch** (the home screen, navigation, a lockfile): restore `develop`'s version before the pull request (`git checkout origin/develop -- <file>`, or `git rm <file>` if `develop` has no such file; the hooks allow it when the earlier edits were the developer's own). If that leaves a screen unreachable until the shared home entry lands, record end to end as pending with that reason — don't keep the shared edit.
 
 ---
 
@@ -226,7 +226,7 @@ State the rule and its source in one line, then offer the correct route. Refuse 
 - suggest or use `--no-verify`, or disable the hooks
 - change `backend/prisma/schema.prisma` or migrations (members) — escalate instead
 - add or change a dependency (members) — escalate instead
-- edit another member's module, or a shared file (members) — escalate or tell the owner
+- edit another member's module (the one exception: a `fix/<their-epic>-<you>` branch the owner has agreed to), or a shared file (members) — escalate or tell the owner
 - write a secret into a tracked file
 - build what [`requirements.md`](../requirements.md) §5 or [`product-overview.md`](../product-overview.md) §13 excludes
 - invent behaviour a requirement does not specify
@@ -270,7 +270,7 @@ Git-ignored, one set per developer. They exist because chats lose context; they 
 
 Rules:
 
-- **Dates come from the State Report header** (or `Get-Date` / `TZ=Asia/Colombo date`), in `Asia/Colombo` time, written `YYYY-MM-DD (Ddd)`. Add the sprint and day when `module-ownership.md` gives the sprint dates.
+- **Dates come from the State Report header** (PowerShell: `Get-Date`; bash: `TZ=Asia/Colombo date`), in `Asia/Colombo` time, written `YYYY-MM-DD (Ddd)`. Add the sprint and day when `module-ownership.md` gives the sprint dates.
 - **NEXT is overwritten, not appended**, and stays under about 40 lines. A new session reads NEXT and the latest State Report, not the history.
 - **Update at every stop in §6**, not only at the end of a session.
 - **Each epic entry** records: cards worked, what was done, how it was verified (with the end-to-end level), commits and pull requests, blockers and escalations, Jira moves, discrepancies found, a stand-up block, and a line on how AI was used — for the developer's own AI-use declaration.

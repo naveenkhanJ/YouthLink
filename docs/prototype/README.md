@@ -101,12 +101,17 @@ Also absent by design: anything about behaviour beyond navigation, which lives i
 Which screens demonstrate each requirement. **Use this to find your starting point** — open the
 requirement in `requirements.md` for the rule, then the screens here for the interface.
 
-**Screen ownership follows this index:** a screen is built by the owner of the requirement it is
-listed under. Corrected 2026-09-25: `FR-APPLY-01`, `FR-DISC-05` and `FR-NOTIF-01` had each been mapped
-to all thirteen main M3 screens, and `FR-DISC-01` listed the listing detail `3.12` as well. Each now
-lists only the screens that show it — which makes `3.12` Applying & Selection's (`FR-APPLY-01`), not
-Discovery's. Variants of a listed screen (`3.12s`, `3.1ldg`, …) go with it; `scripts/card-context.mjs`
-lists them.
+**Who builds a screen** is decided by its number, not by how many requirements list it: a screen
+belongs to the module its number belongs to — `1.x` Account, `2.x` Gig Posting, `3.x` Discovery and
+Notifications, `4.x` Applying & Selection, and so on, as in *The modules* above; `0.x`, `HF.x` and `NAV.x`
+are shared. **One exception: the listing detail `3.12` and its variants belong to Applying & Selection**
+(`FR-APPLY-01`), whose Slice D task builds it. A screen listed under a requirement of another module is
+still built by its own module; the other requirement is behaviour or data that module supplies through
+its API — `3.1` shows `FR-POST-07`'s urgency, which Discovery displays and Gig Posting computes.
+
+Corrected 2026-09-25: `FR-APPLY-01`, `FR-DISC-05` and `FR-NOTIF-01` had each been mapped to all thirteen
+main M3 screens, and `FR-DISC-01` also listed `3.12`; each now lists only the screens that show it.
+Variants of a listed screen (`3.12s`, `3.1ldg`, …) go with it; `scripts/card-context.mjs` lists them.
 
 | Requirement | Priority | Title | Screens |
 | --- | --- | --- | --- |
@@ -283,8 +288,3 @@ Ruled as having nothing to draw, with the reason. **Not gaps.**
 | `NFR-SEC-01` | password hashing — server-side, nothing to draw |
 | `NFR-SEC-02` | login rate-limiting — the USER-facing half is drawn (1.6bnr2/1.6bnr3, 11.1w/11.1L); the limit itself is server-side |
 | `NFR-USE-02` | low data usage — satisfied by CONSTRUCTION across the whole file rather than by one screen: zero IMAGE fills in 492 frames (every visual is drawn vector), MD2's flat-vector map ruling ('no imagery, honest about not being a real map'), and a 25-glyph drawn icon set. Same shape as NFR-LOC-04 — there is no screen that could show it, because every screen shows it |
-| `FR-ADM-01` | 10.3b |
-| `FR-ENDORSE-03` | 5.5c |
-| `FR-ENDORSE-05` | 5.5c |
-| `FR-MOD-02` | 10.3b, 3.7b, 5.5c |
-| `NFR-OPS-04` | 5.5c |

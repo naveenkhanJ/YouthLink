@@ -74,7 +74,7 @@ Phone verification at signup and OTP login goes through **Firebase Phone Authent
 
 The middleware is on `develop` at `backend/src/middleware/requireAuth.js`. Apply it in your module's routes file to every endpoint that needs a signed-in user, and read the user from `req.user`.
 
-**Which endpoints need it — ruled 2026-09-25.** Every endpoint requires sign-in, **except** the ones that exist to get a person signed in: registration, both login paths, password reset (`FR-ACC-10`) and the account-recovery request, whose requester is unauthenticated by definition. There is no signed-out use of the app: first run leads only to account creation (`M0` → `1.1`), and Browse first appears right after registration (`3.9`). So Browse and every other Discovery endpoint require sign-in, which is also what lets `FR-POST-08` decide how precisely to show a location.
+**Which endpoints need it — ruled 2026-09-25.** Every endpoint requires sign-in, **except** the ones that exist to get a person signed in — registration, both login paths, password reset (`FR-ACC-10`) and the account-recovery request, whose requester is unauthenticated by definition — and the `/health` check, which carries no data. There is no signed-out use of the app: first run leads only to account creation (`M0` → `1.1`), and Browse first appears right after registration (`3.9`). So Browse and every other Discovery endpoint require sign-in, which is also what lets `FR-POST-08` decide how precisely to show a location.
 
 **Role checks follow the actor table.** Where a requirement's *Actor(s)* names who may act, the endpoint refuses every other role with 403 — for example, only a Local Business/Employer creates a posting (`FR-POST-01`), and only a Youth Job-Seeker applies (`FR-APPLY-02`). A route that checks the token but not the role lets anyone signed in do everything.
 
@@ -200,7 +200,7 @@ Requirements amended after Sprint 1 closed changed stories that were already Don
 
 ### 3. UI conformance for Sprint 1 screens
 
-Every Sprint 1 screen was built before the prototype specification existed. Each owner brings their own screens to it — DoD clause 5 — using the shared UI kit and tokens once they are on `develop`. The screens are the ones the prototype's [requirement index](prototype/README.md#requirement-index) maps to each requirement.
+Every Sprint 1 screen was built before the prototype specification existed. Each owner brings their own screens to it — DoD clause 5 — using the shared UI kit and tokens once they are on `develop`. The screens are the ones the prototype's [requirement index](prototype/README.md#requirement-index) maps to each requirement, **limited to the screens your module builds** — by screen number, with the listing detail `3.12` belonging to Applying & Selection (see *Who builds a screen* in the prototype README). Where another module's screen shows your requirement, you supply the data through your API; you don't edit their screen.
 
 | Owner | Requirements whose screens to bring to the specification |
 | --- | --- |
