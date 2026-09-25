@@ -74,6 +74,10 @@ Phone verification at signup and OTP login goes through **Firebase Phone Authent
 
 The middleware is on `develop` at `backend/src/middleware/requireAuth.js`. Apply it in your module's routes file to every endpoint that needs a signed-in user, and read the user from `req.user`.
 
+**Which endpoints need it — ruled 2026-09-25.** Every endpoint requires sign-in, **except** the ones that exist to get a person signed in: registration, both login paths, password reset (`FR-ACC-10`) and the account-recovery request, whose requester is unauthenticated by definition. There is no signed-out use of the app: first run leads only to account creation (`M0` → `1.1`), and Browse first appears right after registration (`3.9`). So Browse and every other Discovery endpoint require sign-in, which is also what lets `FR-POST-08` decide how precisely to show a location.
+
+**Role checks follow the actor table.** Where a requirement's *Actor(s)* names who may act, the endpoint refuses every other role with 403 — for example, only a Local Business/Employer creates a posting (`FR-POST-01`), and only a Youth Job-Seeker applies (`FR-APPLY-02`). A route that checks the token but not the role lets anyone signed in do everything.
+
 ---
 
 ## Sprint 1–2 — the core loop: post → discover → apply → select
@@ -187,6 +191,7 @@ Requirements amended after Sprint 1 closed changed stories that were already Don
 | Lahiru | YL-170 | YL-42 | [FR-POST-07](requirements.md#fr-post-07--urgency-computation) | Urgent means 48 hours or less, with no lower bound |
 | Pawan | YL-171 | YL-45 | [FR-DISC-01](requirements.md#fr-disc-01--radius-based-browsing) | Pay figure and basis on every browse result |
 | Pawan | YL-172 | YL-46 | [FR-DISC-02](requirements.md#fr-disc-02--manual-location-fallback) | The location permission ask, and permanent denial |
+| Pawan | YL-178 | YL-45 | [FR-DISC-01](requirements.md#fr-disc-01--radius-based-browsing) | Record each browse's centre as the worker's last browse location (needs the schema change of 2026-09-25) |
 | Naveenkhan | YL-173 | YL-55 | [FR-APPLY-04](requirements.md#fr-apply-04--applicant-pool-sort-order) | Earliest application first within tiers 2 and 3 |
 | Naveenkhan | YL-174 | YL-60 | [FR-APPLY-09](requirements.md#fr-apply-09--automatic-not-selected-notification) | Resolve Pending applicants on expiry and withdrawal |
 | Naveenkhan | YL-175 | YL-61 | [FR-APPLY-10](requirements.md#fr-apply-10--pending-applicant-notification-on-material-change) | Send `APPLICATION_TERMS_CHANGED` to Pending applicants |

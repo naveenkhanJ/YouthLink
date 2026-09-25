@@ -239,6 +239,10 @@ and a shared seed script. Only shared components come from one person. See
 Git hooks installed by `npm install`, agent refusals, and review. The hooks can be
 bypassed on purpose; they exist to catch slips. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#local-checks).
 
+**Every endpoint requires sign-in unless it exists to sign someone in**, and role
+checks follow each requirement's actor table. See the cross-cutting authentication
+section of [`module-ownership.md`](module-ownership.md#cross-cutting-authentication).
+
 **The workflow serves the person using it.** An agent following the protocol
 declines to break the team's rules, but it records progress only in the
 developer's own git-ignored `.worklog/` and never reports on them.

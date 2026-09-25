@@ -145,7 +145,7 @@ Check every screen against its block in the card pack:
 | --- | --- |
 | Tokens | Every colour, spacing, radius, elevation and text style is the named token from `design-system.md`. No raw hex, no ad-hoc sizes |
 | Components | Each `INSTANCE` is the named component with the listed variant (`{Style=Primary}`), from the shared UI kit once it exists |
-| Copy | Every string exactly as written in the block. Strings are specification, not placeholder |
+| Copy | Every string exactly as written in the block. Strings are specification, not placeholder. Pay is written as `design-system.md` §9 states |
 | Structure | Elements in the same order and hierarchy; auto-layout direction, padding and gap as listed |
 | States | Every drawn variant for the requirement (each screen ID) is built, plus the composed states `design-system.md` §8 says to build |
 | Pinned actions | A `ctaBar` stays pinned above the scrolling content, per `design-system.md` §5 |
