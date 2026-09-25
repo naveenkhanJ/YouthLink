@@ -81,6 +81,7 @@ for (const id of ids) {
     say("The prototype index maps no screen to this requirement. Check docs/prototype/README.md → \"Requirements with no interface\" for the ruling; backend-only work is expected in that case.");
     say();
   }
+  let screenTexts = "";
   const components = new Map();
   const tokens = new Map();
   if (!NO_SCREENS) {
@@ -94,6 +95,7 @@ for (const id of ids) {
         say();
         continue;
       }
+      screenTexts += block.text + "\n";
       say(`<!-- from docs/prototype/${block.file} -->`);
       say(block.text);
       say();
@@ -134,6 +136,10 @@ for (const id of ids) {
     }
     if (tokens.size) {
       say(`**Tokens and text styles:** ${[...tokens.keys()].sort().map((t) => `\`${t}\``).join(", ")}`);
+      say();
+    }
+    if (/\bpay\b/i.test(r.text) || /TEXT pay(Basis)? /.test(screenTexts)) {
+      say("**Pay strings:** write every pay figure as design-system.md §9 states — drawn and derived rows for each pay kind.");
       say();
     }
   }
