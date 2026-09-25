@@ -17,6 +17,7 @@
     "react-native-screens": "~4.26.0"
   },
   "scripts": {
+    "prepare": "node ../scripts/install-hooks.mjs",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
