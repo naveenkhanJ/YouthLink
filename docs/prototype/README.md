@@ -260,6 +260,8 @@ Ruled as having nothing to draw, with the reason. **Not gaps.**
 | Requirement | Why there is nothing to draw |
 | --- | --- |
 | `FR-ACC-06` | incomplete signup expiry — the requirement's own note says it 'has no trigger under the current design' since FR-ACC-08's amendment made registration a single atomic submission |
+| `FR-ADM-04` | verification-document review — `Won't (this build)`, future-contingent; nothing is built, so nothing is drawn |
+| `FR-APPLY-11` | no application cap — a design constraint met by the ABSENCE of any limit, counter or "applications remaining" element; its evidence is that no screen shows one |
 | `NFR-LOC-01` | English-only in this build — the ABSENCE of any Sinhala/Tamil UI is the artefact, and its acceptance criterion is literally that none is present |
 | `NFR-LOC-02` | Sinhala/Tamil scoped for a later phase — backlog, not this build |
 | `NFR-LOC-03` | dashboard English-only permanently — same shape as NFR-LOC-01 |
