@@ -17,11 +17,14 @@
  *   - raw hex colours in mobile files (the prototype binds tokens)
  *
  * During a merge commit (e.g. merging develop in) only the secret checks run:
- * those files come from develop, not from you.
+ * those files come from develop, not from you. Likewise a file restored to
+ * exactly develop's version is always allowed — that is how an earlier edit to
+ * a shared file is taken back out of a branch.
  *
  * Bypassable with --no-verify by design; see docs/workflow/agent-protocol.md.
  */
 import { existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import {
   git, gitOr, loadTeam, currentEmail, memberByEmail, currentBranch, parseBranch,
   moduleOfPath, isProtected, isNeverCommit, paint,
@@ -78,9 +81,21 @@ for (const path of staged) {
   }
 }
 
+// A staged file identical to develop's copy is a revert to develop (e.g. dropping an
+// earlier edit to a shared file before a PR) — always allowed, whoever owns the path.
+const matchesDevelop = (path) => {
+  try {
+    execFileSync("git", ["diff", "--cached", "--quiet", "origin/develop", "--", path], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 if (!merging && me) {
   for (const path of staged) {
     if (isNeverCommit(team, path)) continue;
+    if (matchesDevelop(path)) continue;
 
     if (isProtected(team, path)) {
       if (isOwner) warnings.push(`${path} — schema change: DoD clause 7, tell every affected teammate before this lands.`);
