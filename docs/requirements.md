@@ -378,6 +378,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user has at least one active (not completed, ended, or cancelled) Engagement, when they attempt deletion, then the system blocks it and requires resolving every active Engagement first.
 - Given a user with no active Engagements confirms deletion with their password, when deletion completes, then their identifying data is removed but past ratings and engagement records remain, attributed to an anonymized reference rather than deleted.
 
+> **Amended 2026-09-25.** The data deletion removes includes the last browse location (`User.lastBrowseLat`, `lastBrowseLng`, `lastBrowseAt`), cleared to null — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-ACC-18 — Unified Settings screen
 
 | Actor(s)        | Priority |
@@ -627,6 +629,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given an urgent posting is submitted, when fan-out triggers, then only opted-in youth within radius receive a proactive push.
 - Given a non-urgent posting is submitted, when fan-out triggers, then all non-opted-out youth within radius receive the standard notification.
 
+> **Amended 2026-09-25 — what "within radius" is measured from.** Nothing recorded where a youth is, so the radius in this requirement, `FR-NOTIF-01` and `FR-NOTIF-02` had no point to measure from, and an implementation could only notify everyone nationwide. **The radius is measured from the youth's last browse location**: the centre of their most recent Browse search — the device location, or the centre of the manually chosen area (`FR-DISC-02`) — stored as `User.lastBrowseLat`/`lastBrowseLng` with `lastBrowseAt`, **rounded to two decimal places (about 1 km)** and overwritten on every browse, never kept as a history. **The radius is the 5 km default of `FR-DISC-01`**, without auto-expansion: expansion exists to fill an empty results screen, and there is no screen to fill here. **Only an active account with a recent location is notified:** a youth who has never browsed, whose location is more than 30 days old (`lastBrowseAt`), or whose account is deleted or suspended receives no location-based notification. The stored location is never shown to anyone, and account deletion (`FR-ACC-17`) clears it along with the other identifying data. The acceptance criteria above are unchanged; this says how "within radius" is decided.
+
 #### FR-POST-11 — Posting editing
 
 | Actor(s)                | Priority |
@@ -769,6 +773,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a browse result is rendered, when displayed, then its pay figure and basis are visible without opening the listing.
 
 > **Amended 2026-08-27.** The pay-on-result requirement was added following UEE Lab 04's finding that "legitimate job offers paying too little to be worth pursuing" was the single most-selected challenge among youth respondents (71%, n=14), ahead of every scam-related concern. Pay was already available for sorting (FR-DISC-05) but was not required to be visible while scanning results, which meant the most common reason for rejecting a listing could only be discovered by opening it. See the project's reconciliation register, ref C17.
+
+> **Amended 2026-09-25.** Each browse also records its centre on the user, rounded to about 1 km (`User.lastBrowseLat`/`lastBrowseLng`/`lastBrowseAt`), because gig notifications are targeted from it — see `FR-POST-10`'s amendment of the same date.
 
 #### FR-DISC-02 — Manual location fallback
 
@@ -1984,6 +1990,8 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 - Given a youth has already received 5 urgent pushes that day, when a 6th matching urgent gig is posted, then it is queued into a batched digest rather than sent individually.
 - Given a youth has not opted in, when an urgent gig matches them, then they see the urgent label in-app but receive no proactive push.
 
+> **Amended 2026-09-25.** "Within the search radius" is measured from the youth's last browse location, within the 5 km default — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-NOTIF-02 — Non-urgent gig notifications
 
 | Actor(s)         | Priority |
@@ -1996,6 +2004,8 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 
 - Given a youth has not opted out, when a non-urgent posting matches their radius, then they receive the standard notification.
 - Given a youth has opted out, when a non-urgent posting matches, then no notification is sent.
+
+> **Amended 2026-09-25.** "Within radius" is measured from the youth's last browse location, within the 5 km default — see `FR-POST-10`'s amendment of the same date.
 
 #### FR-NOTIF-03 — Notification preferences
 

@@ -48,6 +48,8 @@ The single identity table for all three self-selected actor types (Youth Job-See
 | `endorsementSuggestionShownAt` | DateTime              | nullable                                        | One-time nudge tracker, fires after 3 unselected applications (FR-ENDORSE-14)                                         |
 | `notifyUrgentOptIn`            | Boolean               | default `false`                                 | Opt-**in** (FR-NOTIF-01, FR-NOTIF-03)                                                                                 |
 | `notifyNewGigOptOut`           | Boolean               | default `false`                                 | Opt-**out**-by-default (FR-NOTIF-02, FR-NOTIF-03)                                                                     |
+| `lastBrowseLat` / `lastBrowseLng` | Float              | nullable                                        | Centre of the worker's most recent Browse search, rounded to 2 decimals (~1 km), overwritten each browse. The point FR-POST-10's fan-out measures "within radius" from. Added 2026-09-25 |
+| `lastBrowseAt`                 | DateTime              | nullable                                        | When that location was recorded. Fan-out ignores a location older than 30 days, and deleted or suspended accounts. Added 2026-09-25 |
 | `tosAcceptedAt`                | DateTime              | required at signup completion                   | FR-ACC-19                                                                                                             |
 | `accountStatus`                | Enum(`AccountStatus`) | default `PENDING_SIGNUP`                        | Registration writes `ACTIVE` directly — `PENDING_SIGNUP` is currently never persisted. See FR-ACC-06's amendment note |
 | `signupExpiresAt`              | DateTime              | nullable                                        | **Currently unused.** Supported a staged signup that FR-ACC-01 no longer performs; see FR-ACC-06's amendment note     |
@@ -59,7 +61,7 @@ The single identity table for all three self-selected actor types (Youth Job-See
 | `deletedAt`                    | DateTime              | nullable                                        | Soft-delete marker (FR-ACC-17, NFR-PRIV-03)                                                                           |
 | `createdAt` / `updatedAt`      | DateTime              |                                                 |                                                                                                                       |
 
-**On deletion (FR-ACC-17, NFR-PRIV-03):** the row is not removed. `phone`, `email`, `nicEncrypted`, `legalName`, `passwordHash` are overwritten with anonymized placeholders and `deletedAt` is set — every `Rating`, `CompletionRecord`, and `Engagement` referencing this `id` stays intact, satisfying "preserve engagement history under an anonymized reference." Deletion is blocked at the application layer while any `Engagement.status = ACTIVE` exists (NFR-REL-04, FR-ACC-17).
+**On deletion (FR-ACC-17, NFR-PRIV-03):** the row is not removed. `phone`, `email`, `nicEncrypted`, `legalName`, `passwordHash` are overwritten with anonymized placeholders, `lastBrowseLat`/`lastBrowseLng`/`lastBrowseAt` are cleared to null (added 2026-09-25), and `deletedAt` is set — every `Rating`, `CompletionRecord`, and `Engagement` referencing this `id` stays intact, satisfying "preserve engagement history under an anonymized reference." Deletion is blocked at the application layer while any `Engagement.status = ACTIVE` exists (NFR-REL-04, FR-ACC-17).
 
 **A suspension records its grounds (FR-ADM-03, amended 2026-09-24).** `suspensionReason` is set whenever `suspendedAt` is — an application-layer rule; the column stays nullable so an unsuspended account carries none.
 
@@ -717,6 +719,7 @@ NFR-PERF-02 targets 1 second for common round-trip actions and NFR-PERF-03 caps 
 | `Rating`       | (`rateeId`, `revealedAt`)                               | Average rating for pool sort and profile display                        |
 | `Warning`      | (`userId`, `issuedAt`)                                  | Rolling 90-day threshold check (FR-MOD-02)                              |
 | `Notification` | (`userId`, `readAt`), (`adminAccountId`, `readAt`)      | Notification history (FR-NOTIF-08)                                      |
+| `User`         | (`lastBrowseLat`, `lastBrowseLng`)                      | Posting fan-out to youth within radius (FR-POST-10, FR-NOTIF-01/02)     |
 
 ---
 

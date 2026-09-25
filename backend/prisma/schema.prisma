@@ -48,6 +48,15 @@ model User {
   endorsementSuggestionShownAt DateTime?
   notifyUrgentOptIn            Boolean        @default(false)
   notifyNewGigOptOut           Boolean        @default(false)
+  // Added 2026-09-25 (fan-out targeting). Where the worker last browsed from: the centre of their most
+  // recent Browse search — device location, or the manual area's centre (FR-DISC-02) — rounded to two
+  // decimal places (about 1 km) and overwritten on every browse, never kept as a history. FR-POST-10,
+  // FR-NOTIF-01 and FR-NOTIF-02 measure "within radius" from here. Null until the first browse; a null
+  // or 30-day-old location receives no location-based notification. Cleared on deletion (FR-ACC-17).
+  // Never shown to anyone.
+  lastBrowseLat                Float?
+  lastBrowseLng                Float?
+  lastBrowseAt                 DateTime?
   tosAcceptedAt                DateTime?
   accountStatus                AccountStatus  @default(PENDING_SIGNUP)
   signupExpiresAt              DateTime?
@@ -88,6 +97,7 @@ model User {
 
   @@index([accountStatus])
   @@index([deletedAt])
+  @@index([lastBrowseLat, lastBrowseLng])
 }
 
 model OtpCode {
