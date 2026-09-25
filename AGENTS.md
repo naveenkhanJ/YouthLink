@@ -6,6 +6,26 @@ Context for any AI coding agent working in this repository. Written to be tool-n
 
 ---
 
+## Session protocol — read first
+
+The block below is copied verbatim into the instruction files of tools that cannot import this one (`mobile/AGENTS.md`, `.github/copilot-instructions.md`, `.cursor/rules/`, `.windsurf/rules/`). Change it here, then copy it; `node scripts/check-docs.mjs` fails while any copy differs.
+
+<!-- agent-core:start -->
+**Mandatory at the start of every chat, and again after any compaction or summary. Protocol version 1.**
+
+1. **Code first.** Before any work, establish what the code actually implements: run `node scripts/state-report.mjs --save` (no shell: ask the developer to run it and paste the output), then check each acceptance criterion of the current cards against the code. Code on `develop` outranks Jira, progress notes, documents, chat summaries and what anyone says. Write no code until this is done.
+2. **Identity and branch.** `git config user.email` must be listed in `docs/workflow/team.json`, and the branch must be the developer's own and follow `CONTRIBUTING.md`. If not, stop and give the exact branch name.
+3. **Full procedure:** read `docs/workflow/agent-protocol.md` in full. For each card, read the output of `node scripts/card-context.mjs <FR-ID>` in full.
+4. **The developer runs git.** Never run `git commit`, `git push`, `git checkout` or `git merge` yourself. Give the exact commands, the commit message (`<type>(<surface>): <description> [<FR-ID>]`), and say when a pull request is due (`node scripts/pr-check.mjs`; base `develop`, merge commit, never squash, never delete the branch).
+5. **Refuse** anything that breaks `AGENTS.md` or `CONTRIBUTING.md`: commits to `develop`/`main`, squash, force-push, `--no-verify`, schema or dependency changes by a member, another member's module or a shared file, secrets, excluded features, invented behaviour.
+6. **Escalate** schema needs, unclear or contradictory requirements and missing shared pieces with the `ESCALATE TO AFHAM (Scrum Master)` block in the protocol, park the card, and continue with the next one.
+7. **UI is exact per `docs/prototype/`:** design tokens, components, copy, structure, and every drawn state.
+8. **Record progress** in the developer's git-ignored `.worklog/` (templates in `docs/workflow/templates/`), dated from `date` in Asia/Colombo time. It is the developer's own record; never report on them.
+9. **Stop only** for a commit, a pull request, an end-to-end run, a command only the developer should run, a refusal, or an escalation. Otherwise keep going.
+<!-- agent-core:end -->
+
+---
+
 ## What this is
 
 **YouthLink** — a mobile platform connecting Sri Lankan youth job-seekers with verified local gigs and part-time work. Aligned to UN SDG 1 (No Poverty) and SDG 8 (Decent Work and Economic Growth). Built by four students as a university group project; every contributor must be able to explain their own code in a live viva.
@@ -24,14 +44,16 @@ Three surfaces: `backend/` (Node.js + Express, **ES modules**), `mobile/` (React
 | [`docs/product-overview.md`](docs/product-overview.md) | How the system works and _why_. Four mechanisms are not guessable from the UI or the schema — the check-in code exchange (custody flips to the worker at the payment step), the endorsement bootstrap, the three-tier applicant sort, and the double-blind rating reveal |
 | [`docs/decisions.md`](docs/decisions.md)               | **Why things are the way they are.** Read it when something looks arbitrary, wrong, or like an oversight. Mostly pointers to reasoning that lives next to what it governs. Add to it when a decision turns out not to be written down                                    |
 | [`docs/database-schema.md`](docs/database-schema.md)   | 22 tables, every field, and a "Deliberately Not Modeled" section. Consult it whenever you touch data                                                                                                                                                                     |
-| [`docs/module-ownership.md`](docs/module-ownership.md) | Who owns which module, per-story tasks, and the cross-cutting authentication contract                                                                                                                                                                                    |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md)                   | Branching, commit format, pull requests, Definition of Done                                                                                                                                                                                                              |
+| [`docs/prototype/`](docs/prototype/README.md)          | **The interface specification.** Every screen's node tree, components, tokens and exact copy, plus [`design-system.md`](docs/prototype/design-system.md) and a requirement → screen index. UI is built to match it exactly                                              |
+| [`docs/module-ownership.md`](docs/module-ownership.md) | Who owns which module, per-story tasks, the Sprint 3 carry-over, and the cross-cutting authentication contract                                                                                                                                                           |
+| [`docs/workflow/`](docs/workflow/agent-protocol.md)    | **How to work here.** The agent protocol, [`team.json`](docs/workflow/team.json) (who owns which paths), the progress-file templates, and the session-start prompt                                                                                                       |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)                   | Branching, commit format, pull requests, local checks, Definition of Done                                                                                                                                                                                                |
 
-**This table is a map, not a substitute for the documents it points to.** Read the linked document in full before writing code against it — not this table's one-line summary, not what a schema column seems to imply, not what you read earlier in a long session. Re-read rather than recall; a document doesn't drift, your memory of it does. If the answer isn't written down anywhere, ask rather than fill the gap with something reasonable-sounding.
+**This table is a map, not a substitute for the documents it points to.** Read the linked document before writing code against it — not this table's one-line summary, not what a schema column seems to imply, not what you read earlier in a long session. For a card, `node scripts/card-context.mjs <FR-ID>` prints the exact parts of the requirements, prototype and schema it needs, verbatim; read that in full, and open whole documents when it points outside itself. Re-read rather than recall; a document doesn't drift, your memory of it does. If the answer isn't written down anywhere, ask rather than fill the gap with something reasonable-sounding.
 
 **Acceptance criteria are the specification.** Check your work against the documented Given/When/Then, explicitly, not against your own sense of finished. That is clause 1 of the Definition of Done.
 
-**Each developer keeps a `.worklog/progress.md`** — per-developer working state, since chat sessions lose context and Jira/git don't hold everything (what's actually verified, decisions made mid-implementation, where to pick up). It's git-ignored, so it isn't visible in this repo history and isn't shared between us. Read your own at the start of a session; update it at the end.
+**Each developer keeps a `.worklog/`** — `progress.md` (the index and NEXT block), one file per epic, and saved State Reports — because chat sessions lose context and Jira/git don't hold everything (what's actually verified, decisions made mid-implementation, where to pick up). It's git-ignored, so it isn't visible in this repo history and isn't shared between us. Templates and rules: [`docs/workflow/agent-protocol.md`](docs/workflow/agent-protocol.md) §9. Read your own at the start of a session; update it at every stop.
 
 ---
 
@@ -40,7 +62,7 @@ Three surfaces: `backend/` (Node.js + Express, **ES modules**), `mobile/` (React
 1. **Never modify `backend/prisma/schema.prisma` or create a migration** without being asked. The full schema was designed up front and migrated deliberately so nobody blocks anyone. If a change looks genuinely necessary, stop and say so — it requires notifying every affected teammate first (`CONTRIBUTING.md` → Changing the database schema).
 2. **Stay inside the current owner's module.** Each person owns one epic end to end, backend and mobile. Work touching someone else's epic is their work, not yours. See [`docs/module-ownership.md`](docs/module-ownership.md).
 3. **Never write real secrets into a tracked file.** `backend/.env` is git-ignored and holds real values; `backend/.env.example` is committed and holds placeholders. A new environment variable goes in **both**.
-4. **Don't run `git commit`, `git push`, or `git checkout`** unless explicitly asked. `git status` and `git diff` are fine.
+4. **Don't run `git commit`, `git push`, `git checkout` or `git merge`** unless explicitly asked. `git status`, `git diff`, `git log` and `git fetch` are fine, as are the read-only scripts in `scripts/`.
 5. **Don't build what the requirements deliberately exclude.** `docs/requirements.md` §5 and `docs/product-overview.md` §13 list what was considered and rejected — in-app messaging, profile photos, block-user, draft postings, an appeals process. Those are decisions, not gaps.
 6. **Don't invent behaviour when a requirement is unclear.** Ask. Almost everything here was decided deliberately and written down somewhere.
 
@@ -70,7 +92,9 @@ Three surfaces: `backend/` (Node.js + Express, **ES modules**), `mobile/` (React
 
 **Mobile navigation is React Navigation, and you add screens through your module's manifest** — `src/screens/<module>/<module>.screens.js`. `RootNavigator.js` collects every manifest automatically and should not be edited. Screen names are global, so prefix them with the module: `AccountRegister`, not `Register`.
 
-**Mobile is Android-only for Sprints 1–2.** Firebase and the navigation packages are native modules, so Expo Go cannot run the app — a development build is required, started with `npx expo start --dev-client`.
+**Mobile is Android-only for now.** Firebase and the navigation packages are native modules, so Expo Go cannot run the app — a development build is required, started with `npx expo start --dev-client`. A shared development build (an APK) removes the need to compile it yourself; see the README. The backend address comes from `EXPO_PUBLIC_API_URL` in `mobile/.env`, never from code.
+
+**The git hooks are local checks, not security.** They block the common mistakes (wrong branch, bad commit subject, secrets, another person's module) and can be bypassed with `--no-verify`. Never suggest bypassing them: fix what they report.
 
 ---
 
@@ -94,6 +118,6 @@ Commit:  <type>(<surface>): <description> [<FR-ID>, <FR-ID>]
 
 ## Definition of Done
 
-A story is Done when it meets its documented acceptance criteria, is merged into `develop`, **runs end to end in the actual app** (not only through Postman or a unit test), has no known blocking bugs, functionally matches the wireframe for UI work, is committed with a descriptive message, and — if it changed the schema — every affected teammate was told first.
+A story is Done when it meets its documented acceptance criteria, is merged into `develop`, **runs end to end in the actual app** (not only through Postman or a unit test), has no known blocking bugs, **matches the prototype specification exactly** for UI work, is committed with a descriptive message, and — if it changed the schema — every affected teammate was told first. Full wording, and how the end-to-end run is recorded while not everyone can build the app, in [`CONTRIBUTING.md`](CONTRIBUTING.md#definition-of-done).
 
 Automated test coverage is deliberately out of scope at this stage. Running the thing end to end is doing that job.

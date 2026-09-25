@@ -1,10 +1,10 @@
-# Expo HAS CHANGED
+---
+trigger: always_on
+---
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+# YouthLink — repository rules
 
-## Repository rules
-
-**This file adds to the repository-root [`AGENTS.md`](../AGENTS.md); it does not replace it.** Some tools read only the nearest `AGENTS.md`, so the root file's mandatory core is copied below. Read the root `AGENTS.md` and [`docs/workflow/agent-protocol.md`](../docs/workflow/agent-protocol.md) in full before anything else.
+This repository's full agent instructions are in [`AGENTS.md`](../../AGENTS.md) at the repository root, and the procedure in [`docs/workflow/agent-protocol.md`](../../docs/workflow/agent-protocol.md). Read both in full before anything else. The core below is copied verbatim from `AGENTS.md` for tools that do not load it.
 
 <!-- agent-core:start -->
 **Mandatory at the start of every chat, and again after any compaction or summary. Protocol version 1.**
