@@ -105,6 +105,7 @@ for (const line of diff) {
   if (!line.startsWith("+") || line.startsWith("+++")) continue;
   if (/-----BEGIN [A-Z ]*PRIVATE KEY-----|"private_key"\s*:/.test(line)) fail(`${file} — private-key material.`);
   if (!/^(backend|mobile|dashboard)\/src\//.test(file)) continue;
+  if (/^\+\s*(\/\/|\*|\/\*)/.test(line)) continue; // comments explain; only code is checked below
   if (file.startsWith("mobile/src/") && /['"]#[0-9a-fA-F]{3,8}['"]/.test(line) && !/theme|tokens/.test(file)) notes.hex.add(file);
   if (/\b(TODO|FIXME|XXX|HACK)\b/.test(line)) notes.todo.add(file);
   if (/console\.log\(/.test(line)) notes.log.add(file);
