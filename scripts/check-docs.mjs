@@ -19,7 +19,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, normalize } from "node:path";
 import { gitOr, repoRoot, loadTeam, paint } from "./lib/common.mjs";
-import { loadRequirements } from "./lib/spec.mjs";
+import { loadRequirements, loadScreenIndex, listScreens } from "./lib/spec.mjs";
 
 const root = repoRoot();
 process.chdir(root);
@@ -35,8 +35,9 @@ function anchorsOf(file) {
   const set = new Set();
   let fence = false;
   for (const line of read(file).split("\n")) {
-    if (/^(```|~~~)/.test(line)) fence = !fence;
+    if (/^\s*(```|~~~)/.test(line)) fence = !fence;
     if (fence) continue;
+    for (const a of line.matchAll(/<a\s+(?:id|name)="([^"]+)"/g)) set.add(a[1].toLowerCase());
     const m = line.match(/^#{1,6} (.+?)\s*#*\s*$/);
     if (!m) continue;
     const base = slug(m[1]);
@@ -53,7 +54,7 @@ const mdFiles = gitOr(["ls-files", "--cached", "--others", "--exclude-standard",
 for (const file of mdFiles) {
   let fence = false;
   read(file).split("\n").forEach((line, i) => {
-    if (/^(```|~~~)/.test(line)) fence = !fence;
+    if (/^\s*(```|~~~)/.test(line)) fence = !fence;
     if (fence) return;
     const noCode = line.replace(/`[^`]*`/g, "");
     for (const m of noCode.matchAll(/\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) {
@@ -65,7 +66,8 @@ for (const file of mdFiles) {
         problems.push(`${file}:${i + 1} — link to missing file: ${target}`);
         continue;
       }
-      if (anchor && /\.mdc?$/.test(resolved) && !anchorsOf(resolved).has(anchor.toLowerCase())) {
+      const wanted = anchor ? decodeURIComponent(anchor).toLowerCase() : "";
+      if (anchor && /\.mdc?$/.test(resolved) && !anchorsOf(resolved).has(wanted)) {
         problems.push(`${file}:${i + 1} — link to missing heading: ${target}`);
       }
     }
@@ -112,15 +114,25 @@ for (const m of team.members) for (const mod of m.modules) {
 
 // --- 5. every FR has a screen ruling --------------------------------------------------
 const proto = existsSync("docs/prototype/README.md") ? read("docs/prototype/README.md") : "";
+// Only a table row that starts with the ID counts as its ruling — not a passing mention in prose.
+const ruled = new Set([...proto.matchAll(/^\| `((?:FR|NFR)-[A-Z]+-\d+)` \|/gm)].map((m) => m[1]));
 for (const id of loadRequirements(root).keys()) {
   if (!id.startsWith("FR-")) continue;
-  if (!proto.includes(`\`${id}\``)) problems.push(`${id} — neither in the prototype requirement index nor in "Requirements with no interface".`);
+  if (!ruled.has(id)) problems.push(`${id} — neither in the prototype requirement index nor in "Requirements with no interface".`);
+}
+// Every screen the index names must exist as a screen block.
+const known = new Set(listScreens(root).map((sc) => sc.id));
+for (const [id, groups] of loadScreenIndex(root)) {
+  for (const g of groups) for (const sid of g.ids) {
+    if (!known.has(sid)) problems.push(`prototype index: ${id} lists screen \`${sid}\`, which no screen file documents.`);
+  }
 }
 
 // --- report -------------------------------------------------------------------
 if (problems.length) {
   console.error(paint.red(paint.bold(`check-docs: ${problems.length} problem(s)`)));
   for (const p of problems) console.error(`  • ${p}`);
-  process.exit(1);
+  process.exitCode = 1;
+} else {
+  console.log(paint.green(`check-docs: OK — ${mdFiles.length} Markdown files, links, core block, protocol version, team.json, prototype index.`));
 }
-console.log(paint.green(`check-docs: OK — ${mdFiles.length} Markdown files, links, core block, protocol version, team.json, prototype index.`));

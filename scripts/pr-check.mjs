@@ -16,7 +16,7 @@
 import { execFileSync } from "node:child_process";
 import {
   gitOr, repoRoot, loadTeam, currentEmail, memberByEmail, currentBranch, parseBranch,
-  moduleOfPath, isProtected, isNeverCommit, commitSubjectRegex, paint,
+  moduleOfPath, isProtected, isNeverCommit, commitSubjectRegex, isGitGeneratedSubject, diffPaths, paint,
 } from "./lib/common.mjs";
 
 const FETCH = !process.argv.includes("--no-fetch");
@@ -60,7 +60,7 @@ if (dirty.length) warn(`${dirty.length} uncommitted change(s) will not be in the
 const subjectRe = commitSubjectRegex(team);
 const commits = gitOr(["log", `${DEVELOP}..HEAD`, "--no-merges", "--format=%h%x09%ae%x09%s"]).split("\n").filter(Boolean)
   .map((l) => { const [sha, email, subject] = l.split("\t"); return { sha, email, subject }; });
-const badSubjects = commits.filter((c) => !subjectRe.test(c.subject));
+const badSubjects = commits.filter((c) => !subjectRe.test(c.subject) && !isGitGeneratedSubject(c.subject));
 if (badSubjects.length) {
   warn(`${badSubjects.length} commit subject(s) break the convention (history is not rewritten here; note it in the PR): ` +
     badSubjects.slice(0, 5).map((c) => `${c.sha} "${c.subject}"`).join("; "));
@@ -70,7 +70,7 @@ if (foreign.length) warn(`${foreign.length} commit(s) authored by another addres
 const ids = [...new Set(commits.flatMap((c) => c.subject.match(/\b(?:FR|NFR)-[A-Z]+-\d+\b/g) || []))].sort();
 
 // --- files --------------------------------------------------------------------
-const files = gitOr(["diff", "--name-only", `${DEVELOP}...HEAD`]).split("\n").filter(Boolean);
+const files = diffPaths([`${DEVELOP}...HEAD`]); // renames split: both ends are checked
 const isOwner = me?.role === "shared-owner";
 for (const f of files) {
   if (isNeverCommit(team, f)) { fail(`${f} — secrets and local-only files never go into a PR.`); continue; }
@@ -97,11 +97,11 @@ if (files.some((f) => /\.(md|mdc)$/.test(f) || f === "docs/workflow/team.json"))
 }
 
 // --- added lines --------------------------------------------------------------
-const diff = gitOr(["diff", "-U0", "--no-color", `${DEVELOP}...HEAD`]).split("\n");
+const diff = gitOr(["-c", "core.quotePath=false", "diff", "-U0", "--no-color", "--no-renames", `${DEVELOP}...HEAD`]).split("\n");
 let file = "";
 const notes = { hex: new Set(), todo: new Set(), log: new Set(), host: new Set() };
 for (const line of diff) {
-  if (line.startsWith("+++ b/")) { file = line.slice(6); continue; }
+  if (line.startsWith("+++ ")) { file = line.replace(/^\+\+\+ (b\/)?/, ""); continue; }
   if (!line.startsWith("+") || line.startsWith("+++")) continue;
   if (/-----BEGIN [A-Z ]*PRIVATE KEY-----|"private_key"\s*:/.test(line)) fail(`${file} — private-key material.`);
   if (!/^(backend|mobile|dashboard)\/src\//.test(file)) continue;
@@ -135,4 +135,4 @@ Pull request (CONTRIBUTING.md → Writing the pull request)
     **Anything to watch** — a trade-off, something that looks odd but isn't, a follow-up left for later
     **End to end** — self (screenshot attached) · integration (run on the shared build) · pending (not run yet)
 `);
-process.exit(failed ? 1 : 0);
+process.exitCode = failed ? 1 : 0; // not process.exit(): that can cut off output still being written to a pipe
