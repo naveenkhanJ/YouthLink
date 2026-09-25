@@ -378,6 +378,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user has at least one active (not completed, ended, or cancelled) Engagement, when they attempt deletion, then the system blocks it and requires resolving every active Engagement first.
 - Given a user with no active Engagements confirms deletion with their password, when deletion completes, then their identifying data is removed but past ratings and engagement records remain, attributed to an anonymized reference rather than deleted.
 
+> **Amended 2026-09-25.** The data deletion removes includes the last browse location (`User.lastBrowseLat`, `lastBrowseLng`, `lastBrowseAt`), cleared to null — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-ACC-18 — Unified Settings screen
 
 | Actor(s)        | Priority |
@@ -627,7 +629,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given an urgent posting is submitted, when fan-out triggers, then only opted-in youth within radius receive a proactive push.
 - Given a non-urgent posting is submitted, when fan-out triggers, then all non-opted-out youth within radius receive the standard notification.
 
-> **Amended 2026-09-25 — what "within radius" is measured from.** Nothing recorded where a youth is, so the radius in this requirement, `FR-NOTIF-01` and `FR-NOTIF-02` had no point to measure from, and an implementation could only notify everyone nationwide. **The radius is measured from the youth's last browse location**: the centre of their most recent Browse search — the device location, or the centre of the manually chosen area (`FR-DISC-02`) — stored as `User.lastBrowseLat`/`lastBrowseLng` with `lastBrowseAt`, **rounded to two decimal places (about 1 km)** and overwritten on every browse, never kept as a history. **The radius is the 5 km default of `FR-DISC-01`**, without auto-expansion: expansion exists to fill an empty results screen, and there is no screen to fill here. **A youth who has never browsed has no location and receives no location-based notification.** The stored location is never shown to anyone, and is removed with the account under `NFR-PRIV-03`. The acceptance criteria above are unchanged; this says how "within radius" is decided.
+> **Amended 2026-09-25 — what "within radius" is measured from.** Nothing recorded where a youth is, so the radius in this requirement, `FR-NOTIF-01` and `FR-NOTIF-02` had no point to measure from, and an implementation could only notify everyone nationwide. **The radius is measured from the youth's last browse location**: the centre of their most recent Browse search — the device location, or the centre of the manually chosen area (`FR-DISC-02`) — stored as `User.lastBrowseLat`/`lastBrowseLng` with `lastBrowseAt`, **rounded to two decimal places (about 1 km)** and overwritten on every browse, never kept as a history. **The radius is the 5 km default of `FR-DISC-01`**, without auto-expansion: expansion exists to fill an empty results screen, and there is no screen to fill here. **Only an active account with a recent location is notified:** a youth who has never browsed, whose location is more than 30 days old (`lastBrowseAt`), or whose account is deleted or suspended receives no location-based notification. The stored location is never shown to anyone, and account deletion (`FR-ACC-17`) clears it along with the other identifying data. The acceptance criteria above are unchanged; this says how "within radius" is decided.
 
 #### FR-POST-11 — Posting editing
 
