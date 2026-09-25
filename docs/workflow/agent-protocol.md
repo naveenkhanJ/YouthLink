@@ -51,16 +51,18 @@ A session is every new chat, and every time the conversation has been compacted 
 
 ### 3.1 Start
 
-1. **Date.** Run `date` (or ask the developer for today's date if you have no shell). Every progress entry uses this date, in the team's timezone (`Asia/Colombo`). Never guess the date.
+1. **Date.** Take it from the State Report's first line (step 6), which is computed in the team's timezone, `Asia/Colombo`. Until then, or with no shell, ask the developer. `date` on its own may print UTC, and in Windows `cmd` it asks to set the clock; in PowerShell use `Get-Date`. Never guess the date.
 2. **Who.** Run `git config user.email` and find the developer in [`team.json`](team.json). If the email is not listed, say so: their commits will be blocked by the hooks and may not be credited to them on GitHub.
 3. **Read, in this order:** `AGENTS.md` (in full), this protocol (in full, and note its version), the developer's `.worklog/progress.md` NEXT block, and their latest State Report in `.worklog/state/`. Do not read the whole progress history; read what NEXT points to.
 4. **Branch.** Check the current branch (`git branch --show-current`). It must be the developer's branch for the active epic: `<type>/<epic>-<name>`, or a name listed for them in `team.json`. If it is `develop`, `main`, someone else's branch, or off-convention, **stop** and give the exact branch name and the commands to switch (below). Do not run them yourself.
 
    ```bash
    git fetch
-   git checkout feature/<epic>-<name>          # the branch already exists
-   git checkout -b feature/<epic>-<name> origin/develop   # first time only
+   git checkout feature/<epic>-<name>                    # the branch exists (locally or on origin)
+   git checkout -b feature/<epic>-<name> origin/develop  # only if it exists nowhere yet
    ```
+
+   The State Report's section 2 lists the developer's branches on the remote; `git branch --list` shows local ones. Use `-b` only when the branch appears in neither — creating it fresh when it already exists on the remote forks its history. One slice spanning two modules keeps one branch (`moduleBranches` in `team.json`).
 
 5. **Hooks.** If `git config --get core.hooksPath` is not `.githooks`, ask the developer to run `node scripts/install-hooks.mjs` (or `npm install` in any surface).
 6. **Ground truth.** Run `node scripts/state-report.mjs --save`. If you cannot run commands, ask the developer to run it and paste the output, and **do not write code until you have it**. Then do the reconciliation in §3.2.
@@ -97,6 +99,8 @@ Re-run `state-report.mjs` (targeted re-reading is enough when nothing moved) at 
 3. **The developer's cards for the current sprint**, from `module-ownership.md` and Jira: Must, then Should, then Could. Where a requirement says to implement it together with another, keep them together.
 4. **If the current sprint's cards are not in `module-ownership.md` yet**, stop after the carry-over and say so. Do not pick unassigned work.
 
+**Code already on the branch for a requirement that isn't on the developer's cards** (built early, inside their own module): keep it if it is correct, name it in the pull request, and record it; don't extend it until a card assigns it. If it sits outside their module, it comes out of the branch (restore `develop`'s version of the file) and the owner is told.
+
 ### 4.2 One card at a time
 
 Finish, commit and record one card before starting the next. A card may span several commits.
@@ -113,6 +117,7 @@ No member waits for another member's work.
 - **Data another module creates** (postings for Applying, ratings for the applicant sort): build against `develop`'s schema and the shared seed script, never against another member's branch.
 - **A call into another module** (posting creation should trigger a notification): the called module exposes a function; the calling module calls it. If the function is not on `develop` yet, the caller ships a clearly marked no-op in its own module and the card notes the dependency. Neither side waits.
 - **A missing contract, seed data, or shared component:** escalate (§8.3) to the shared-components owner, park the card, and move to the next one.
+- **Shared files edited on a member's branch** (the home screen, navigation, a lockfile): restore `develop`'s version before the pull request (`git checkout origin/develop -- <file>`; the hooks allow it). If that leaves a screen unreachable until the shared home entry lands, record end to end as pending with that reason — don't keep the shared edit.
 
 ---
 
@@ -265,7 +270,7 @@ Git-ignored, one set per developer. They exist because chats lose context; they 
 
 Rules:
 
-- **Dates come from `date`**, in `Asia/Colombo` time, written `YYYY-MM-DD (Ddd)`. Add the sprint and day when `module-ownership.md` gives the sprint dates.
+- **Dates come from the State Report header** (or `Get-Date` / `TZ=Asia/Colombo date`), in `Asia/Colombo` time, written `YYYY-MM-DD (Ddd)`. Add the sprint and day when `module-ownership.md` gives the sprint dates.
 - **NEXT is overwritten, not appended**, and stays under about 40 lines. A new session reads NEXT and the latest State Report, not the history.
 - **Update at every stop in §6**, not only at the end of a session.
 - **Each epic entry** records: cards worked, what was done, how it was verified (with the end-to-end level), commits and pull requests, blockers and escalations, Jira moves, discrepancies found, a stand-up block, and a line on how AI was used — for the developer's own AI-use declaration.

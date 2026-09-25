@@ -89,9 +89,12 @@ This is a deliberate choice to keep the rule trivial: **the epic is written on y
 **Pull `develop` into your branch regularly**, at least whenever someone else merges:
 
 ```
+git fetch
 git checkout feature/account-management-afham
-git merge develop
+git merge origin/develop
 ```
+
+Merge `origin/develop`, not your local `develop`: the local copy only moves when you pull it, so merging it can quietly miss everyone's latest work.
 
 A branch that lives for weeks drifts from `develop`, and the longer you leave it the more painful the eventual merge. Merging `develop` in early and often keeps each one small.
 
@@ -119,7 +122,7 @@ refactor(shared): extract OTP validation helper [FR-ACC-08]
 chore(backend): add prisma seed script
 ```
 
-**`surface` lives here, not in the branch name.** Branches are named by epic; the commit's scope segment is what tells you which surface a change touched when you scan `git log`. Values: `backend`, `mobile`, `dashboard`, `shared`.
+**`surface` lives here, not in the branch name.** Branches are named by epic; the commit's scope segment is what tells you which surface a change touched when you scan `git log`. Values: `backend`, `mobile`, `dashboard`, and `shared` — for a commit that spans more than one surface, or touches none of the three (documentation, tooling).
 
 **List every requirement the commit touches**, comma-separated. Several requirements are validation rules living inside another requirement's flow — the age gate, NIC handling, duplicate prevention and ToS acceptance all sit inside registration — so one commit legitimately closes several cards.
 
@@ -168,7 +171,7 @@ In GitHub Desktop, the field below **Summary** is the body.
 
 ### Writing the pull request
 
-**Title: same format as a commit subject** — `<type>(<surface>): <description>`. GitHub puts the PR title into the merge commit, so a good one keeps `develop`'s history readable. The auto-filled branch name does not.
+**Title: same format as a commit subject** — `<type>(<surface>): <description> [<FR-ID>, …]`, listing the requirements the PR implements. GitHub puts the PR title into the merge commit, so a good one keeps `develop`'s history readable. The auto-filled branch name does not.
 
 **Description: three things, briefly.**
 
@@ -197,7 +200,7 @@ git config --get core.hooksPath      # → .githooks
 
 Merging `develop` into your branch is always allowed — those files come from `develop`, not from you. The hooks are Node scripts behind a small shell wrapper, so they behave the same on Windows (including GitHub Desktop), macOS and Linux; if Node isn't on the PATH the hook warns and lets the commit through. **They can be skipped with `--no-verify`. Don't:** they are what stands between a slip and `develop`'s history.
 
-Four scripts, all read-only apart from `git fetch`:
+Four scripts, all read-only apart from `git fetch` (and `state-report --save`, which writes one file into your git-ignored `.worklog/state/`):
 
 | Script | What it's for |
 | --- | --- |
@@ -281,7 +284,7 @@ git checkout -b feature/gig-posting-yourname
 
 # every time after that — the branch already exists, just go back to it
 git checkout feature/gig-posting-yourname
-git merge develop                 # stay current with everyone else's merges
+git fetch && git merge origin/develop   # stay current with everyone else's merges
 
 # commit
 git commit -m "feat(backend): add posting creation endpoint [FR-POST-01]"

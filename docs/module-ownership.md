@@ -165,7 +165,11 @@ The apply flow, the three-tier applicant sort, Employer selection, bidirectional
 
 ### 1. Sprint 1 work onto `develop`
 
-Any Sprint 1 slice code that is not yet merged into `develop` comes first: merge `develop` into your branch, adapt the code to the current schema and shared code, run it, and open a pull request. No card is Done while its code is unmerged (DoD clause 2). `node scripts/state-report.mjs` shows whether one of your branches carries module code that `develop` lacks. The cards' status in Jira is left as it is.
+Any Sprint 1 slice code that is not yet merged into `develop` comes first: merge `origin/develop` into your branch, adapt the code to the current schema and shared code, run it, and open a pull request. No card is Done while its code is unmerged (DoD clause 2). `node scripts/state-report.mjs` shows whether one of your branches carries module code that `develop` lacks. The cards' status in Jira is left as it is.
+
+Edits your branch made to shared files — `mobile/src/screens/HomeScreen.js` above all, since three branches each rewrote it — come out before the pull request: restore `develop`'s copy (`git checkout origin/develop -- <file>`). Reaching your screens is then the job of the shared home entry (item 4, first in Afham's queue); until it lands, record end to end as pending with that reason.
+
+**Slice C is one slice across two modules**, so Discovery and core Notifications share one branch, `feature/discovery-search-pawan` (`moduleBranches` in [`workflow/team.json`](workflow/team.json)).
 
 ### 2. Follow-on cards
 
@@ -202,10 +206,11 @@ Every Sprint 1 screen was built before the prototype specification existed. Each
 
 ### 4. Shared prerequisites — Afham
 
-The pieces everyone else builds on, first in Afham's queue so nobody is held up by them:
+The pieces everyone else builds on, first in Afham's queue so nobody is held up by them, in this order:
 
+- **A neutral home entry** that reaches every module's screens through the manifests, so no module branch needs to touch `HomeScreen.js` — the first thing each member's Sprint 1 pull request depends on.
 - **Design tokens and the core UI kit** — the components `design-system.md` §5 names (buttons, text fields, the app bar, the pinned action bar, skeletons, empty and error states), bound to the §1–§4 tokens. They replace the module-local `theme.js` files; until they land, module code uses the token names exactly, so switching is a rename.
-- **A neutral home entry and the navigation shells** (`NAV.1`–`NAV.3`), so module branches stop rewriting `mobile/src/screens/HomeScreen.js`; Help/FAQ (`HF.1`–`HF.4`) follows.
+- **The navigation shells** (`NAV.1`–`NAV.3`), replacing the neutral entry; Help/FAQ (`HF.1`–`HF.4`) follows.
 - **A shared seed script**, so each module runs against realistic data from the others without waiting for them.
 - **The shared development build** — an Android APK sent to the team, rebuilt whenever a native dependency changes.
 

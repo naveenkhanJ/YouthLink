@@ -1,7 +1,7 @@
 # Progress — <your name>
 
 <!-- Copy to .worklog/progress.md (git-ignored). The index of your working state.
-     Procedure: docs/workflow/agent-protocol.md §9. Dates from `date`, Asia/Colombo, YYYY-MM-DD (Ddd). -->
+     Procedure: docs/workflow/agent-protocol.md §9. Dates from the State Report header (Asia/Colombo), YYYY-MM-DD (Ddd). -->
 
 Protocol version read: 1 · Last updated: YYYY-MM-DD (Ddd) HH:MM
 
