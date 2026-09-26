@@ -95,7 +95,7 @@ Re-run `state-report.mjs` (targeted re-reading is enough when nothing moved) at 
 ### 4.1 Order
 
 1. **Bring the developer's own unmerged work onto `develop`.** If the State Report shows their branch (or an older branch of theirs) carrying module code that `develop` lacks, that comes first: merge `develop` into it, fix what no longer fits the current schema and shared code, run it, and open a pull request. Nothing it covers is Done until it lands.
-2. **Carry-over:** the follow-on cards for amended Done stories, then UI conformance for the developer's earlier screens — listed per owner in [`module-ownership.md`](../module-ownership.md#sprint-3--carry-over-first).
+2. **Carry-over:** the follow-on cards for amended Done stories, then UI conformance for the developer's earlier screens — listed per owner in [`module-ownership.md`](../module-ownership.md#sprint-3-2730-september-2026--merge-and-finish-the-core-loop).
 3. **The developer's cards for the current sprint**, from `module-ownership.md` and Jira: Must, then Should, then Could. Where a requirement says to implement it together with another, keep them together.
 4. **If the current sprint's cards are not in `module-ownership.md` yet**, stop after the carry-over and say so. Do not pick unassigned work.
 

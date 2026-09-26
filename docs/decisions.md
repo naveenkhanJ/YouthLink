@@ -246,3 +246,13 @@ section of [`module-ownership.md`](module-ownership.md#cross-cutting-authenticat
 **The workflow serves the person using it.** An agent following the protocol
 declines to break the team's rules, but it records progress only in the
 developer's own git-ignored `.worklog/` and never reports on them.
+
+## Sprint 3 and 4 planning (2026-09-26)
+
+**Checking the code before planning changed the plan.** Before scheduling Sprint 3, the actual content of every Sprint 1 branch was read directly — not assumed from Jira, from branch names, or from what anyone said. Result: Discovery+Notifications (Pawan) and Applying & Selection (Naveenkhan) are not unfinished, they are substantially complete and simply unmerged (`develop` had only the scaffold stub for both); Gig Posting's backend was already merged, and Lahiru's unmerged branch turned out to be almost entirely finished mobile screens. This reframed Sprint 3 from "build the core loop" to "merge and finish it" — a materially easier problem, and the plan changed because of what the check found, not despite it.
+
+**The team will not close every remaining card, and said so rather than padding the backlog.** Of thirteen epics, one (Account) is solid, one (Gig Posting) is partial, two (Discovery+Notifications, Applying & Selection) have real code stuck unmerged, and eight have no code at all — Engagement Lifecycle, Ratings & Reputation, Profile & Trust Signals (beyond Account), Community Endorsement, Disputes & Reporting, Moderator Functions, Admin Functions, Dashboard Infrastructure. With the deadline at 8am on 4 October, spreading effort across all thirteen was rejected in favour of finishing what's closest to working. This is a deliberate scope cut, not a discovered shortfall — see `module-ownership.md`'s Sprint 3 and Sprint 4 sections for exactly what's in and what's explicitly left for a later release.
+
+**Sprint 4 extends the loop rather than only polishing.** `Engagement` and `Rating` are already fully modelled in the schema, so completing the loop through to a rated engagement (a deliberately limited six-story subset of Engagement Lifecycle, plus all of Ratings & Reputation) was chosen over touching more epics thinly. The remaining eight Engagement stories (cancellation flows, re-confirmation, stalled handling) stay in the backlog on purpose.
+
+**Scrum roles for Sprint 3–4: Lahiru (Scrum Master), Pawan (Product Owner)** — the two who had not yet held either role in Sprint 1–2 (Afham SM, Naveenkhan PO). Recorded in `workflow/team.json`'s `sprintRoles`. Module ownership is unaffected by Scrum role — who codes what stays as in the Owners table; SM/PO is a ceremony/backlog-facilitation role layered on top, not a substitute developer assignment.
