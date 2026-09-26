@@ -1,12 +1,17 @@
 {
-  "$comment": "Single source for who is who, which modules each person owns, and which paths are shared. Read by the git hooks and scripts/*.mjs, and by AI agents at session start. Human-readable scope and story lists stay in docs/module-ownership.md. Only the shared-components owner edits this file; update 'modules' when a sprint assigns new slices. 'moduleBranches' lets one slice that spans two modules keep one branch (module -> epic segment of the branch it lives on).",
+  "$comment": "Single source for who is who, which modules each person owns, and which paths are shared. Read by the git hooks and scripts/*.mjs, and by AI agents at session start. Human-readable scope and story lists stay in docs/module-ownership.md. Only the shared-components owner edits this file; update 'modules' when a sprint assigns new slices. 'moduleBranches' lets one slice that spans two modules keep one branch (module -> epic segment of the branch it lives on). 'scrumRole' is each person's CURRENT Scrum role; 'sprintRoles' below is the dated history the assignment's role-rotation requirement is checked against.",
   "version": 1,
   "timezone": "Asia/Colombo",
+  "sprintRoles": {
+    "$comment": "Per-sprint Scrum Master / Product Owner. Sprint 1-2: Afham SM, Naveenkhan PO (Sprint 2 continued Sprint 1's own scope under the same roles). Sprint 3-4: Lahiru SM, Pawan PO -- the two who had not yet held either role. Update when Sprint 4 roles are confirmed if they change.",
+    "1-2": { "scrumMaster": "afham", "productOwner": "naveenkhan" },
+    "3-4": { "scrumMaster": "lahiru", "productOwner": "pawan" }
+  },
   "members": [
     {
       "id": "afham",
       "name": "M. I. M. Afham",
-      "scrumRole": "Scrum Master",
+      "scrumRole": "Developer",
       "role": "shared-owner",
       "emails": ["mohamed_afham@outlook.com"],
       "modules": ["account"],
@@ -16,7 +21,7 @@
     {
       "id": "lahiru",
       "name": "P. M. L. Lakmal (Lahiru)",
-      "scrumRole": "Developer",
+      "scrumRole": "Scrum Master",
       "role": "member",
       "emails": ["lahirulakmal893@gmail.com", "145210689+lahirulakmal23@users.noreply.github.com"],
       "modules": ["posting"],
@@ -26,7 +31,7 @@
     {
       "id": "pawan",
       "name": "H. P. Weliwitigoda (Pawan)",
-      "scrumRole": "Developer",
+      "scrumRole": "Product Owner",
       "role": "member",
       "emails": ["harithapawan12@gmail.com"],
       "modules": ["discovery", "notification"],
@@ -37,10 +42,10 @@
     {
       "id": "naveenkhan",
       "name": "J. Naveenkhan",
-      "scrumRole": "Product Owner",
+      "scrumRole": "Developer",
       "role": "member",
       "emails": ["it23812826@my.sliit.lk", "167011572+naveenkhanJ@users.noreply.github.com"],
-      "modules": ["application"],
+      "modules": ["application", "engagement"],
       "acceptedBranches": [],
       "ignoredBranches": []
     }

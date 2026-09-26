@@ -163,13 +163,21 @@ The apply flow, the three-tier applicant sort, Employer selection, bidirectional
 
 ---
 
-## Sprint 3 — carry-over first
+## Sprint 3 (27–30 September 2026) — merge and finish the core loop
 
-**Sprint 3's own slices are not assigned yet.** They will be added here, with the sprint dates, and in [`workflow/team.json`](workflow/team.json). Until then, this carry-over is each owner's whole queue, in this order ([`workflow/agent-protocol.md`](workflow/agent-protocol.md) §4.1). **Nobody waits on another member:** each item below can be done by its owner alone, and the only shared dependency is on the shared components.
+**Scrum Master: Lahiru · Product Owner: Pawan** (Sprint 1–2 held Afham SM / Naveenkhan PO; Sprint 3–4 rotates to the two who hadn't — see `workflow/team.json`'s `sprintRoles`). **Nobody waits on another member:** each item below can be done by its owner alone, and the only shared dependency is on the shared components.
 
-### 1. Sprint 1 work onto `develop`
+**Checked directly against the code on `develop` (2026-09-26), not assumed from Jira or from branch names.** The picture is better than "unfinished": Discovery+Notifications and Applying & Selection are not half-written, they are *substantially complete and sitting unmerged* — `develop` currently has only the scaffold stub for `discovery`, `notification` and `application` (a commented-out example route, nothing else), while `feature/discovery-search-pawan` and `feature/applying-selection-naveenkhan` each carry hundreds of lines of real service/controller logic plus finished mobile screens. Gig Posting's backend is already merged; Lahiru's branch adds ~3,900 lines that are almost entirely five complete posting screens, also unmerged. **So Sprint 3 is an integration and finishing sprint, not a greenfield one** — the goal is to get what already exists onto `develop`, resolve the drift, and prove post → discover → apply → select actually runs end to end, which is exactly Sprint 1–2's original goal.
 
-Any Sprint 1 slice code that is not yet merged into `develop` comes first: merge `origin/develop` into your branch, adapt the code to the current schema and shared code, run it, and open a pull request. No card is Done while its code is unmerged (DoD clause 2). `node scripts/state-report.mjs` shows whether one of your branches carries module code that `develop` lacks. The cards' status in Jira is left as it is.
+### 1. Merge the branches onto `develop`
+
+| Owner | Branch | Drift vs `develop` | What's on it, unmerged |
+| --- | --- | --- | --- |
+| Pawan | `feature/discovery-search-pawan` | 55 behind, 2 commits ahead | Full radius/filter/sort browse query, notification preferences + list + mark-read, `DiscoveryScreen.js`, `NotificationPreferencesScreen.js` |
+| Naveenkhan | `feature/applying-selection-naveenkhan` | 55 behind, 7 commits ahead | Apply/pool/mine/withdraw/select/decline (already includes FR-APPLY-12, the worker's-own-list bonus scope), 4 mobile screens, own `Button`/`TextField`/`theme.js` |
+| Lahiru | `feature/gig-posting` | 89 behind, 1 commit ahead | Five posting screens (List/Create/Review/Success/Detail) plus a validators test file — the backend is already on `develop` |
+
+Merge `origin/develop` into your branch, resolve drift against the schema and shared-tooling changes that landed since (Pawan: the branch predates the `lastBrowseLat/Lng/At` fan-out columns — see YL-178 below), run it, and open a pull request. No card is Done while its code is unmerged (DoD clause 2). `node scripts/state-report.mjs` shows the same picture from your own branch.
 
 Edits your branch made to shared files — `mobile/src/screens/HomeScreen.js` above all, since three branches each rewrote it — come out before the pull request: restore `develop`'s copy (`git checkout origin/develop -- <file>`). Reaching your screens is then the job of the shared home entry (item 4, first in Afham's queue); until it lands, record end to end as pending with that reason.
 
@@ -211,13 +219,49 @@ Every Sprint 1 screen was built before the prototype specification existed. Each
 
 ### 4. Shared prerequisites — Afham
 
-The pieces everyone else builds on, first in Afham's queue so nobody is held up by them, in this order:
+The pieces everyone else builds on, first in Afham's queue so nobody is held up by them, in this order — now more urgent than when this was written, since three teammates just delivered real screens that need one navigation to actually reach them:
 
 - **A neutral home entry** that reaches every module's screens through the manifests, so no module branch needs to touch `HomeScreen.js` — the first thing each member's Sprint 1 pull request depends on.
-- **Design tokens and the core UI kit** — the components `design-system.md` §5 names (buttons, text fields, the app bar, the pinned action bar, skeletons, empty and error states), bound to the §1–§4 tokens. They replace the module-local `theme.js` files; until they land, module code uses the token names exactly, so switching is a rename.
+- **Design tokens and the core UI kit** — the components `design-system.md` §5 names (buttons, text fields, the app bar, the pinned action bar, skeletons, empty and error states), bound to the §1–§4 tokens. They replace the module-local `theme.js` files (Naveenkhan's branch already has its own, per-module — expect a rename pass, not a rewrite); until they land, module code uses the token names exactly.
 - **The navigation shells** (`NAV.1`–`NAV.3`), replacing the neutral entry; Help/FAQ (`HF.1`–`HF.4`) follows.
 - **A shared seed script**, so each module runs against realistic data from the others without waiting for them.
 - **The shared development build** — an Android APK sent to the team, rebuilt whenever a native dependency changes.
+
+### 5. Real feature work — Afham
+
+Not filler: two Must-priority, already-scoped stories inside Account Management that were missing from the Sprint 1–2 story table (found by the 2026-09-16 error/offline pass), confirmed unbuilt by grep against `develop`.
+
+| Card | Requirement | What it is | Pts |
+| --- | --- | --- | --- |
+| YL-84 | FR-ACC-10 | Password reset: OTP primary, email-link secondary (minimal web page, not a deep link); a completed reset invalidates every session via `passwordChangedAt` | 5 |
+| YL-86 | FR-ACC-12 | Phone number change: password + OTP gated, atomic swap keeping the old number locked until the new one verifies; offers YL-84's email channel when SMS can't be received | 3 |
+
+Both are mobile + backend only — no dashboard work, so no new surface to stand up under time pressure. **YL-176** (FR-ACC-10's admin-assisted recovery for the no-phone-no-email case, 5 pts) is explicitly left out of Sprint 3: it needs a case-queue review screen on the dashboard, which is currently an empty Vite scaffold with no pages built. It stays in the backlog alongside the other dashboard-dependent scope (Admin Functions, Moderator Functions, Dashboard Infrastructure) rather than starting a fourth surface this sprint.
+
+---
+
+## Sprint 4 (tentatively 1–3 October 2026) — extend the loop to completed-and-rated, plus UI conformance
+
+**Scrum Master: Lahiru · Product Owner: Pawan** (same as Sprint 3, pending confirmation — see `workflow/team.json`'s `sprintRoles`). Decided 2026-09-26: not a pure polish sprint. Once Sprint 3's merges land, `Engagement` and `Rating`/`RatingRemovalRequest` are already fully modelled in the schema (checkpoint codes, cancellation, stalled flags all present), so extending post → discover → apply → select through to **engage → complete → rate** is real, buildable feature work, not speculative — and a stronger increment to present than polish alone.
+
+**Engagement Lifecycle — Naveenkhan.** Natural continuation: Select (his epic) is what spawns the `Engagement` row, so he carries the most context into it (this pairing was already flagged as the sensible default below, before Sprint 4 existed as a plan). **Important — checked against Jira, not against this document's older table:** the FR-ENG epic has grown since the "5 stories, 13 points" estimate below was written. Jira now lists fourteen stories, ENG-01 through ENG-14. Sprint 4 picks up a deliberately limited **core subset** — the six needed to reach a working "engagement gets created, checkpoints happen, it ends, rating unlocks" loop:
+
+| Card | Requirement | Why it's core |
+| --- | --- | --- |
+| YL-62 | FR-ENG-01 | The check-in code checkpoints themselves |
+| YL-63 | FR-ENG-02 | Unpaid-internship exception to the payment checkpoint |
+| YL-64 | FR-ENG-03 | Unable-to-confirm → dispute fallback (so a stuck checkpoint doesn't dead-end) |
+| YL-65 | FR-ENG-04 | Per-Engagement scoping — mostly a verification task against the existing schema |
+| YL-66 | FR-ENG-12 | Part-time End Engagement, the route into rating |
+| YL-160 | FR-ENG-14 | The engagements list — the container every engagement screen hangs off; without it there is no entry point to the checkpoint screens |
+
+**Explicitly left in the backlog, beyond Sprint 4:** ENG-05/06 (cancellation flows), ENG-07 (completion-rate weighting nuance), ENG-08 (cancellation scope — likely covered by ENG-04's verification but not re-scoped here), ENG-09 (material-change re-confirmation), ENG-10 (urgency recomputation on time change — reuses `computeIsUrgent()`, see YL-170's note), ENG-11 (multi-slot re-confirmation), ENG-13 (stalled-engagement handling). These are real and Must-priority, not nice-to-haves, but they refine a mechanism that doesn't exist yet — building the core loop first and coming back for these is the same consolidate-rather-than-spread-thin call as Sprint 3's.
+
+**Ratings & Reputation — tentatively Pawan, to confirm once Sprint 3's outcome is known.** RATE-01 through 05 (YL-67–71, 9 points), unchanged from the table below — no epic growth here. Depends on Engagement reaching "ended," so sequence it after Naveenkhan's core subset lands, not in parallel from day one. RATE-06 (rating disputes, YL-118, Should) stays out — it needs a Disputes pipeline that doesn't exist.
+
+**UI conformance to the prototype spec (DoD clause 5) — Lahiru and Afham, and every owner for their own screens.** This is the carry-over item 3 further down this document, unavoidable once there's a shared UI kit to conform to. Also: the smaller Must-priority items from the 2026-09-16 error/offline pass not already covered by Sprint 3 (see the amended-scope table below).
+
+**Worth watching, not yet added to either sprint's scope:** YL-174's description notes it should be "implemented together with FR-POST-12 (YL-99), FR-POST-13 (YL-100) and FR-APPLY-12 (YL-158)" to keep the "a posting that stops accepting applications resolves its applicants" invariant true end to end. YL-158 (FR-APPLY-12) may already be substantially done — Naveenkhan's branch already has the `/mine` route — worth him checking once merged, rather than assuming. YL-99/YL-100 (Lahiru's) are not in Sprint 3's scope; flagging so the gap is a decision, not an oversight, if Sprint 4 has room.
 
 ---
 
@@ -228,7 +272,7 @@ section was the original plan for Sprint 2 before the team decided to
 carry Sprint 1's own scope forward instead. It's kept in full, not
 deleted, because this work still needs doing eventually and the
 breakdown below remains valid whenever a future sprint picks it up —
-treat everything below as unscheduled, not as current assignments.
+treat everything below as unscheduled, not as current assignments. **Engagement Lifecycle's core subset and all of Ratings & Reputation are now scheduled for Sprint 4 above** — the story tables immediately below still describe the original, smaller estimate and are kept for the reasoning; Jira is authoritative on the current story list (Engagement has grown to fourteen stories; Ratings is unchanged).
 
 These four extend the loop past selection to a completed, rated engagement — including the endorsement mechanism that differentiates the product.
 
