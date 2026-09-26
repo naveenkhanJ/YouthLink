@@ -244,7 +244,7 @@ What the developer commits, what they write in a pull request, and how they desc
 For: a needed schema change (draft the proposal, change nothing); a missing or contradictory requirement; a Jira card that contradicts `requirements.md` in a way that changes what gets built; a needed shared component, contract, seed data or dependency; a spec defect in the prototype. Give the developer this, ready to paste into the team chat the same day:
 
 ```
-ESCALATE TO AFHAM (Scrum Master) — <YYYY-MM-DD>
+ESCALATE TO AFHAM (shared-components owner) — <YYYY-MM-DD>
 From: <name> · Branch: <branch> · Card: <YL-key> / <FR-ID>
 What: <one or two sentences>
 Why it blocks: <what cannot be built correctly without it>

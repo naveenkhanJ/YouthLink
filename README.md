@@ -231,11 +231,13 @@ The full list, with the reasoning behind each, is in [`docs/requirements.md`](do
 
 ## Team
 
-| Name                         | Role                      |
-| ---------------------------- | ------------------------- |
-| J. Naveenkhan                | Product Owner · Developer |
-| M. I. M. Afham               | Scrum Master · Developer  |
-| P. M. L. Lakmal _(Lahiru)_   | Developer                 |
-| H. P. Weliwitigoda _(Pawan)_ | Developer                 |
+Scrum Master and Product Owner rotate by sprint, so this table shows the **current** assignment (Sprint 3–4); it is not the full history. `docs/workflow/team.json`'s `sprintRoles` is the dated record, and `docs/decisions.md` explains why each rotation happened.
 
-All four write code regardless of Scrum role.
+| Name                         | Current role (Sprint 3–4) |
+| ---------------------------- | -------------------------- |
+| P. M. L. Lakmal _(Lahiru)_   | Scrum Master · Developer   |
+| H. P. Weliwitigoda _(Pawan)_ | Product Owner · Developer  |
+| M. I. M. Afham               | Developer (shared-components owner) |
+| J. Naveenkhan                | Developer                  |
+
+All four write code regardless of Scrum role. Sprint 1–2 held Afham as Scrum Master and Naveenkhan as Product Owner.
