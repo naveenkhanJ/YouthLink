@@ -8,17 +8,18 @@
  * Switching the mode toggle below does not share state between the two
  * paths, so partially-entered data in one mode never leaks into the other.
  *
- * No post-login destination screen exists yet (no other module has a
- * screen built), so a successful login shows an inline confirmation rather
- * than navigating anywhere — where an authenticated user actually lands is
- * a bigger, not-yet-decided app-wide question, not something to invent here.
+ * A successful login now hands the token/user to AuthContext's signIn()
+ * (persists to SecureStore, see src/auth/AuthContext.js) and resets the
+ * stack back to Home, which renders the signed-in role's shell — Home used
+ * to be an unreachable dead end for a logged-in user, this is the fix.
  */
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { loginPassword, loginOtp } from "../../api/account";
-import { setAuthToken, parseApiError } from "../../api/client";
+import { parseApiError } from "../../api/client";
+import { useAuth } from "../../auth/AuthContext";
 import { colors, spacing, radius, typography } from "./theme";
 import Button from "./components/Button";
 import TextField from "./components/TextField";
@@ -29,8 +30,8 @@ import usePhoneVerification from "./hooks/usePhoneVerification";
 import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
 export default function LoginScreen({ navigation }) {
+  const { signIn } = useAuth();
   const [mode, setMode] = useState("password"); // "password" | "otp"
-  const [loggedInUser, setLoggedInUser] = useState(null);
 
   // Password path. `phone` is the 9-digit local part only — PhoneField
   // enforces that shape, same as usePhoneVerification's OTP path — the
@@ -49,9 +50,9 @@ export default function LoginScreen({ navigation }) {
     setLoading(true);
     try {
       const { token, user } = await loginPassword({ phone: `${COUNTRY_CODE}${phone}`, password });
-      setAuthToken(token);
       setPassword("");
-      setLoggedInUser(user);
+      await signIn(token, user);
+      navigation.reset({ index: 0, routes: [{ name: "Home" }] });
     } catch (err) {
       const { formError, fieldErrors } = parseApiError(err);
       setFormError(formError);
@@ -69,19 +70,9 @@ export default function LoginScreen({ navigation }) {
   async function handleConfirmCode() {
     await otpVerification.confirmCode(async (idToken) => {
       const { token, user } = await loginOtp({ idToken });
-      setAuthToken(token);
-      setLoggedInUser(user);
+      await signIn(token, user);
+      navigation.reset({ index: 0, routes: [{ name: "Home" }] });
     });
-  }
-
-  if (loggedInUser) {
-    return (
-      <View style={styles.successContainer}>
-        <Text style={styles.title}>Welcome back, {loggedInUser.legalName}</Text>
-        <Text style={styles.body}>Logged in successfully.</Text>
-        <StatusBar style="dark" />
-      </View>
-    );
   }
 
   return (
@@ -156,12 +147,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
   },
-  successContainer: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: spacing.xl,
-    backgroundColor: colors.surface,
-  },
   // Top-anchored, not centered — the Password/OTP toggle below changes how
   // much content the screen renders (a mode switch, or the code field
   // appearing after "Send code"), and centering the whole scroll content
@@ -204,10 +189,6 @@ const styles = StyleSheet.create({
   },
   modeLabelActive: {
     color: colors.surface,
-  },
-  body: {
-    fontSize: typography.body.fontSize,
-    color: colors.textSecondary,
   },
   formError: {
     fontSize: typography.caption.fontSize,
