@@ -219,48 +219,67 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
   if (!tabs) {
     throw new Error(`TabBar: unknown role "${role}" (expected worker, employer, or verifier)`);
   }
-  // The 64-tall band is the design spec; insets.bottom is extra padding
-  // below it so a gesture-nav home indicator doesn't sit across the labels
-  // (found live on a real device — the bar was flush with the screen edge).
+  // The 64-tall band is the design spec, fixed and untouched by the device —
+  // insets.bottom (a gesture-nav home indicator, so the bar isn't flush with
+  // the screen edge) is a separate spacer view below it, not padding inside
+  // it. Padding inside the same box that centers the icon/label competes
+  // with them for room: `paddingBottom` there shrinks the available content
+  // area by insets.bottom (found live: content overlapped the top border on
+  // a device with a 24dp inset). Switching that box to `minHeight` stopped
+  // the overlap but not the underlying problem — the box merely grew to fit
+  // content-plus-padding exactly, with zero margin left above the icon,
+  // because insets.bottom was still competing with content for the same
+  // box rather than being genuinely additional space. A sibling spacer
+  // view is the only way the 64dp band's own internal spacing stays
+  // exactly what the design specifies regardless of the device's inset.
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.bar, elevation.bar, { paddingBottom: insets.bottom }]}>
-      {tabs.map((tab) => {
-        const active = tab.key === activeTab;
-        const color = active ? colors.brand.primary : colors.text.secondary;
-        return (
-          <Pressable
-            key={tab.key}
-            onPress={() => onTabPress(tab.key)}
-            style={styles.tab}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: active }}
-            accessibilityLabel={tab.label}
-          >
-            <View style={[styles.iconFrame, active && styles.iconFrameActive]}>
-              <TabIcon shape={tab.icon} active={active} />
-              {tab.key === "notifications" && notificationBadge && (
-                <View style={styles.badge} />
-              )}
-            </View>
-            <Text style={[styles.label, { color }]} numberOfLines={1}>
-              {tab.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+    <View style={styles.wrapper}>
+      <View style={[styles.bar, elevation.bar]}>
+        {tabs.map((tab) => {
+          const active = tab.key === activeTab;
+          const color = active ? colors.brand.primary : colors.text.secondary;
+          return (
+            <Pressable
+              key={tab.key}
+              onPress={() => onTabPress(tab.key)}
+              style={styles.tab}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={tab.label}
+            >
+              <View style={[styles.iconFrame, active && styles.iconFrameActive]}>
+                <TabIcon shape={tab.icon} active={active} />
+                {tab.key === "notifications" && notificationBadge && (
+                  <View style={styles.badge} />
+                )}
+              </View>
+              <Text style={[styles.label, { color }]} numberOfLines={1}>
+                {tab.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <View style={[styles.insetSpacer, { height: insets.bottom }]} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: colors.bg.default,
+  },
   bar: {
     flexDirection: "row",
     height: 64,
     backgroundColor: colors.bg.default,
     borderTopWidth: 1,
     borderTopColor: colors.border.default,
+  },
+  insetSpacer: {
+    backgroundColor: colors.bg.default,
   },
   tab: {
     flex: 1,
