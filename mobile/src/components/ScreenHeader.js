@@ -13,6 +13,7 @@
  * drawn, so the header's height never shifts based on whether onBack exists.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "../theme/tokens";
 
 /**
@@ -21,8 +22,12 @@ import { colors, spacing, typography } from "../theme/tokens";
  * @param {import("react").ReactNode} [action] - Right-side Action slot content.
  */
 export default function ScreenHeader({ title, onBack, action }) {
+  // insets.top: the status bar overlays this screen's layout rather than
+  // pushing it down (found live — the status bar's icons were rendering
+  // directly on top of the title text without this).
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, { paddingTop: insets.top }]}>
       <View style={styles.backHit}>
         {onBack ? (
           <Pressable
@@ -46,7 +51,7 @@ export default function ScreenHeader({ title, onBack, action }) {
 
 const styles = StyleSheet.create({
   bar: {
-    height: 56,
+    minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: spacing.xs,

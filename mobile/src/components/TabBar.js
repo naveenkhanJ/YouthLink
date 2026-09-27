@@ -20,6 +20,7 @@
  * vector — flag for a design pass once real icon assets exist.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 const TABS_BY_ROLE = {
@@ -118,9 +119,13 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
     throw new Error(`TabBar: unknown role "${role}" (expected worker, employer, or verifier)`);
   }
   const tabWidth = 360 / tabs.length;
+  // The 64-tall band is the design spec; insets.bottom is extra padding
+  // below it so a gesture-nav home indicator doesn't sit across the labels
+  // (found live on a real device — the bar was flush with the screen edge).
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.bar}>
+    <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
       {tabs.map((tab) => {
         const active = tab.key === activeTab;
         return (
@@ -181,6 +186,8 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.tabLabel,
+    width: "100%",
+    textAlign: "center",
   },
   badge: {
     position: "absolute",

@@ -4,6 +4,7 @@
  * out so the three screens don't triplicate this wrapper.
  */
 import { Text, View, StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../../theme/tokens";
 import ScreenHeader from "../../../components/ScreenHeader";
 import Step from "./Step";
@@ -30,6 +31,7 @@ export default function TopicLayout({ headerTitle, pageTitle, lead, steps, footn
         </View>
         <Text style={styles.footnote}>{footnote}</Text>
       </View>
+      <StatusBar style="dark" />
     </View>
   );
 }

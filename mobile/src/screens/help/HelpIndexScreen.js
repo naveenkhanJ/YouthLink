@@ -11,6 +11,7 @@
  * list rather than linking to a screen that doesn't exist.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
 
@@ -38,6 +39,7 @@ export default function HelpIndexScreen({ navigation }) {
           </Pressable>
         ))}
       </View>
+      <StatusBar style="dark" />
     </View>
   );
 }
