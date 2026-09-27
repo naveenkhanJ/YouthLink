@@ -8,16 +8,27 @@
  * bounding boxes) got several of these wrong.
  *
  * Three role variants (the only difference is which tabs exist and how many):
- *   worker    — Browse, Applications, Engagements, Notifications, Profile (5, 72w each)
- *   employer  — Postings, Post a Gig, Engagements, Notifications, Profile (5, 72w each)
- *   verifier  — Endorsements, Vouch, Notifications, Profile (4, 90w each — width is
- *               360 / tab count, not a hard-coded 72)
+ *   worker    — Browse, Applications, Engagements, Notifications, Profile (5)
+ *   employer  — Postings, Post a Gig, Engagements, Notifications, Profile (5)
+ *   verifier  — Endorsements, Vouch, Notifications, Profile (4)
+ * Each tab is flex:1 — the 360dp frame width in Figma is that reference
+ * screen's width, not a hard constraint, so tabs fill whatever the real
+ * device's width is. A previous version hard-coded `360 / tabs.length` as a
+ * pixel width, which left a blank, easy-to-miss gap at the bar's right edge
+ * on any device wider than 360dp (found live on the Pixel_8 emulator, whose
+ * screen is ~411dp wide — a 135px strip of the bar simply had no tabs in it).
  *
  * Active-state rule, per the component's own Figma description ("Active tab =
  * brand tone, first tab active in each variant") and MNAV-shells.md: the
  * active tab's icon sits in a 56x30 pill filled colors.bg.brandTint, its icon
  * and label are colors.brand.primary; an inactive tab has no pill and its
  * icon/label are colors.text.secondary — no underline, no weight change.
+ * iconFrame needs `overflow: "hidden"` alongside `borderRadius` — without it,
+ * Android renders the conditionally-applied backgroundColor as a plain
+ * square and silently ignores the radius (found live: a plain View with
+ * borderRadius set unconditionally but backgroundColor applied only when
+ * active rendered with square corners on Android — overflow:"hidden" forces
+ * the clip; borderRadius alone was not enough).
  */
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import Svg, { Path, Circle, Line } from "react-native-svg";
@@ -208,7 +219,6 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
   if (!tabs) {
     throw new Error(`TabBar: unknown role "${role}" (expected worker, employer, or verifier)`);
   }
-  const tabWidth = 360 / tabs.length;
   // The 64-tall band is the design spec; insets.bottom is extra padding
   // below it so a gesture-nav home indicator doesn't sit across the labels
   // (found live on a real device — the bar was flush with the screen edge).
@@ -223,8 +233,8 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
           <Pressable
             key={tab.key}
             onPress={() => onTabPress(tab.key)}
-            style={[styles.tab, { width: tabWidth }]}
-            accessibilityRole="button"
+            style={styles.tab}
+            accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             accessibilityLabel={tab.label}
           >
@@ -253,6 +263,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border.default,
   },
   tab: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.xs,
@@ -261,6 +272,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 30,
     borderRadius: radius.pill,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
