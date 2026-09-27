@@ -1,14 +1,13 @@
 /**
  * HF.1 — Help index. docs/prototype/MHF-help.md.
  *
- * Reachable while signed out (no auth check here). Rows are hand-built
- * frames, not a shared component — the spec says this row shape appears
- * nowhere else in the prototype, so a reusable component would be
- * speculative.
+ * Reachable while signed out (no auth check here) — MHF-help.md is explicit
+ * that this is "the point of HF.5": someone locked out of their account
+ * can't read a help page that requires being in it.
  *
- * HF.5 ("Account access") isn't built yet — not enough of its screen was
- * researched this session to build it faithfully, so it's left off this
- * list rather than linking to a screen that doesn't exist.
+ * Rows are hand-built frames, not a shared component — the spec says this
+ * row shape appears nowhere else in the prototype, so a reusable component
+ * would be speculative.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -19,6 +18,7 @@ const ROWS = [
   { label: "How check-in codes work", target: "HelpCheckIn" },
   { label: "How endorsement works", target: "HelpEndorsement" },
   { label: "How disputes are resolved", target: "HelpDisputes" },
+  { label: "How to get back into your account", target: "HelpAccountAccess" },
 ];
 
 export default function HelpIndexScreen({ navigation }) {

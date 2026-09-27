@@ -2,26 +2,32 @@
  * The app's neutral entry point (docs/module-ownership.md Sprint 3, shared
  * prerequisite item 1) — replaces the placeholder that used to live here.
  *
- * There is no designed "generic Home" screen in docs/prototype/ (MNAV-shells.md
- * defines three role-specific tab shells instead, each landing on that role's
- * first hub tab), so this screen's job is routing, not its own UI:
- *   - signed out  → the existing login/register screens (docs/prototype/'s
- *     M0 onboarding + 1.1 role-selection aren't built yet; this is a
- *     deliberately minimal stand-in, not a UI-conformance screen)
- *   - signed in   → that role's TabBar, on its first hub tab
+ * There is no designed "generic Home" screen in docs/prototype/ — MNAV-shells.md
+ * defines three role-specific tab shells instead ("this frame is a definition,
+ * not a step... no flow visits them"), each landing on that role's first hub
+ * tab. So this screen's job is routing, not its own UI:
+ *   - signed in   → that role's TabBar + the exact shell copy MNAV-shells.md
+ *     already wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
+ *   - signed out  → held off entirely, on Afham's explicit instruction
+ *     (2026-09-27): docs/prototype/'s M0 onboarding + 1.1 role-selection are
+ *     what actually belongs here, and neither is in scope yet. What's below
+ *     is deliberately NOT designed UI — no tokens, no brand styling, same
+ *     plain-scaffold spirit as this file's original placeholder — just
+ *     enough to keep reaching the existing Login/Register screens for
+ *     testing until M0 is actually built. Do not "improve" its look; that
+ *     was the mistake the first time (a full YouthLink-branded screen that
+ *     doesn't exist anywhere in the prototype).
  *
  * The real hub screens (Browse, My Postings, My Endorsements) aren't on
  * develop yet — they're on other modules' unmerged Sprint 3 branches — so
  * each one is a clearly-marked placeholder here (docs/workflow/agent-protocol.md
- * §4.4's "clearly marked no-op") until those PRs land. Swapping a placeholder
- * for the real screen at that point is a one-line change to HUB_SCREEN_BY_TAB
- * below, not a rebuild of this file.
+ * §4.4's "clearly marked no-op") until those PRs land.
  */
 import { useState } from "react";
 import { ActivityIndicator, Button as RNButton, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
-import TabBar from "../components/TabBar";
+import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 
 const ROLE_TO_TABBAR_ROLE = {
@@ -36,22 +42,16 @@ const FIRST_TAB_BY_ROLE = {
   verifier: "endorsements",
 };
 
-const HUB_LABEL_BY_TAB = {
-  browse: "Browse",
-  postings: "My Postings",
-  endorsements: "My Endorsements",
-};
-
-function SignedOutEntry({ navigation }) {
+// Deliberately plain — not a designed screen, see the file header.
+function SignedOutScaffold({ navigation }) {
   return (
-    <View style={styles.centered}>
-      <Text style={styles.title}>YouthLink</Text>
-      <Text style={styles.subtitle}>Find part-time work, hire for a gig, or vouch for someone you know.</Text>
-      <View style={styles.buttonStack}>
-        <RNButton title="Log in" onPress={() => navigation.navigate("AccountLogin")} />
-        <RNButton title="Create account" onPress={() => navigation.navigate("AccountRegister")} />
-      </View>
-      <StatusBar style="dark" />
+    <View style={scaffoldStyles.container}>
+      <Text style={scaffoldStyles.note}>
+        Not signed in. M0 onboarding / 1.1 role selection aren't built yet — this is
+        engineering scaffolding to reach Login/Register, not app UI.
+      </Text>
+      <RNButton title="Log in" onPress={() => navigation.navigate("AccountLogin")} />
+      <RNButton title="Create account" onPress={() => navigation.navigate("AccountRegister")} />
     </View>
   );
 }
@@ -59,15 +59,13 @@ function SignedOutEntry({ navigation }) {
 function SignedInShell({ user, signOut }) {
   const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
   const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
+  const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
 
   return (
     <View style={styles.flex}>
       <View style={styles.hubContent}>
-        <Text style={styles.title}>{HUB_LABEL_BY_TAB[activeTab] ?? activeTab}</Text>
-        <Text style={styles.subtitle}>
-          Signed in as {user.legalName} ({user.role}). This module's real screen isn't merged
-          into develop yet — placeholder content until it lands.
-        </Text>
+        <Text style={styles.title}>{shellCopy.title}</Text>
+        <Text style={styles.subtitle}>{shellCopy.hosts}</Text>
         <View style={styles.buttonStack}>
           <RNButton title="Sign out" onPress={signOut} />
         </View>
@@ -93,7 +91,7 @@ export default function HomeScreen({ navigation }) {
     return <SignedInShell user={user} signOut={signOut} />;
   }
 
-  return <SignedOutEntry navigation={navigation} />;
+  return <SignedOutScaffold navigation={navigation} />;
 }
 
 const styles = StyleSheet.create({
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   title: {
-    ...typography.display,
+    ...typography.title,
     color: colors.text.primary,
     marginBottom: spacing.sm,
     textAlign: "center",
@@ -129,5 +127,24 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
     gap: spacing.md,
     width: "100%",
+  },
+});
+
+// Intentionally not using theme tokens here — see the file header on why
+// this stays a plain scaffold rather than designed UI.
+const scaffoldStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+    gap: 12,
+    backgroundColor: "#fff",
+  },
+  note: {
+    fontSize: 14,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 12,
   },
 });
