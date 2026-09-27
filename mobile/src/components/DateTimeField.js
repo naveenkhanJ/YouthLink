@@ -1,0 +1,121 @@
+/**
+ * Input/DateTimeField — real Figma component (node 28:92, "Components /
+ * Inputs" page, found 2026-09-28).
+ *
+ * IMPORTANT, not just a visual note: the real component's own description
+ * says "G5: PICKER framing, never free text — 1.4's birthdate is
+ * currently free text in code, spec overrides." That's exactly the
+ * `RegisterScreen.js` free-text `YYYY-MM-DD` field already flagged as a
+ * known gap in `account-management.md`.
+ *
+ * Built as a hybrid rather than picker-only, on Afham's explicit
+ * instruction (2026-09-28): the value itself is a real, masked `TextInput`
+ * (typing digits auto-inserts the `-` separators, same digit-stripping
+ * approach as `PhoneField`) so the field is actually usable today, without
+ * forcing the native-dependency decision a real picker needs. The calendar
+ * glyph is its own separate `Pressable` — `onPressCalendar` is where a
+ * caller hooks up an actual native picker (e.g.
+ * `@react-native-community/datetimepicker`) later; adding that dependency
+ * is a real decision (a rebuild, told to the team first) that isn't made
+ * here. Both paths write to the same `value`/`onChangeText`, so whichever
+ * one a screen wires up, the field behaves the same either way.
+ */
+import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
+import { colors, spacing, radius, typography } from "../theme/tokens";
+
+/** "20040314" -> "2004-03-14"; stops adding a dash until the next digit arrives. */
+function formatDigits(digits) {
+  const d = digits.slice(0, 8);
+  if (d.length <= 4) return d;
+  if (d.length <= 6) return `${d.slice(0, 4)}-${d.slice(4)}`;
+  return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6)}`;
+}
+
+/**
+ * @param {string} label
+ * @param {string} [value] - "YYYY-MM-DD", e.g. "2004-03-14".
+ * @param {(value: string) => void} onChangeText
+ * @param {string} [placeholder] - Defaults to "YYYY-MM-DD".
+ * @param {() => void} [onPressCalendar] - Opens the caller's native date picker, if wired.
+ * @param {string} [error]
+ */
+export default function DateTimeField({
+  label,
+  value = "",
+  onChangeText,
+  placeholder = "YYYY-MM-DD",
+  onPressCalendar,
+  error,
+}) {
+  function handleChange(text) {
+    onChangeText(formatDigits(text.replace(/[^0-9]/g, "")));
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={[styles.field, error && styles.fieldError]}>
+        <TextInput
+          style={[styles.value, value && styles.valueFilled]}
+          value={value}
+          onChangeText={handleChange}
+          placeholder={placeholder}
+          placeholderTextColor={colors.text.secondary}
+          keyboardType="number-pad"
+          maxLength={10}
+          accessibilityLabel={label}
+        />
+        <Pressable
+          onPress={onPressCalendar}
+          hitSlop={spacing.sm}
+          accessibilityRole="button"
+          accessibilityLabel={`Open date picker for ${label}`}
+        >
+          <Text style={styles.calendarGlyph}>📅</Text>
+        </Pressable>
+      </View>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    // 6px — a literal in the real component, not a named spacing token.
+    gap: 6,
+  },
+  label: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  field: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    borderRadius: radius.input,
+    backgroundColor: colors.bg.default,
+  },
+  fieldError: {
+    borderWidth: 1.5,
+    borderColor: colors.border.error,
+  },
+  value: {
+    flex: 1,
+    ...typography.body,
+    color: colors.text.secondary,
+    padding: 0,
+  },
+  valueFilled: {
+    color: colors.text.primary,
+  },
+  calendarGlyph: {
+    fontSize: 14,
+  },
+  errorText: {
+    ...typography.caption,
+    color: colors.state.danger,
+  },
+});

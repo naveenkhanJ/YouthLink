@@ -1,15 +1,28 @@
 /**
- * Input/TextField — docs/prototype/design-system.md §5.
+ * Input/TextField — real Figma component (node 12:59, "Components /
+ * Inputs" page, found 2026-09-28; this file was previously built from
+ * `design-system.md`'s text description only).
  *
  * State: Default | Focused | Filled | Error | Disabled (computed from props,
  * not passed explicitly — Focused/Filled are local interaction state, Error
  * and Disabled are the caller's). Type: Text | Secure (secureTextEntry).
  * A typed value keeps color/text/primary even in the Error state — only the
- * border changes — per §8's composed-error rule.
+ * border changes — per §8's composed-error rule. Disabled greys the value
+ * text itself (text/secondary), not just the field chrome — confirmed from
+ * the real component, where a Disabled+filled field still shows its value
+ * but in the same grey as a placeholder.
  *
  * Secure fields get the show/hide EyeIcon toggle for free (ported from the
  * account-module version — this was a real, previously-missing feature: a
  * password typo was undetectable until the next login failed).
+ *
+ * Open discrepancy, not resolved here: the real component's own built-in
+ * error line renders at `mobile/caption` (12px), but its own usage note
+ * says it "matches TextField's inline error grammar" with the standalone
+ * `Feedback/FieldError` component — which is confirmed `mobile/secondary`
+ * (14px). This file composes the real `FieldError.js` (14px) rather than
+ * duplicate the possibly-stale 12px hand-drawn line, since FieldError is
+ * the one explicitly checked against its own real component.
  */
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
@@ -92,7 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   label: {
-    ...typography.sectionLabel,
+    ...typography.secondary,
     color: colors.text.secondary,
     marginBottom: spacing.xs,
   },
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.default,
     borderRadius: radius.input,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     backgroundColor: colors.bg.default,
   },
   input: {
