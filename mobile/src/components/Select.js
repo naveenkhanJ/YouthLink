@@ -10,6 +10,7 @@
  */
 import { useState } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 /**
@@ -36,7 +37,13 @@ export default function Select({ label, options, value, onChange, placeholder = 
         <Text style={[styles.value, selectedOption && styles.valueFilled]}>
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Text style={styles.chevron}>{open ? "▲" : "▼"}</Text>
+        <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={colors.text.secondary} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          {open ? (
+            <Path d="M18 15l-6-6-6 6" />
+          ) : (
+            <Path d="M6 9l6 6 6-6" />
+          )}
+        </Svg>
       </Pressable>
       {open ? (
         <View style={styles.options}>
@@ -84,10 +91,6 @@ const styles = StyleSheet.create({
   },
   valueFilled: {
     color: colors.text.primary,
-  },
-  chevron: {
-    fontSize: 10,
-    color: colors.text.secondary,
   },
   options: {
     borderWidth: 1,

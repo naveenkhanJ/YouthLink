@@ -31,8 +31,6 @@ const LOCAL_DIGITS = 9;
  * @param {boolean} [editable]
  */
 export default function PhoneField({ value, onChangeText, error, editable = true }) {
-  const [focused, setFocused] = useState(false);
-
   function handleChange(text) {
     onChangeText(text.replace(/[^0-9]/g, "").slice(0, LOCAL_DIGITS));
   }
@@ -43,7 +41,6 @@ export default function PhoneField({ value, onChangeText, error, editable = true
       <View
         style={[
           styles.row,
-          focused && !error && editable && styles.rowFocused,
           error && styles.rowError,
           !editable && styles.rowDisabled,
         ]}
@@ -55,8 +52,6 @@ export default function PhoneField({ value, onChangeText, error, editable = true
           style={styles.input}
           value={value}
           onChangeText={handleChange}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
           editable={editable}
           placeholder="7X XXX XXXX"
           placeholderTextColor={colors.text.secondary}

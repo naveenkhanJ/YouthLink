@@ -16,19 +16,18 @@
  * account-module version — this was a real, previously-missing feature: a
  * password typo was undetectable until the next login failed).
  *
- * Open discrepancy, not resolved here: the real component's own built-in
- * error line renders at `mobile/caption` (12px), but its own usage note
- * says it "matches TextField's inline error grammar" with the standalone
- * `Feedback/FieldError` component — which is confirmed `mobile/secondary`
- * (14px). This file composes the real `FieldError.js` (14px) rather than
- * duplicate the possibly-stale 12px hand-drawn line, since FieldError is
- * the one explicitly checked against its own real component.
+ * Discrepancy RESOLVED 2026-09-29: the real component's own built-in
+ * error line renders at `mobile/caption` (12px), confirmed directly from
+ * Figma. The standalone `Feedback/FieldError` component is `mobile/secondary`
+ * (14px) per its own real component — those are two different sizes for
+ * two different contexts. This file now renders its own inline 12px error
+ * to match the real TextField, rather than composing the 14px FieldError.
+ * Callers who want the standalone error style still use FieldError directly.
  */
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 import EyeIcon from "./EyeIcon";
-import FieldError from "./FieldError";
 
 /**
  * @param {string} label
@@ -95,7 +94,9 @@ export default function TextField({
           </Pressable>
         ) : null}
       </View>
-      <FieldError message={!disabled ? error : null} />
+      {!disabled && error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 }
@@ -140,5 +141,10 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     marginLeft: spacing.sm,
+  },
+  errorText: {
+    ...typography.caption,
+    color: colors.state.danger,
+    marginTop: spacing.xs,
   },
 });

@@ -8,7 +8,7 @@
 import { View, StyleSheet } from "react-native";
 import { colors } from "../theme/tokens";
 
-const SIZE = 22;
+const SIZE = 24;
 
 /**
  * @param {boolean} revealed - true renders the "hide" (slashed) state.

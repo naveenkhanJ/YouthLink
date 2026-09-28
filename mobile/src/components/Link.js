@@ -5,7 +5,7 @@
  * `Action/Button` and the smaller `Action/ListRowAction`.
  */
 import { Pressable, Text, StyleSheet } from "react-native";
-import { colors } from "../theme/tokens";
+import { colors, typography } from "../theme/tokens";
 
 /**
  * @param {string} title
@@ -24,8 +24,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   text: {
-    fontSize: 16,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.brand.primary,
     textDecorationLine: "underline",
   },

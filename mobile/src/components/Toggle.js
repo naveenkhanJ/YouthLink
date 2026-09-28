@@ -1,10 +1,6 @@
 /**
  * Input/Toggle — real Figma component (node 28:59, "Components / Inputs"
- * page, found 2026-09-28). New — nothing existed for this before. Built
- * on RN's own `Switch` rather than a hand-drawn track — a pill track with
- * a circular thumb is exactly what `Switch` already renders, recoloured
- * to the real tokens (`bg/subtle` off-track, `brand/primary` on-track,
- * white thumb).
+ * page, found 2026-09-28).
  *
  * G9 rule (real component's own note): the `label` must describe the
  * OUTCOME, never the raw field name — the two real rows are "Notify me
@@ -12,8 +8,11 @@
  * nearby" (an inverted field, default on). Two identical-looking toggles
  * can behave oppositely; that's the caller's copy to get right, not
  * something this component can enforce.
+ *
+ * Built as a custom 44x24 pill to match the exact Figma geometry, replacing
+ * the previous native Switch (which has OS-dependent, un-stylable dimensions).
  */
-import { Platform, Switch, Text, View, StyleSheet } from "react-native";
+import { Pressable, Text, View, StyleSheet } from "react-native";
 import { colors, spacing, typography } from "../theme/tokens";
 
 /**
@@ -25,13 +24,15 @@ export default function Toggle({ label, value, onValueChange }) {
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: colors.bg.subtle, true: colors.brand.primary }}
-        thumbColor={colors.bg.default}
-        ios_backgroundColor={colors.bg.subtle}
-      />
+      <Pressable
+        onPress={() => onValueChange(!value)}
+        style={[styles.track, value ? styles.trackOn : styles.trackOff]}
+        accessibilityRole="switch"
+        accessibilityState={{ checked: value }}
+        accessibilityLabel={label}
+      >
+        <View style={[styles.thumb, value ? styles.thumbOn : styles.thumbOff]} />
+      </Pressable>
     </View>
   );
 }
@@ -47,5 +48,35 @@ const styles = StyleSheet.create({
     flex: 1,
     ...typography.body,
     color: colors.text.primary,
+  },
+  track: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    padding: 2,
+    justifyContent: "center",
+  },
+  trackOn: {
+    backgroundColor: colors.brand.primary,
+  },
+  trackOff: {
+    backgroundColor: colors.bg.subtle,
+  },
+  thumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.bg.default,
+    elevation: 2,
+    shadowColor: colors.text.primary,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  thumbOn: {
+    transform: [{ translateX: 20 }],
+  },
+  thumbOff: {
+    transform: [{ translateX: 0 }],
   },
 });

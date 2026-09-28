@@ -21,6 +21,7 @@
  * one a screen wires up, the field behaves the same either way.
  */
 import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
+import Svg, { Rect, Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 /** "20040314" -> "2004-03-14"; stops adding a dash until the next digit arrives. */
@@ -71,7 +72,10 @@ export default function DateTimeField({
           accessibilityRole="button"
           accessibilityLabel={`Open date picker for ${label}`}
         >
-          <Text style={styles.calendarGlyph}>📅</Text>
+          <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={colors.text.secondary} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <Path d="M16 2v4M8 2v4M3 10h18" />
+          </Svg>
         </Pressable>
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -110,9 +114,6 @@ const styles = StyleSheet.create({
   },
   valueFilled: {
     color: colors.text.primary,
-  },
-  calendarGlyph: {
-    fontSize: 14,
   },
   errorText: {
     ...typography.caption,
