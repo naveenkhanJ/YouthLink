@@ -16,5 +16,6 @@ const router = express.Router();
 router.post("/register", asyncHandler(controller.register));
 router.post("/login/password", asyncHandler(controller.loginPassword));
 router.post("/login/otp", asyncHandler(controller.loginOtp));
+router.post("/check-availability", asyncHandler(controller.checkAvailability));
 
 export default router;

@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
-import { register } from "../../api/account";
+import { register, checkAvailability } from "../../api/account";
 import { parseApiError } from "../../api/client";
 import { colors, spacing, typography } from "./theme";
 import Button from "./components/Button";
@@ -57,7 +57,14 @@ const ROLES = [
 
 export default function RegisterScreen({ navigation }) {
   // Step 1 — phone verification.
-  const verification = usePhoneVerification();
+  const verification = usePhoneVerification({
+    onBeforeSend: async (phone) => {
+      const result = await checkAvailability({ phone });
+      if (result.phoneTaken) {
+        throw new Error("This phone number is already registered.");
+      }
+    },
+  });
   const [idToken, setIdToken] = useState(null);
 
   // Step 2 — the rest of the form, only reachable once idToken is set.

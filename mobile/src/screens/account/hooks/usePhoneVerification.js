@@ -25,6 +25,7 @@ import { COUNTRY_CODE, LOCAL_DIGITS } from "../phoneFormat";
 // spamming Firebase's own rate limits, short enough that a genuinely
 // undelivered SMS doesn't leave someone stuck waiting.
 const RESEND_COOLDOWN_SECONDS = 30;
+const APP_EXPIRY_SECONDS = 5 * 60;
 
 function formatLocalNumber(digits) {
   // "771234567" -> "77 123 4567", matching how Sri Lankan mobile numbers
@@ -34,7 +35,8 @@ function formatLocalNumber(digits) {
     .join(" ");
 }
 
-export default function usePhoneVerification() {
+export default function usePhoneVerification(options = {}) {
+  const { onBeforeSend } = options;
   const [phone, setPhone] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [code, setCode] = useState("");
@@ -42,10 +44,15 @@ export default function usePhoneVerification() {
   const [sendingCode, setSendingCode] = useState(false);
   const [confirmingCode, setConfirmingCode] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [codeExpired, setCodeExpired] = useState(false);
   const cooldownTimer = useRef(null);
+  const expiryTimer = useRef(null);
 
   useEffect(() => {
-    return () => clearInterval(cooldownTimer.current);
+    return () => {
+      clearInterval(cooldownTimer.current);
+      clearTimeout(expiryTimer.current);
+    };
   }, []);
 
   function startCooldown() {
@@ -64,22 +71,26 @@ export default function usePhoneVerification() {
 
   async function sendCode() {
     setError(null);
-    // Defensive, not reachable through the UI as built — PhoneField caps
-    // input at 9 digits and every "Send code"/"Resend code" button is
-    // disabled until this is true. Kept anyway: this hook doesn't control
-    // how it's consumed, and a cheap boundary check here is the same
-    // "trust internal code, validate at the edge" reasoning the backend
-    // already applies to itself.
     if (phone.length !== LOCAL_DIGITS) {
       setError(`Enter a ${LOCAL_DIGITS}-digit phone number.`);
       return;
     }
     setSendingCode(true);
     try {
+      if (onBeforeSend) {
+        await onBeforeSend(phone);
+      }
       const result = await signInWithPhoneNumber(getAuth(), COUNTRY_CODE + phone);
       setConfirmationResult(result);
       setCode("");
+      setCodeExpired(false);
       startCooldown();
+      
+      clearTimeout(expiryTimer.current);
+      expiryTimer.current = setTimeout(() => {
+        setCodeExpired(true);
+        setError("This code has expired. Please request a new one.");
+      }, APP_EXPIRY_SECONDS * 1000);
     } catch (err) {
       setError(err.message || "Could not send a verification code.");
     } finally {
@@ -93,9 +104,11 @@ export default function usePhoneVerification() {
    * explicit, working replacement. */
   function changeNumber() {
     clearInterval(cooldownTimer.current);
+    clearTimeout(expiryTimer.current);
     setConfirmationResult(null);
     setCode("");
     setError(null);
+    setCodeExpired(false);
     setResendCooldown(0);
   }
 
@@ -108,6 +121,10 @@ export default function usePhoneVerification() {
    */
   async function confirmCode(onVerified) {
     setError(null);
+    if (codeExpired) {
+      setError("This code has expired. Please request a new one.");
+      return;
+    }
     if (code.length !== 6) {
       setError("Enter the 6-digit code.");
       return;
@@ -138,6 +155,7 @@ export default function usePhoneVerification() {
     sendingCode,
     confirmingCode,
     resendCooldown,
+    codeExpired,
     formattedPhone: `${COUNTRY_CODE} ${formatLocalNumber(phone)}`,
     sendCode,
     confirmCode,

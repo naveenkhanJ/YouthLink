@@ -30,7 +30,7 @@ import usePhoneVerification from "./hooks/usePhoneVerification";
 import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
 export default function LoginScreen({ navigation }) {
-  const { signIn } = useAuth();
+  const { signIn, sessionEndReason } = useAuth();
   const [mode, setMode] = useState("password"); // "password" | "otp"
 
   // Password path. `phone` is the 9-digit local part only — PhoneField
@@ -83,6 +83,12 @@ export default function LoginScreen({ navigation }) {
       enableOnAndroid
       extraScrollHeight={120}
     >
+      {sessionEndReason ? (
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>{sessionEndReason}</Text>
+        </View>
+      ) : null}
+
       <Text style={styles.title}>Log in</Text>
 
       <View style={styles.modeToggle}>
@@ -158,6 +164,18 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xxl,
     backgroundColor: colors.surface,
+  },
+  banner: {
+    backgroundColor: colors.bg?.subtle,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginBottom: spacing.xl,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.brand?.primary || colors.primary,
+  },
+  bannerText: {
+    fontSize: typography.body?.fontSize || 16,
+    color: colors.textPrimary,
   },
   title: {
     fontSize: typography.title.fontSize,

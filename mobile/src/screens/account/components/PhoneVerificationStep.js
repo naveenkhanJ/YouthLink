@@ -33,6 +33,7 @@ export default function PhoneVerificationStep({ verification, onConfirm, confirm
     formattedPhone,
     sendCode,
     changeNumber,
+    codeExpired,
   } = verification;
 
   if (!confirmationResult) {
@@ -74,7 +75,7 @@ export default function PhoneVerificationStep({ verification, onConfirm, confirm
         title={confirmLabel}
         onPress={onConfirm}
         loading={confirmingCode}
-        disabled={code.length !== 6}
+        disabled={code.length !== 6 || codeExpired}
       />
 
       {/* Disabled on resendCooldown > 0 (the normal case), sendingCode, and

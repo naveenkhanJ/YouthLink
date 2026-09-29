@@ -36,7 +36,7 @@ function normalizePhoneForLookup(phone) {
 const LOCKOUT_THRESHOLD = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 const LOCKED_MESSAGE =
-  "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.";
+  "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead.";
 const CLEARED_LOCKOUT = { failedLoginAttempts: 0, lockedUntil: null };
 
 // Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
@@ -118,16 +118,16 @@ function validateFields({
   }
   if (!password || typeof password !== "string") {
     fields.password = "Required";
+  } else if (password.length < 8 || password.length > 64) {
+    fields.password = "Must be between 8 and 64 characters";
   }
   // email is optional (User.email is nullable) — only checked if provided.
   if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email))) {
     fields.email = "Must be a valid email address";
   }
-  if (!nic || typeof nic !== "string" || nic.trim().length < 4) {
-    // At least 4 chars so getNicLast4 never receives something too short
-    // to mask (see nicCrypto.js) — a malformed NIC should fail here as a
-    // clean 400, not later as an opaque 500 after a wasted Firebase call.
-    fields.nic = "Required, must be at least 4 characters";
+  const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
+  if (!nic || typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
+    fields.nic = "Must be 12 digits, or 9 digits followed by V or X";
   }
   if (!birthdate || Number.isNaN(new Date(birthdate).getTime())) {
     fields.birthdate = "Required, must be a valid date";
@@ -151,6 +151,44 @@ function validateFields({
       fields,
     );
   }
+}
+
+/**
+ * FR-ACC-05: pre-check for a friendly, field-level error before OTP is sent.
+ * @param {object} input
+ * @param {string} [input.phone]
+ * @param {string} [input.email]
+ * @returns {Promise<{ phoneTaken: boolean, emailTaken: boolean }>}
+ */
+async function checkAvailability({ phone, email }) {
+  const result = { phoneTaken: false, emailTaken: false };
+
+  if (phone) {
+    const normalizedPhone = normalizePhoneForLookup(phone);
+    const existingPhone = await prisma.user.findFirst({
+      where: {
+        phone: normalizedPhone,
+        phoneVerifiedAt: { not: null },
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+    if (existingPhone) {
+      result.phoneTaken = true;
+    }
+  }
+
+  if (email) {
+    const existingEmail = await prisma.user.findFirst({
+      where: { email: email.trim(), deletedAt: null },
+      select: { id: true },
+    });
+    if (existingEmail) {
+      result.emailTaken = true;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -229,7 +267,7 @@ async function register(input) {
   // docs/database-schema.md) are the actual enforcement and still apply
   // as a safety net in the create() below, in case of a race between
   // this check and the insert.
-  const [existingPhone, existingNic] = await Promise.all([
+  const [existingPhone, existingNic, existingEmail] = await Promise.all([
     prisma.user.findFirst({
       where: {
         phone: phoneNumber,
@@ -242,6 +280,10 @@ async function register(input) {
       where: { nicEncrypted, deletedAt: null },
       select: { id: true },
     }),
+    email ? prisma.user.findFirst({
+      where: { email: email.trim(), deletedAt: null },
+      select: { id: true },
+    }) : Promise.resolve(null),
   ]);
 
   if (existingPhone) {
@@ -252,6 +294,11 @@ async function register(input) {
   if (existingNic) {
     throw AppError.conflict("That NIC is already registered.", {
       nic: "Already registered",
+    });
+  }
+  if (existingEmail) {
+    throw AppError.conflict("That email address is already in use.", {
+      email: "Already in use",
     });
   }
 
@@ -313,8 +360,13 @@ async function loginWithPassword({ phone, password }) {
   // Same generic message whether the phone isn't registered or the password
   // is wrong — telling the two apart would let a caller enumerate registered
   // phone numbers.
-  const invalidCredentials = () =>
-    AppError.unauthorized("Incorrect phone number or password.");
+  const invalidCredentials = (remaining) => {
+    let msg = "We couldn't log you in with those details. Check your number and password, or reset your password.";
+    if (remaining !== undefined && remaining > 0) {
+      msg += ` You have ${remaining} attempt${remaining === 1 ? '' : 's'} left.`;
+    }
+    return AppError.unauthorized(msg);
+  };
 
   if (!user) {
     // Burn roughly the same time a real password check would take, so an
@@ -381,7 +433,7 @@ async function loginWithPassword({ phone, password }) {
     const currentlyLocked = row.lockedUntil && row.lockedUntil > now;
 
     if (currentlyLocked) {
-      return "locked";
+      return { status: "locked" };
     }
 
     if (!passwordCorrect) {
@@ -399,20 +451,20 @@ async function loginWithPassword({ phone, password }) {
             : null,
         },
       });
-      return lockingNow ? "locked" : "invalid";
+      return lockingNow ? { status: "locked" } : { status: "invalid", remaining: LOCKOUT_THRESHOLD - attempts };
     }
 
     if (failedLoginAttempts !== 0 || row.lockedUntil) {
       await tx.user.update({ where: { id: user.id }, data: CLEARED_LOCKOUT });
     }
-    return "success";
+    return { status: "success" };
   });
 
-  if (outcome === "locked") {
+  if (outcome.status === "locked") {
     throw AppError.locked(LOCKED_MESSAGE);
   }
-  if (outcome === "invalid") {
-    throw invalidCredentials();
+  if (outcome.status === "invalid") {
+    throw invalidCredentials(outcome.remaining);
   }
 
   // Suspension is revealed only after the password is proven correct — doing
@@ -476,4 +528,4 @@ async function loginWithOtp({ idToken }) {
   return { token: signToken({ sub: user.id }), user };
 }
 
-export default { register, loginWithPassword, loginWithOtp };
+export default { register, loginWithPassword, loginWithOtp, checkAvailability };

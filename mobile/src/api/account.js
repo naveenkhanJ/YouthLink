@@ -43,3 +43,7 @@ export function loginOtp(payload) {
 export function register(payload) {
   return request("/api/account/register", { method: "POST", body: payload });
 }
+
+export function checkAvailability(payload) {
+  return request("/api/account/check-availability", { method: "POST", body: payload });
+}
