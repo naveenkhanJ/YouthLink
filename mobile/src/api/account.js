@@ -47,3 +47,19 @@ export function register(payload) {
 export function checkAvailability(payload) {
   return request("/api/account/check-availability", { method: "POST", body: payload });
 }
+
+export function requestPasswordReset(payload) {
+  return request("/api/account/reset-password/request", { method: "POST", body: payload });
+}
+
+export function verifyPasswordResetOtp(payload) {
+  return request("/api/account/reset-password/otp", { method: "POST", body: payload });
+}
+
+export function confirmPasswordReset(payload) {
+  return request("/api/account/reset-password/confirm", { method: "POST", body: payload });
+}
+
+export function requestAccountRecovery(payload) {
+  return request("/api/account/recovery/request", { method: "POST", body: payload });
+}
