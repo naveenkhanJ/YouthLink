@@ -49,4 +49,41 @@ export default {
     const result = await service.checkAvailability(req.body);
     res.status(200).json(result);
   },
+
+  async resetPasswordChannels(req, res) {
+    const result = await service.resetPasswordChannels(req.body);
+    res.status(200).json(result);
+  },
+
+  async resetPasswordRequest(req, res) {
+    const result = await service.resetPasswordRequest(req.body);
+    res.status(200).json(result);
+  },
+
+  async resetPasswordVerify(req, res) {
+    const result = await service.resetPasswordVerify(req.body);
+    res.status(200).json(result);
+  },
+
+  async resetPasswordConfirm(req, res) {
+    const result = await service.resetPasswordConfirm(req.body);
+    res.status(200).json(result);
+  },
+
+  async recoveryRequest(req, res) {
+    const result = await service.recoveryRequest(req.body);
+    res.status(200).json(result);
+  },
+
+  async recoveryStatus(req, res) {
+    // Typically deviceId would come from a header or body. For GET requests, we can use req.query
+    // Wait, let's just use req.query since it's a GET request
+    const result = await service.recoveryStatus({ deviceId: req.query.deviceId || req.body.deviceId });
+    res.status(200).json(result);
+  },
+
+  async recoveryConfirm(req, res) {
+    const result = await service.recoveryConfirm(req.body);
+    res.status(200).json(result);
+  },
 };

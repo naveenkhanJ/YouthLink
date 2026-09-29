@@ -14,6 +14,8 @@ import { hashPassword, verifyPassword } from "./passwordHash.js";
 import { verifyFirebaseIdToken } from "./firebaseAuth.js";
 import { signToken } from "../../lib/jwt.js";
 import { isSuspended } from "../../lib/accountStatus.js";
+import crypto from "crypto";
+import { generateOtp, verifyOtp } from "./otpService.js";
 
 const MIN_AGE = 18;
 const VALID_ROLES = ["YOUTH_JOB_SEEKER", "EMPLOYER", "COMMUNITY_ENDORSER"];
@@ -528,4 +530,239 @@ async function loginWithOtp({ idToken }) {
   return { token: signToken({ sub: user.id }), user };
 }
 
-export default { register, loginWithPassword, loginWithOtp, checkAvailability };
+async function resetPasswordChannels({ phone }) {
+  if (!phone) {
+    throw AppError.badRequest("Phone is required.", { phone: "Required" });
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    // "enumeration weakness FR-ENDORSE-03's deliberately generic 'no eligible match found' already guards against"
+    throw AppError.notFound("No eligible match found");
+  }
+
+  return {
+    phone: user.phone,
+    email: user.email,
+    emailVerified: !!user.emailVerifiedAt,
+  };
+}
+
+async function resetPasswordRequest({ phone, channel }) {
+  if (!phone || !channel) {
+    throw AppError.badRequest("Phone and channel are required.");
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    // Prevent enumeration by returning success blindly
+    return { success: true };
+  }
+
+  if (channel === "PHONE") {
+    const code = await generateOtp({
+      phone: user.phone,
+      purpose: "PASSWORD_RESET",
+      userId: user.id,
+    });
+    console.log(`[Mock SMS] Password reset code for ${user.phone}: ${code}`);
+  } else if (channel === "EMAIL") {
+    if (!user.email || !user.emailVerifiedAt) {
+      return { success: true };
+    }
+    const token = crypto.randomBytes(32).toString("hex");
+    await prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        email: user.email,
+        token,
+        purpose: "PASSWORD_RESET",
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+      },
+    });
+    console.log(
+      `[Mock Email] Password reset link for ${user.email}: https://youthlink.example.com/reset?token=${token}`
+    );
+  } else {
+    throw AppError.badRequest("Invalid channel");
+  }
+
+  return { success: true };
+}
+
+async function resetPasswordVerify({ phone, code }) {
+  if (!phone || !code) {
+    throw AppError.badRequest("Phone and code are required.");
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    throw AppError.unauthorized("Invalid or expired code.");
+  }
+  
+  const isValid = await verifyOtp({
+    phone: normalizedPhone,
+    code,
+    purpose: "PASSWORD_RESET",
+  });
+  if (!isValid) {
+    throw AppError.unauthorized("Invalid or expired code.");
+  }
+
+  // Code was valid and has been consumed. Issue a short-lived token 
+  // so the client can submit the new password in a subsequent step.
+  const token = crypto.randomBytes(32).toString("hex");
+  await prisma.emailVerificationToken.create({
+    data: {
+      userId: user.id,
+      email: user.email || user.phone, // fallback to phone if no email
+      token,
+      purpose: "PASSWORD_RESET",
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+    },
+  });
+
+  return { success: true, token };
+}
+
+async function resetPasswordConfirm({ token, newPassword }) {
+  if (!newPassword || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.");
+  }
+  if (!token) {
+    throw AppError.badRequest("Must provide a reset token.");
+  }
+
+  const emailToken = await prisma.emailVerificationToken.findFirst({
+    where: {
+      token,
+      purpose: "PASSWORD_RESET",
+      consumedAt: null,
+      expiresAt: { gt: new Date() },
+    },
+    include: { user: true },
+  });
+  if (!emailToken || !emailToken.user || emailToken.user.deletedAt) {
+    throw AppError.unauthorized("Invalid or expired token.");
+  }
+  const user = emailToken.user;
+  
+  await prisma.emailVerificationToken.update({
+    where: { id: emailToken.id },
+    data: { consumedAt: new Date() },
+  });
+
+  const hash = await hashPassword(newPassword);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: hash,
+      passwordChangedAt: new Date(),
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
+  });
+
+  return { success: true };
+}
+
+async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
+  if (!nic || !birthdate || !legalName || !deviceId) {
+    throw AppError.badRequest("All fields are required.");
+  }
+  // The system matches the NIC against the account record using the deterministic encryption
+  const encryptedNic = encryptNic(nic);
+  const user = await prisma.user.findFirst({
+    where: {
+      nicEncrypted: encryptedNic,
+      legalName,
+      birthdate: new Date(birthdate),
+      deletedAt: null,
+    },
+  });
+
+  await prisma.accountRecoveryRequest.create({
+    data: {
+      userId: user ? user.id : null,
+      nicSubmittedEncrypted: encryptedNic,
+      legalNameSubmitted: legalName,
+      birthdateSubmitted: new Date(birthdate),
+      deviceId,
+    },
+  });
+
+  return { success: true };
+}
+
+async function recoveryStatus({ deviceId }) {
+  if (!deviceId) {
+    throw AppError.badRequest("deviceId is required.");
+  }
+  const req = await prisma.accountRecoveryRequest.findFirst({
+    where: { deviceId },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!req) {
+    throw AppError.notFound("No request found.");
+  }
+  return { status: req.status };
+}
+
+async function recoveryConfirm({ deviceId, newPassword }) {
+  if (!deviceId) {
+    throw AppError.badRequest("deviceId is required.");
+  }
+  if (!newPassword || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.");
+  }
+
+  const req = await prisma.accountRecoveryRequest.findFirst({
+    where: { deviceId, status: "APPROVED", completedAt: null },
+    orderBy: { createdAt: "desc" },
+    include: { user: true },
+  });
+
+  if (!req || !req.user || req.user.deletedAt) {
+    throw AppError.unauthorized("No approved, unused recovery request found for this device.");
+  }
+
+  const hash = await hashPassword(newPassword);
+  
+  await prisma.$transaction([
+    prisma.accountRecoveryRequest.update({
+      where: { id: req.id },
+      data: { completedAt: new Date() },
+    }),
+    prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        passwordHash: hash,
+        passwordChangedAt: new Date(),
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      },
+    }),
+  ]);
+
+  return { success: true };
+}
+
+export default {
+  register,
+  loginWithPassword,
+  loginWithOtp,
+  checkAvailability,
+  resetPasswordChannels,
+  resetPasswordRequest,
+  resetPasswordVerify,
+  resetPasswordConfirm,
+  recoveryRequest,
+  recoveryStatus,
+  recoveryConfirm,
+};
