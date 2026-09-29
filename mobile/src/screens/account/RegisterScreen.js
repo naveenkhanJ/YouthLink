@@ -161,6 +161,24 @@ export default function RegisterScreen({ navigation }) {
     });
   }
 
+  async function handleEmailBlur() {
+    if (!email.trim() || !EMAIL_FORMAT.test(email.trim())) return;
+    try {
+      const result = await checkAvailability({ email: email.trim() });
+      if (result.emailTaken) {
+        setFieldErrors((prev) => ({ ...prev, email: "Already in use" }));
+      } else {
+        setFieldErrors((prev) => {
+          const next = { ...prev };
+          if (next.email === "Already in use") delete next.email;
+          return next;
+        });
+      }
+    } catch (err) {
+      // Ignore network errors on blur, let the submit catch them
+    }
+  }
+
   // Step 4 — submit registration
   async function handleSubmitRegistration() {
     setFieldErrors({});
@@ -419,9 +437,10 @@ export default function RegisterScreen({ navigation }) {
 
         <TextField
           label="Email (optional)"
-          value={email}
-          onChangeText={setEmail}
-          placeholder="you@example.com"
+            value={email}
+            onChangeText={setEmail}
+            onBlur={handleEmailBlur}
+            placeholder="you@example.com"
           keyboardType="email-address"
           error={fieldErrors.email}
         />
@@ -548,3 +567,5 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
 });
+
+
