@@ -63,3 +63,7 @@ export function confirmPasswordReset(payload) {
 export function requestAccountRecovery(payload) {
   return request("/api/account/recovery/request", { method: "POST", body: payload });
 }
+
+export function changePhone(payload) {
+  return request("/api/account/phone/change", { method: "POST", body: payload });
+}

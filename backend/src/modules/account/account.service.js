@@ -753,6 +753,50 @@ async function recoveryConfirm({ deviceId, newPassword }) {
   return { success: true };
 }
 
+  /**
+   * FR-ACC-12 Phone Number Change
+   */
+  async function changePhone({ userId, password, idToken }) {
+    if (!password) {
+      throw AppError.badRequest("Password is required.", { password: "Required" });
+    }
+    if (!idToken) {
+      throw AppError.badRequest("Phone verification token is required.");
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId, deletedAt: null } });
+    if (!user) throw AppError.unauthorized("User not found");
+
+    const validPassword = await verifyPassword(password, user.passwordHash);
+    if (!validPassword) {
+      throw AppError.unauthorized("That password doesn't match your account. Please try again.", { password: "Incorrect password" });
+    }
+
+    let newPhone;
+    try {
+      ({ phoneNumber: newPhone } = await verifyFirebaseIdToken(idToken));
+    } catch (err) {
+      throw AppError.unauthorized("Phone verification failed or has expired. Verify your phone again.");
+    }
+
+    if (newPhone === user.phone) {
+      throw AppError.badRequest("This is already your registered phone number.");
+    }
+
+    const existingPhone = await prisma.user.findFirst({
+      where: { phone: newPhone, phoneVerifiedAt: { not: null }, deletedAt: null },
+    });
+    if (existingPhone) {
+      throw AppError.conflict("That phone number is already registered.", { phone: "Already registered" });
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { phone: newPhone },
+    });
+
+    return { success: true, phone: newPhone };
+  }
 export default {
   register,
   loginWithPassword,
@@ -765,4 +809,6 @@ export default {
   recoveryRequest,
   recoveryStatus,
   recoveryConfirm,
+  changePhone,
 };
+

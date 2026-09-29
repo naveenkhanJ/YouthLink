@@ -36,7 +36,7 @@ export default function AccountRecoveryStatusScreen({ navigation, route }) {
         contentContainerStyle={styles.content}
       >
         <FormBanner
-          kind={status === "approved" ? "Success" : "Info"}
+          kind={status === "approved" ? "info" : "info"}
           message={
             status === "approved"
               ? "Your account has been recovered. Set a new password to finish."
