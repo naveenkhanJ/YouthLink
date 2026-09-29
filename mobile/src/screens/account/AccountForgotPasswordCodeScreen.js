@@ -20,7 +20,7 @@ import Button from "../../components/Button";
 import CodeInputNumeric from "../../components/CodeInputNumeric";
 import Link from "../../components/Link";
 import CtaBar from "../../components/CtaBar";
-import { verifyPasswordResetOtp } from "../../api/account";
+import { verifyPasswordResetOtp, requestPasswordReset } from "../../api/account";
 import { parseApiError } from "../../api/client";
 
 export default function AccountForgotPasswordCodeScreen({ navigation, route }) {
@@ -28,6 +28,18 @@ export default function AccountForgotPasswordCodeScreen({ navigation, route }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  async function handleResendCode() {
+    setLoading(true);
+    setError(null);
+    try {
+      await requestPasswordReset({ phone: identifier, channel });
+    } catch (err) {
+      setError(parseApiError(err).formError);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleVerifyCode() {
     setLoading(true);
@@ -71,7 +83,7 @@ export default function AccountForgotPasswordCodeScreen({ navigation, route }) {
         <View style={styles.linkGroup}>
           <Link
             title="Resend code"
-            onPress={() => console.log("Resend code — not yet implemented")}
+            onPress={handleResendCode}
           />
           {channel === "sms" && (
             <Link
