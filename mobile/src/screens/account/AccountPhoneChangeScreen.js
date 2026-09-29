@@ -46,6 +46,7 @@ export default function AccountPhoneChangeScreen({ navigation }) {
     resendCooldown,
     formattedPhone,
     sendCode,
+    confirmCode,
     changeNumber,
   } = verification;
 
