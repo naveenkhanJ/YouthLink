@@ -79,7 +79,7 @@ export default function AccountForgotPasswordScreen({ navigation, route }) {
       >
         {isNeitherReachable && (
           <FormBanner
-            kind="Error"
+            kind="error"
             message="We can't reach you by phone or email, so we can't reset your password automatically."
           />
         )}

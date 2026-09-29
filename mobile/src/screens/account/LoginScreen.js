@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation }) {
             present we show it as a FormBanner instead of the static subtitle. */}
         {sessionEndReason ? (
           <View style={styles.bannerWrap}>
-            <FormBanner kind="Info" message={sessionEndReason} />
+            <FormBanner kind="info" message={sessionEndReason} />
           </View>
         ) : (
           <Text style={styles.welcomeSub}>
@@ -112,7 +112,7 @@ export default function LoginScreen({ navigation }) {
 
         {formError ? (
           <View style={styles.formBannerWrap}>
-            <FormBanner kind="Error" message={formError} />
+            <FormBanner kind="error" message={formError} />
           </View>
         ) : null}
 

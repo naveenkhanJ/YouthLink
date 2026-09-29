@@ -10,6 +10,7 @@
 import express from "express";
 import asyncHandler from "../../utils/asyncHandler.js";
 import controller from "./account.controller.js";
+import requireAuth from "../../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -27,4 +28,7 @@ router.post("/recovery/request", asyncHandler(controller.recoveryRequest));
 router.get("/recovery/status", asyncHandler(controller.recoveryStatus));
 router.post("/recovery/confirm", asyncHandler(controller.recoveryConfirm));
 
+router.post("/phone/change", requireAuth, asyncHandler(controller.changePhone));
+
 export default router;
+

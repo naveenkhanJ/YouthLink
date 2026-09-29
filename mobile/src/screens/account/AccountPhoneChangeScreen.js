@@ -1,16 +1,5 @@
-/**
- * Phone number change (spec 1.12 / 1.12err) — Afham.
- *
- * Layout:
- *  - Chrome/ScreenHeader title "Change phone number"
- *  - TextField "Password" (secure)
- *  - PhoneField "New phone number"
- *  - TEXT "Your current number stays active until the new one is verified."
- *  - SPACER
- *  - ctaBar: Button "Send code to new number"
- */
-import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../theme/tokens";
@@ -19,29 +8,70 @@ import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import PhoneField from "../../components/PhoneField";
 import CtaBar from "../../components/CtaBar";
-import { LOCAL_DIGITS } from "./phoneFormat";
-// API functions will be imported here when backend is wired, e.g. verifyPassword, sendOtp
+import Link from "../../components/Link";
+import CodeInputNumeric from "../../components/CodeInputNumeric";
+import CountdownText from "../../components/CountdownText";
+import FormBanner from "../../components/FormBanner";
+import { LOCAL_DIGITS, COUNTRY_CODE } from "./phoneFormat";
+import usePhoneVerification from "./hooks/usePhoneVerification";
+import { changePhone, checkAvailability } from "../../api/account";
+import { parseApiError } from "../../api/client";
 
 export default function AccountPhoneChangeScreen({ navigation }) {
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // Used for testing 1.12err state
+  const [localError, setLocalError] = useState(null);
+  const [finishing, setFinishing] = useState(false);
 
-  async function handleSendCode() {
-    // Basic mock implementation for UI review
-    if (password !== "correct") {
-      setError("That password doesn't match your account. Please try again.");
-      return;
+  const verification = usePhoneVerification({
+    onBeforeSend: async (ph) => {
+      if (!password) {
+        throw new Error("Password is required.");
+      }
+      const result = await checkAvailability({ phone: `${COUNTRY_CODE}${ph}` });
+      if (result.phoneTaken) {
+        throw new Error("This number is already registered.");
+      }
+    },
+  });
+
+  const {
+    phone,
+    setPhone,
+    confirmationResult,
+    code,
+    setCode,
+    error: verificationError,
+    sendingCode,
+    confirmingCode,
+    resendCooldown,
+    formattedPhone,
+    sendCode,
+    changeNumber,
+  } = verification;
+
+  const error = localError || verificationError;
+
+  useEffect(() => {
+    async function finishChange() {
+      if (!code || code.length !== 6 || !confirmationResult || finishing) return;
+      setFinishing(true);
+      setLocalError(null);
+      
+      await confirmCode(async (idToken) => {
+        try {
+          await changePhone({ password, idToken });
+          Alert.alert("Success", "Your phone number has been updated.");
+          navigation.goBack();
+        } catch (err) {
+          const { formError } = parseApiError(err);
+          setLocalError(formError || "Verification failed. Please try again.");
+        }
+      });
+      
+      setFinishing(false);
     }
-    setError(null);
-    setLoading(true);
-    // TODO: Wire up actual password verification and OTP sending
-    setTimeout(() => {
-      setLoading(false);
-      // navigation.navigate("AccountPhoneChangeConfirm", { newPhone: phone }) // Next step
-    }, 1000);
-  }
+    finishChange();
+  }, [code, confirmationResult]);
 
   const canSubmit = password.length > 0 && phone.length === LOCAL_DIGITS;
 
@@ -62,34 +92,80 @@ export default function AccountPhoneChangeScreen({ navigation }) {
           value={password}
           onChangeText={(val) => {
             setPassword(val);
-            if (error) setError(null);
+            if (localError) setLocalError(null);
           }}
           secureTextEntry
-          placeholder="••••••••••"
-          error={error}
+          placeholder="8-64 characters"
+          error={localError ? "error" : undefined}
+          editable={!confirmationResult}
         />
         
         <PhoneField
           label="New phone number"
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={(val) => {
+            setPhone(val);
+            if (localError) setLocalError(null);
+          }}
+          editable={!confirmationResult}
         />
 
-        <Text style={styles.note}>
-          Your current number stays active until the new one is verified.
-        </Text>
+        {error ? (
+          <FormBanner kind="error" message={error} />
+        ) : null}
+
+        {confirmationResult ? (
+          <View style={styles.pendingChangeRow}>
+            <Text style={styles.prTitle}>Pending  confirm {formattedPhone}</Text>
+            <Text style={styles.prBody}>
+              Your current number stays active until the new one is confirmed by SMS code. If the code expires or you cancel, nothing changes.
+            </Text>
+            <CodeInputNumeric
+              value={code}
+              onChangeText={setCode}
+              error={localError ? "error" : undefined}
+              autoFocus
+            />
+            {resendCooldown > 0 ? (
+              <CountdownText
+                text="Resend in :"
+              />
+            ) : (
+              <Link
+                title="Resend code"
+                onPress={sendCode}
+                disabled={sendingCode || confirmingCode || finishing}
+              />
+            )}
+            <View style={{ marginTop: spacing.md }}>
+              <Link
+                title="Cancel this change"
+                onPress={() => {
+                  setPassword("");
+                  changeNumber();
+                }}
+              />
+            </View>
+          </View>
+        ) : (
+          <Text style={styles.note}>
+            Your current number stays active until the new one is verified.
+          </Text>
+        )}
 
         <View style={styles.spacer} />
       </KeyboardAwareScrollView>
 
-      <CtaBar>
-        <Button
-          title="Send code to new number"
-          onPress={handleSendCode}
-          loading={loading}
-          disabled={!canSubmit}
-        />
-      </CtaBar>
+      {!confirmationResult && (
+        <CtaBar>
+          <Button
+            title="Send code to new number"
+            onPress={sendCode}
+            loading={sendingCode}
+            disabled={!canSubmit}
+          />
+        </CtaBar>
+      )}
     </View>
   );
 }
@@ -118,4 +194,22 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: spacing.xxl,
   },
+  pendingChangeRow: {
+    padding: spacing.md,
+    backgroundColor: colors.bg.default,
+    borderColor: colors.border.default,
+    borderWidth: 1,
+    borderRadius: 10,
+    gap: spacing.sm,
+  },
+  prTitle: {
+    ...typography["body-medium"],
+    color: colors.text.primary,
+  },
+  prBody: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
 });
+
+

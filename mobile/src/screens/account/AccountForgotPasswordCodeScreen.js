@@ -77,7 +77,7 @@ export default function AccountForgotPasswordCodeScreen({ navigation, route }) {
         />
 
         {error ? (
-          <FormBanner kind="Error" message={error} />
+          <FormBanner kind="error" message={error} />
         ) : null}
 
         <View style={styles.linkGroup}>
