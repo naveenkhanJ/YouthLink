@@ -25,6 +25,7 @@ import AccountForgotPasswordCodeScreen from "./AccountForgotPasswordCodeScreen";
 import AccountRecoveryConfirmScreen from "./AccountRecoveryConfirmScreen";
 import AccountRecoveryStatusScreen from "./AccountRecoveryStatusScreen";
 import AccountResetPasswordScreen from "./AccountResetPasswordScreen";
+import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
 
 export default [
   {
@@ -66,5 +67,10 @@ export default [
     name: "AccountResetPassword",
     component: AccountResetPasswordScreen,
     options: { title: "Reset password" },
+  },
+  {
+    name: "AccountPhoneChange",
+    component: AccountPhoneChangeScreen,
+    options: { headerShown: false },
   },
 ];

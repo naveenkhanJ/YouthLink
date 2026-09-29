@@ -30,14 +30,14 @@ const LOCAL_DIGITS = 9;
  * @param {string} [error]
  * @param {boolean} [editable]
  */
-export default function PhoneField({ value, onChangeText, error, editable = true }) {
+export default function PhoneField({ value, onChangeText, error, editable = true, label = "Phone number" }) {
   function handleChange(text) {
     onChangeText(text.replace(/[^0-9]/g, "").slice(0, LOCAL_DIGITS));
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Phone number</Text>
+      <Text style={styles.label}>{label}</Text>
       <View
         style={[
           styles.row,
