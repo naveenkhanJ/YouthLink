@@ -56,6 +56,9 @@ export default function TextField({
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
 
+  const currentLength = value ? value.length : 0;
+  const showCount = maxLength && !disabled && (maxLength - currentLength <= 20);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -94,8 +97,13 @@ export default function TextField({
           </Pressable>
         ) : null}
       </View>
-      {!disabled && error ? (
-        <Text style={styles.errorText}>{error}</Text>
+      {(!disabled && error) || showCount ? (
+        <View style={styles.footerRow}>
+          <Text style={styles.errorText}>{!disabled && error ? error : ""}</Text>
+          {showCount ? (
+            <Text style={styles.charCount}>{maxLength - currentLength}</Text>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -142,9 +150,19 @@ const styles = StyleSheet.create({
   toggleButton: {
     marginLeft: spacing.sm,
   },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: spacing.xs,
+  },
   errorText: {
     ...typography.caption,
     color: colors.state.danger,
-    marginTop: spacing.xs,
+    flex: 1,
+  },
+  charCount: {
+    ...typography.caption,
+    color: colors.text.secondary,
+    marginLeft: spacing.sm,
   },
 });

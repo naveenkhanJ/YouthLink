@@ -7,6 +7,11 @@
 import { API_BASE_URL } from "../config";
 
 let authToken = null;
+let authFailureCallback = null;
+
+export function setAuthFailureCallback(fn) {
+  authFailureCallback = fn;
+}
 
 /** Called after login so subsequent requests carry the token. */
 export function setAuthToken(token) {
@@ -41,6 +46,11 @@ export async function request(path, options = {}) {
     );
     error.status = response.status;
     error.fields = data?.fields; // per-field messages, e.g. { phone: "..." }
+    
+    if ((response.status === 401 || response.status === 403) && authFailureCallback) {
+      authFailureCallback();
+    }
+    
     throw error;
   }
 

@@ -14,7 +14,7 @@
  */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { setAuthToken } from "../api/client";
+import { setAuthToken, setAuthFailureCallback } from "../api/client";
 
 const TOKEN_KEY = "youthlink.authToken";
 const USER_KEY = "youthlink.authUser";
@@ -25,6 +25,7 @@ export function AuthProvider({ children }) {
   // "loading" only lasts through the initial SecureStore read at app boot.
   const [status, setStatus] = useState("loading");
   const [user, setUser] = useState(null);
+  const [sessionEndReason, setSessionEndReason] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +47,11 @@ export function AuthProvider({ children }) {
     }
 
     restore();
+    
+    setAuthFailureCallback(() => {
+      signOut("Your session has ended. Please log in again.");
+    });
+    
     return () => {
       cancelled = true;
     };
@@ -61,19 +67,20 @@ export function AuthProvider({ children }) {
     setStatus("signedIn");
   }
 
-  async function signOut() {
+  async function signOut(reason = null) {
     await Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEY),
       SecureStore.deleteItemAsync(USER_KEY),
     ]);
     setAuthToken(null);
     setUser(null);
+    setSessionEndReason(reason);
     setStatus("signedOut");
   }
 
   const value = useMemo(
-    () => ({ status, user, signIn, signOut }),
-    [status, user],
+    () => ({ status, user, sessionEndReason, signIn, signOut }),
+    [status, user, sessionEndReason],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -83,8 +90,9 @@ export function AuthProvider({ children }) {
  * @returns {{
  *   status: "loading" | "signedOut" | "signedIn",
  *   user: object | null,
+ *   sessionEndReason: string | null,
  *   signIn: (token: string, user: object) => Promise<void>,
- *   signOut: () => Promise<void>,
+ *   signOut: (reason?: string) => Promise<void>,
  * }}
  */
 export function useAuth() {

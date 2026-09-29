@@ -14,6 +14,8 @@ import { hashPassword, verifyPassword } from "./passwordHash.js";
 import { verifyFirebaseIdToken } from "./firebaseAuth.js";
 import { signToken } from "../../lib/jwt.js";
 import { isSuspended } from "../../lib/accountStatus.js";
+import crypto from "crypto";
+import { generateOtp, verifyOtp } from "./otpService.js";
 
 const MIN_AGE = 18;
 const VALID_ROLES = ["YOUTH_JOB_SEEKER", "EMPLOYER", "COMMUNITY_ENDORSER"];
@@ -36,7 +38,7 @@ function normalizePhoneForLookup(phone) {
 const LOCKOUT_THRESHOLD = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 const LOCKED_MESSAGE =
-  "Too many failed attempts. Try again in 15 minutes, or log in with OTP instead.";
+  "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead.";
 const CLEARED_LOCKOUT = { failedLoginAttempts: 0, lockedUntil: null };
 
 // Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
@@ -118,16 +120,16 @@ function validateFields({
   }
   if (!password || typeof password !== "string") {
     fields.password = "Required";
+  } else if (password.length < 8 || password.length > 64) {
+    fields.password = "Must be between 8 and 64 characters";
   }
   // email is optional (User.email is nullable) — only checked if provided.
   if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email))) {
     fields.email = "Must be a valid email address";
   }
-  if (!nic || typeof nic !== "string" || nic.trim().length < 4) {
-    // At least 4 chars so getNicLast4 never receives something too short
-    // to mask (see nicCrypto.js) — a malformed NIC should fail here as a
-    // clean 400, not later as an opaque 500 after a wasted Firebase call.
-    fields.nic = "Required, must be at least 4 characters";
+  const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
+  if (!nic || typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
+    fields.nic = "Must be 12 digits, or 9 digits followed by V or X";
   }
   if (!birthdate || Number.isNaN(new Date(birthdate).getTime())) {
     fields.birthdate = "Required, must be a valid date";
@@ -151,6 +153,44 @@ function validateFields({
       fields,
     );
   }
+}
+
+/**
+ * FR-ACC-05: pre-check for a friendly, field-level error before OTP is sent.
+ * @param {object} input
+ * @param {string} [input.phone]
+ * @param {string} [input.email]
+ * @returns {Promise<{ phoneTaken: boolean, emailTaken: boolean }>}
+ */
+async function checkAvailability({ phone, email }) {
+  const result = { phoneTaken: false, emailTaken: false };
+
+  if (phone) {
+    const normalizedPhone = normalizePhoneForLookup(phone);
+    const existingPhone = await prisma.user.findFirst({
+      where: {
+        phone: normalizedPhone,
+        phoneVerifiedAt: { not: null },
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+    if (existingPhone) {
+      result.phoneTaken = true;
+    }
+  }
+
+  if (email) {
+    const existingEmail = await prisma.user.findFirst({
+      where: { email: email.trim(), deletedAt: null },
+      select: { id: true },
+    });
+    if (existingEmail) {
+      result.emailTaken = true;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -229,7 +269,7 @@ async function register(input) {
   // docs/database-schema.md) are the actual enforcement and still apply
   // as a safety net in the create() below, in case of a race between
   // this check and the insert.
-  const [existingPhone, existingNic] = await Promise.all([
+  const [existingPhone, existingNic, existingEmail] = await Promise.all([
     prisma.user.findFirst({
       where: {
         phone: phoneNumber,
@@ -242,6 +282,10 @@ async function register(input) {
       where: { nicEncrypted, deletedAt: null },
       select: { id: true },
     }),
+    email ? prisma.user.findFirst({
+      where: { email: email.trim(), deletedAt: null },
+      select: { id: true },
+    }) : Promise.resolve(null),
   ]);
 
   if (existingPhone) {
@@ -252,6 +296,11 @@ async function register(input) {
   if (existingNic) {
     throw AppError.conflict("That NIC is already registered.", {
       nic: "Already registered",
+    });
+  }
+  if (existingEmail) {
+    throw AppError.conflict("That email address is already in use.", {
+      email: "Already in use",
     });
   }
 
@@ -313,8 +362,13 @@ async function loginWithPassword({ phone, password }) {
   // Same generic message whether the phone isn't registered or the password
   // is wrong — telling the two apart would let a caller enumerate registered
   // phone numbers.
-  const invalidCredentials = () =>
-    AppError.unauthorized("Incorrect phone number or password.");
+  const invalidCredentials = (remaining) => {
+    let msg = "We couldn't log you in with those details. Check your number and password, or reset your password.";
+    if (remaining !== undefined && remaining > 0) {
+      msg += ` You have ${remaining} attempt${remaining === 1 ? '' : 's'} left.`;
+    }
+    return AppError.unauthorized(msg);
+  };
 
   if (!user) {
     // Burn roughly the same time a real password check would take, so an
@@ -381,7 +435,7 @@ async function loginWithPassword({ phone, password }) {
     const currentlyLocked = row.lockedUntil && row.lockedUntil > now;
 
     if (currentlyLocked) {
-      return "locked";
+      return { status: "locked" };
     }
 
     if (!passwordCorrect) {
@@ -399,20 +453,20 @@ async function loginWithPassword({ phone, password }) {
             : null,
         },
       });
-      return lockingNow ? "locked" : "invalid";
+      return lockingNow ? { status: "locked" } : { status: "invalid", remaining: LOCKOUT_THRESHOLD - attempts };
     }
 
     if (failedLoginAttempts !== 0 || row.lockedUntil) {
       await tx.user.update({ where: { id: user.id }, data: CLEARED_LOCKOUT });
     }
-    return "success";
+    return { status: "success" };
   });
 
-  if (outcome === "locked") {
+  if (outcome.status === "locked") {
     throw AppError.locked(LOCKED_MESSAGE);
   }
-  if (outcome === "invalid") {
-    throw invalidCredentials();
+  if (outcome.status === "invalid") {
+    throw invalidCredentials(outcome.remaining);
   }
 
   // Suspension is revealed only after the password is proven correct — doing
@@ -476,4 +530,239 @@ async function loginWithOtp({ idToken }) {
   return { token: signToken({ sub: user.id }), user };
 }
 
-export default { register, loginWithPassword, loginWithOtp };
+async function resetPasswordChannels({ phone }) {
+  if (!phone) {
+    throw AppError.badRequest("Phone is required.", { phone: "Required" });
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    // "enumeration weakness FR-ENDORSE-03's deliberately generic 'no eligible match found' already guards against"
+    throw AppError.notFound("No eligible match found");
+  }
+
+  return {
+    phone: user.phone,
+    email: user.email,
+    emailVerified: !!user.emailVerifiedAt,
+  };
+}
+
+async function resetPasswordRequest({ phone, channel }) {
+  if (!phone || !channel) {
+    throw AppError.badRequest("Phone and channel are required.");
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    // Prevent enumeration by returning success blindly
+    return { success: true };
+  }
+
+  if (channel === "PHONE") {
+    const code = await generateOtp({
+      phone: user.phone,
+      purpose: "PASSWORD_RESET",
+      userId: user.id,
+    });
+    console.log(`[Mock SMS] Password reset code for ${user.phone}: ${code}`);
+  } else if (channel === "EMAIL") {
+    if (!user.email || !user.emailVerifiedAt) {
+      return { success: true };
+    }
+    const token = crypto.randomBytes(32).toString("hex");
+    await prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        email: user.email,
+        token,
+        purpose: "PASSWORD_RESET",
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+      },
+    });
+    console.log(
+      `[Mock Email] Password reset link for ${user.email}: https://youthlink.example.com/reset?token=${token}`
+    );
+  } else {
+    throw AppError.badRequest("Invalid channel");
+  }
+
+  return { success: true };
+}
+
+async function resetPasswordVerify({ phone, code }) {
+  if (!phone || !code) {
+    throw AppError.badRequest("Phone and code are required.");
+  }
+  const normalizedPhone = normalizePhoneForLookup(phone);
+  const user = await prisma.user.findFirst({
+    where: { phone: normalizedPhone, deletedAt: null },
+  });
+  if (!user) {
+    throw AppError.unauthorized("Invalid or expired code.");
+  }
+  
+  const isValid = await verifyOtp({
+    phone: normalizedPhone,
+    code,
+    purpose: "PASSWORD_RESET",
+  });
+  if (!isValid) {
+    throw AppError.unauthorized("Invalid or expired code.");
+  }
+
+  // Code was valid and has been consumed. Issue a short-lived token 
+  // so the client can submit the new password in a subsequent step.
+  const token = crypto.randomBytes(32).toString("hex");
+  await prisma.emailVerificationToken.create({
+    data: {
+      userId: user.id,
+      email: user.email || user.phone, // fallback to phone if no email
+      token,
+      purpose: "PASSWORD_RESET",
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+    },
+  });
+
+  return { success: true, token };
+}
+
+async function resetPasswordConfirm({ token, newPassword }) {
+  if (!newPassword || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.");
+  }
+  if (!token) {
+    throw AppError.badRequest("Must provide a reset token.");
+  }
+
+  const emailToken = await prisma.emailVerificationToken.findFirst({
+    where: {
+      token,
+      purpose: "PASSWORD_RESET",
+      consumedAt: null,
+      expiresAt: { gt: new Date() },
+    },
+    include: { user: true },
+  });
+  if (!emailToken || !emailToken.user || emailToken.user.deletedAt) {
+    throw AppError.unauthorized("Invalid or expired token.");
+  }
+  const user = emailToken.user;
+  
+  await prisma.emailVerificationToken.update({
+    where: { id: emailToken.id },
+    data: { consumedAt: new Date() },
+  });
+
+  const hash = await hashPassword(newPassword);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash: hash,
+      passwordChangedAt: new Date(),
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+    },
+  });
+
+  return { success: true };
+}
+
+async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
+  if (!nic || !birthdate || !legalName || !deviceId) {
+    throw AppError.badRequest("All fields are required.");
+  }
+  // The system matches the NIC against the account record using the deterministic encryption
+  const encryptedNic = encryptNic(nic);
+  const user = await prisma.user.findFirst({
+    where: {
+      nicEncrypted: encryptedNic,
+      legalName,
+      birthdate: new Date(birthdate),
+      deletedAt: null,
+    },
+  });
+
+  await prisma.accountRecoveryRequest.create({
+    data: {
+      userId: user ? user.id : null,
+      nicSubmittedEncrypted: encryptedNic,
+      legalNameSubmitted: legalName,
+      birthdateSubmitted: new Date(birthdate),
+      deviceId,
+    },
+  });
+
+  return { success: true };
+}
+
+async function recoveryStatus({ deviceId }) {
+  if (!deviceId) {
+    throw AppError.badRequest("deviceId is required.");
+  }
+  const req = await prisma.accountRecoveryRequest.findFirst({
+    where: { deviceId },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!req) {
+    throw AppError.notFound("No request found.");
+  }
+  return { status: req.status };
+}
+
+async function recoveryConfirm({ deviceId, newPassword }) {
+  if (!deviceId) {
+    throw AppError.badRequest("deviceId is required.");
+  }
+  if (!newPassword || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.");
+  }
+
+  const req = await prisma.accountRecoveryRequest.findFirst({
+    where: { deviceId, status: "APPROVED", completedAt: null },
+    orderBy: { createdAt: "desc" },
+    include: { user: true },
+  });
+
+  if (!req || !req.user || req.user.deletedAt) {
+    throw AppError.unauthorized("No approved, unused recovery request found for this device.");
+  }
+
+  const hash = await hashPassword(newPassword);
+  
+  await prisma.$transaction([
+    prisma.accountRecoveryRequest.update({
+      where: { id: req.id },
+      data: { completedAt: new Date() },
+    }),
+    prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        passwordHash: hash,
+        passwordChangedAt: new Date(),
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      },
+    }),
+  ]);
+
+  return { success: true };
+}
+
+export default {
+  register,
+  loginWithPassword,
+  loginWithOtp,
+  checkAvailability,
+  resetPasswordChannels,
+  resetPasswordRequest,
+  resetPasswordVerify,
+  resetPasswordConfirm,
+  recoveryRequest,
+  recoveryStatus,
+  recoveryConfirm,
+};
