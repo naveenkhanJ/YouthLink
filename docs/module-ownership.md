@@ -240,28 +240,35 @@ Both are mobile + backend only — no dashboard work, so no new surface to stand
 
 ---
 
-## Sprint 4 (tentatively 1–3 October 2026) — extend the loop to completed-and-rated, plus UI conformance
+## Sprint 4 (1–3 October 2026) — extend the loop to completed-and-rated
 
-**Scrum Master: Lahiru · Product Owner: Pawan** (same as Sprint 3, pending confirmation — see `workflow/team.json`'s `sprintRoles`). Decided 2026-09-26: not a pure polish sprint. Once Sprint 3's merges land, `Engagement` and `Rating`/`RatingRemovalRequest` are already fully modelled in the schema (checkpoint codes, cancellation, stalled flags all present), so extending post → discover → apply → select through to **engage → complete → rate** is real, buildable feature work, not speculative — and a stronger increment to present than polish alone.
+**Scrum Master: Lahiru · Product Owner: Pawan** (same pairing as Sprint 3 — confirmed 2026-10-01; the team considered rotating to complete the requirement for all four members but chose to keep this pairing for Sprint 4. Afham and Naveenkhan will not hold the other role this assignment — a known, accepted gap against the rotation requirement; see `docs/decisions.md`. See `workflow/team.json`'s `sprintRoles`). Decided 2026-09-26: not a pure polish sprint. Once Sprint 3's merges land, `Engagement` and `Rating`/`RatingRemovalRequest` are already fully modelled in the schema (checkpoint codes, cancellation, stalled flags all present), so extending post → discover → apply → select through to **engage → complete → rate** is real, buildable feature work, not speculative — and a stronger increment to present than polish alone.
 
-**Engagement Lifecycle — Naveenkhan.** Natural continuation: Select (his epic) is what spawns the `Engagement` row, so he carries the most context into it (this pairing was already flagged as the sensible default below, before Sprint 4 existed as a plan). **Important — checked against Jira, not against this document's older table:** the FR-ENG epic has grown since the "5 stories, 13 points" estimate below was written. Jira now lists fourteen stories, ENG-01 through ENG-14. Sprint 4 picks up a deliberately limited **core subset** — the six needed to reach a working "engagement gets created, checkpoints happen, it ends, rating unlocks" loop:
+**Sprint 4 is three days, so it is the smallest useful set: 6 story points per member (24 in total), every card visible in the app rather than backend-only, all inside each member's own module.** UI conformance to the prototype spec (DoD clause 5) is finished for every member as of 2026-10-01, so this is feature work only. Planned twice on 2026-10-01: a first pass at 12 points each was cut in half as too high for three days (Sprint 1 delivered 8 points for the whole team).
 
-| Card | Requirement | Why it's core |
+| Member | Cards | Points |
 | --- | --- | --- |
-| YL-62 | FR-ENG-01 | The check-in code checkpoints themselves |
-| YL-63 | FR-ENG-02 | Unpaid-internship exception to the payment checkpoint |
-| YL-64 | FR-ENG-03 | Unable-to-confirm → dispute fallback (so a stuck checkpoint doesn't dead-end) |
-| YL-65 | FR-ENG-04 | Per-Engagement scoping — mostly a verification task against the existing schema |
-| YL-66 | FR-ENG-12 | Part-time End Engagement, the route into rating |
-| YL-160 | FR-ENG-14 | The engagements list — the container every engagement screen hangs off; without it there is no entry point to the checkpoint screens |
+| Naveenkhan | YL-160 engagements list (3), YL-66 End Engagement (3) | 6 |
+| Pawan | YL-67 rating submission (1), YL-68 double-blind reveal (3), YL-69 completion-rate stat (2) | 6 |
+| Lahiru | YL-99 withdraw a posting (1), YL-101 "2 of 3 filled" display (1), YL-102 keep an unsent form on the device (2), YL-105 Open/Filled status badge (2) | 6 |
+| Afham | YL-92 unified Settings screen (3), YL-85 password change (2), YL-89 display name editing (1) | 6 |
 
-**Explicitly left in the backlog, beyond Sprint 4:** ENG-05/06 (cancellation flows), ENG-07 (completion-rate weighting nuance), ENG-08 (cancellation scope — likely covered by ENG-04's verification but not re-scoped here), ENG-09 (material-change re-confirmation), ENG-10 (urgency recomputation on time change — reuses `computeIsUrgent()`, see YL-170's note), ENG-11 (multi-slot re-confirmation), ENG-13 (stalled-engagement handling). These are real and Must-priority, not nice-to-haves, but they refine a mechanism that doesn't exist yet — building the core loop first and coming back for these is the same consolidate-rather-than-spread-thin call as Sprint 3's.
+**Engagement Lifecycle — Naveenkhan.** Select (his epic) creates the `Engagement` row, so he carries the most context into it. Jira lists fourteen FR-ENG stories (ENG-01 to ENG-14), well past the "5 stories, 13 points" estimate in the older table below; Jira is authoritative. Sprint 4 takes two: YL-160, the engagements list every engagement screen hangs off, and YL-66, End Engagement, the route into rating. **Watch YL-66:** its "something went wrong" answer opens a dispute case, and no Disputes pipeline exists. Build the "no problem" route into rating and leave the dispute route as a clearly marked stub.
 
-**Ratings & Reputation — tentatively Pawan, to confirm once Sprint 3's outcome is known.** RATE-01 through 05 (YL-67–71, 9 points), unchanged from the table below — no epic growth here. Depends on Engagement reaching "ended," so sequence it after Naveenkhan's core subset lands, not in parallel from day one. RATE-06 (rating disputes, YL-118, Should) stays out — it needs a Disputes pipeline that doesn't exist.
+**Ratings & Reputation — Pawan, confirmed 2026-10-01 now that Sprint 3 landed cleanly.** YL-67, YL-68 and YL-69, the rating submission, the double-blind reveal and the completion-rate stat. He builds and tests against seeded ended-engagement data (the same approach as YL-174/175), so nobody waits for anyone.
 
-**UI conformance to the prototype spec (DoD clause 5) — Lahiru and Afham, and every owner for their own screens.** This is the carry-over item 3 further down this document, unavoidable once there's a shared UI kit to conform to. Also: the smaller Must-priority items from the 2026-09-16 error/offline pass not already covered by Sprint 3 (see the amended-scope table below).
+**Gig Posting — Lahiru**: four visible cards, YL-99 (withdraw), YL-101 (slot-fill count), YL-102 (keeping an unsent form) and YL-105 (Open/Filled badge). **Account — Afham**: the Settings screen (YL-92) and the two Settings rows that live on it, YL-85 and YL-89.
 
-**Worth watching, not yet added to either sprint's scope:** YL-174's description notes it should be "implemented together with FR-POST-12 (YL-99), FR-POST-13 (YL-100) and FR-APPLY-12 (YL-158)" to keep the "a posting that stops accepting applications resolves its applicants" invariant true end to end. YL-158 (FR-APPLY-12) may already be substantially done — Naveenkhan's branch already has the `/mine` route — worth him checking once merged, rather than assuming. YL-99/YL-100 (Lahiru's) are not in Sprint 3's scope; flagging so the gap is a decision, not an oversight, if Sprint 4 has room.
+Each owner should check the code before starting a card — some may already be partly built — and build only what is missing.
+
+**Left in the backlog on purpose, beyond Sprint 4:**
+- **Engagement:** YL-62/63 (check-in checkpoints and the unpaid exception), YL-64 (needs a Disputes pipeline), YL-65 (verification-only), and ENG-05 to ENG-13 (cancellation, completion-rate weighting, re-confirmation, urgency recomputation, stalled handling).
+- **Ratings:** YL-70 and YL-71 (per-Engagement independence and outcome applicability, both refinements of the core flow) and YL-118 (rating disputes, needs a Disputes pipeline).
+- **Notifications:** YL-157 (urgent vs. regular treatment), YL-161 (rating notifications) and YL-156 (permission handling, which may need a new native dependency and so a new shared build).
+- **Posting:** YL-98 (edit a posting) and YL-100 (posting expiry). YL-100 and YL-99 together complete the invariant YL-174 was built for, that a posting that stops accepting applications resolves its applicants; with YL-100 out, that invariant stays only partly true at the demo.
+- **Account:** YL-91 (account deletion), YL-82 (employer posting-as type), YL-90 (posting-as change), YL-88 (email change, needs a confirmation-link email) and YL-176 (needs an Admin function).
+
+These are real, Must-priority work, not nice-to-haves, but they refine mechanisms that are not all built yet. Finishing a small, working slice is the same consolidate-rather-than-spread-thin call as Sprint 3's.
 
 ---
 

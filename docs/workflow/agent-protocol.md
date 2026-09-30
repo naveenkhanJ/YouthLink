@@ -4,7 +4,7 @@ Protocol version 1 · 2026-09-25
 
 **How an AI coding agent works in this repository, from the first message of a chat to the pull request.** Written for any agent: Claude, Codex, Cursor, Windsurf, Copilot, Gemini, or a plain chat. [`AGENTS.md`](../../AGENTS.md) carries the short mandatory core; this is the full procedure it points to.
 
-**The agent's goal:** carry the developer's cards to Done, correctly, without needing to be steered, and stop only where a person has to act. The developer stays the author: they run the commits, they open the pull requests, and they must be able to explain every line at the viva.
+**The agent's goal:** carry the developer's cards to Done, correctly, without needing to be steered, and stop only where a person has to act. The developer stays the author: they decide when commits and pull requests happen, and they must be able to explain every line at the viva. The agent doesn't run commits, pushes, branch switches, merges or other state-changing commands on its own initiative, but **runs any of them when the developer explicitly asks** (§8.1 still applies to what it runs).
 
 ---
 
@@ -108,6 +108,7 @@ Finish, commit and record one card before starting the next. A card may span sev
 ### 4.3 Jira
 
 - **Connected:** move the card yourself — In Progress when you start it, In Review when its pull request is open, Done when it is merged into `develop` and has been run end to end (§5.6).
+- **Done before the merge, on explicit request:** if the developer explicitly asks you to move a card to Done while its code is not on `develop` yet, do it. Their request waives only the merge (Definition of Done clause 2). Every other clause must still hold — acceptance criteria met, run end to end at self or integration level (§5.6), no blocking bugs, UI matching the prototype, committed per convention. If one does not, name it in one line and don't move the card until it does. Record "Done in Jira, not yet merged" in the progress file so the merge still happens.
 - **Not connected:** tell the developer which move to make, at the moment it is due, and add it to "Pending Jira moves" in their NEXT block until they confirm.
 
 ### 4.4 Independence between modules
@@ -173,7 +174,7 @@ Ask the developer to run the flow in the app. Record the level in the progress e
 - **integration** — it was run on the shared development build or a teammate's working setup
 - **pending** — not run yet, with the reason
 
-Pending does not block the next card or the pull request. The card moves to Done only once it has been run at self or integration level. Never write "run end to end" for something that has not been run.
+Pending does not block the next card or the pull request. The card moves to Done only once it has been run at self or integration level (and merged, unless the developer explicitly asks for Done earlier — §4.3). Never write "run end to end" for something that has not been run.
 
 ### 5.7 Pull request stop
 
@@ -193,7 +194,7 @@ Stop and wait for the developer only at these points:
 1. **Commit due** (§5.5)
 2. **Pull request due** (§5.7)
 3. **End-to-end run needed** (§5.6)
-4. **A command only they should run:** switching branch, merging `develop`, installing hooks, pasting script output you cannot produce yourself
+4. **A state-changing command they have not asked you to run:** switching branch, merging `develop`, installing hooks, committing, pushing — give the exact command and stop. If they explicitly ask you to run it, run it instead of stopping (a request is the approval; never refuse or hand it back). Also pasting script output you cannot produce yourself, when you have no shell
 5. **A refusal** (§8.1)
 6. **An escalation** (§8.3) — then park the card and continue with the next unblocked one
 7. **Context nearly full** — update the progress file first (§9), then say a new chat should start
@@ -210,7 +211,7 @@ Say plainly, once, and carry on only if the developer still wants to after heari
 - "we'll fix it later" for anything a requirement asks for now; `TODO`/`FIXME` in place of behaviour
 - hard-coded values where configuration or a token belongs; raw hex colours; copy that differs from the prototype
 - copying another module's code, or code from a branch that isn't the developer's, instead of building it
-- calling something done that has not been run, or marking Done without the merge
+- calling something done that has not been run, or marking Done while any clause other than the merge is unmet (the merge alone can be waived on explicit request — §4.3)
 - a commit or pull request much larger than one coherent piece of work
 - working from a summary instead of the document
 
