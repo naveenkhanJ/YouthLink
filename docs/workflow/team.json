@@ -3,7 +3,7 @@
   "version": 1,
   "timezone": "Asia/Colombo",
   "sprintRoles": {
-    "$comment": "Per-sprint Scrum Master / Product Owner. Sprint 1-2: Afham SM, Naveenkhan PO (Sprint 2 continued Sprint 1's own scope under the same roles). Sprint 3-4: Lahiru SM, Pawan PO -- the two who had not yet held either role. Update when Sprint 4 roles are confirmed if they change.",
+    "$comment": "Per-sprint Scrum Master / Product Owner. Sprint 1-2: Afham SM, Naveenkhan PO (Sprint 2 continued Sprint 1's own scope under the same roles). Sprint 3-4: Lahiru SM, Pawan PO -- the two who had not yet held either role in Sprint 3. Confirmed 2026-10-01: the team chose to keep this same pairing for Sprint 4 rather than rotate further, so Afham and Naveenkhan will not hold the other role this assignment -- a known, accepted gap against the rotation requirement (see docs/decisions.md).",
     "1-2": { "scrumMaster": "afham", "productOwner": "naveenkhan" },
     "3-4": { "scrumMaster": "lahiru", "productOwner": "pawan" }
   },

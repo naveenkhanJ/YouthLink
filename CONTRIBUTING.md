@@ -251,6 +251,8 @@ A story is Done when **all** of the following hold:
 
 **How clause 3 is recorded while not everyone can build the app yet.** Each pull request and progress entry states the end-to-end level honestly: **self** (you ran it on your own device or emulator), **integration** (it was run on the shared development build or a teammate's working setup), or **pending** (not run yet, and why). Pending doesn't stop you opening the pull request or starting the next card; the card moves to Done once it has been run at either of the other two levels. The clause itself is unchanged — this only makes its state visible instead of blocking work on it.
 
+**Jira status before the merge.** A member can explicitly ask their agent to move a card to Done in Jira before its pull request is merged. That waives the Jira move's wait for clause 2 only; clause 2 itself is still unmet until the merge, and clauses 1 and 3–7 must all hold before the card moves.
+
 **Automated test coverage is deliberately not part of this.** That's a conscious scope decision for this stage, not an oversight. Point 3 — actually running the thing end to end — is doing that job for now.
 
 ---
