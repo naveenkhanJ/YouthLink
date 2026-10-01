@@ -34,6 +34,9 @@ router.post("/recovery/confirm", asyncHandler(controller.recoveryConfirm));
 
 router.post("/phone/change", requireAuth, asyncHandler(controller.changePhone));
 router.post("/password/change", requireAuth, asyncHandler(controller.changePassword));
+router.get("/me", requireAuth, asyncHandler(controller.getMe));
+router.post("/email/change", requireAuth, asyncHandler(controller.requestEmailChange));
+router.post("/email/cancel", requireAuth, asyncHandler(controller.cancelEmailChange));
 router.put("/nic", requireAuth, asyncHandler(controller.changeNic));
 router.patch("/display-name", requireAuth, asyncHandler(controller.updateDisplayName));
 

@@ -25,6 +25,7 @@ function publicUser(user) {
     legalName: user.legalName,
     birthdate: user.birthdate,
     nicLast4: user.nicLast4,
+    emailVerified: Boolean(user.emailVerifiedAt),
     // Settings (FR-ACC-18) shows the employer's posting type and business name.
     postingAsType: user.postingAsType ?? null,
     businessName: user.businessName ?? null,
@@ -57,6 +58,20 @@ async function changeNic(req, res) {
     nic: req.body?.nic,
   });
   res.status(200).json(result);
+}
+
+async function getMe(req, res) {
+  const { user, pendingEmail } = await service.getMe({ userId: req.user.id });
+  res.status(200).json({ ...publicUser(user), pendingEmail });
+}
+
+async function requestEmailChange(req, res) {
+  const result = await service.requestEmailChange({ userId: req.user.id, email: req.body?.email });
+  res.status(200).json(result);
+}
+
+async function cancelEmailChange(req, res) {
+  res.status(200).json(await service.cancelEmailChange({ userId: req.user.id }));
 }
 
 async function changePhone(req, res) {
@@ -144,6 +159,9 @@ export default {
 
   changePhone,
   changeNic,
+  getMe,
+  requestEmailChange,
+  cancelEmailChange,
   changePassword,
   updateDisplayName,
 };

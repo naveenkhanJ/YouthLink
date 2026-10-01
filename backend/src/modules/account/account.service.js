@@ -78,6 +78,8 @@ const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
 const PASSWORD_RECHECK_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const RESET_TOKEN_MINUTES = 15;
 const EMAIL_CONFIRM_HOURS = 24;
+// Each email-change request sends an email: five per person per fifteen minutes (typos allowed).
+const EMAIL_CHANGE_REQUEST_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 
 // FR-ACC-09 / NFR-SEC-02: 5 consecutive failed password attempts locks the
 // password path for 15 minutes. Only the password path — FR-ACC-07 deliberately
@@ -433,13 +435,19 @@ async function verifyEmail({ token }) {
   const tokenHash = hashToken(token);
 
   const row = await prisma.emailVerificationToken.findFirst({
-    where: { token: tokenHash, purpose: "SIGNUP", consumedAt: null, expiresAt: { gt: new Date() } },
+    where: {
+      token: tokenHash,
+      purpose: { in: ["SIGNUP", "EMAIL_CHANGE"] },
+      consumedAt: null,
+      expiresAt: { gt: new Date() },
+    },
     include: { user: true },
   });
-  // The link only counts while the account still holds the address it was sent to.
-  if (!row || !row.user || row.user.deletedAt || row.user.email !== row.email) {
-    return { status: "invalid" };
-  }
+  if (!row || !row.user || row.user.deletedAt) return { status: "invalid" };
+  const isChange = row.purpose === "EMAIL_CHANGE";
+  // A signup link only counts while the account still holds the address it was sent to. An
+  // email-change link is the opposite: the address it carries is NOT yet on the account.
+  if (!isChange && row.user.email !== row.email) return { status: "invalid" };
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -448,7 +456,20 @@ async function verifyEmail({ token }) {
         data: { consumedAt: new Date() },
       });
       if (claimed.count === 0) throw new AppError(409, "used");
-      await tx.user.update({ where: { id: row.userId }, data: { emailVerifiedAt: new Date() } });
+      if (isChange) {
+        // FR-ACC-14 AC2: the new address replaces the old one and is verified, in one step; any
+        // other link still waiting for this person is spent with it.
+        await tx.emailVerificationToken.updateMany({
+          where: { userId: row.userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+          data: { consumedAt: new Date() },
+        });
+        await tx.user.update({
+          where: { id: row.userId },
+          data: { email: row.email, emailVerifiedAt: new Date() },
+        });
+      } else {
+        await tx.user.update({ where: { id: row.userId }, data: { emailVerifiedAt: new Date() } });
+      }
     });
   } catch (err) {
     // 409 "used": another request spent the link first. P2002: someone else confirmed the
@@ -1050,6 +1071,95 @@ async function updateDisplayName({ userId, legalName }) {
 }
 
 /**
+ * FR-ACC-14: ask to add or change the account's email. Nothing on the account changes yet: the
+ * new address is held on an EMAIL_CHANGE token, so User.email stays on the old, still-active
+ * value (and recovery channel) until the confirmation link is opened (AC1). Asking again
+ * replaces the earlier pending change.
+ * @param {{ userId: string, email: string }} input
+ * @returns {Promise<{ pendingEmail: string }>}
+ */
+async function requestEmailChange({ userId, email }) {
+  if (typeof email !== "string" || !EMAIL_FORMAT.test(email.trim()) || email.trim().length > 254) {
+    throw AppError.badRequest("Enter a valid email address.", { email: "Must be a valid email address" });
+  }
+  const address = normalizeEmail(email);
+
+  const limitKey = `email-change:${userId}`;
+  if (isBlocked(limitKey, EMAIL_CHANGE_REQUEST_LIMIT.max, EMAIL_CHANGE_REQUEST_LIMIT.windowMs)) {
+    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  if (user.email === address && user.emailVerifiedAt) {
+    throw AppError.badRequest("That is already your confirmed email address.", {
+      email: "Already your email address",
+    });
+  }
+
+  // FR-ACC-05: uniqueness is scoped to VERIFIED addresses. The message to the app never says
+  // whose account holds it.
+  const holder = await prisma.user.findFirst({
+    where: {
+      email: { equals: address, mode: "insensitive" },
+      emailVerifiedAt: { not: null },
+      deletedAt: null,
+      id: { not: userId },
+    },
+    select: { id: true },
+  });
+  if (holder) {
+    throw AppError.conflict("That email address is already in use.", { email: "Already in use" });
+  }
+
+  record(limitKey, EMAIL_CHANGE_REQUEST_LIMIT.windowMs);
+  const token = crypto.randomBytes(32).toString("hex");
+  await prisma.$transaction(async (tx) => {
+    await tx.emailVerificationToken.updateMany({
+      where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+      data: { consumedAt: new Date() },
+    });
+    await tx.emailVerificationToken.create({
+      data: {
+        userId,
+        email: address,
+        token: hashToken(token),
+        purpose: "EMAIL_CHANGE",
+        expiresAt: new Date(Date.now() + EMAIL_CONFIRM_HOURS * 60 * 60 * 1000),
+      },
+    });
+  });
+  deliverInDevelopment("Email", address, `${config.publicBaseUrl}/api/account/verify-email?token=${token}`);
+  return { pendingEmail: address };
+}
+
+/** FR-ACC-14: "Cancel this change" — the waiting confirmation link stops working. */
+async function cancelEmailChange({ userId }) {
+  await prisma.emailVerificationToken.updateMany({
+    where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+    data: { consumedAt: new Date() },
+  });
+  return { success: true };
+}
+
+/**
+ * The signed-in person's current account, plus the email change still waiting for its
+ * confirmation link (if any). The app refreshes from this after something changes outside it —
+ * the link being opened in a browser — so Settings shows the new address.
+ * @returns {Promise<{ user: object, pendingEmail: string|null }>}
+ */
+async function getMe({ userId }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  const pending = await prisma.emailVerificationToken.findFirst({
+    where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+    select: { email: true },
+  });
+  return { user, pendingEmail: pending ? pending.email : null };
+}
+
+/**
  * FR-ACC-13: correct the NIC number. Gated behind password re-entry only — no OTP-equivalent
  * step. The shape is checked (12 digits, or 9 digits and V/X), never a registry, and the NIC is
  * stored with the same deterministic encryption as at signup so the one-account-per-NIC rule
@@ -1154,6 +1264,9 @@ export default {
   recoveryConfirm,
   changePhone,
   changeNic,
+  requestEmailChange,
+  cancelEmailChange,
+  getMe,
   changePassword,
   updateDisplayName,
 };
