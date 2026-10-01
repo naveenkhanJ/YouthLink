@@ -1004,6 +1004,33 @@ async function changePassword({ userId, currentPassword, newPassword }) {
 }
 
 /**
+ * FR-ACC-15: edit the display (legal) name after signup. Deliberately low ceremony, like the NIC
+ * correction (FR-ACC-13): signed-in access is the only gate. The name lives only on the User
+ * row, so this one update is the change "everywhere it is shown".
+ * @param {{ userId: string, legalName: string }} input
+ * @returns {Promise<{ legalName: string }>}
+ */
+async function updateDisplayName({ userId, legalName }) {
+  if (typeof legalName !== "string" || legalName.trim().length === 0) {
+    throw AppError.badRequest("Display name is required.", { legalName: "Required" });
+  }
+  const trimmed = legalName.trim();
+  if (trimmed.length > 100) {
+    throw AppError.badRequest("Display name must be 100 characters or fewer.", {
+      legalName: "Must be 100 characters or fewer",
+    });
+  }
+
+  // updateMany so a deleted account (or a missing row) changes nothing and ends the session.
+  const updated = await prisma.user.updateMany({
+    where: { id: userId, deletedAt: null },
+    data: { legalName: trimmed },
+  });
+  if (updated.count === 0) throw AppError.sessionEnded();
+  return { legalName: trimmed };
+}
+
+/**
  * FR-ACC-12: change the phone number. Gated behind the current password and a fresh
  * Firebase verification of the NEW number. The old number keeps satisfying the uniqueness
  * constraint until this single update swaps it, so the swap is atomic (AC2, AC3).
@@ -1090,4 +1117,5 @@ export default {
   recoveryConfirm,
   changePhone,
   changePassword,
+  updateDisplayName,
 };

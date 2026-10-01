@@ -42,6 +42,14 @@ async function changePassword(req, res) {
   res.status(200).json(result);
 }
 
+async function updateDisplayName(req, res) {
+  const result = await service.updateDisplayName({
+    userId: req.user.id,
+    legalName: req.body?.legalName,
+  });
+  res.status(200).json(result);
+}
+
 async function changePhone(req, res) {
   const result = await service.changePhone({
     userId: req.user.id,
@@ -127,5 +135,6 @@ export default {
 
   changePhone,
   changePassword,
+  updateDisplayName,
 };
 
