@@ -35,7 +35,7 @@ export default function LoadingState() {
 const styles = StyleSheet.create({
   container: {
     gap: 10,
-    padding: 16,
+    padding: 16 - 1, // Figma: 16 with the 1px stroke inside (114px tall); RN's border is outside
     borderWidth: 1,
     borderColor: colors.border.default,
     borderRadius: radius.input,

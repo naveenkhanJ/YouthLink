@@ -4,15 +4,17 @@
  *
  * Five tappable WHOLE stars (6.1, FR-RATE-01) — no half-star, no free
  * text. The real component's own note: "count conveyed by text echo
- * ('3 of 5 stars'), never fill colour alone" — filled and empty stars use
- * different glyphs (★ vs ☆), not just different colours, and the text
- * echo is shown whenever at least one star is selected. Star colour is
+ * ('3 of 5 stars'), never fill colour alone" — the text echo is shown
+ * whenever at least one star is selected. Stars are Figma's own 28px
+ * solid star shape (see StarShape.js): filled ones in color/badge/rating,
+ * empty ones in color/border/default, 8px apart. Star colour is
  * `color/badge/rating` — the register's own adjacency rule keeps rating
  * stars out of any context with urgent/danger colours, which is exactly
  * why this is its own distinct token rather than reusing `state.danger`
  * or `state.urgent`.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import StarShape from "./StarShape";
 import { colors, spacing, typography } from "../theme/tokens";
 
 const STAR_COUNT = 5;
@@ -33,9 +35,10 @@ export default function StarInput({ value = 0, onChange }) {
             accessibilityRole="button"
             accessibilityLabel={`${star} star${star === 1 ? "" : "s"}`}
           >
-            <Text style={[styles.star, { color: star <= value ? colors.badge.rating : colors.border.default }]}>
-              {star <= value ? "★" : "☆"}
-            </Text>
+            <StarShape
+              size={28}
+              color={star <= value ? colors.badge.rating : colors.border.default}
+            />
           </Pressable>
         ))}
       </View>
@@ -54,11 +57,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    gap: spacing.xs,
-  },
-  star: {
-    fontSize: 28,
-    lineHeight: 28,
+    gap: spacing.sm, // Figma 28:75: 28px stars 8px apart
   },
   echo: {
     ...typography.secondary,

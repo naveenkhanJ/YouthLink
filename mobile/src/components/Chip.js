@@ -46,15 +46,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
   },
+  // Default and display chips have a 1px stroke INSIDE a 32px pill in Figma;
+  // RN's border is outside the padding, so they subtract it (selected has none).
   selectDefault: {
     backgroundColor: colors.bg.default,
     borderWidth: 1,
     borderColor: colors.border.default,
+    paddingHorizontal: 13,
+    paddingVertical: 5,
   },
   selectSelected: {
     backgroundColor: colors.brand.primary,
   },
   displayChip: {
+    paddingHorizontal: 13,
+    paddingVertical: 5,
     borderWidth: 1,
     borderColor: colors.badge.endorsed,
     color: colors.badge.endorsed,

@@ -31,7 +31,7 @@
  * the clip; borderRadius alone was not enough).
  */
 import { View, Pressable, Text, StyleSheet } from "react-native";
-import Svg, { Path, Circle, Line } from "react-native-svg";
+import Svg, { Path, Circle, Line, G } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, radius, typography, elevation } from "../theme/tokens";
 
@@ -79,15 +79,115 @@ const SHELL_COPY_BY_ROLE = {
   },
 };
 
+/**
+ * The `iconFill` (active) variant of each tab icon, read straight from the
+ * Figma component (Components / Chrome, node 48:141) — shapes filled with
+ * brand.primary, detail strokes in text.inverse (on the filled body) or
+ * brand.primary (free-standing). Each <G> places the Figma layer at its own
+ * (x, y) inside the 24x24 frame; paths are the layers' own vectorPaths.
+ */
+function FilledTabIcon({ shape }) {
+  const fill = colors.brand.primary;
+  const onFill = colors.text.inverse;
+  const round = { strokeLinecap: "round", strokeLinejoin: "round" };
+  switch (shape) {
+    case "applications":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <G transform="translate(3 7)">
+            <Path d="M0 2C0 .9.9 0 2 0H16C17.1 0 18 .9 18 2V11C18 12.1 17.1 13 16 13H2C.9 13 0 12.1 0 11V2Z" fill={fill} />
+          </G>
+          <G transform="translate(8 4)">
+            <Path d="M0 3V2C0 .9.9 0 2 0H6C7.1 0 8 .9 8 2V3" stroke={fill} strokeWidth={2} strokeLinecap="round" />
+          </G>
+        </Svg>
+      );
+    case "engagements":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <Circle cx={12} cy={12} r={9} fill={fill} />
+          <G transform="translate(12 8)">
+            <Path d="M0 0L0 4L3 6" stroke={onFill} strokeWidth={2} {...round} />
+          </G>
+        </Svg>
+      );
+    case "notifications":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <G transform="translate(3 3)">
+            <Path d="M8 0C4.7 0 2 2.7 2 6L2 10L0 13L16 13L14 10L14 6C14 2.7 11.3 0 8 0Z" fill={fill} />
+          </G>
+          <G transform="translate(9.5 19)">
+            <Path d="M0 0C.3 1.2 1.3 2 2.5 2C3.7 2 4.7 1.2 5 0" stroke={fill} strokeWidth={2} strokeLinecap="round" />
+          </G>
+        </Svg>
+      );
+    case "profile":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <Circle cx={12} cy={7} r={4} fill={fill} />
+          <G transform="translate(4 13)">
+            <Path d="M0 8C0 3.6 3.6 0 8 0C12.4 0 16 3.6 16 8L0 8Z" fill={fill} />
+          </G>
+        </Svg>
+      );
+    case "postings":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <G transform="translate(5 2)">
+            <Path d="M2 0C.9 0 0 .9 0 2L0 14C0 15.1.9 16 2 16L12 16C13.1 16 14 15.1 14 14L14 2C14 .9 13.1 0 12 0L2 0Z" fill={fill} />
+          </G>
+          <Path d="M8.5 8H15.5M8.5 12H15.5M8.5 16H13" stroke={onFill} strokeWidth={1.6} strokeLinecap="round" />
+        </Svg>
+      );
+    case "postGig":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <Circle cx={12} cy={12} r={9} fill={fill} />
+          <G transform="translate(8 8)">
+            <Path d="M4 0L4 8M0 4L8 4" stroke={onFill} strokeWidth={2} strokeLinecap="round" />
+          </G>
+        </Svg>
+      );
+    case "endorsements":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <G transform="translate(3 3)">
+            <Path d="M9 0L18 9L9 18L0 9L9 0Z" fill={fill} />
+          </G>
+        </Svg>
+      );
+    case "vouch":
+      return (
+        <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+          <Circle cx={9.5} cy={6.5} r={3.5} fill={fill} />
+          <G transform="translate(2.5 13)">
+            <Path d="M0 7C0 3.1 3.1 0 7 0C10.9 0 14 3.1 14 7L0 7Z" fill={fill} />
+          </G>
+          <G transform="translate(17 5)">
+            <Path d="M2.5 0L2.5 5M0 2.5L5 2.5" stroke={fill} strokeWidth={2} strokeLinecap="round" />
+          </G>
+        </Svg>
+      );
+    default:
+      return null;
+  }
+}
+
 /** Every icon is a real Figma-exported path/shape at its native 24x24
  * viewBox, colour supplied at render time (text.secondary inactive,
  * brand.primary active) rather than baked in, so one set of assets serves
  * both states. */
 function TabIcon({ shape, active }) {
-  // The real Figma component's "active" icon isn't a different shape — same
-  // path, stroke recoloured to brand.primary, at 2.5 instead of 2 (confirmed
-  // by downloading both the Browse tab's inactive and active icon exports:
-  // identical geometry, just colour + a slightly heavier stroke).
+  // Active state (docs/prototype/MNAV-shells.md: "an `iconFill` child" on the
+  // active tab, `iconStroke` on the rest). Browse is the one tab whose iconFill
+  // really is the same outline recoloured (stroke 2.5 in brand.primary), so it
+  // falls through to the stroke drawing below. Every other tab has a distinct
+  // FILLED icon in Figma, drawn by FilledTabIcon. An earlier version applied the
+  // Browse rule to every tab, which is why those active icons stayed outlines.
+  if (active && shape !== "browse") {
+    return <FilledTabIcon shape={shape} />;
+  }
   const color = active ? colors.brand.primary : colors.text.secondary;
   const w = active ? 2.5 : 2;
   const common = { stroke: color, strokeWidth: w, fill: "none" };
@@ -281,11 +381,14 @@ const styles = StyleSheet.create({
   insetSpacer: {
     backgroundColor: colors.bg.default,
   },
+  // Figma 48:15: each tab is a column with pad 6/0/6/0 and gap 2, starting at
+  // the top of the bar — not vertically centred, and a 2px gap rather than 4.
   tab: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.xs,
+    justifyContent: "flex-start",
+    paddingTop: 6 - 1, // the bar's 1px top border pushes content down; Figma has none
+    gap: 2,
   },
   iconFrame: {
     width: 56,
@@ -304,9 +407,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   badge: {
+    // Figma `urgentDot`: 6x6 at (38, 4) inside the 56x30 pill.
     position: "absolute",
-    top: 2,
-    right: 14,
+    top: 4,
+    left: 38,
     width: 6,
     height: 6,
     borderRadius: 3,

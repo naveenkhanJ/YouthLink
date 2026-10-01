@@ -65,8 +65,7 @@ const styles = StyleSheet.create({
   title: {
     ...typography.title,
     color: colors.text.primary,
-    alignSelf: "flex-start",
-    marginTop: 4,
+    alignSelf: "flex-start", // no extra margin: Figma has the title at y=18 = 10 pad + 4 handle + 4 gap
   },
   option: {
     width: "100%",

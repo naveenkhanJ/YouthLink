@@ -59,19 +59,16 @@ const styles = StyleSheet.create({
   trackOn: {
     backgroundColor: colors.brand.primary,
   },
+  // Figma 28:53: the off track is color/border/default, not bg/subtle.
   trackOff: {
-    backgroundColor: colors.bg.subtle,
+    backgroundColor: colors.border.default,
   },
   thumb: {
     width: 20,
     height: 20,
     borderRadius: 10,
     backgroundColor: colors.bg.default,
-    elevation: 2,
-    shadowColor: colors.text.primary,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    // No shadow: the Figma knob (28:54) is a flat white ellipse.
   },
   thumbOn: {
     transform: [{ translateX: 20 }],

@@ -20,8 +20,9 @@ export default function FieldError({ message }) {
 
 const styles = StyleSheet.create({
   text: {
+    // Figma 45:2 is just the 14/20 danger text, 20px tall; the gap to the field
+    // above it belongs to the parent's layout, not to this component.
     ...typography.secondary,
     color: colors.state.danger,
-    marginTop: spacing.xs,
   },
 });

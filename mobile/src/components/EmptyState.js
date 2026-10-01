@@ -65,8 +65,9 @@ const styles = StyleSheet.create({
     ...typography.secondary,
     color: colors.text.secondary,
     textAlign: "center",
+    maxWidth: 280, // Figma 45:11 wraps the body in a fixed 280px box
   },
-  actionWrap: {
-    marginTop: spacing.sm,
-  },
+  // No extra margin: the card's own gap (8) is the whole space above the
+  // action in Figma 45:9 — the old marginTop made it 16.
+  actionWrap: {},
 });

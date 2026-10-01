@@ -20,6 +20,7 @@
  * contact-reveal/selected-worker surfaces only.
  */
 import { Text, View, StyleSheet } from "react-native";
+import Svg, { Path, Circle } from "react-native-svg";
 import { colors, radius, typography } from "../theme/tokens";
 
 /**
@@ -41,9 +42,16 @@ export default function MapArea({ kind = "area", areaLabel }) {
           <Text style={styles.areaLabel}>{areaLabel}</Text>
         </View>
       ) : (
+        // Figma 40:138: the pin is a 24 x 32 path (brand.primary) with an 8px
+        // bg/subtle dot, its top 48px down in the 160px map and centred across.
         <View style={styles.pinWrap}>
-          <View style={styles.pinHead} />
-          <View style={styles.pinPoint} />
+          <Svg width={24} height={32} viewBox="0 0 24 32">
+            <Path
+              d="M12 0C5.4 0 0 5.4 0 12C0 21 12 32 12 32C12 32 24 21 24 12C24 5.4 18.6 0 12 0Z"
+              fill={colors.brand.primary}
+            />
+            <Circle cx={12} cy={12} r={4} fill={colors.bg.subtle} />
+          </Svg>
         </View>
       )}
     </View>
@@ -76,11 +84,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 1,
   },
+  // Figma 40:128 `areaShape`: a 180 x 110 ellipse, centred, black at 15% (the
+  // old 55%/70% sizing and an invented 16% slate overlay only approximated it).
   areaShape: {
-    width: "55%",
-    height: "70%",
+    width: 180,
+    height: 110,
     borderRadius: 999,
-    backgroundColor: "rgba(17, 24, 39, 0.16)",
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -89,23 +99,8 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   pinWrap: {
-    alignItems: "center",
-  },
-  pinHead: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.brand.primary,
-  },
-  pinPoint: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
-    borderTopWidth: 8,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    borderTopColor: colors.brand.primary,
-    marginTop: -2,
+    position: "absolute",
+    top: 48 - 1, // 48 from the map's outer top edge; RN positions inside the 1px border
+    alignSelf: "center",
   },
 });

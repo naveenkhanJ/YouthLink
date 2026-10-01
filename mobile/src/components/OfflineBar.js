@@ -21,7 +21,7 @@ import { colors, spacing, radius, typography } from "../theme/tokens";
  * @param {string} [message] - Defaults to a generic offline notice; override
  * per screen (e.g. "Offline — showing gigs saved on your phone").
  */
-export default function OfflineBar({ message = "Offline — showing your last loaded data" }) {
+export default function OfflineBar({ message = "Offline — showing gigs saved on your phone" }) {
   return (
     <View style={styles.bar}>
       <Text style={styles.text}>{message}</Text>
@@ -37,8 +37,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     backgroundColor: colors.bg.subtle,
     justifyContent: "center",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    // Figma pads 8/12 with the stroke inside the 36px bar; RN's border is
+    // outside the padding, so subtract it or the 20px line is clipped.
+    paddingVertical: spacing.sm - 1,
+    paddingHorizontal: spacing.md - 1,
   },
   text: {
     ...typography.secondary,
