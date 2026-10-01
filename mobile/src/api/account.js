@@ -115,3 +115,12 @@ export function changePassword(payload) {
 export function updateDisplayName(payload) {
   return request("/api/account/display-name", { method: "PATCH", body: payload });
 }
+
+/**
+ * FR-ACC-13: correct the NIC, gated behind password re-entry only.
+ * @param {{ password: string, nic: string }} payload
+ * @returns {Promise<{ nicLast4: string }>}
+ */
+export function changeNic(payload) {
+  return request("/api/account/nic", { method: "PUT", body: payload });
+}

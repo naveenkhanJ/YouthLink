@@ -30,6 +30,7 @@ import AccountTermsScreen from "./AccountTermsScreen";
 import AccountSettingsScreen from "./AccountSettingsScreen";
 import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
+import AccountNicScreen from "./AccountNicScreen";
 
 export default [
   {
@@ -95,6 +96,11 @@ export default [
   {
     name: "AccountDisplayName",
     component: AccountDisplayNameScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountNic",
+    component: AccountNicScreen,
     options: { headerShown: false },
   },
 ];
