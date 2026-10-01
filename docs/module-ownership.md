@@ -389,7 +389,7 @@ Two amendments create work that no slice's story table covered. Recorded the sam
 |---|---|---|
 | `FR-ACC-10` (E8) | **Account recovery, worker side** — the request form, its submitted state, and the approved outcome that leads into setting a new password. Four screens, and the device-binding identifier the request carries | **Slice A — Account Management** |
 | `FR-ACC-10` (E8) | **Account recovery, dashboard side** — the request in the Admin case queue, the review surface showing the NIC match against engagement and rating history, and the approve/reject actions with their audit entries. **Admin only**; it must not be reachable by a Moderator | **Slice A**, with the dashboard's case-queue owner — coordinate, as it adds a card type to a shared surface |
-| `FR-ACC-12` (E5) | Password reset by verified email while logged in — reuses `FR-ACC-10`'s existing channel | **Slice A — Account Management** |
+| `FR-ACC-12` (E5) | Password reset by verified email while logged in — reuses `FR-ACC-10`'s existing channel. Built as the "Forgotten your current password?" link on Change password and screens `1.11r1`–`1.11r4`, carried by the password-change story (YL-85) | **Slice A — Account Management** |
 | `FR-ACC-05` (E1, E2) · `FR-ACC-09` (E6, E7) · `FR-ACC-01` (E3) | Pre-verification availability checks, the remaining-attempts warning, and the lockout naming the OTP path | **Slice A — Account Management** |
 | `FR-ADM-06` (O5, O6) | **The staff-account surface** — the Admin-only list, admin-assisted password reset, and removal of staff access | **Slice A**, dashboard side |
 | `FR-POST-15` · `NFR-USE-01` (E9) | Device-only retention of an in-progress posting form | **Slice B — Gig Posting** |
