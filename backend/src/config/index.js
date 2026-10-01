@@ -90,5 +90,10 @@ export default {
   // sole thing authenticating every request across every module.
   jwtSecret: required("JWT_SECRET"),
 
+  // Where this API is reachable from a person's browser. Used to build the links in
+  // password-reset and email-confirmation emails (FR-ACC-10, FR-ACC-01), which open
+  // small web pages served by the account module — not a mobile deep link.
+  publicBaseUrl: optional("PUBLIC_BASE_URL", `http://localhost:${optional("PORT", "3000")}`),
+
   // Add new variables here AND to .env.example. Never commit real values.
 };

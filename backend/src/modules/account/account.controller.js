@@ -11,6 +11,7 @@
  * handler, which turns it into the right status code.
  */
 import service from "./account.service.js";
+import { messagePage, resetPasswordPage } from "./pages.js";
 
 // Never return passwordHash or nicEncrypted — only the masked last 4 digits
 // (NFR-SEC-03) reach the client. Shared by register and both login paths so
@@ -37,6 +38,7 @@ async function changePhone(req, res) {
   });
   res.status(200).json(result);
 }
+
 export default {
   async register(req, res) {
     const user = await service.register(req.body);
@@ -84,10 +86,26 @@ export default {
   },
 
   async recoveryStatus(req, res) {
-    // Typically deviceId would come from a header or body. For GET requests, we can use req.query
-    // Wait, let's just use req.query since it's a GET request
-    const result = await service.recoveryStatus({ deviceId: req.query.deviceId || req.body.deviceId });
+    // A GET has no body (req.body is undefined under Express 5), so the device id travels in
+    // the query string. Reading req.body here used to throw and answer 500.
+    const result = await service.recoveryStatus({ deviceId: req.query.deviceId });
     res.status(200).json(result);
+  },
+
+  // The pages below are opened from links in emails, in a browser — so they answer HTML,
+  // not JSON, and never throw to the JSON error handler for an ordinary bad link.
+  async verifyEmailPage(req, res) {
+    const { status } = await service.verifyEmail({ token: req.query.token });
+    const pages = {
+      confirmed: ["Email confirmed", "Your email address is now confirmed. You can close this page."],
+      taken: ["Email already in use", "That email address is already confirmed on another YouthLink account."],
+      invalid: ["Link no longer valid", "This confirmation link has expired or was already used."],
+    };
+    res.status(status === "confirmed" ? 200 : 400).type("html").send(messagePage(...pages[status]));
+  },
+
+  resetPasswordPage(req, res) {
+    res.status(200).type("html").send(resetPasswordPage(req.query.token));
   },
 
   async recoveryConfirm(req, res) {
