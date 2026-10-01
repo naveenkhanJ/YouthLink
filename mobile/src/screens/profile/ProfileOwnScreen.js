@@ -24,6 +24,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import useForegroundRefresh from "../../auth/useForegroundRefresh";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/AuthContext";
@@ -98,6 +99,7 @@ export default function ProfileOwnScreen({ navigation }) {
     load();
     return navigation.addListener("focus", load);
   }, [navigation, load]);
+  useForegroundRefresh(load);
 
   /** Opens `name` if some module has registered it; a not-yet-built screen is a no-op. */
   function open(name, params) {
@@ -156,7 +158,7 @@ export default function ProfileOwnScreen({ navigation }) {
             ratingCount={trust.ratingCount}
             completionRate={trust.completionRate}
             jobCount={trust.jobCount}
-            subtext={isEmployer ? `${profile.employer.completedEngagements} engagements completed` : undefined}
+            subtext={isEmployer ? `${profile.employer.completedEngagements} ${profile.employer.completedEngagements === 1 ? "engagement" : "engagements"} completed` : undefined}
           />
         ) : isVerifier ? (
           <ProfileTrustBlock tier="zeroHistory" headline="Community Verifier" subtext={verifierLine(profile.verifier)} />

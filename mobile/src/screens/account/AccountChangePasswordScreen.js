@@ -29,7 +29,7 @@ import { useAuth } from "../../auth/AuthContext";
 import { changePassword } from "../../api/account";
 
 const WRONG_CURRENT_MESSAGE = "That password doesn't match your account. Please try again.";
-const LENGTH_MESSAGE = "8 to 64 characters — spaces allowed, no other rules.";
+const LENGTH_MESSAGE = "Password must be 8 to 64 characters.";
 const MISMATCH_MESSAGE = "Passwords do not match.";
 
 export default function AccountChangePasswordScreen({ navigation }) {

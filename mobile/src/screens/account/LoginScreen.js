@@ -49,9 +49,12 @@ export default function LoginScreen({ navigation, route }) {
   const [formError, setFormError] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const [loading, setLoading] = useState(false);
+  // 1.6bnr3: after too many wrong passwords the server pauses password login for 15 minutes.
+  // It says so in its message; the button stays disabled until the number is changed.
+  const [paused, setPaused] = useState(false);
 
   // 1.6emp shows the button disabled, 1.6 enabled: it needs a full number and a password.
-  const canSubmit = !suspended && phone.length === LOCAL_DIGITS && password.length > 0;
+  const canSubmit = !suspended && !paused && phone.length === LOCAL_DIGITS && password.length > 0;
 
   async function handleSubmit() {
     setFieldErrors({});
@@ -71,10 +74,18 @@ export default function LoginScreen({ navigation, route }) {
       setFieldErrors(parsed.fieldErrors);
       // 403 on this endpoint is only ever "suspended" (after the password was proven right).
       setSuspended(err.status === 403);
+      setPaused(/paused/i.test(parsed.formError ?? ""));
     } finally {
       setLoading(false);
     }
   }
+
+  // 1.6emp / 1.6sub / 1.6 each draw their own line under the title.
+  const welcomeSub = loading
+    ? "Signing you in… fields are locked while we check."
+    : !phone && !password
+      ? "Enter your phone number and password to log in."
+      : "Log in to pick up where you left off.";
 
   const helpTarget = () => navigation.navigate("HelpAccountAccess");
 
@@ -92,21 +103,30 @@ export default function LoginScreen({ navigation, route }) {
         {sessionEndReason ? (
           <View style={styles.backHit} />
         ) : (
-          <BackButton onPress={() => navigation.goBack()} />
+          <BackButton
+            onPress={() =>
+              navigation.canGoBack()
+                ? navigation.goBack()
+                : navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] })
+            }
+          />
         )}
 
         <Text style={styles.screenTitle}>Welcome back</Text>
-        <Text style={styles.welcomeSub}>Log in to pick up where you left off.</Text>
+        <Text style={styles.welcomeSub}>{welcomeSub}</Text>
 
-        {sessionEndReason ? <Text style={styles.sessionBanner}>{SESSION_BANNER}</Text> : null}
+        {sessionEndReason && !suspended ? <Text style={styles.sessionBanner}>{SESSION_BANNER}</Text> : null}
 
         {formError ? <FormBanner kind="error" message={formError} /> : null}
 
         <PhoneField
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={(value) => {
+            setPhone(value);
+            setPaused(false);
+          }}
           error={Boolean(fieldErrors.phone)}
-          editable={!suspended}
+          editable={!suspended && !loading}
         />
         {fieldErrors.phone ? <FieldError message={fieldErrors.phone} /> : null}
 
@@ -116,7 +136,7 @@ export default function LoginScreen({ navigation, route }) {
           onChangeText={setPassword}
           placeholder="8–64 characters"
           secureTextEntry
-          disabled={suspended}
+          disabled={suspended || loading}
           error={Boolean(fieldErrors.password)}
         />
         {fieldErrors.password ? <FieldError message={fieldErrors.password} /> : null}
@@ -125,7 +145,7 @@ export default function LoginScreen({ navigation, route }) {
         <View style={styles.spacer} />
 
         <View style={styles.linkGroup}>
-          {suspended ? (
+          {loading ? null : suspended ? (
             <Link title="What suspension means" onPress={helpTarget} />
           ) : (
             <>

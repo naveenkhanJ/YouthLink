@@ -25,7 +25,7 @@ import FormBanner from "../../components/FormBanner";
 import CtaBar from "../../components/CtaBar";
 import { confirmPasswordReset, confirmRecovery } from "../../api/account";
 
-const LENGTH_MESSAGE = "8 to 64 characters — spaces allowed, no other rules.";
+const LENGTH_MESSAGE = "Password must be 8 to 64 characters.";
 const MISMATCH_MESSAGE = "Passwords do not match.";
 const SESSION_EXPIRED_MESSAGE =
   "This reset has expired or was already used. Go back and request a new code.";

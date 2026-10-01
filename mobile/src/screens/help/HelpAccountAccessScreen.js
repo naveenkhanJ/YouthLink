@@ -13,11 +13,11 @@ import TopicLayout from "./components/TopicLayout";
 const STEPS = [
   {
     lead: "Too many password attempts",
-    body: 'your password is paused for 15 minutes. Sign-in locks after 5 wrong passwords in a row. Only the password is paused: "Log in with a code instead" still works, and it is the fastest way back in.',
+    body: 'your password is paused for 15 minutes. Sign-in locks after 5 wrong passwords in a row. Only the password is paused: “Log in with a code instead” still works, and it is the fastest way back in.',
   },
   {
     lead: "You've forgotten your password",
-    body: 'tap "Forgot password?". We send a reset code to your phone, or a reset link to your email if you added and confirmed one.',
+    body: 'tap “Forgot password?”. We send a reset code to your phone, or a reset link to your email if you added and confirmed one.',
   },
   {
     lead: "Your phone and email no longer reach you",
