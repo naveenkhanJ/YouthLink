@@ -33,7 +33,14 @@ import EyeIcon from "./EyeIcon";
  * @param {string} label
  * @param {string} value
  * @param {(text: string) => void} onChangeText
- * @param {string} [error] - Field-level error message; also switches State to Error.
+ * @param {string|boolean} [error] - Truthy puts the field in State=Error (red border). The
+ *   message itself is drawn by a separate Feedback/FieldError beneath the field, per
+ *   design-system.md §8 ("hide the field's own built-in error line"); pass
+ *   `showErrorLine` only where no FieldError is composed under it.
+ * @param {() => void} [onBlur] - Called when the field loses focus (e.g. check an email on exit).
+ * @param {boolean} [showErrorLine] - Draw `error` (when it is a string) inside the field.
+ * @param {number} [maxLength] - Hard cap. From 90% of it the field shows an "N / cap"
+ *   caption, right-aligned beneath it (prototype 1.4cnt, "90 / 100").
  * @param {boolean} [disabled]
  * @param {boolean} [secureTextEntry]
  * @param {string} [placeholder]
@@ -46,6 +53,8 @@ export default function TextField({
   value,
   onChangeText,
   error,
+  showErrorLine = false,
+  onBlur,
   disabled = false,
   secureTextEntry = false,
   placeholder,
@@ -57,7 +66,10 @@ export default function TextField({
   const [revealed, setRevealed] = useState(false);
 
   const currentLength = value ? value.length : 0;
-  const showCount = maxLength && !disabled && (maxLength - currentLength <= 20);
+  // Prototype 1.4cnt draws a right-aligned "90 / 100" caption once the entry is at 90% of
+  // the cap (FR-ACC-01 E3: input is blocked at the cap, with the count shown as it nears).
+  const showCount = Boolean(maxLength) && !disabled && currentLength >= maxLength * 0.9;
+  const errorText = !disabled && showErrorLine && typeof error === "string" ? error : "";
 
   return (
     <View style={styles.container}>
@@ -75,7 +87,10 @@ export default function TextField({
           value={value}
           onChangeText={onChangeText}
           onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onBlur={(event) => {
+            setFocused(false);
+            if (onBlur) onBlur(event);
+          }}
           editable={!disabled}
           secureTextEntry={secureTextEntry && !revealed}
           placeholder={placeholder}
@@ -97,11 +112,13 @@ export default function TextField({
           </Pressable>
         ) : null}
       </View>
-      {(!disabled && error) || showCount ? (
+      {errorText || showCount ? (
         <View style={styles.footerRow}>
-          <Text style={styles.errorText}>{!disabled && error ? error : ""}</Text>
+          <Text style={styles.errorText}>{errorText}</Text>
           {showCount ? (
-            <Text style={styles.charCount}>{maxLength - currentLength}</Text>
+            <Text style={styles.charCount}>
+              {currentLength} / {maxLength}
+            </Text>
           ) : null}
         </View>
       ) : null}
@@ -110,9 +127,9 @@ export default function TextField({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.lg,
-  },
+  // No outer margin: the Figma component is 328 x 72 (label 20 + gap 4 + input 48); the
+  // space between fields is the screen's own gap (8 or 16 depending on the screen).
+  container: {},
   label: {
     ...typography.secondary,
     color: colors.text.secondary,
@@ -153,7 +170,7 @@ const styles = StyleSheet.create({
   footerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: spacing.xs,
+    marginTop: spacing.xs, // Figma: gap 4 under the field
   },
   errorText: {
     ...typography.caption,
