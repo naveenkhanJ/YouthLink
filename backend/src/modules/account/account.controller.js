@@ -50,6 +50,15 @@ async function updateDisplayName(req, res) {
   res.status(200).json(result);
 }
 
+async function changeNic(req, res) {
+  const result = await service.changeNic({
+    userId: req.user.id,
+    password: req.body?.password,
+    nic: req.body?.nic,
+  });
+  res.status(200).json(result);
+}
+
 async function changePhone(req, res) {
   const result = await service.changePhone({
     userId: req.user.id,
@@ -134,6 +143,7 @@ export default {
   },
 
   changePhone,
+  changeNic,
   changePassword,
   updateDisplayName,
 };

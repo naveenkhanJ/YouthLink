@@ -70,10 +70,12 @@ function deliverInDevelopment(kind, destination, secret) {
 // Reset requests per phone (each sends an SMS) and wrong reset codes per phone.
 const RESET_REQUEST_LIMIT = { max: 3, windowMs: 15 * 60 * 1000 };
 const RESET_CODE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
-const PHONE_CHANGE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
-// Same reasoning for a password change: the current password is re-checked on an already
-// signed-in session, so a stolen session must not be able to guess it without limit.
-const PASSWORD_CHANGE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
+// FR-ACC-04: shape only, never a registry (12 digits, or 9 digits and V/X).
+const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
+// Settings actions (phone, password, NIC) re-check the current password on an ALREADY signed-in
+// session, so a stolen session must not be able to guess it without limit: five wrong attempts
+// per user per fifteen minutes, counted separately for each action.
+const PASSWORD_RECHECK_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const RESET_TOKEN_MINUTES = 15;
 const EMAIL_CONFIRM_HOURS = 24;
 
@@ -180,7 +182,6 @@ function validateFields({
   if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email.trim()))) {
     fields.email = "Must be a valid email address";
   }
-  const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
   if (!nic || typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
     fields.nic = "Must be 12 digits, or 9 digits followed by V or X";
   }
@@ -952,6 +953,40 @@ async function recoveryConfirm({ deviceId, newPassword }) {
 }
 
 /**
+ * Re-checks the signed-in person's CURRENT password for a Settings action (password, phone or
+ * NIC change) and returns their user row.
+ *
+ * - Wrong attempts are limited per user and per action (PASSWORD_RECHECK_LIMIT), because a stolen
+ *   session could otherwise guess here without ever reaching the login lockout.
+ * - A wrong password is a 400 field error, NOT a 401: the session is fine, only this entry is
+ *   wrong, and a 401 would be read by the app as "your session has ended".
+ * @param {{ userId: string, password: unknown, field: string, action: string }} input
+ *   `field` names the form field in the error; `action` keeps the attempt counts separate.
+ * @returns {Promise<object>} The user row.
+ */
+async function requireCurrentPassword({ userId, password, field, action }) {
+  if (!password || typeof password !== "string") {
+    throw AppError.badRequest("Password is required.", { [field]: "Required" });
+  }
+  const failureKey = `${action}:${userId}`;
+  if (isBlocked(failureKey, PASSWORD_RECHECK_LIMIT.max, PASSWORD_RECHECK_LIMIT.windowMs)) {
+    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+
+  if (!(await verifyPassword(password, user.passwordHash))) {
+    record(failureKey, PASSWORD_RECHECK_LIMIT.windowMs);
+    throw AppError.badRequest("That password doesn't match your account. Please try again.", {
+      [field]: "Incorrect password",
+    });
+  }
+  clear(failureKey);
+  return user;
+}
+
+/**
  * FR-ACC-11: a signed-in user changes their password with the current one — no OTP, no email.
  * Stamping passwordChangedAt makes requireAuth reject every token issued before now, on every
  * device (the same mechanism as a reset, FR-ACC-10), so a stolen session cannot outlive the
@@ -961,33 +996,17 @@ async function recoveryConfirm({ deviceId, newPassword }) {
  * @returns {Promise<{ success: true, token: string }>}
  */
 async function changePassword({ userId, currentPassword, newPassword }) {
-  if (!currentPassword || typeof currentPassword !== "string") {
-    throw AppError.badRequest("Current password is required.", { currentPassword: "Required" });
-  }
   if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 64) {
     throw AppError.badRequest("Password must be between 8 and 64 characters.", {
       newPassword: "Must be 8 to 64 characters",
     });
   }
-
-  const failureKey = `password-change:${userId}`;
-  if (isBlocked(failureKey, PASSWORD_CHANGE_FAILURE_LIMIT.max, PASSWORD_CHANGE_FAILURE_LIMIT.windowMs)) {
-    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
-  }
-
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.deletedAt) throw AppError.sessionEnded();
-
-  const validPassword = await verifyPassword(currentPassword, user.passwordHash);
-  if (!validPassword) {
-    record(failureKey, PASSWORD_CHANGE_FAILURE_LIMIT.windowMs);
-    // 400 with a field error, NOT 401: the session is fine, only this entry is wrong, and a
-    // 401 would be read by the app as "your session has ended".
-    throw AppError.badRequest("That password doesn't match your account. Please try again.", {
-      currentPassword: "Incorrect password",
-    });
-  }
-  clear(failureKey);
+  const user = await requireCurrentPassword({
+    userId,
+    password: currentPassword,
+    field: "currentPassword",
+    action: "password-change",
+  });
 
   const hash = await hashPassword(newPassword); // slow by design
 
@@ -1031,39 +1050,57 @@ async function updateDisplayName({ userId, legalName }) {
 }
 
 /**
+ * FR-ACC-13: correct the NIC number. Gated behind password re-entry only — no OTP-equivalent
+ * step. The shape is checked (12 digits, or 9 digits and V/X), never a registry, and the NIC is
+ * stored with the same deterministic encryption as at signup so the one-account-per-NIC rule
+ * (FR-ACC-05) still holds. It plays no part in the age gate (FR-ACC-03), which reads only the
+ * birthdate.
+ * @param {{ userId: string, password: string, nic: string }} input
+ * @returns {Promise<{ nicLast4: string }>}
+ */
+async function changeNic({ userId, password, nic }) {
+  if (typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
+    throw AppError.badRequest("NIC must be 12 digits, or 9 digits followed by V or X.", {
+      nic: "Must be 12 digits, or 9 digits followed by V or X",
+    });
+  }
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "nic-change" });
+
+  const nicEncrypted = encryptNic(nic);
+  const nicLast4 = getNicLast4(nic);
+
+  // Friendly field-level error first; the partial unique index is the real enforcement.
+  const holder = await prisma.user.findFirst({
+    where: { nicEncrypted, deletedAt: null },
+    select: { id: true },
+  });
+  if (holder && holder.id !== user.id) {
+    throw AppError.conflict("That NIC is already registered.", { nic: "Already registered" });
+  }
+
+  try {
+    await prisma.user.update({ where: { id: user.id }, data: { nicEncrypted, nicLast4 } });
+  } catch (err) {
+    // A signup or another correction raced this one and took the NIC first.
+    if (err.code === "P2002") {
+      throw AppError.conflict("That NIC is already registered.", { nic: "Already registered" });
+    }
+    throw err;
+  }
+  return { nicLast4 };
+}
+
+/**
  * FR-ACC-12: change the phone number. Gated behind the current password and a fresh
  * Firebase verification of the NEW number. The old number keeps satisfying the uniqueness
  * constraint until this single update swaps it, so the swap is atomic (AC2, AC3).
  * @param {{ userId: string, password: string, idToken: string }} input
  */
 async function changePhone({ userId, password, idToken }) {
-  if (!password || typeof password !== "string") {
-    throw AppError.badRequest("Password is required.", { password: "Required" });
-  }
   if (!idToken || typeof idToken !== "string") {
     throw AppError.badRequest("Phone verification token is required.");
   }
-
-  // The password is being re-checked on an already signed-in session, so a stolen session
-  // could otherwise guess it here without ever hitting the login lockout.
-  const failureKey = `phone-change:${userId}`;
-  if (isBlocked(failureKey, PHONE_CHANGE_FAILURE_LIMIT.max, PHONE_CHANGE_FAILURE_LIMIT.windowMs)) {
-    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
-  }
-
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user || user.deletedAt) throw AppError.sessionEnded();
-
-  const validPassword = await verifyPassword(password, user.passwordHash);
-  if (!validPassword) {
-    record(failureKey, PHONE_CHANGE_FAILURE_LIMIT.windowMs);
-    // 400 with a field error, NOT 401: the session is fine, only this entry is wrong, and a
-    // 401 would be read by the app as "your session has ended".
-    throw AppError.badRequest("That password doesn't match your account. Please try again.", {
-      password: "Incorrect password",
-    });
-  }
-  clear(failureKey);
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "phone-change" });
 
   let newPhone;
   try {
@@ -1116,6 +1153,7 @@ export default {
   recoveryStatus,
   recoveryConfirm,
   changePhone,
+  changeNic,
   changePassword,
   updateDisplayName,
 };
