@@ -4,11 +4,22 @@
  * Epic: FR-ACC · Owner: Afham — see the cross-cutting authentication section
  * in docs/module-ownership.md. Do not write your own version.
  *
- * Re-reads accountStatus and suspendedAt from the database on EVERY
- * request — never trusts the token for these — which is what delivers
- * NFR-REL-02's "a suspension takes effect on the account's very next
- * request." A token issued before a suspension must stop working
- * immediately.
+ * Re-reads accountStatus, suspendedAt and passwordChangedAt from the database
+ * on EVERY request — never trusts the token for these:
+ *   - suspension takes effect on the account's very next request (NFR-REL-02);
+ *   - a completed password reset or change invalidates every session issued
+ *     before it (FR-ACC-10 amendment A3/A5, FR-ACC-11 A4): a token whose `iat`
+ *     predates User.passwordChangedAt is rejected, so a stolen token does not
+ *     outlive a password change. `iat` is whole seconds, so it is compared with
+ *     passwordChangedAt rounded DOWN to whole seconds: a token issued in the
+ *     same second as the change (the login that follows a reset) stays valid,
+ *     and only tokens from an earlier second are rejected.
+ *
+ * Every way a session can end between requests answers with the same code,
+ * `SESSION_ENDED` (FR-ACC-07 amendment A32), so the app can return to login
+ * with one neutral message instead of three different failure screens. Other
+ * 401/403 responses (a wrong password on a signed-in screen, a role refusal)
+ * carry no such code and must NOT sign the user out.
  *
  * Deliberately does NOT check lockedUntil here. NFR-SEC-02 locks "the
  * password-login path" specifically, and product-overview.md is explicit
@@ -34,6 +45,7 @@ async function requireAuth(req, res, next) {
   const header = req.headers.authorization || "";
   const [scheme, token] = header.split(" ");
   if (scheme !== "Bearer" || !token) {
+    // No token was presented at all — not an ended session, just not signed in.
     return next(AppError.unauthorized("Missing or malformed Authorization header."));
   }
 
@@ -41,7 +53,7 @@ async function requireAuth(req, res, next) {
   try {
     payload = verifyToken(token);
   } catch {
-    return next(AppError.unauthorized("Invalid or expired token."));
+    return next(AppError.sessionEnded());
   }
 
   const user = await prisma.user.findUnique({
@@ -52,14 +64,21 @@ async function requireAuth(req, res, next) {
       accountStatus: true,
       suspendedAt: true,
       deletedAt: true,
+      passwordChangedAt: true,
     },
   });
 
   if (!user || user.deletedAt || user.accountStatus === "DELETED") {
-    return next(AppError.unauthorized("Account no longer exists."));
+    return next(AppError.sessionEnded());
   }
   if (isSuspended(user)) {
-    return next(AppError.forbidden("This account has been suspended."));
+    return next(AppError.sessionEnded("This account has been suspended.", 403));
+  }
+  if (
+    user.passwordChangedAt &&
+    payload.iat < Math.floor(user.passwordChangedAt.getTime() / 1000)
+  ) {
+    return next(AppError.sessionEnded());
   }
 
   req.user = user;

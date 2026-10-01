@@ -37,12 +37,16 @@ export default function Select({ label, options, value, onChange, placeholder = 
         <Text style={[styles.value, selectedOption && styles.valueFilled]}>
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={colors.text.secondary} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          {open ? (
-            <Path d="M18 15l-6-6-6 6" />
-          ) : (
-            <Path d="M6 9l6 6 6-6" />
-          )}
+        {/* Figma 28:13 / 28:23: a 10 x 5 chevron, stroke text/secondary 1.8; the
+            open state is the same path flipped. */}
+        <Svg width={10} height={5} viewBox="0 0 10 5" fill="none" overflow="visible">
+          <Path
+            d={open ? "M0 5L5 0L10 5" : "M0 0L5 5L10 0"}
+            stroke={colors.text.secondary}
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </Svg>
       </Pressable>
       {open ? (
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: spacing.md,
+    padding: spacing.md - 1, // Figma pads 12 with the 1px stroke inside the 48px field
     borderWidth: 1,
     borderColor: colors.border.default,
     borderRadius: radius.input,
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
-    paddingVertical: spacing.xs,
+    paddingVertical: spacing.xs - 1, // Figma pads 4 with the stroke inside (316px for 7 options)
     overflow: "hidden",
   },
   option: {

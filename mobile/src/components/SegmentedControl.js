@@ -58,8 +58,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     backgroundColor: colors.bg.subtle,
   },
+  // Figma sizes each segment to its label and then shares the leftover width
+  // equally (207.5 / 114.5 at 328px), so grow from the content width instead of
+  // flex:1, which would force two equal halves.
   segment: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: spacing.sm,

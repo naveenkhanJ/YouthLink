@@ -44,17 +44,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.md,
-    padding: spacing.lg,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },
+  // Figma draws the stroke INSIDE a 16px-padded frame (78px tall in both
+  // states); React Native lays the border OUTSIDE the padding. Subtracting the
+  // border width from the padding keeps the card 78px and the content in the
+  // same place whichever state is showing.
   cardDefault: {
     borderWidth: 1.5,
     borderColor: colors.border.default,
+    padding: spacing.lg - 1.5,
   },
   cardSelected: {
     borderWidth: 2,
     borderColor: colors.brand.primary,
+    padding: spacing.lg - 2,
   },
   radio: {
     width: 20,

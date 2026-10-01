@@ -15,6 +15,7 @@ import cors from "cors";
 
 import errorHandler from "./middleware/errorHandler.js";
 import notFound from "./middleware/notFound.js";
+import requireAuth from "./middleware/requireAuth.js";
 
 import accountRoutes from "./modules/account/account.routes.js";
 import postingRoutes from "./modules/posting/posting.routes.js";
@@ -45,18 +46,23 @@ app.get("/health", (req, res) => {
 // ---------------------------------------------------------------------------
 // Module routers. One line per epic; the module owns everything below its path.
 // Add yours here when you create your module folder, then leave it alone.
+//
+// Every router except account is mounted behind requireAuth, so "every endpoint
+// requires sign-in" (docs/module-ownership.md, ruled 2026-09-25) holds even if a
+// module forgets to protect a route, and req.user is always set for handlers.
+// Account is the exception because it contains the endpoints that get a person
+// signed in (register, login, password reset, recovery); it applies requireAuth
+// per route itself. Role checks (the actor table) stay in each module.
 // ---------------------------------------------------------------------------
 app.use("/api/account", accountRoutes);
-app.use("/api/postings", postingRoutes);
-app.use("/api/discovery", discoveryRoutes);
-app.use("/api/applications", applicationRoutes);
-app.use("/api/notifications", notificationRoutes);
-
-// Sprint 2 epics — folders exist so nobody has to invent the layout later.
-app.use("/api/engagements", engagementRoutes);
-app.use("/api/ratings", ratingRoutes);
-app.use("/api/profiles", profileRoutes);
-app.use("/api/endorsements", endorsementRoutes);
+app.use("/api/postings", requireAuth, postingRoutes);
+app.use("/api/discovery", requireAuth, discoveryRoutes);
+app.use("/api/applications", requireAuth, applicationRoutes);
+app.use("/api/notifications", requireAuth, notificationRoutes);
+app.use("/api/engagements", requireAuth, engagementRoutes);
+app.use("/api/ratings", requireAuth, ratingRoutes);
+app.use("/api/profiles", requireAuth, profileRoutes);
+app.use("/api/endorsements", requireAuth, endorsementRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

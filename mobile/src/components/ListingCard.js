@@ -47,9 +47,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },
-  urgentBadge: {
-    marginBottom: 2,
-  },
+  // No extra margin: Figma 39:83 spaces the badge from the title with the
+  // card's own 6px gap (164px tall in total).
+  urgentBadge: {},
   title: {
     ...typography.bodyMedium,
     color: colors.text.primary,

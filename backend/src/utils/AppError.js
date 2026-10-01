@@ -10,12 +10,15 @@ class AppError extends Error {
    * @param {number} status - HTTP status code.
    * @param {string} message - Message safe to return to the client.
    * @param {object} [fields] - Optional per-field errors, e.g. { phone: "Already registered" }.
+   * @param {string} [code] - Optional machine-readable code the client can branch on
+   *   without parsing the message, e.g. "SESSION_ENDED" (see requireAuth.js).
    */
-  constructor(status, message, fields) {
+  constructor(status, message, fields, code) {
     super(message);
     this.name = "AppError";
     this.status = status;
     this.fields = fields;
+    this.code = code;
     Error.captureStackTrace(this, AppError);
   }
 
@@ -33,6 +36,13 @@ class AppError extends Error {
   }
   static conflict(message, fields) {
     return new AppError(409, message, fields);
+  }
+  /** The session itself is over: expired/invalid token, password changed, suspended, deleted. */
+  static sessionEnded(message = "Your session has ended. Please log in again.", status = 401) {
+    return new AppError(status, message, undefined, "SESSION_ENDED");
+  }
+  static tooManyRequests(message = "Too many attempts. Try again later.") {
+    return new AppError(429, message);
   }
   static locked(message = "Temporarily locked. Try again later.") {
     return new AppError(423, message);

@@ -21,7 +21,7 @@
  * one a screen wires up, the field behaves the same either way.
  */
 import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
-import Svg, { Rect, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 /** "20040314" -> "2004-03-14"; stops adding a dash until the next digit arrives. */
@@ -72,9 +72,17 @@ export default function DateTimeField({
           accessibilityRole="button"
           accessibilityLabel={`Open date picker for ${label}`}
         >
-          <Svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={colors.text.secondary} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <Path d="M16 2v4M8 2v4M3 10h18" />
+          {/* Figma's own glyph (node 28:80): 12 x 12, stroke text/secondary 1.5,
+              round caps and joins. overflow visible because the stroke extends
+              past the 12px box (Figma insets the image by -6.25%). */}
+          <Svg width={12} height={12} viewBox="0 0 12 12" fill="none" overflow="visible">
+            <Path
+              d="M0 5.5L12 5.5M3 0L3 3M9 0L9 3M0 2L12 2L12 12L0 12L0 2Z"
+              stroke={colors.text.secondary}
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </Svg>
         </Pressable>
       </View>
@@ -96,13 +104,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: spacing.md,
+    // Figma pads 12 with the 1px stroke INSIDE the 48px field; React Native
+    // puts the border outside the padding, so it is subtracted (50px otherwise).
+    padding: spacing.md - 1,
     borderWidth: 1,
     borderColor: colors.border.default,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },
   fieldError: {
+    padding: spacing.md - 1.5, // same compensation, for the 1.5px error stroke
     borderWidth: 1.5,
     borderColor: colors.border.error,
   },

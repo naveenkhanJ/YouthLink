@@ -10,6 +10,7 @@
  * this as a required field.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import Svg, { Rect, Path, Circle } from "react-native-svg";
 import { colors, radius, typography } from "../theme/tokens";
 
 const MAX_PHOTOS = 3;
@@ -26,12 +27,38 @@ export default function PhotoPicker({ photos = [], onAdd }) {
       <View style={styles.tiles}>
         {photos.map((uri, i) => (
           <View key={i} style={styles.thumb}>
-            <Text style={styles.thumbGlyph}>🖼</Text>
+            {/* Figma `icon-image` (24 x 24): a 20 x 10 mountain outline at (2,8) and
+                a 5px sun ring at (15,3), stroke text/secondary 1.5. */}
+            <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M2 18L9 8L14 14L17 11L22 18L2 18Z"
+                stroke={colors.text.secondary}
+                strokeWidth={1.5}
+                strokeLinejoin="round"
+              />
+              <Circle cx={17.5} cy={5.5} r={1.75} stroke={colors.text.secondary} strokeWidth={1.5} />
+            </Svg>
           </View>
         ))}
         {canAddMore ? (
           <Pressable onPress={onAdd} style={styles.addTile} accessibilityRole="button" accessibilityLabel="Add a photo">
-            <Text style={styles.addGlyph}>+</Text>
+            {/* Figma `addTile`: a 72px rounded square with a 1.5px border/default
+                stroke dashed 4 on / 4 off, drawn INSIDE the shape, and a 16px
+                brand.primary plus (stroke 2) at (28,28). RN's own dashed border
+                cannot set the dash lengths, so the outline is an SVG rect. */}
+            <Svg width={72} height={72} viewBox="0 0 72 72" fill="none" style={StyleSheet.absoluteFill}>
+              <Rect
+                x={0.75}
+                y={0.75}
+                width={70.5}
+                height={70.5}
+                rx={7.25}
+                stroke={colors.border.default}
+                strokeWidth={1.5}
+                strokeDasharray="4 4"
+              />
+              <Path d="M36 28L36 44M28 36L44 36" stroke={colors.brand.primary} strokeWidth={2} strokeLinecap="round" />
+            </Svg>
           </Pressable>
         ) : null}
       </View>
@@ -52,19 +79,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  // The dashed outline and the plus are drawn by the SVG inside; this is only
+  // the 72px hit area.
   addTile: {
     width: 72,
     height: 72,
-    borderRadius: radius.input,
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: colors.border.default,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addGlyph: {
-    fontSize: 20,
-    color: colors.brand.primary,
   },
   thumb: {
     width: 72,
@@ -73,10 +92,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.subtle,
     alignItems: "center",
     justifyContent: "center",
-  },
-  thumbGlyph: {
-    fontSize: 20,
-    color: colors.text.secondary,
   },
   caption: {
     ...typography.caption,

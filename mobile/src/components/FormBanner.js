@@ -9,8 +9,10 @@ import { Text, View, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 const KIND_STYLES = {
+  // Figma 45:4 (Kind=Error) has a stroke and no fill, so it takes whatever
+  // surface it sits on rather than forcing white.
   error: {
-    background: colors.bg.default,
+    background: "transparent",
     border: colors.border.error,
     text: colors.state.danger,
   },
@@ -47,11 +49,12 @@ const styles = StyleSheet.create({
   banner: {
     borderWidth: 1,
     borderRadius: radius.input,
-    // 10px vertical — a literal in the real component, not one of the
-    // named spacing tokens (4/8/12/16/24/32).
-    paddingVertical: 10,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.lg,
+    // Figma pads 10/12 (10 is a literal in the real component, not a spacing
+    // token) with the 1px stroke INSIDE the 40px banner; React Native lays the
+    // border outside the padding, so it is subtracted. No outer margin: the
+    // 328x40 component has none, spacing is the parent's job.
+    paddingVertical: 10 - 1,
+    paddingHorizontal: spacing.md - 1,
   },
   text: {
     ...typography.secondary,

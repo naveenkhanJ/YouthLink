@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   field: {
     height: 56,
     justifyContent: "center",
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.lg - 2, // Figma pads 16 with the 2px stroke inside
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     borderColor: colors.badge.endorsed,
   },
   fieldError: {
+    paddingHorizontal: spacing.lg - 1, // 1px error stroke
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: colors.border.error,
