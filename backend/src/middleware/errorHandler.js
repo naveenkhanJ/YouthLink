@@ -14,6 +14,7 @@ function errorHandler(err, req, res, next) {
     return res.status(err.status).json({
       error: err.message,
       ...(err.fields ? { fields: err.fields } : {}),
+      ...(err.code ? { code: err.code } : {}),
     });
   }
 
