@@ -37,8 +37,8 @@ export function loginOtp(payload) {
  * from a client-side phone verification already confirmed successfully —
  * see RegisterScreen.js.
  * @param {object} payload
- * @returns {Promise<object>} The created (public-shape) User row — no
- *   token; registration doesn't log the user in, unlike login.
+ * @returns {Promise<{ token: string, user: object }>} A session token and the created
+ *   (public-shape) user: the person is signed in as soon as the account exists.
  */
 export function register(payload) {
   return request("/api/account/register", { method: "POST", body: payload });
@@ -165,4 +165,15 @@ export function getDeletionStatus() {
  */
 export function deleteAccount(payload) {
   return request("/api/account/delete", { method: "POST", body: payload });
+}
+
+/**
+ * FR-ACC-02 / FR-ACC-16: how an employer's account posts. Business needs a name (up to 100) and
+ * may carry a bio (up to 300); Individual/Household clears both. The same call edits the business
+ * name and bio of an account that already posts as Business.
+ * @param {{ postingAsType: "INDIVIDUAL"|"BUSINESS", businessName?: string, businessBio?: string }} payload
+ * @returns {Promise<{ postingAsType: string, businessName: string|null, businessBio: string|null }>}
+ */
+export function updatePostingAs(payload) {
+  return request("/api/account/posting-as", { method: "PATCH", body: payload });
 }
