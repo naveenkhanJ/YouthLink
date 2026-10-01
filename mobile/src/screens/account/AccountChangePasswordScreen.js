@@ -11,8 +11,9 @@
  * current password is a field error on that field (State=Error + FieldError, as 1.12err draws
  * the same case for the phone form), not a sign-out.
  *
- * Not drawn here: the "Forgotten your current password?" link (1.11r1) and its follow-on
- * screens 1.11r2–r4 — which card builds them is an open question, so they are not built.
+ * "Forgotten your current password?" (1.11r1) opens AccountResetByEmail (1.11r2–r4), which emails
+ * a reset link to the verified address; it sits between the length rule and the sign-out line,
+ * as 1.11r1 draws it.
  */
 import { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -24,6 +25,7 @@ import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import FieldError from "../../components/FieldError";
 import FormBanner from "../../components/FormBanner";
+import Link from "../../components/Link";
 import CtaBar from "../../components/CtaBar";
 import { useAuth } from "../../auth/AuthContext";
 import { changePassword } from "../../api/account";
@@ -112,6 +114,12 @@ export default function AccountChangePasswordScreen({ navigation }) {
         <FieldError message={fieldErrors.confirmPassword} />
 
         <Text style={styles.help}>8 to 64 characters — spaces allowed, no other rules.</Text>
+        <View style={styles.linkWrap}>
+          <Link
+            title="Forgotten your current password?"
+            onPress={() => navigation.navigate("AccountResetByEmail")}
+          />
+        </View>
         <Text style={styles.help}>Changing your password signs you out on any other device.</Text>
 
         <View style={styles.spacer} />
@@ -144,6 +152,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xs,
     gap: spacing.lg,
+  },
+  linkWrap: {
+    alignItems: "flex-start",
   },
   help: {
     ...typography.secondary,

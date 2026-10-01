@@ -29,6 +29,7 @@ import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
 import AccountTermsScreen from "./AccountTermsScreen";
 import AccountSettingsScreen from "./AccountSettingsScreen";
 import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
+import AccountResetByEmailScreen from "./AccountResetByEmailScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
 import AccountNicScreen from "./AccountNicScreen";
 import AccountEmailScreen from "./AccountEmailScreen";
@@ -95,6 +96,11 @@ export default [
   {
     name: "AccountChangePassword",
     component: AccountChangePasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountResetByEmail",
+    component: AccountResetByEmailScreen,
     options: { headerShown: false },
   },
   {
