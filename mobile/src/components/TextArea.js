@@ -35,7 +35,7 @@ export default function TextArea({ value, onChangeText, placeholder, error = fal
 const styles = StyleSheet.create({
   field: {
     minHeight: 96,
-    padding: spacing.md,
+    padding: spacing.md - 1, // Figma pads 12 with the 1px stroke inside
     borderWidth: 1,
     borderColor: colors.border.default,
     borderRadius: radius.input,

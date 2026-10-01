@@ -13,6 +13,7 @@
  * below the row, not just a red box — callers pass it as `errorMessage`.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 /**
@@ -37,7 +38,19 @@ export default function Checkbox({ checked, onToggle, label, errorMessage }) {
             errorMessage && styles.boxError,
           ]}
         >
-          {checked ? <Text style={styles.checkmark}>✓</Text> : null}
+          {checked ? (
+            // The exact vector from Figma node 23:9 (12 x 9.5, drawn at 6,7.5
+            // inside the 24px box): stroke text/inverse 2.5, round caps/joins.
+            <Svg width={12} height={9.5} viewBox="0 0 12 9.5" fill="none">
+              <Path
+                d="M0 5L4.5 9.5L12 0"
+                stroke={colors.text.inverse}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
+          ) : null}
         </View>
         <Text style={styles.label}>{label}</Text>
       </Pressable>
@@ -54,6 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: spacing.md,
+    paddingVertical: 2, // Figma: row pad 2/0/2/0
   },
   box: {
     width: 24,
@@ -65,17 +79,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  // Checked: solid brand fill, no stroke (Figma 23:8 has fill only). The border
+  // is kept at the same width in the same colour so the 24px box does not
+  // change size between states.
   boxChecked: {
     backgroundColor: colors.brand.primary,
     borderColor: colors.brand.primary,
   },
   boxError: {
     borderColor: colors.border.error,
-  },
-  checkmark: {
-    color: colors.text.inverse,
-    fontSize: 14,
-    fontWeight: "700",
   },
   label: {
     flex: 1,
