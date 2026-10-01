@@ -74,6 +74,14 @@ async function cancelEmailChange(req, res) {
   res.status(200).json(await service.cancelEmailChange({ userId: req.user.id }));
 }
 
+async function getDeletionStatus(req, res) {
+  res.status(200).json(await service.getDeletionStatus({ userId: req.user.id }));
+}
+
+async function deleteAccount(req, res) {
+  res.status(200).json(await service.deleteAccount({ userId: req.user.id, password: req.body?.password }));
+}
+
 async function changePhone(req, res) {
   const result = await service.changePhone({
     userId: req.user.id,
@@ -159,6 +167,8 @@ export default {
 
   changePhone,
   changeNic,
+  getDeletionStatus,
+  deleteAccount,
   getMe,
   requestEmailChange,
   cancelEmailChange,

@@ -1159,6 +1159,111 @@ async function getMe({ userId }) {
   return { user, pendingEmail: pending ? pending.email : null };
 }
 
+// FR-ACC-17 / NFR-REL-04: an engagement that is not completed, ended or cancelled blocks deletion.
+// DISPUTED counts: a dispute is an unresolved engagement, not a finished one.
+const BLOCKING_ENGAGEMENT_STATUSES = ["ACTIVE", "DISPUTED"];
+
+/** The first engagement (as worker or employer) that still blocks this person's deletion. */
+async function findBlockingEngagement(db, userId) {
+  return db.engagement.findFirst({
+    where: {
+      status: { in: BLOCKING_ENGAGEMENT_STATUSES },
+      OR: [{ workerId: userId }, { employerId: userId }],
+    },
+    orderBy: { createdAt: "asc" },
+    include: {
+      gigPosting: { select: { title: true, postedAsType: true } },
+      worker: { select: { legalName: true } },
+      employer: { select: { legalName: true, businessName: true } },
+    },
+  });
+}
+
+/**
+ * FR-ACC-17: can this person delete their account right now? The deletion screens name the
+ * engagement in the way ("Shop assistant — weekend with Saman Stores is still running"), so the
+ * answer carries its posting title and the OTHER party's name — the business name when the
+ * posting was made as a Business, otherwise the legal name.
+ * @returns {Promise<{ blocked: boolean, engagement: { title: string, withName: string }|null }>}
+ */
+async function getDeletionStatus({ userId }) {
+  const engagement = await findBlockingEngagement(prisma, userId);
+  if (!engagement) return { blocked: false, engagement: null };
+  const iAmWorker = engagement.workerId === userId;
+  const employerName =
+    engagement.gigPosting.postedAsType === "BUSINESS" && engagement.employer.businessName
+      ? engagement.employer.businessName
+      : engagement.employer.legalName;
+  return {
+    blocked: true,
+    engagement: {
+      title: engagement.gigPosting.title,
+      withName: iAmWorker ? employerName : engagement.worker.legalName,
+    },
+  };
+}
+
+/**
+ * FR-ACC-17 / NFR-PRIV-03: delete the account. Gated behind password re-entry and blocked while
+ * any engagement is active. Deletion is an anonymisation, not a row removal: the identifying
+ * columns are overwritten (NIC, phone, email, password, legal name, last browse location) so
+ * every rating, completion record and engagement that points at this id keeps pointing at it,
+ * now attributed to an anonymised reference rather than a person.
+ *
+ * The user row is locked (SELECT ... FOR UPDATE) before the engagement check, and any other
+ * module inserting an engagement for this person has to take a lock on the same row (the foreign
+ * key), so an engagement cannot slip in between the check and the anonymisation.
+ * @param {{ userId: string, password: string }} input
+ * @returns {Promise<{ success: true }>}
+ */
+async function deleteAccount({ userId, password }) {
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "account-delete" });
+  const unusableHash = await hashPassword(crypto.randomBytes(32).toString("hex")); // nobody knows it
+
+  await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${user.id} FOR UPDATE`;
+
+    if (await findBlockingEngagement(tx, user.id)) {
+      throw AppError.conflict(
+        "You can't delete your account while an engagement is active. It has to be completed or cancelled first.",
+        undefined,
+      );
+    }
+
+    await tx.user.update({
+      where: { id: user.id },
+      data: {
+        // Placeholders keep the NOT NULL columns satisfied and unique (the id is unique).
+        phone: `deleted-${user.id}`,
+        phoneVerifiedAt: null,
+        email: null,
+        emailVerifiedAt: null,
+        nicEncrypted: `deleted:${user.id}`,
+        nicLast4: "0000",
+        legalName: "Deleted user",
+        passwordHash: unusableHash,
+        passwordChangedAt: new Date(), // every token issued before now is rejected
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        bio: null,
+        businessName: null,
+        businessBio: null,
+        endorsementCode: null,
+        lastBrowseLat: null,
+        lastBrowseLng: null,
+        lastBrowseAt: null,
+        accountStatus: "DELETED",
+        deletedAt: new Date(),
+      },
+    });
+    // Anything that holds the person's own identifying details or a way back in.
+    await tx.otpCode.deleteMany({ where: { userId: user.id } });
+    await tx.emailVerificationToken.deleteMany({ where: { userId: user.id } });
+    await tx.accountRecoveryRequest.deleteMany({ where: { userId: user.id } });
+  });
+  return { success: true };
+}
+
 /**
  * FR-ACC-13: correct the NIC number. Gated behind password re-entry only — no OTP-equivalent
  * step. The shape is checked (12 digits, or 9 digits and V/X), never a registry, and the NIC is
@@ -1264,6 +1369,8 @@ export default {
   recoveryConfirm,
   changePhone,
   changeNic,
+  getDeletionStatus,
+  deleteAccount,
   requestEmailChange,
   cancelEmailChange,
   getMe,
