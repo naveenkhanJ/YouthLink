@@ -1,20 +1,23 @@
 /**
- * Engagement Lifecycle routes — mounted at /api/engagements by src/app.js.
+ * Engagement Lifecycle routes — mounted at /api/engagements by src/app.js (behind requireAuth).
  *
- * Epic: FR-ENG  ·  Owner: TBD (Sprint 2)
- * Requirements: see docs/requirements.md, module FR-ENG
- *
- * Keep this file thin. It maps URLs to controller functions and applies
- * middleware; it contains no logic of its own.
+ * Epic: FR-ENG  ·  Owner: Naveenkhan
  */
-const express = require("express");
-const asyncHandler = require("../../utils/asyncHandler");
-const controller = require("./engagement.controller");
+import express from "express";
+import asyncHandler from "../../utils/asyncHandler.js";
+import controller from "./engagement.controller.js";
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+router.get("/", asyncHandler(controller.list));
+// Before "/:id", so "change-responses" is never read as an engagement id.
+router.get("/change-responses/:postingId", asyncHandler(controller.changeResponses));
+router.get("/:id", asyncHandler(controller.getById));
+router.post("/:id/checkpoints/verify", asyncHandler(controller.verifyCheckpoint));
+router.post("/:id/end", asyncHandler(controller.end));
+router.post("/:id/reconfirm", asyncHandler(controller.reconfirm));
+router.post("/:id/checkpoints/unable-to-confirm", asyncHandler(controller.unableToConfirm));
+router.post("/:id/cancel", asyncHandler(controller.cancel));
+router.post("/:id/cancellation/respond", asyncHandler(controller.respondToRequest));
 
-module.exports = router;
+export default router;
