@@ -18,7 +18,12 @@ import StarsDisplay from "./StarsDisplay";
 
 /**
  * @param {"zeroHistory"|"history"} tier
- * @param {string} [endorserName] - "zeroHistory" tier only, e.g. "Sunil Bandara".
+ * @param {string} [endorserName] - "zeroHistory" tier only, e.g. "Sunil Bandara". Without it the
+ *   block is just the headline (1.18z, 56px tall): no Endorsed badge, no "Endorsed by" line.
+ * @param {string} [headline] - "zeroHistory" tier only; defaults to "New to YouthLink". A Community
+ *   Verifier's block reads "Community Verifier" (1.18v).
+ * @param {string} [subtext] - Replaces the second line: a verifier's "Vouching since May 2026 · 3
+ *   endorsed", or an employer's "23 engagements completed" in the history tier.
  * @param {number} [ratingAverage] - "history" tier only.
  * @param {number} [ratingCount] - "history" tier only.
  * @param {number} [completionRate] - "history" tier only, 0-100.
@@ -27,6 +32,8 @@ import StarsDisplay from "./StarsDisplay";
 export default function ProfileTrustBlock({
   tier,
   endorserName,
+  headline = "New to YouthLink",
+  subtext,
   ratingAverage,
   ratingCount,
   completionRate,
@@ -37,16 +44,18 @@ export default function ProfileTrustBlock({
       {tier === "zeroHistory" ? (
         <>
           <View style={styles.headline}>
-            <Text style={styles.headlineText}>New to YouthLink</Text>
-            <Badge family="endorsed" />
+            <Text style={styles.headlineText}>{headline}</Text>
+            {endorserName ? <Badge family="endorsed" /> : null}
           </View>
-          <Text style={styles.subtext}>Endorsed by {endorserName}</Text>
+          {endorserName || subtext ? (
+            <Text style={styles.subtext}>{subtext ?? `Endorsed by ${endorserName}`}</Text>
+          ) : null}
         </>
       ) : (
         <>
           <StarsDisplay average={ratingAverage} count={ratingCount} />
           <Text style={styles.subtext}>
-            {completionRate}% completion · {jobCount} job{jobCount === 1 ? "" : "s"}
+            {subtext ?? `${completionRate}% completion · ${jobCount} job${jobCount === 1 ? "" : "s"}`}
           </Text>
         </>
       )}

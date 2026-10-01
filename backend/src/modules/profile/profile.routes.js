@@ -1,7 +1,7 @@
 /**
  * Profile & Trust Signals routes — mounted at /api/profiles by src/app.js.
  *
- * Epic: FR-PROF  ·  Owner: TBD (Sprint 2)
+ * Epic: FR-PROF  ·  Owner: Afham (minimal slice: the person's own profile)
  * Requirements: see docs/requirements.md, module FR-PROF
  *
  * Keep this file thin. It maps URLs to controller functions and applies
@@ -13,8 +13,8 @@ import controller from "./profile.controller.js";
 
 const router = express.Router();
 
-// Example of the shape to follow — delete once you add a real route:
-// router.post("/", asyncHandler(controller.create));
-// router.get("/:id", asyncHandler(controller.getById));
+// FR-PROF-01/02/06: the signed-in person's own profile (M1 1.18). requireAuth is applied where
+// src/app.js mounts this router.
+router.get("/me", asyncHandler(controller.getOwnProfile));
 
 export default router;
