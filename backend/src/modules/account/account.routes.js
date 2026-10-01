@@ -33,6 +33,7 @@ router.get("/recovery/status", asyncHandler(controller.recoveryStatus));
 router.post("/recovery/confirm", asyncHandler(controller.recoveryConfirm));
 
 router.post("/phone/change", requireAuth, asyncHandler(controller.changePhone));
+router.post("/password/change", requireAuth, asyncHandler(controller.changePassword));
 
 export default router;
 

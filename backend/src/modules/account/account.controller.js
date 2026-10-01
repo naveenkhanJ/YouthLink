@@ -33,6 +33,15 @@ function publicUser(user) {
   };
 }
 
+async function changePassword(req, res) {
+  const result = await service.changePassword({
+    userId: req.user.id,
+    currentPassword: req.body?.currentPassword,
+    newPassword: req.body?.newPassword,
+  });
+  res.status(200).json(result);
+}
+
 async function changePhone(req, res) {
   const result = await service.changePhone({
     userId: req.user.id,
@@ -117,5 +126,6 @@ export default {
   },
 
   changePhone,
+  changePassword,
 };
 
