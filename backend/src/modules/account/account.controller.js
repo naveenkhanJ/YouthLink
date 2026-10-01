@@ -11,7 +11,11 @@
  * handler, which turns it into the right status code.
  */
 import service from "./account.service.js";
+import AppError from "../../utils/AppError.js";
+import { isBlocked, record } from "./attemptLimiter.js";
 import { messagePage, resetPasswordPage } from "./pages.js";
+
+const AVAILABILITY_LIMIT = { max: 30, windowMs: 60_000 };
 
 // Never return passwordHash or nicEncrypted — only the masked last 4 digits
 // (NFR-SEC-03) reach the client. Shared by register and both login paths so
@@ -115,6 +119,14 @@ export default {
   },
 
   async checkAvailability(req, res) {
+    // The app needs this answer while the person fills the form (1.2err), but unthrottled it
+    // would let anyone list registered phones and emails in bulk. Per caller address, generous
+    // enough for a real person retrying a few times.
+    const key = `check-availability:${req.ip}`;
+    if (isBlocked(key, AVAILABILITY_LIMIT.max, AVAILABILITY_LIMIT.windowMs)) {
+      throw AppError.tooManyRequests("Too many checks. Wait a minute and try again.");
+    }
+    record(key, AVAILABILITY_LIMIT.windowMs);
     const result = await service.checkAvailability(req.body);
     res.status(200).json(result);
   },
@@ -163,8 +175,13 @@ export default {
     res.status(status === "confirmed" ? 200 : 400).type("html").send(messagePage(...pages[status]));
   },
 
-  resetPasswordPage(req, res) {
-    res.status(200).type("html").send(resetPasswordPage(req.query.token));
+  async resetPasswordPage(req, res) {
+    // A spent, expired or unknown link says so up front instead of after a password is typed.
+    const valid = await service.isResetTokenUsable(req.query.token);
+    const page = valid
+      ? resetPasswordPage(req.query.token)
+      : messagePage("Link no longer valid", "This reset link has expired or was already used. Request a new one from the app.");
+    res.status(200).type("html").send(page);
   },
 
   async recoveryConfirm(req, res) {

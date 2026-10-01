@@ -125,8 +125,10 @@ async function getOwnProfile({ userId }) {
     };
   } else if (user.role === "EMPLOYER") {
     profile.employer = {
+      // ENDED (a part-time engagement that ran its course) opens rating exactly like COMPLETED
+      // (FR-ENG-12), so both count here — otherwise the count disagrees with the ratings shown.
       completedEngagements: await prisma.engagement.count({
-        where: { employerId: userId, status: "COMPLETED" },
+        where: { employerId: userId, status: { in: ["COMPLETED", "ENDED"] } },
       }),
     };
   }
