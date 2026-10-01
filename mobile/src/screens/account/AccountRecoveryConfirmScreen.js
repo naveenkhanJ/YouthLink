@@ -8,7 +8,7 @@
  * display title "Recover your account", content pad 6/16/0/16 gap 8: explainer, NIC + shape
  * help, Birthdate, Legal name, outcome note, growing spacer, ctaBar "Submit request".
  *
- * The request is tied to this device by a random id kept in SecureStore (recoveryDevice.js), so
+ * The request is tied to this device by a random id issued by the server and kept in SecureStore (recoveryDevice.js), so
  * the answer can be shown here later without any login. If this device already has an open
  * request the person is taken straight to its status instead of being asked again.
  */
@@ -27,7 +27,7 @@ import CtaBar from "../../components/CtaBar";
 import BackButton from "./components/BackButton";
 import CloseButton from "./components/CloseButton";
 import { requestAccountRecovery, getRecoveryStatus } from "../../api/account";
-import { getRecoveryDeviceId, peekRecoveryDeviceId } from "./recoveryDevice";
+import { saveRecoveryDeviceId, peekRecoveryDeviceId } from "./recoveryDevice";
 
 const NIC_SHAPE = /^(\d{12}|\d{9}[VvXx])$/;
 const NIC_MESSAGE = "A NIC is 12 digits, or 9 digits followed by V or X.";
@@ -80,8 +80,8 @@ export default function AccountRecoveryConfirmScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const deviceId = await getRecoveryDeviceId();
-      await requestAccountRecovery({ nic: nic.trim(), birthdate, legalName: name.trim(), deviceId });
+      const { deviceId } = await requestAccountRecovery({ nic: nic.trim(), birthdate, legalName: name.trim() });
+      await saveRecoveryDeviceId(deviceId);
       navigation.replace("AccountRecoveryStatus");
     } catch (err) {
       if (err.fields?.birthdate) setFieldErrors({ birthdate: BIRTHDATE_MESSAGE });
@@ -138,6 +138,7 @@ export default function AccountRecoveryConfirmScreen({ navigation }) {
           onChangeText={setName}
           autoCapitalize="words"
           maxLength={100}
+          showCounter
           error={Boolean(fieldErrors.legalName)}
         />
         <FieldError message={fieldErrors.legalName} />

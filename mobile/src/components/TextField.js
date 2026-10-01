@@ -39,8 +39,10 @@ import EyeIcon from "./EyeIcon";
  *   `showErrorLine` only where no FieldError is composed under it.
  * @param {() => void} [onBlur] - Called when the field loses focus (e.g. check an email on exit).
  * @param {boolean} [showErrorLine] - Draw `error` (when it is a string) inside the field.
- * @param {number} [maxLength] - Hard cap. From 90% of it the field shows an "N / cap"
- *   caption, right-aligned beneath it (prototype 1.4cnt, "90 / 100").
+ * @param {number} [maxLength] - Hard cap on what can be typed.
+ * @param {boolean} [showCounter] - Opt in to the "N / cap" caption, right-aligned beneath the field
+ *   from 90% of `maxLength` (prototype 1.4cnt, "90 / 100"). Only the legal-name fields draw it;
+ *   a NIC, password or email field has a cap but no counter.
  * @param {boolean} [disabled]
  * @param {boolean} [secureTextEntry]
  * @param {string} [placeholder]
@@ -61,6 +63,7 @@ export default function TextField({
   keyboardType = "default",
   autoCapitalize = "none",
   maxLength,
+  showCounter = false,
 }) {
   const [focused, setFocused] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -68,7 +71,7 @@ export default function TextField({
   const currentLength = value ? value.length : 0;
   // Prototype 1.4cnt draws a right-aligned "90 / 100" caption once the entry is at 90% of
   // the cap (FR-ACC-01 E3: input is blocked at the cap, with the count shown as it nears).
-  const showCount = Boolean(maxLength) && !disabled && currentLength >= maxLength * 0.9;
+  const showCount = showCounter && Boolean(maxLength) && !disabled && currentLength >= maxLength * 0.9;
   const errorText = !disabled && showErrorLine && typeof error === "string" ? error : "";
 
   return (

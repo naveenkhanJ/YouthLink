@@ -20,7 +20,7 @@
  * (both Default and Disabled) is 1.5px; Primary/Destructive-disabled's is
  * 1px; Primary/Destructive/Text-default have no border at all.
  */
-import { ActivityIndicator, Pressable, Text, StyleSheet } from "react-native";
+import { ActivityIndicator, Pressable, Text, View, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 const STYLE_VARIANTS = {
@@ -63,7 +63,8 @@ const DISABLED = {
  * @param {string} title
  * @param {() => void} onPress
  * @param {"primary"|"secondary"|"destructive"|"text"} [style]
- * @param {boolean} [loading] - Shows a spinner instead of the label, disables the button.
+ * @param {boolean} [loading] - Shows a spinner in place of the label and disables the button; the
+ *   button does not change size or move.
  * @param {boolean} [disabled]
  */
 export default function Button({
@@ -95,18 +96,18 @@ export default function Button({
           borderColor: colorsForState.border || "transparent",
         },
         isText ? styles.textVariant : styles.defaultVariant,
-        // Loading shrinks to a narrow fixed-width pill (the spinner only,
-        // no label) rather than keeping the button's normal content width
-        // — the real component draws it this way for every style.
-        loading && (isText ? styles.textLoadingWidth : styles.loadingWidth),
         pressed && !isDisabled && styles.pressed,
       ]}
     >
+      {/* The label stays in the layout (invisible while loading) so the button keeps exactly the
+          size and position it had a moment ago, and the spinner is centred over it. Figma 1.6sub
+          draws the Loading button the same width as the Default one: 328, filling the bar. */}
+      <Text style={[styles.label, { color: colorsForState.label }, loading && styles.hidden]}>{title}</Text>
       {loading ? (
-        <ActivityIndicator color={colorsForState.label} />
-      ) : (
-        <Text style={[styles.label, { color: colorsForState.label }]}>{title}</Text>
-      )}
+        <View style={styles.spinner} pointerEvents="none">
+          <ActivityIndicator color={colorsForState.label} />
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -128,13 +129,13 @@ const styles = StyleSheet.create({
     // (stretch) alignment forces the label to the container's full width.
     alignSelf: "flex-start",
   },
-  loadingWidth: {
-    width: 68,
-    paddingHorizontal: 0,
+  hidden: {
+    opacity: 0,
   },
-  textLoadingWidth: {
-    width: 36,
-    paddingHorizontal: 0,
+  spinner: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
   },
   pressed: {
     opacity: 0.85,

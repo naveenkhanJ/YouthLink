@@ -833,6 +833,19 @@ async function resetPasswordVerify({ phone, code }) {
  * passwordChangedAt is what makes requireAuth reject every session issued before now.
  * @param {{ token: string, newPassword: string }} input
  */
+/**
+ * Whether an emailed reset link can still be used (read-only: nothing is consumed). Lets the web
+ * page refuse a spent or expired link before showing the form.
+ */
+async function isResetTokenUsable(token) {
+  if (!token || typeof token !== "string") return false;
+  const row = await prisma.emailVerificationToken.findFirst({
+    where: { token: hashToken(token), purpose: "PASSWORD_RESET", consumedAt: null, expiresAt: { gt: new Date() } },
+    select: { user: { select: { deletedAt: true } } },
+  });
+  return Boolean(row && row.user && !row.user.deletedAt);
+}
+
 async function resetPasswordConfirm({ token, newPassword }) {
   if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 64) {
     throw AppError.badRequest("Password must be between 8 and 64 characters.");
@@ -882,11 +895,14 @@ async function resetPasswordConfirm({ token, newPassword }) {
  * Admin-reviewed recovery. The response is always { success: true } and reveals nothing
  * about whether the details matched an account.
  */
-async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
-  if (!nic || !birthdate || !legalName || !deviceId) {
+async function recoveryRequest({ nic, birthdate, legalName }) {
+  if (!nic || !birthdate || !legalName) {
     throw AppError.badRequest("All fields are required.");
   }
-  assertDeviceId(deviceId);
+  // The server mints the device id (32 random bytes → 64 hex characters), so the app needs no
+  // secure random source of its own. It is the only thing that lets the status and confirm
+  // endpoints recognise the requesting device, which is why it comes from crypto.randomBytes.
+  const deviceId = crypto.randomBytes(32).toString("hex");
   const birthdateValue = new Date(birthdate);
   if (Number.isNaN(birthdateValue.getTime())) {
     throw AppError.badRequest("Birthdate must be a valid date.", { birthdate: "Required, must be a valid date" });
@@ -916,7 +932,9 @@ async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
     },
   });
 
-  return { success: true };
+  // The id goes back on every outcome, matched or not, so the response still reveals nothing
+  // about whether the details belonged to an account.
+  return { success: true, deviceId };
 }
 
 /**
@@ -1421,6 +1439,7 @@ export default {
   resetPasswordRequest,
   resetPasswordVerify,
   resetPasswordConfirm,
+  isResetTokenUsable,
   recoveryRequest,
   recoveryStatus,
   recoveryConfirm,

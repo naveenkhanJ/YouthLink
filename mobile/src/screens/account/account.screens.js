@@ -29,6 +29,7 @@ import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
 import AccountTermsScreen from "./AccountTermsScreen";
 import AccountSettingsScreen from "./AccountSettingsScreen";
 import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
+import AccountResetByEmailScreen from "./AccountResetByEmailScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
 import AccountNicScreen from "./AccountNicScreen";
 import AccountEmailScreen from "./AccountEmailScreen";
@@ -55,27 +56,27 @@ export default [
   {
     name: "AccountForgotPassword",
     component: AccountForgotPasswordScreen,
-    options: { title: "Forgot password" },
+    options: { headerShown: false },
   },
   {
     name: "AccountForgotPasswordCode",
     component: AccountForgotPasswordCodeScreen,
-    options: { title: "Verify code" },
+    options: { headerShown: false },
   },
   {
     name: "AccountRecoveryConfirm",
     component: AccountRecoveryConfirmScreen,
-    options: { title: "Recover account" },
+    options: { headerShown: false },
   },
   {
     name: "AccountRecoveryStatus",
     component: AccountRecoveryStatusScreen,
-    options: { title: "Recovery status" },
+    options: { headerShown: false },
   },
   {
     name: "AccountResetPassword",
     component: AccountResetPasswordScreen,
-    options: { title: "Reset password" },
+    options: { headerShown: false },
   },
   {
     name: "AccountPhoneChange",
@@ -95,6 +96,11 @@ export default [
   {
     name: "AccountChangePassword",
     component: AccountChangePasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountResetByEmail",
+    component: AccountResetByEmailScreen,
     options: { headerShown: false },
   },
   {

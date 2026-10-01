@@ -24,6 +24,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useToast } from "../../components/Toast";
+import useForegroundRefresh from "../../auth/useForegroundRefresh";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/AuthContext";
@@ -81,6 +83,7 @@ function ProfileRow({ label, onPress }) {
 export default function ProfileOwnScreen({ navigation }) {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
+  const { show, toast } = useToast(spacing.xxl * 3); // clears the 64px tab bar
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
 
@@ -98,10 +101,12 @@ export default function ProfileOwnScreen({ navigation }) {
     load();
     return navigation.addListener("focus", load);
   }, [navigation, load]);
+  useForegroundRefresh(load);
 
-  /** Opens `name` if some module has registered it; a not-yet-built screen is a no-op. */
+  /** Opens `name` if some module has registered it; a screen not in this build says so. */
   function open(name, params) {
     if (navigation.getState().routeNames.includes(name)) navigation.navigate(name, params);
+    else show("This isn't available in this version of the app yet.");
   }
 
   const tabRole = TAB_ROLE[user?.role];
@@ -156,7 +161,7 @@ export default function ProfileOwnScreen({ navigation }) {
             ratingCount={trust.ratingCount}
             completionRate={trust.completionRate}
             jobCount={trust.jobCount}
-            subtext={isEmployer ? `${profile.employer.completedEngagements} engagements completed` : undefined}
+            subtext={isEmployer ? `${profile.employer.completedEngagements} ${profile.employer.completedEngagements === 1 ? "engagement" : "engagements"} completed` : undefined}
           />
         ) : isVerifier ? (
           <ProfileTrustBlock tier="zeroHistory" headline="Community Verifier" subtext={verifierLine(profile.verifier)} />
@@ -198,6 +203,7 @@ export default function ProfileOwnScreen({ navigation }) {
         <ProfileRow label="Settings" onPress={() => navigation.navigate("AccountSettings")} />
       </ScrollView>
       {tabBar}
+      {toast}
     </View>
   );
 }

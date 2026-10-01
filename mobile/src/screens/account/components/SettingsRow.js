@@ -21,7 +21,7 @@ export default function SettingsRow({ label, value, danger = false, onPress }) {
     <Pressable onPress={onPress} style={styles.row} accessibilityRole="button">
       <Text style={[styles.label, danger && styles.danger]}>{label}</Text>
       {value ? (
-        <Text style={styles.value} numberOfLines={1}>
+        <Text style={styles.value} numberOfLines={1} ellipsizeMode="middle">
           {value}
         </Text>
       ) : null}
@@ -47,8 +47,11 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.md,
   },
+  // The label keeps its natural width (never squeezed by a long value such as an email) and
+  // the gap to the value is taken up by growing, so the value stays right-aligned.
   label: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 0,
     ...typography.body,
     color: colors.text.primary,
   },
@@ -57,6 +60,8 @@ const styles = StyleSheet.create({
   },
   value: {
     flexShrink: 1,
+    maxWidth: "65%",
+    textAlign: "right",
     ...typography.secondary,
     color: colors.text.secondary,
   },

@@ -77,6 +77,7 @@ export default function AccountDisplayNameScreen({ navigation }) {
           }}
           autoCapitalize="words"
           maxLength={NAME_CAP}
+          showCounter
           error={Boolean(fieldError)}
         />
         <FieldError message={fieldError} />

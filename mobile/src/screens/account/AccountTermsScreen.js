@@ -6,15 +6,12 @@
  */
 import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
 
 export default function AccountTermsScreen({ navigation }) {
-  const insets = useSafeAreaInsets();
-
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <View style={styles.root}>
       <StatusBar style="dark" />
       <ScreenHeader title="Terms & Privacy" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>

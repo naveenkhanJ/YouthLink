@@ -28,7 +28,7 @@ import { changeNic } from "../../api/account";
 const NIC_SHAPE = /^(\d{12}|\d{9}[VvXx])$/;
 const WRONG_PASSWORD_MESSAGE = "That password doesn't match your account. Please try again.";
 const NIC_TAKEN_MESSAGE =
-  "This NIC is already registered. You can log in instead, or check the number for a typo.";
+  "This NIC is already registered to another account. Check the number for a typo.";
 const NIC_SHAPE_MESSAGE = "A NIC is 12 digits, or 9 digits followed by V or X.";
 
 export default function AccountNicScreen({ navigation }) {

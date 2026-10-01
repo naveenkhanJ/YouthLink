@@ -74,7 +74,7 @@ function resetPasswordPage(token) {
     e.preventDefault();
     var pw = document.getElementById("pw").value, pw2 = document.getElementById("pw2").value;
     err.textContent = "";
-    if (pw.length < 8 || pw.length > 64) { err.textContent = "8 to 64 characters — spaces allowed, no other rules."; return; }
+    if (pw.length < 8 || pw.length > 64) { err.textContent = "Password must be 8 to 64 characters."; return; }
     if (pw !== pw2) { err.textContent = "Passwords do not match"; return; }
     go.disabled = true;
     fetch("/api/account/reset-password/confirm", {

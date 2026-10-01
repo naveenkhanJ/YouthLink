@@ -355,7 +355,7 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
                   <View style={styles.badge} />
                 )}
               </View>
-              <Text style={[styles.label, { color }]} numberOfLines={1}>
+              <Text style={[styles.label, { color }]} numberOfLines={1} maxFontSizeMultiplier={1.1}>
                 {tab.label}
               </Text>
             </Pressable>

@@ -23,7 +23,7 @@ router.get("/verify-email", asyncHandler(controller.verifyEmailPage));
 
 router.post("/reset-password/channels", asyncHandler(controller.resetPasswordChannels));
 // The minimal web page the emailed reset link opens (FR-ACC-10).
-router.get("/reset-password/page", controller.resetPasswordPage);
+router.get("/reset-password/page", asyncHandler(controller.resetPasswordPage));
 router.post("/reset-password/request", asyncHandler(controller.resetPasswordRequest));
 router.post("/reset-password/verify", asyncHandler(controller.resetPasswordVerify));
 router.post("/reset-password/confirm", asyncHandler(controller.resetPasswordConfirm));

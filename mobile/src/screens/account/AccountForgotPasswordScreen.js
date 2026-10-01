@@ -168,7 +168,7 @@ export default function AccountForgotPasswordScreen({ navigation, route }) {
 
       <CtaBar>
         <Button
-          title={neither ? "Recover my account" : "Send reset code"}
+          title={neither ? "Recover my account" : selected === "EMAIL" ? "Send reset link" : "Send reset code"}
           onPress={handleSubmit}
           loading={sending}
           disabled={!phoneKnown || (!neither && !channelsLoaded)}

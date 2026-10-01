@@ -123,8 +123,8 @@ Variants of a listed screen (`3.12s`, `3.1ldg`, …) go with it; `scripts/card-c
 | `FR-ACC-07` | Must | Login | [M1](M1-account.md) `1.6`, `1.6bnr3`, `1.6sus`, `1.7`, `1.7sus` · [M11](M11-dashboard.md) `11.1` |
 | `FR-ACC-08` | Must | OTP mechanism | [M1](M1-account.md) `1.2`, `1.3`, `1.3err1`, `1.3err2`, `1.6sus`, `1.7`, `1.7sus` |
 | `FR-ACC-09` | Must | Password security | [M1](M1-account.md) `1.6bnr1`, `1.6bnr3` · [M11](M11-dashboard.md) `11.1w`, `11.1L`, `11.1p` |
-| `FR-ACC-10` | Must | Password reset | [M1](M1-account.md) `1.11`, `1.8`, `1.8bnr`, `1.8rec2`, `1.8rec3`, `1.9` · [M11](M11-dashboard.md) `11.4rec`, `11.8rec1`, `11.8rec2`, `11.8rec3`, `11.6rec` |
-| `FR-ACC-11` | Must | Password change | [M1](M1-account.md) `1.11` |
+| `FR-ACC-10` | Must | Password reset | [M1](M1-account.md) `1.11`, `1.11r2`, `1.11r3`, `1.11r4`, `1.8`, `1.8bnr`, `1.8rec2`, `1.8rec3`, `1.9` · [M11](M11-dashboard.md) `11.4rec`, `11.8rec1`, `11.8rec2`, `11.8rec3`, `11.6rec` |
+| `FR-ACC-11` | Must | Password change | [M1](M1-account.md) `1.11`, `1.11r1`, `1.11r2`, `1.11r3`, `1.11r4` |
 | `FR-ACC-12` | Must | Phone number change | [M1](M1-account.md) `1.12`, `1.12err` |
 | `FR-ACC-13` | Must | NIC correction | [M1](M1-account.md) `1.13`, `1.4` |
 | `FR-ACC-14` | Must | Email add/change | [M1](M1-account.md) `1.14`, `1.9` |

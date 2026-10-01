@@ -72,7 +72,7 @@ const TERMS_MESSAGE = "Please accept the Terms of Service and Privacy Policy to 
 // Not drawn (no frame for these): kept short and in the same voice.
 const EMAIL_TAKEN_MESSAGE = "This email address is already in use.";
 const EMAIL_INVALID_MESSAGE = "Enter a valid email address.";
-const PASSWORD_LENGTH_MESSAGE = "8 to 64 characters — spaces allowed, no other rules.";
+const PASSWORD_LENGTH_MESSAGE = "Password must be 8 to 64 characters.";
 const PASSWORD_MISMATCH_MESSAGE = "Passwords do not match.";
 const NAME_REQUIRED_MESSAGE = "Enter your full legal name.";
 const NIC_FORMAT_MESSAGE = "A NIC is 12 digits, or 9 digits followed by V or X.";
@@ -573,6 +573,7 @@ export default function RegisterScreen({ navigation }) {
           onChangeText={setLegalName}
           autoCapitalize="words"
           maxLength={LEGAL_NAME_CAP}
+          showCounter
           error={Boolean(fieldErrors.legalName)}
         />
         <FieldError message={fieldErrors.legalName} />
