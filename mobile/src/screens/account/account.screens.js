@@ -31,6 +31,7 @@ import AccountSettingsScreen from "./AccountSettingsScreen";
 import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
 import AccountNicScreen from "./AccountNicScreen";
+import AccountEmailScreen from "./AccountEmailScreen";
 
 export default [
   {
@@ -101,6 +102,11 @@ export default [
   {
     name: "AccountNic",
     component: AccountNicScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountEmail",
+    component: AccountEmailScreen,
     options: { headerShown: false },
   },
 ];

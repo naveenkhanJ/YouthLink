@@ -124,3 +124,27 @@ export function updateDisplayName(payload) {
 export function changeNic(payload) {
   return request("/api/account/nic", { method: "PUT", body: payload });
 }
+
+/**
+ * The signed-in person's current account plus the email change still waiting for its
+ * confirmation link, if any.
+ * @returns {Promise<object>} The public user fields and `pendingEmail`.
+ */
+export function getMe() {
+  return request("/api/account/me");
+}
+
+/**
+ * FR-ACC-14: ask to add or change the email. The old address stays active until the link sent
+ * to the new one is opened.
+ * @param {{ email: string }} payload
+ * @returns {Promise<{ pendingEmail: string }>}
+ */
+export function requestEmailChange(payload) {
+  return request("/api/account/email/change", { method: "POST", body: payload });
+}
+
+/** FR-ACC-14: "Cancel this change" — the waiting link stops working. */
+export function cancelEmailChange() {
+  return request("/api/account/email/cancel", { method: "POST", body: {} });
+}
