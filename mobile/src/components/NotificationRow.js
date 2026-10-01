@@ -12,6 +12,7 @@
  * decision itself happens server-side.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, elevation, typography } from "../theme/tokens";
 
 /**
@@ -31,7 +32,13 @@ export default function NotificationRow({ type = "standard", title, body, timeAg
         <Text style={styles.body} numberOfLines={isDigest ? 1 : undefined}>{body}</Text>
         {!isDigest && timeAgo ? <Text style={styles.timeAgo}>{timeAgo}</Text> : null}
       </View>
-      {isDigest ? <Text style={styles.chevron}>▼</Text> : null}
+      {isDigest ? (
+        // Figma `chevron` (10 x 5, stroke text/secondary 1.8, round), at the card's
+        // top-right padding corner (306,12 in a 328px card).
+        <Svg width={10} height={5} viewBox="0 0 10 5" fill="none" overflow="visible">
+          <Path d="M0 0L5 5L10 0" stroke={colors.text.secondary} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+        </Svg>
+      ) : null}
     </Pressable>
   );
 }
@@ -50,7 +57,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.brand.primary,
-    marginTop: 6,
+    // Figma `unreadDot` sits at (12,12): the very top of the 12px padding.
   },
   content: {
     flex: 1,
@@ -67,10 +74,5 @@ const styles = StyleSheet.create({
   timeAgo: {
     ...typography.caption,
     color: colors.text.secondary,
-  },
-  chevron: {
-    fontSize: 8,
-    color: colors.text.secondary,
-    marginTop: 6,
   },
 });

@@ -35,7 +35,9 @@ export default function CodePanel({ view, code, enteredCode, onChangeCode, onCon
             Share your code only after you have the money. It is your proof — it stops anyone
             later claiming you were never paid.
           </Text>
-          <Button title="Yes — show my code" onPress={onConfirmPaid} style="primary" />
+          <View style={styles.action}>
+            <Button title="Yes — show my code" onPress={onConfirmPaid} style="primary" />
+          </View>
         </>
       ) : null}
       {view === "enterer" ? (
@@ -71,6 +73,11 @@ const styles = StyleSheet.create({
     ...typography.secondary,
     color: colors.text.secondary,
   },
+  // Figma 40:123: the button hugs its label (211px); a plain child of this
+  // column would stretch to the card's full width.
+  action: {
+    alignSelf: "flex-start",
+  },
   codeBox: {
     alignSelf: "flex-start",
     paddingHorizontal: spacing.lg,
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.subtle,
   },
   code: {
-    ...typography.displayNumber,
+    ...typography.title, // Figma 40:109: Semi Bold 20/28 (displayNumber is 20/26)
     color: colors.text.primary,
   },
 });

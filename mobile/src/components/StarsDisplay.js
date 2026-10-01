@@ -15,6 +15,7 @@
  */
 import { Text, View, StyleSheet } from "react-native";
 import { colors, typography } from "../theme/tokens";
+import StarShape from "./StarShape";
 
 /**
  * @param {number} average - e.g. 4.6.
@@ -23,7 +24,7 @@ import { colors, typography } from "../theme/tokens";
 export default function StarsDisplay({ average, count }) {
   return (
     <View style={styles.row}>
-      <Text style={styles.star}>★</Text>
+      <StarShape size={16} color={colors.badge.rating} />
       <Text style={styles.average}>{average.toFixed(1)}</Text>
       <Text style={styles.count}>from {count} rating{count === 1 ? "" : "s"}</Text>
     </View>
@@ -35,10 +36,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-  },
-  star: {
-    fontSize: 16,
-    color: colors.badge.rating,
   },
   average: {
     ...typography.bodyMedium,
