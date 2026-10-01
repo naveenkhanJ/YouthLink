@@ -56,7 +56,7 @@ function SignedOutScaffold({ navigation }) {
   );
 }
 
-function SignedInShell({ user, signOut }) {
+function SignedInShell({ user, signOut, navigation }) {
   const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
   const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
@@ -70,7 +70,15 @@ function SignedInShell({ user, signOut }) {
           <RNButton title="Sign out" onPress={signOut} />
         </View>
       </View>
-      <TabBar role={tabBarRole} activeTab={activeTab} onTabPress={setActiveTab} />
+      <TabBar
+        role={tabBarRole}
+        activeTab={activeTab}
+        onTabPress={(key) => {
+          // Profile (1.18) is built; the other hubs are other modules' and stay placeholders here.
+          if (key === "profile") navigation.navigate("ProfileOwn");
+          else setActiveTab(key);
+        }}
+      />
       <StatusBar style="dark" />
     </View>
   );
@@ -88,7 +96,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (status === "signedIn") {
-    return <SignedInShell user={user} signOut={signOut} />;
+    return <SignedInShell user={user} signOut={signOut} navigation={navigation} />;
   }
 
   return <SignedOutScaffold navigation={navigation} />;
