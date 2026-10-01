@@ -29,6 +29,7 @@ function publicUser(user) {
     // Settings (FR-ACC-18) shows the employer's posting type and business name.
     postingAsType: user.postingAsType ?? null,
     businessName: user.businessName ?? null,
+    businessBio: user.businessBio ?? null,
     accountStatus: user.accountStatus,
     createdAt: user.createdAt,
   };
@@ -82,6 +83,12 @@ async function deleteAccount(req, res) {
   res.status(200).json(await service.deleteAccount({ userId: req.user.id, password: req.body?.password }));
 }
 
+async function updatePostingAs(req, res) {
+  const { postingAsType, businessName, businessBio } = req.body ?? {};
+  const result = await service.updatePostingAs({ userId: req.user.id, postingAsType, businessName, businessBio });
+  res.status(200).json(result);
+}
+
 async function changePhone(req, res) {
   const result = await service.changePhone({
     userId: req.user.id,
@@ -93,8 +100,8 @@ async function changePhone(req, res) {
 
 export default {
   async register(req, res) {
-    const user = await service.register(req.body);
-    res.status(201).json(publicUser(user));
+    const { token, user } = await service.register(req.body);
+    res.status(201).json({ token, user: publicUser(user) });
   },
 
   async loginPassword(req, res) {
@@ -167,6 +174,7 @@ export default {
 
   changePhone,
   changeNic,
+  updatePostingAs,
   getDeletionStatus,
   deleteAccount,
   getMe,

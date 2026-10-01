@@ -39,6 +39,7 @@ router.post("/email/change", requireAuth, asyncHandler(controller.requestEmailCh
 router.post("/email/cancel", requireAuth, asyncHandler(controller.cancelEmailChange));
 router.get("/deletion", requireAuth, asyncHandler(controller.getDeletionStatus));
 router.post("/delete", requireAuth, asyncHandler(controller.deleteAccount));
+router.patch("/posting-as", requireAuth, asyncHandler(controller.updatePostingAs));
 router.put("/nic", requireAuth, asyncHandler(controller.changeNic));
 router.patch("/display-name", requireAuth, asyncHandler(controller.updateDisplayName));
 

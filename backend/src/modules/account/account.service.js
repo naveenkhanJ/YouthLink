@@ -378,6 +378,9 @@ async function register(input) {
         birthdate: birthdateValue,
         tosAcceptedAt: new Date(),
         accountStatus: "ACTIVE",
+        // FR-ACC-02: an employer posts as Individual/Household until the posting-as step
+        // (registration step 5) says otherwise, so a posting always has a type.
+        postingAsType: role === "EMPLOYER" ? "INDIVIDUAL" : null,
       },
     });
   } catch (err) {
@@ -401,7 +404,9 @@ async function register(input) {
       console.error("Could not create the email confirmation link:", err);
     }
   }
-  return user;
+  // The person is signed in straight away (the prototype continues into the app, and an employer's
+  // step 5 needs a session), exactly as a login would sign them in.
+  return { token: signToken({ sub: user.id }), user };
 }
 
 /** Creates a single-use confirmation link for the account's current email address. */
@@ -1265,6 +1270,56 @@ async function deleteAccount({ userId, password }) {
 }
 
 /**
+ * FR-ACC-02 / FR-ACC-16: an employer sets how the account posts — Individual/Household, or
+ * Business with a business name (required, up to 100 characters) and an optional bio (up to 300).
+ * Switching back to Individual clears both, so nothing stale is left to display. Only the
+ * account changes: postings already published keep the poster-type and name they were posted
+ * with. The same call edits the business name and bio of an account that is already Business
+ * (screen 1.15eb).
+ * @param {{ userId: string, postingAsType: string, businessName?: string, businessBio?: string }} input
+ * @returns {Promise<{ postingAsType: string, businessName: string|null, businessBio: string|null }>}
+ */
+async function updatePostingAs({ userId, postingAsType, businessName, businessBio }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  if (user.role !== "EMPLOYER") {
+    throw AppError.forbidden("Only employers choose how their account posts.");
+  }
+  if (postingAsType !== "INDIVIDUAL" && postingAsType !== "BUSINESS") {
+    throw AppError.badRequest("Choose Individual/Household or Business.", { postingAsType: "Required" });
+  }
+
+  let data;
+  if (postingAsType === "BUSINESS") {
+    const name = typeof businessName === "string" ? businessName.trim() : "";
+    if (!name) {
+      throw AppError.badRequest("Business name is required.", { businessName: "Required" });
+    }
+    if (name.length > 100) {
+      throw AppError.badRequest("Business name must be 100 characters or fewer.", {
+        businessName: "Must be 100 characters or fewer",
+      });
+    }
+    const bio = typeof businessBio === "string" ? businessBio.trim() : "";
+    if (bio.length > 300) {
+      throw AppError.badRequest("Business bio must be 300 characters or fewer.", {
+        businessBio: "Must be 300 characters or fewer",
+      });
+    }
+    data = { postingAsType, businessName: name, businessBio: bio || null };
+  } else {
+    data = { postingAsType, businessName: null, businessBio: null };
+  }
+
+  const updated = await prisma.user.update({ where: { id: userId }, data });
+  return {
+    postingAsType: updated.postingAsType,
+    businessName: updated.businessName,
+    businessBio: updated.businessBio,
+  };
+}
+
+/**
  * FR-ACC-13: correct the NIC number. Gated behind password re-entry only — no OTP-equivalent
  * step. The shape is checked (12 digits, or 9 digits and V/X), never a registry, and the NIC is
  * stored with the same deterministic encryption as at signup so the one-account-per-NIC rule
@@ -1369,6 +1424,7 @@ export default {
   recoveryConfirm,
   changePhone,
   changeNic,
+  updatePostingAs,
   getDeletionStatus,
   deleteAccount,
   requestEmailChange,
