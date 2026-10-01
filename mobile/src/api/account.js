@@ -96,3 +96,22 @@ export function confirmRecovery(payload) {
 export function changePhone(payload) {
   return request("/api/account/phone/change", { method: "POST", body: payload });
 }
+
+/**
+ * FR-ACC-11: change the password with the current one. Every other device is signed out; the
+ * response carries a fresh token for THIS device (its old one is rejected like the rest).
+ * @param {{ currentPassword: string, newPassword: string }} payload
+ * @returns {Promise<{ success: true, token: string }>}
+ */
+export function changePassword(payload) {
+  return request("/api/account/password/change", { method: "POST", body: payload });
+}
+
+/**
+ * FR-ACC-15: edit the display (legal) name.
+ * @param {{ legalName: string }} payload
+ * @returns {Promise<{ legalName: string }>} The saved (trimmed) name.
+ */
+export function updateDisplayName(payload) {
+  return request("/api/account/display-name", { method: "PATCH", body: payload });
+}

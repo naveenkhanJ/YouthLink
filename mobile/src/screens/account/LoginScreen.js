@@ -38,11 +38,12 @@ import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 const SESSION_BANNER =
   "You were signed out — your session ended, or your password was changed on another device. Sign in again to continue. If that change wasn't you, reset your password now.";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, route }) {
   const { signIn, sessionEndReason } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const [phone, setPhone] = useState("");
+  // Sign out (1.10s) lands here with the number remembered; every other way in starts empty.
+  const [phone, setPhone] = useState(route?.params?.phone ?? "");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);

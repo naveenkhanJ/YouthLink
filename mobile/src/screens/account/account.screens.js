@@ -27,6 +27,9 @@ import AccountRecoveryStatusScreen from "./AccountRecoveryStatusScreen";
 import AccountResetPasswordScreen from "./AccountResetPasswordScreen";
 import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
 import AccountTermsScreen from "./AccountTermsScreen";
+import AccountSettingsScreen from "./AccountSettingsScreen";
+import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
+import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
 
 export default [
   {
@@ -77,6 +80,21 @@ export default [
   {
     name: "AccountTerms",
     component: AccountTermsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountSettings",
+    component: AccountSettingsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountChangePassword",
+    component: AccountChangePasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountDisplayName",
+    component: AccountDisplayNameScreen,
     options: { headerShown: false },
   },
 ];

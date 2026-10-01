@@ -26,6 +26,9 @@ import Button from "./Button";
  * @param {() => void} onCancel
  * @param {string} confirmLabel - The explicit destructive verb, e.g. "Discard".
  * @param {() => void} onConfirm
+ * @param {"text"|"secondary"} [cancelStyle] - Defaults to "text" (1.17-style destructive
+ *   dialogs). Sign out (1.10s) is not destructive and draws Secondary + Primary instead.
+ * @param {"destructive"|"primary"} [confirmStyle] - Defaults to "destructive".
  */
 export default function ConfirmDialog({
   title,
@@ -34,14 +37,16 @@ export default function ConfirmDialog({
   onCancel,
   confirmLabel,
   onConfirm,
+  cancelStyle = "text",
+  confirmStyle = "destructive",
 }) {
   return (
     <View style={[styles.card, elevation.sheet]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       <View style={styles.actions}>
-        <Button title={cancelLabel} onPress={onCancel} style="text" />
-        <Button title={confirmLabel} onPress={onConfirm} style="destructive" />
+        <Button title={cancelLabel} onPress={onCancel} style={cancelStyle} />
+        <Button title={confirmLabel} onPress={onConfirm} style={confirmStyle} />
       </View>
     </View>
   );

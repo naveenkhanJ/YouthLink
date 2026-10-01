@@ -71,6 +71,9 @@ function deliverInDevelopment(kind, destination, secret) {
 const RESET_REQUEST_LIMIT = { max: 3, windowMs: 15 * 60 * 1000 };
 const RESET_CODE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const PHONE_CHANGE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
+// Same reasoning for a password change: the current password is re-checked on an already
+// signed-in session, so a stolen session must not be able to guess it without limit.
+const PASSWORD_CHANGE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const RESET_TOKEN_MINUTES = 15;
 const EMAIL_CONFIRM_HOURS = 24;
 
@@ -949,6 +952,85 @@ async function recoveryConfirm({ deviceId, newPassword }) {
 }
 
 /**
+ * FR-ACC-11: a signed-in user changes their password with the current one — no OTP, no email.
+ * Stamping passwordChangedAt makes requireAuth reject every token issued before now, on every
+ * device (the same mechanism as a reset, FR-ACC-10), so a stolen session cannot outlive the
+ * change. That includes the token this request came with, so the response carries a fresh one
+ * and this device stays signed in; only the OTHER devices are signed out.
+ * @param {{ userId: string, currentPassword: string, newPassword: string }} input
+ * @returns {Promise<{ success: true, token: string }>}
+ */
+async function changePassword({ userId, currentPassword, newPassword }) {
+  if (!currentPassword || typeof currentPassword !== "string") {
+    throw AppError.badRequest("Current password is required.", { currentPassword: "Required" });
+  }
+  if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.", {
+      newPassword: "Must be 8 to 64 characters",
+    });
+  }
+
+  const failureKey = `password-change:${userId}`;
+  if (isBlocked(failureKey, PASSWORD_CHANGE_FAILURE_LIMIT.max, PASSWORD_CHANGE_FAILURE_LIMIT.windowMs)) {
+    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+
+  const validPassword = await verifyPassword(currentPassword, user.passwordHash);
+  if (!validPassword) {
+    record(failureKey, PASSWORD_CHANGE_FAILURE_LIMIT.windowMs);
+    // 400 with a field error, NOT 401: the session is fine, only this entry is wrong, and a
+    // 401 would be read by the app as "your session has ended".
+    throw AppError.badRequest("That password doesn't match your account. Please try again.", {
+      currentPassword: "Incorrect password",
+    });
+  }
+  clear(failureKey);
+
+  const hash = await hashPassword(newPassword); // slow by design
+
+  // Only replace the hash we just checked: if another change landed in between, this request's
+  // token is no longer valid and nothing is overwritten.
+  const updated = await prisma.user.updateMany({
+    where: { id: userId, passwordHash: user.passwordHash },
+    data: { passwordHash: hash, passwordChangedAt: new Date() },
+  });
+  if (updated.count === 0) throw AppError.sessionEnded();
+
+  // Signed after the stamp, so its iat is not older than passwordChangedAt (seconds).
+  return { success: true, token: signToken({ sub: userId }) };
+}
+
+/**
+ * FR-ACC-15: edit the display (legal) name after signup. Deliberately low ceremony, like the NIC
+ * correction (FR-ACC-13): signed-in access is the only gate. The name lives only on the User
+ * row, so this one update is the change "everywhere it is shown".
+ * @param {{ userId: string, legalName: string }} input
+ * @returns {Promise<{ legalName: string }>}
+ */
+async function updateDisplayName({ userId, legalName }) {
+  if (typeof legalName !== "string" || legalName.trim().length === 0) {
+    throw AppError.badRequest("Display name is required.", { legalName: "Required" });
+  }
+  const trimmed = legalName.trim();
+  if (trimmed.length > 100) {
+    throw AppError.badRequest("Display name must be 100 characters or fewer.", {
+      legalName: "Must be 100 characters or fewer",
+    });
+  }
+
+  // updateMany so a deleted account (or a missing row) changes nothing and ends the session.
+  const updated = await prisma.user.updateMany({
+    where: { id: userId, deletedAt: null },
+    data: { legalName: trimmed },
+  });
+  if (updated.count === 0) throw AppError.sessionEnded();
+  return { legalName: trimmed };
+}
+
+/**
  * FR-ACC-12: change the phone number. Gated behind the current password and a fresh
  * Firebase verification of the NEW number. The old number keeps satisfying the uniqueness
  * constraint until this single update swaps it, so the swap is atomic (AC2, AC3).
@@ -1034,4 +1116,6 @@ export default {
   recoveryStatus,
   recoveryConfirm,
   changePhone,
+  changePassword,
+  updateDisplayName,
 };
