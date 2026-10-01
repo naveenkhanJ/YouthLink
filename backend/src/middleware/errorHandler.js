@@ -17,6 +17,20 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  // Client errors raised by Express itself, e.g. body-parser's malformed JSON
+  // (400, type "entity.parse.failed") or an oversized body (413). They carry a
+  // 4xx `status` and are flagged `expose`, meaning their message is safe to
+  // show. Without this they fell through to the 500 branch below, which told
+  // the client "Something went wrong" for a mistake that was the client's.
+  if (err.expose && err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({
+      error:
+        err.type === "entity.parse.failed"
+          ? "The request body is not valid JSON."
+          : err.message,
+    });
+  }
+
   // Prisma's unique-constraint violation. Surfaces as a 409 rather than a 500,
   // because it means the client sent a value that already exists.
   if (err.code === "P2002") {
