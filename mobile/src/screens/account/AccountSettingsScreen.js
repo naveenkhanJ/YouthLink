@@ -26,6 +26,7 @@ import { View, Text, ScrollView, Modal, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../auth/AuthContext";
 import { colors, spacing, typography } from "../../theme/tokens";
+import { useToast } from "../../components/Toast";
 import ScreenHeader from "../../components/ScreenHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import SettingsRow from "./components/SettingsRow";
@@ -33,6 +34,7 @@ import { COUNTRY_CODE, formatLocalNumber, toLocalDigits } from "./phoneFormat";
 import { getMe } from "../../api/account";
 
 // Destinations owned by other cards (see header). Names are the proposed screen names.
+const NOT_AVAILABLE = "This isn't available in this version of the app yet.";
 const NIC = "AccountNic";
 const EMAIL = "AccountEmail";
 const BUSINESS = "AccountBusiness";
@@ -44,6 +46,7 @@ export default function AccountSettingsScreen({ navigation }) {
   const { user, signOut, updateUser } = useAuth();
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const refreshRef = useRef(() => {});
+  const { show, toast } = useToast();
 
   // Every time Settings comes into view, re-read the account: an email confirmed in the browser,
   // a number changed on another device. Quiet on failure — the stored values stay on screen.
@@ -65,9 +68,17 @@ export default function AccountSettingsScreen({ navigation }) {
   const isEmployer = user.role === "EMPLOYER";
   const isBusiness = isEmployer && user.postingAsType === "BUSINESS";
 
-  /** Opens `name` if some module has registered it; a not-yet-built screen is a no-op. */
+  /**
+   * Opens `name` if some module has registered it. A screen that is not built yet (another
+   * module's, not on this build) says so for a couple of seconds instead of ignoring the tap.
+   * Not drawn in Figma: a plain inverse-on-ink toast built from the design tokens.
+   */
   function open(name, params) {
-    if (navigation.getState().routeNames.includes(name)) navigation.navigate(name, params);
+    if (navigation.getState().routeNames.includes(name)) {
+      navigation.navigate(name, params);
+      return;
+    }
+    show(NOT_AVAILABLE);
   }
 
   async function handleSignOut() {
@@ -114,6 +125,8 @@ export default function AccountSettingsScreen({ navigation }) {
         <SettingsRow label="Sign out" onPress={() => setConfirmingSignOut(true)} />
         <SettingsRow label="Delete account" danger onPress={() => open(DELETE)} />
       </ScrollView>
+
+      {toast}
 
       {/* 1.10s: the dialog sits over a 40% scrim; nothing behind it is interactive. */}
       <Modal

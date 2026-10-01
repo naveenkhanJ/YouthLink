@@ -10,17 +10,25 @@
  *                     Disabled; the person has to complete or cancel it first
  *   "confirm"  1.17p  Password field, the deleteNote, Destructive "Delete my account"; a wrong
  *                     password is the field's State=Error with the 1.12err sentence
- *   "deleted"  1.17d  "Account deleted" with no back chevron, ctaBar "Back to the start" → 1.1
+ *   "deleted"  1.17d  "Account deleted", ctaBar "Back to the start" → 1.1
  *
  * "Delete account" on 1.17 asks the server whether anything blocks it; the server asks again when
  * the password is submitted, so the check cannot go stale. Deleting signs this device out (the
  * token is dead on the server too) and leaves the person on 1.17d.
+ *
+ * DELIBERATE DEVIATION from Figma 1.17d (decided with Afham, 2026-10-02): the frame draws the
+ * "Delete account" ScreenHeader bar above "Account deleted". It is not drawn here. A header bar
+ * is navigation chrome, and this screen is a dead end: the account no longer exists, the back
+ * gesture is swallowed and the only way out is the "Back to the start" button. The title is also
+ * redundant, since "Account deleted" directly below says it. Everything else in 1.17d (content
+ * padding, title, body, ctaBar) is as drawn. Recorded in docs/decisions.md; Figma is unchanged.
  */
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../theme/tokens";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ScreenHeader from "../../components/ScreenHeader";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
@@ -39,6 +47,7 @@ const TWO_STEP_NOTE = "You'll be asked to confirm and re-enter your password.";
 
 export default function AccountDeleteAccountScreen({ navigation }) {
   const { signOut } = useAuth();
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState("intro"); // intro | blocked | confirm | deleted
   const [engagement, setEngagement] = useState(null);
   const [password, setPassword] = useState("");
@@ -121,9 +130,9 @@ export default function AccountDeleteAccountScreen({ navigation }) {
     return (
       <View style={styles.root}>
         <StatusBar style="dark" />
-        <ScreenHeader title="Delete account" hideBack />
-        {/* Figma: content pad 24/16/4/16 gap 16 */}
-        <View style={[styles.content, styles.contentDeleted]}>
+        {/* Figma: content pad 24/16/4/16 gap 16; the header bar is left out (see the file header),
+            so the status-bar inset is added to the top padding instead. */}
+        <View style={[styles.content, styles.contentDeleted, { paddingTop: insets.top + spacing.xl }]}>
           <Text style={styles.deletedTitle}>Account deleted</Text>
           <Text style={styles.body}>
             Your identifying details are gone. Ratings you gave and received remain, attributed to an anonymised
