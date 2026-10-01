@@ -79,6 +79,7 @@ export default function AccountChangePasswordScreen({ navigation }) {
 
         <TextField
           label="Current password"
+          placeholder="8–64 characters"
           value={currentPassword}
           onChangeText={(value) => {
             setCurrentPassword(value);
@@ -91,6 +92,7 @@ export default function AccountChangePasswordScreen({ navigation }) {
         <FieldError message={fieldErrors.currentPassword} />
         <TextField
           label="New password"
+          placeholder="••••••••••"
           value={newPassword}
           onChangeText={setNewPassword}
           secureTextEntry
@@ -100,6 +102,7 @@ export default function AccountChangePasswordScreen({ navigation }) {
         <FieldError message={fieldErrors.newPassword} />
         <TextField
           label="Confirm new password"
+          placeholder="••••••••••"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry

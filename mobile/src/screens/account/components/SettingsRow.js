@@ -1,7 +1,7 @@
 /**
  * One tappable row of the Settings screen (prototype 1.10 `row-*`): 328×48, padding 12/0,
  * gap 12 — a label that fills the row (mobile/body), an optional current value on the right
- * (mobile/secondary, text/secondary) and a 6×12 chevron (stroke text/secondary 1.8).
+ * (mobile/secondary, text/secondary) and a 6×12 chevron (stroke text/secondary 1.8, the exact Figma path).
  * "Delete account" draws its label in state/danger.
  *
  * Local to Account Management: no other screen in the prototype uses this row.
@@ -25,13 +25,15 @@ export default function SettingsRow({ label, value, danger = false, onPress }) {
           {value}
         </Text>
       ) : null}
-      <Svg width={6} height={12} viewBox="0 0 6 12" fill="none">
+      {/* The Figma vector (6×12): "M 0 0 L 6 6 L 0 12", stroke text/secondary 1.8, round cap,
+          miter join. overflow visible because the stroke extends past the 6×12 box. */}
+      <Svg width={6} height={12} viewBox="0 0 6 12" fill="none" overflow="visible">
         <Path
-          d="M1 1L5 6L1 11"
+          d="M0 0L6 6L0 12"
           stroke={colors.text.secondary}
           strokeWidth={1.8}
           strokeLinecap="round"
-          strokeLinejoin="round"
+          strokeLinejoin="miter"
         />
       </Svg>
     </Pressable>

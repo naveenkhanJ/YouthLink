@@ -422,7 +422,7 @@ export default function RegisterScreen({ navigation }) {
           label="Password"
           value={password}
           onChangeText={setPassword}
-          placeholder="8–64 characters"
+          placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
           error={Boolean(fieldErrors.password)}
@@ -432,7 +432,7 @@ export default function RegisterScreen({ navigation }) {
           label="Confirm password"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          placeholder="Re-enter password"
+          placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
           error={Boolean(fieldErrors.confirmPassword)}
@@ -455,7 +455,7 @@ export default function RegisterScreen({ navigation }) {
           label="NIC"
           value={nic}
           onChangeText={setNic}
-          placeholder="200412345678"
+          placeholder="Enter your NIC"
           autoCapitalize="characters"
           maxLength={12}
           error={Boolean(fieldErrors.nic)}
@@ -475,7 +475,6 @@ export default function RegisterScreen({ navigation }) {
           label="Legal name"
           value={legalName}
           onChangeText={setLegalName}
-          placeholder="Full legal name"
           autoCapitalize="words"
           maxLength={LEGAL_NAME_CAP}
           error={Boolean(fieldErrors.legalName)}

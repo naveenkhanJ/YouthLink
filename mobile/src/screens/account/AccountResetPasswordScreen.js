@@ -83,7 +83,7 @@ export default function AccountResetPasswordScreen({ navigation, route }) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          placeholder="8–64 characters"
+          placeholder="••••••••••"
           maxLength={64}
           error={Boolean(fieldErrors.password)}
         />
@@ -93,7 +93,7 @@ export default function AccountResetPasswordScreen({ navigation, route }) {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
-          placeholder="Re-enter password"
+          placeholder="••••••••••"
           maxLength={64}
           error={Boolean(fieldErrors.confirmPassword)}
         />
