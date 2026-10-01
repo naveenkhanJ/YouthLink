@@ -92,6 +92,12 @@ export function AuthProvider({ children }) {
     setUser(next);
   }
 
+  /** Swaps in a fresh token after a password change, so this device is not signed out with the rest. */
+  async function replaceToken(token) {
+    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    setAuthToken(token);
+  }
+
   async function signOut(reason = null) {
     await Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEY),
@@ -104,7 +110,7 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ status, user, sessionEndReason, signIn, signOut, updateUser }),
+    () => ({ status, user, sessionEndReason, signIn, signOut, updateUser, replaceToken }),
     [status, user, sessionEndReason],
   );
 
@@ -119,6 +125,7 @@ export function AuthProvider({ children }) {
  *   signIn: (token: string, user: object) => Promise<void>,
  *   signOut: (reason?: string) => Promise<void>,
  *   updateUser: (changes: object) => Promise<void>,
+ *   replaceToken: (token: string) => Promise<void>,
  * }}
  */
 export function useAuth() {
