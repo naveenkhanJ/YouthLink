@@ -3,14 +3,20 @@
  *
  * Prototype frames (docs/prototype/M1-account.md): 1.1 role, 1.2 phone, 1.3 code, 1.4 details,
  * plus the failure frames 1.2err, 1.3err1/err2, 1.3rs2, 1.4err1/err2/err3 and 1.4cnt. They are
- * the same four steps with different state, so this is one screen holding a `step`.
+ * the same steps with different state, so this is one screen holding a `step`. An employer has a
+ * fifth, 1.5 / 1.5b: how the account posts (FR-ACC-02).
  *
  * Chrome (every step): content pad 6/16/4/16, gap 16, a 44px top bar (back chevron left, ✕
  * right — step 1 has an empty 44px "ghost" instead, nothing to go back to), the display title
- * "Create account", the "Step N of 4" caption, and a pinned ctaBar. The details step is the
+ * "Create account", the "Step N of 4" (5 for an employer) caption, and a pinned ctaBar. The details step is the
  * exception drawn tighter: pad 6/16/0/16, gap 8, and a 52px top bar (8px bottom padding).
  *
  * - Back goes one step back; ✕ abandons registration and returns to role selection (1.1).
+ * - "Create account" (step 4) creates the account and signs the person in. A worker or verifier
+ *   continues into the app; an employer continues to step 5, which saves how the account posts
+ *   (Individual/Household, or Business with a name and optional bio) and then enters the app.
+ *   From step 5 back and ✕ leave for the app: the account exists, so there is nothing to discard
+ *   (the prototype's back → 1.4e would offer to create it twice).
  * - The phone is verified through Firebase (FR-ACC-08); the resulting ID token is held in
  *   state and submitted with the details, where the server validates it.
  * - A failed field is State=Error plus a separate Feedback/FieldError beneath it — the
@@ -27,12 +33,14 @@ import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { register, checkAvailability } from "../../api/account";
+import { register, checkAvailability, updatePostingAs } from "../../api/account";
+import { useAuth } from "../../auth/AuthContext";
 import { colors, spacing, typography } from "../../theme/tokens";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import RoleOption from "../../components/RoleOption";
 import Checkbox from "../../components/Checkbox";
+import SegmentedControl from "../../components/SegmentedControl";
 import Link from "../../components/Link";
 import CodeInputNumeric from "../../components/CodeInputNumeric";
 import CountdownText from "../../components/CountdownText";
@@ -73,11 +81,15 @@ const NIC_SHAPE = /^(\d{12}|\d{9}[VvXx])$/;
 const LEGAL_NAME_CAP = 100;
 
 /**
- * The employer's fifth step ("posting as", FR-ACC-02) is not built yet (YL-82, backlog), so
- * every role registers in four steps and the counter says so rather than promising a step that
- * does not exist.
+ * Four steps for a worker or a verifier; the employer has a fifth (FR-ACC-02): how the account will
+ * post, Individual/Household or Business. The counter says so from step 1 (1.1e: "Step 1 of 5").
  */
-const TOTAL_STEPS = 4;
+function totalSteps(role) {
+  return role === "EMPLOYER" ? 5 : 4;
+}
+
+const BUSINESS_NAME_CAP = 100;
+const BUSINESS_BIO_CAP = 300;
 
 /** Whether `value` is a real calendar date written as YYYY-MM-DD. */
 function isValidDate(value) {
@@ -98,6 +110,7 @@ function fieldMessage(field, code) {
 
 export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { signIn, updateUser } = useAuth();
 
   const [step, setStep] = useState(1);
   const [role, setRole] = useState(null);
@@ -137,19 +150,37 @@ export default function RegisterScreen({ navigation }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [registeredUser, setRegisteredUser] = useState(null);
+  // True once the account exists (step 4 creates it). From then on there is nothing to go back to
+  // and nothing to discard, so back and ✕ leave the registration.
+  const [registered, setRegistered] = useState(false);
+
+  // Step 5 (employer): how the account posts.
+  const [postingAs, setPostingAs] = useState("individual");
+  const [businessName, setBusinessName] = useState("");
+  const [businessBio, setBusinessBio] = useState("");
+  const [postingError, setPostingError] = useState(null);
+  const [savingPosting, setSavingPosting] = useState(false);
 
   // Hardware back follows the on-screen back: one step back, and out of the screen only from
   // the first step.
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (registeredUser || step === 1) return false;
+      if (registered) {
+        finishToHome();
+        return true;
+      }
+      if (step === 1) return false;
       goBackOneStep();
       return true;
     });
     return () => sub.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, registeredUser]);
+  }, [step, registered]);
+
+  /** The account exists and the person is signed in: continue into the app. */
+  function finishToHome() {
+    navigation.reset({ index: 0, routes: [{ name: "Home" }] });
+  }
 
   function goBackOneStep() {
     if (step === 3) changeNumber();
@@ -220,7 +251,7 @@ export default function RegisterScreen({ navigation }) {
 
     setSubmitting(true);
     try {
-      const user = await register({
+      const { token, user } = await register({
         role,
         idToken,
         password,
@@ -230,7 +261,12 @@ export default function RegisterScreen({ navigation }) {
         legalName: legalName.trim(),
         tosAccepted,
       });
-      setRegisteredUser(user);
+      // The prototype continues into the app once the account is created; an employer's step 5
+      // needs the session too, so sign in now.
+      await signIn(token, user);
+      setRegistered(true);
+      if (role === "EMPLOYER") setStep(5);
+      else finishToHome();
     } catch (err) {
       if (err.fields) {
         const mapped = {};
@@ -249,6 +285,25 @@ export default function RegisterScreen({ navigation }) {
     }
   }
 
+  /** Step 5 "Continue": save how the account posts, then into the app. */
+  async function handlePostingAs() {
+    setPostingError(null);
+    setSavingPosting(true);
+    try {
+      const saved = await updatePostingAs(
+        postingAs === "business"
+          ? { postingAsType: "BUSINESS", businessName: businessName.trim(), businessBio: businessBio.trim() }
+          : { postingAsType: "INDIVIDUAL" },
+      );
+      await updateUser(saved);
+      finishToHome();
+    } catch (err) {
+      setPostingError(err.message);
+    } finally {
+      setSavingPosting(false);
+    }
+  }
+
   const loginLink = (
     <Link title="Go to log in" onPress={() => navigation.navigate("AccountLogin")} />
   );
@@ -257,8 +312,8 @@ export default function RegisterScreen({ navigation }) {
   function topBar({ ghost = false, tight = false } = {}) {
     return (
       <View style={[styles.topBar, tight && styles.topBarTight]}>
-        {ghost ? <View style={styles.ghost} /> : <BackButton onPress={goBackOneStep} />}
-        {ghost ? null : <CloseButton onPress={abandon} />}
+        {ghost ? <View style={styles.ghost} /> : <BackButton onPress={registered ? finishToHome : goBackOneStep} />}
+        {ghost ? null : <CloseButton onPress={registered ? finishToHome : abandon} />}
       </View>
     );
   }
@@ -268,30 +323,9 @@ export default function RegisterScreen({ navigation }) {
       <>
         <Text style={styles.screenTitle}>Create account</Text>
         <Text style={styles.stepLabel}>
-          Step {step} of {TOTAL_STEPS}
+          Step {step} of {totalSteps(role)}
         </Text>
       </>
-    );
-  }
-
-  // ── Success ─────────────────────────────────────────────────────────────
-  // The prototype continues into the app (M3 3.9); the registration endpoint issues no session,
-  // so the person logs in with the number and password they just chose.
-  if (registeredUser) {
-    return (
-      <View style={[styles.root, { paddingTop: insets.top }]}>
-        <StatusBar style="dark" />
-        <View style={styles.content}>
-          <View style={styles.ghost} />
-          <Text style={styles.screenTitle}>Account created</Text>
-          <Text style={styles.sentTo}>
-            Welcome, {registeredUser.legalName}. Log in with your phone number and password to get started.
-          </Text>
-        </View>
-        <CtaBar>
-          <Button title="Go to log in" onPress={() => navigation.navigate("AccountLogin")} />
-        </CtaBar>
-      </View>
     );
   }
 
@@ -389,6 +423,68 @@ export default function RegisterScreen({ navigation }) {
     );
   }
 
+  // ── 1.5 / 1.5b Employer posting-as ──────────────────────────────────────
+  if (step === 5) {
+    const business = postingAs === "business";
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <StatusBar style="dark" />
+        <KeyboardAwareScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          enableOnAndroid
+          extraScrollHeight={120}
+        >
+          {topBar()}
+          {heading()}
+          <Text style={styles.question}>How will you post gigs?</Text>
+          <SegmentedControl selected={postingAs} onChange={setPostingAs} />
+          <Text style={styles.postingDesc}>
+            Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event.
+          </Text>
+          <Text style={styles.postingDesc}>
+            Business — you'll add a business name, and it appears on every posting you publish.
+          </Text>
+          <Text style={styles.sentTo}>
+            You can change this later in Settings. Postings you've already published keep the name they were posted
+            under.
+          </Text>
+          {business ? (
+            <>
+              <TextField
+                label="Business name"
+                value={businessName}
+                onChangeText={setBusinessName}
+                placeholder="Enter your business name"
+                autoCapitalize="words"
+                maxLength={BUSINESS_NAME_CAP}
+              />
+              <TextField
+                label="Business bio (optional)"
+                value={businessBio}
+                onChangeText={setBusinessBio}
+                placeholder="What your business does (optional)"
+                autoCapitalize="sentences"
+                maxLength={BUSINESS_BIO_CAP}
+              />
+            </>
+          ) : null}
+          {postingError ? <FormBanner kind="error" message={postingError} /> : null}
+          <View style={styles.spacer} />
+        </KeyboardAwareScrollView>
+        <CtaBar>
+          <Button
+            title="Continue"
+            onPress={handlePostingAs}
+            loading={savingPosting}
+            disabled={business && !businessName.trim()}
+          />
+        </CtaBar>
+      </View>
+    );
+  }
+
   // ── 1.4 Details (1.4err1 / err2 / err3 / 1.4cnt) ────────────────────────
   const termsLabel = (
     <>
@@ -422,7 +518,7 @@ export default function RegisterScreen({ navigation }) {
           label="Password"
           value={password}
           onChangeText={setPassword}
-          placeholder="8–64 characters"
+          placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
           error={Boolean(fieldErrors.password)}
@@ -432,7 +528,7 @@ export default function RegisterScreen({ navigation }) {
           label="Confirm password"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          placeholder="Re-enter password"
+          placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
           error={Boolean(fieldErrors.confirmPassword)}
@@ -455,7 +551,7 @@ export default function RegisterScreen({ navigation }) {
           label="NIC"
           value={nic}
           onChangeText={setNic}
-          placeholder="200412345678"
+          placeholder="Enter your NIC"
           autoCapitalize="characters"
           maxLength={12}
           error={Boolean(fieldErrors.nic)}
@@ -475,7 +571,6 @@ export default function RegisterScreen({ navigation }) {
           label="Legal name"
           value={legalName}
           onChangeText={setLegalName}
-          placeholder="Full legal name"
           autoCapitalize="words"
           maxLength={LEGAL_NAME_CAP}
           error={Boolean(fieldErrors.legalName)}
@@ -550,6 +645,14 @@ const styles = StyleSheet.create({
   },
   fieldHelp: {
     ...typography.caption,
+    color: colors.text.secondary,
+  },
+  question: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  postingDesc: {
+    ...typography.body,
     color: colors.text.secondary,
   },
   nicHelp: {

@@ -12,7 +12,7 @@
  * "sign me out" should use useAuth(), not read api/client.js's token or
  * SecureStore directly.
  */
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken, setAuthFailureCallback } from "../api/client";
 
@@ -28,7 +28,14 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   // "loading" only lasts through the initial SecureStore read at app boot.
   const [status, setStatus] = useState("loading");
-  const [user, setUser] = useState(null);
+  const [user, setUserState] = useState(null);
+  // The latest user, readable from callbacks that outlive a render (a focus listener, a timer):
+  // updateUser must merge onto THIS, never onto the user captured when the callback was made.
+  const userRef = useRef(null);
+  function setUser(next) {
+    userRef.current = next;
+    setUserState(next);
+  }
   const [sessionEndReason, setSessionEndReason] = useState(null);
 
   useEffect(() => {
@@ -87,7 +94,7 @@ export function AuthProvider({ children }) {
 
   /** Replaces the stored user after an edit (phone, name) so every screen shows the new value. */
   async function updateUser(changes) {
-    const next = { ...user, ...changes };
+    const next = { ...userRef.current, ...changes };
     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(next));
     setUser(next);
   }

@@ -30,6 +30,11 @@ import AccountTermsScreen from "./AccountTermsScreen";
 import AccountSettingsScreen from "./AccountSettingsScreen";
 import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
+import AccountNicScreen from "./AccountNicScreen";
+import AccountEmailScreen from "./AccountEmailScreen";
+import AccountDeleteAccountScreen from "./AccountDeleteAccountScreen";
+import AccountPostingAsScreen from "./AccountPostingAsScreen";
+import AccountBusinessScreen from "./AccountBusinessScreen";
 
 export default [
   {
@@ -95,6 +100,31 @@ export default [
   {
     name: "AccountDisplayName",
     component: AccountDisplayNameScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountNic",
+    component: AccountNicScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountEmail",
+    component: AccountEmailScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountDeleteAccount",
+    component: AccountDeleteAccountScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountPostingAs",
+    component: AccountPostingAsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountBusiness",
+    component: AccountBusinessScreen,
     options: { headerShown: false },
   },
 ];

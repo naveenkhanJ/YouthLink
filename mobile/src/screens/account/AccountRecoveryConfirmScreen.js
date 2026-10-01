@@ -116,7 +116,7 @@ export default function AccountRecoveryConfirmScreen({ navigation }) {
           label="NIC"
           value={nic}
           onChangeText={setNic}
-          placeholder="200412345678"
+          placeholder="Enter your NIC"
           autoCapitalize="characters"
           maxLength={12}
           error={Boolean(fieldErrors.nic)}
@@ -136,7 +136,6 @@ export default function AccountRecoveryConfirmScreen({ navigation }) {
           label="Legal name"
           value={name}
           onChangeText={setName}
-          placeholder="Full legal name"
           autoCapitalize="words"
           maxLength={100}
           error={Boolean(fieldErrors.legalName)}

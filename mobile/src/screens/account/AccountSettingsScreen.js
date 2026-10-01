@@ -20,7 +20,7 @@
  * registered; until then the row does nothing rather than crash. Screen names below are the
  * ones to register them under.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Modal, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../auth/AuthContext";
@@ -29,6 +29,7 @@ import ScreenHeader from "../../components/ScreenHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import SettingsRow from "./components/SettingsRow";
 import { COUNTRY_CODE, formatLocalNumber, toLocalDigits } from "./phoneFormat";
+import { getMe } from "../../api/account";
 
 // Destinations owned by other cards (see header). Names are the proposed screen names.
 const NIC = "AccountNic";
@@ -39,8 +40,20 @@ const DELETE = "AccountDeleteAccount";
 const NOTIFICATION_PREFERENCES = "NotificationPreferences";
 
 export default function AccountSettingsScreen({ navigation }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
+
+  // Every time Settings comes into view, re-read the account: an email confirmed in the browser,
+  // a number changed on another device. Quiet on failure — the stored values stay on screen.
+  useEffect(() => {
+    const refresh = () =>
+      getMe()
+        .then(({ pendingEmail, ...account }) => updateUser(account))
+        .catch(() => {});
+    refresh();
+    return navigation.addListener("focus", refresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation]);
 
   if (!user) return null; // signing out: the screen is about to be replaced
 
