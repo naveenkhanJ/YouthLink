@@ -148,3 +148,21 @@ export function requestEmailChange(payload) {
 export function cancelEmailChange() {
   return request("/api/account/email/cancel", { method: "POST", body: {} });
 }
+
+/**
+ * FR-ACC-17: can this person delete their account now? When an engagement blocks it, the
+ * answer names it so the screen can say which one.
+ * @returns {Promise<{ blocked: boolean, engagement: { title: string, withName: string }|null }>}
+ */
+export function getDeletionStatus() {
+  return request("/api/account/deletion");
+}
+
+/**
+ * FR-ACC-17: delete the account, gated behind the password and blocked while an engagement is
+ * active. The identifying details are removed; ratings and engagements stay, anonymised.
+ * @param {{ password: string }} payload
+ */
+export function deleteAccount(payload) {
+  return request("/api/account/delete", { method: "POST", body: payload });
+}

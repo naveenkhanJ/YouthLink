@@ -32,6 +32,7 @@ import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
 import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
 import AccountNicScreen from "./AccountNicScreen";
 import AccountEmailScreen from "./AccountEmailScreen";
+import AccountDeleteAccountScreen from "./AccountDeleteAccountScreen";
 
 export default [
   {
@@ -107,6 +108,11 @@ export default [
   {
     name: "AccountEmail",
     component: AccountEmailScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountDeleteAccount",
+    component: AccountDeleteAccountScreen,
     options: { headerShown: false },
   },
 ];
