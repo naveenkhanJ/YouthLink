@@ -24,36 +24,41 @@ import { colors, spacing, typography } from "../theme/tokens";
  * @param {string} title
  * @param {() => void} [onBack] - Omit to render backHit as an empty spacer.
  * @param {import("react").ReactNode} [action] - Right-side Action slot content.
+ * @param {boolean} [hideBack] - Draw no backHit at all, so the title starts at the left edge (Figma
+ *   1.17d "Account deleted": nothing to go back to). Different from omitting `onBack`, which keeps
+ *   the empty 44px spacer.
  */
-export default function ScreenHeader({ title, onBack, action }) {
+export default function ScreenHeader({ title, onBack, action, hideBack = false }) {
   // insets.top: the status bar overlays this screen's layout rather than
   // pushing it down (found live — the status bar's icons were rendering
   // directly on top of the title text without this).
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.bar, { paddingTop: insets.top }]}>
-      <View style={styles.backHit}>
-        {onBack ? (
-          <Pressable
-            onPress={onBack}
-            hitSlop={spacing.sm}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            style={styles.backTarget}
-          >
-            <Svg width={44} height={44} viewBox="0 0 44 44">
-              <Path
-                d="M26 14L18 22L26 30"
-                stroke={colors.text.primary}
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </Svg>
-          </Pressable>
-        ) : null}
-      </View>
+      {hideBack ? null : (
+        <View style={styles.backHit}>
+          {onBack ? (
+            <Pressable
+              onPress={onBack}
+              hitSlop={spacing.sm}
+              accessibilityRole="button"
+              accessibilityLabel="Back"
+              style={styles.backTarget}
+            >
+              <Svg width={44} height={44} viewBox="0 0 44 44">
+                <Path
+                  d="M26 14L18 22L26 30"
+                  stroke={colors.text.primary}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </Svg>
+            </Pressable>
+          ) : null}
+        </View>
+      )}
       <Text style={styles.title} numberOfLines={1}>
         {title}
       </Text>
