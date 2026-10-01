@@ -85,7 +85,7 @@ export default {
   firebaseServiceAccountPath: required("FIREBASE_SERVICE_ACCOUNT_PATH"),
 
   // Stateless JWT signing secret (FR-ACC-07) — see backend/src/middleware/requireAuth.js
-  // and backend/src/modules/account/jwt.js. No session/refresh-token table
+  // and backend/src/lib/jwt.js. No session/refresh-token table
   // exists (see docs/database-schema.md's Design Decisions), so this is the
   // sole thing authenticating every request across every module.
   jwtSecret: required("JWT_SECRET"),
