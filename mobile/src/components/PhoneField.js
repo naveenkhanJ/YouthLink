@@ -30,7 +30,7 @@ const LOCAL_DIGITS = 9;
  * @param {string} [error]
  * @param {boolean} [editable]
  */
-export default function PhoneField({ value, onChangeText, error, editable = true, label = "Phone number" }) {
+export default function PhoneField({ value, onChangeText, error, showErrorLine = false, editable = true, label = "Phone number" }) {
   function handleChange(text) {
     onChangeText(text.replace(/[^0-9]/g, "").slice(0, LOCAL_DIGITS));
   }
@@ -60,7 +60,9 @@ export default function PhoneField({ value, onChangeText, error, editable = true
           accessibilityLabel="Phone number"
         />
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {showErrorLine && typeof error === "string" && error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 }

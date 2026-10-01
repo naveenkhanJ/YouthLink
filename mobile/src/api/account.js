@@ -48,22 +48,51 @@ export function checkAvailability(payload) {
   return request("/api/account/check-availability", { method: "POST", body: payload });
 }
 
+/**
+ * FR-ACC-10: which reset channels this phone can use. The email comes back masked, and an
+ * unknown number looks the same as one with no verified email.
+ * @param {{ phone: string }} payload - E.164, e.g. "+94771234567".
+ * @returns {Promise<{ phone: string, email: string|null, emailVerified: boolean }>}
+ */
+export function getResetChannels(payload) {
+  return request("/api/account/reset-password/channels", { method: "POST", body: payload });
+}
+
+/** @param {{ phone: string, channel: "PHONE"|"EMAIL" }} payload */
 export function requestPasswordReset(payload) {
   return request("/api/account/reset-password/request", { method: "POST", body: payload });
 }
 
-export function verifyPasswordResetOtp(payload) {
-  return request("/api/account/reset-password/otp", { method: "POST", body: payload });
+/**
+ * Checks the 6-digit reset code.
+ * @param {{ phone: string, code: string }} payload
+ * @returns {Promise<{ success: true, token: string }>} The token for the new-password step.
+ */
+export function verifyPasswordResetCode(payload) {
+  return request("/api/account/reset-password/verify", { method: "POST", body: payload });
 }
 
+/** @param {{ token: string, newPassword: string }} payload */
 export function confirmPasswordReset(payload) {
   return request("/api/account/reset-password/confirm", { method: "POST", body: payload });
 }
 
+/** FR-ACC-10 E8. @param {{ nic: string, birthdate: string, legalName: string, deviceId: string }} payload */
 export function requestAccountRecovery(payload) {
   return request("/api/account/recovery/request", { method: "POST", body: payload });
 }
 
+/** @returns {Promise<{ status: "pending"|"approved"|"rejected"|"used" }>} */
+export function getRecoveryStatus(deviceId) {
+  return request(`/api/account/recovery/status?deviceId=${encodeURIComponent(deviceId)}`);
+}
+
+/** @param {{ deviceId: string, newPassword: string }} payload */
+export function confirmRecovery(payload) {
+  return request("/api/account/recovery/confirm", { method: "POST", body: payload });
+}
+
+/** FR-ACC-12. @param {{ password: string, idToken: string }} payload */
 export function changePhone(payload) {
   return request("/api/account/phone/change", { method: "POST", body: payload });
 }

@@ -83,6 +83,12 @@ const LOCKED_MESSAGE =
   "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead.";
 const CLEARED_LOCKOUT = { failedLoginAttempts: 0, lockedUntil: null };
 
+// Prototype 1.6sus / 1.7sus: each path names the OTHER path, since neither will work.
+const SUSPENDED_ON_PASSWORD_PATH =
+  "This account has been suspended. Staff make that decision and it takes effect immediately. Logging in with a code will not work either, and YouthLink has no appeals process.";
+const SUSPENDED_ON_OTP_PATH =
+  "This account has been suspended. Staff make that decision and it takes effect immediately. Trying the password instead will not work either, and YouthLink has no appeals process.";
+
 // Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
 // compared against on an unregistered-phone login attempt so the response
 // takes roughly the same time as a real wrong-password attempt (which runs
@@ -477,12 +483,17 @@ async function loginWithPassword({ phone, password }) {
   // Same generic message whether the phone isn't registered or the password
   // is wrong — telling the two apart would let a caller enumerate registered
   // phone numbers.
+  // The two strings the prototype draws (1.6bnr1, 1.6bnr2). The remaining-attempts
+  // warning appears only once two or fewer are left (FR-ACC-09 E6), not on every miss.
   const invalidCredentials = (remaining) => {
-    let msg = "We couldn't log you in with those details. Check your number and password, or reset your password.";
-    if (remaining !== undefined && remaining > 0) {
-      msg += ` You have ${remaining} attempt${remaining === 1 ? '' : 's'} left.`;
+    if (remaining !== undefined && remaining > 0 && remaining <= 2) {
+      return AppError.unauthorized(
+        `We couldn't log you in with those details. ${remaining} attempt${remaining === 1 ? "" : "s"} left before password login is paused for 15 minutes.`,
+      );
     }
-    return AppError.unauthorized(msg);
+    return AppError.unauthorized(
+      "We couldn't log you in with those details. Check your number and password, or reset your password.",
+    );
   };
 
   if (!user) {
@@ -588,7 +599,7 @@ async function loginWithPassword({ phone, password }) {
   // it earlier would let a caller learn account status without knowing the
   // password.
   if (isSuspended(user)) {
-    throw AppError.forbidden("This account has been suspended.");
+    throw AppError.forbidden(SUSPENDED_ON_PASSWORD_PATH);
   }
 
   return { token: signToken({ sub: user.id }), user };
@@ -637,7 +648,7 @@ async function loginWithOtp({ idToken }) {
     throw AppError.unauthorized("No account found for this phone number.");
   }
   if (isSuspended(user)) {
-    throw AppError.forbidden("This account has been suspended.");
+    throw AppError.forbidden(SUSPENDED_ON_OTP_PATH);
   }
 
   await clearLockout(user.id);

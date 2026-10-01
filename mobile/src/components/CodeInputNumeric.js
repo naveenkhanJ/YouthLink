@@ -22,7 +22,7 @@ const DIGIT_COUNT = 6;
  * @param {(value: string) => void} onChangeText
  * @param {string} [error] - Shown below the boxes; also reddens them.
  */
-export default function CodeInputNumeric({ value = "", onChangeText, error }) {
+export default function CodeInputNumeric({ value = "", onChangeText, error, showErrorLine = false }) {
   const inputRefs = useRef([]);
   const digits = value.split("");
 
@@ -60,7 +60,9 @@ export default function CodeInputNumeric({ value = "", onChangeText, error }) {
           />
         ))}
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {showErrorLine && typeof error === "string" && error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 }
