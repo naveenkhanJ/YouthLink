@@ -14,7 +14,7 @@
       "scrumRole": "Developer",
       "role": "shared-owner",
       "emails": ["mohamed_afham@outlook.com"],
-      "modules": ["account"],
+      "modules": ["account", "profile"],
       "acceptedBranches": ["chore/shared/project-scaffolding-afham"],
       "ignoredBranches": ["demo/integration-showcase"]
     },
