@@ -1211,7 +1211,7 @@ async function getDeletionStatus({ userId }) {
 /**
  * FR-ACC-17 / NFR-PRIV-03: delete the account. Gated behind password re-entry and blocked while
  * any engagement is active. Deletion is an anonymisation, not a row removal: the identifying
- * columns are overwritten (NIC, phone, email, password, legal name, last browse location) so
+ * columns are overwritten (NIC, phone, email, password, legal name, birthdate, last browse location) so
  * every rating, completion record and engagement that points at this id keeps pointing at it,
  * now attributed to an anonymised reference rather than a person.
  *
@@ -1246,6 +1246,8 @@ async function deleteAccount({ userId, password }) {
         nicEncrypted: `deleted:${user.id}`,
         nicLast4: "0000",
         legalName: "Deleted user",
+        // The birthdate is personal data too; the age gate only matters at signup.
+        birthdate: new Date("1900-01-01"),
         passwordHash: unusableHash,
         passwordChangedAt: new Date(), // every token issued before now is rejected
         failedLoginAttempts: 0,
