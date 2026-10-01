@@ -1,68 +1,169 @@
 /**
- * Temporary launch screen.
+ * The app's neutral entry point (docs/module-ownership.md Sprint 3, shared
+ * prerequisite item 1) — replaces the placeholder that used to live here.
  *
- * Exists so the app runs before any real screen is built — react-navigation
- * throws if a navigator has no screens at all. Replace the initial route in
- * RootNavigator once a real entry screen exists, then delete this file.
+ * There is no designed "generic Home" screen in docs/prototype/ — MNAV-shells.md
+ * defines three role-specific tab shells instead ("this frame is a definition,
+ * not a step... no flow visits them"), each landing on that role's first hub
+ * tab. So this screen's job is routing, not its own UI:
+ *   - signed in   → that role's TabBar + the exact shell copy MNAV-shells.md
+ *     already wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
+ *   - signed out  → held off entirely, on Afham's explicit instruction
+ *     (2026-09-27): docs/prototype/'s M0 onboarding + 1.1 role-selection are
+ *     what actually belongs here, and neither is in scope yet. What's below
+ *     is deliberately NOT designed UI — no tokens, no brand styling, same
+ *     plain-scaffold spirit as this file's original placeholder — just
+ *     enough to keep reaching the existing Login/Register screens for
+ *     testing until M0 is actually built. Do not "improve" its look; that
+ *     was the mistake the first time (a full YouthLink-branded screen that
+ *     doesn't exist anywhere in the prototype).
  *
- * The buttons below are temporary manual-testing scaffolding (added while
- * verifying the dev-client build and Firebase on-device) — there's no real
- * app-wide navigation flow decided yet for where a user lands after each of
- * these. Remove once real navigation exists or an actual entry flow is
- * decided; every route name here must already exist in some module's
- * <module>.screens.js or this will crash at startup.
+ * The real hub screens (Browse, My Postings, My Endorsements) aren't on
+ * develop yet — they're on other modules' unmerged Sprint 3 branches — so
+ * each one is a clearly-marked placeholder here (docs/workflow/agent-protocol.md
+ * §4.4's "clearly marked no-op") until those PRs land.
  */
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Button as RNButton, Pressable, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useAuth } from "../auth/AuthContext";
+import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
+import { colors, spacing, typography } from "../theme/tokens";
+
+const ROLE_TO_TABBAR_ROLE = {
+  YOUTH_JOB_SEEKER: "worker",
+  EMPLOYER: "employer",
+  COMMUNITY_ENDORSER: "verifier",
+};
+
+const FIRST_TAB_BY_ROLE = {
+  worker: "browse",
+  employer: "postings",
+  verifier: "endorsements",
+};
 
 const TEST_LINKS = [
-  { label: "Log in", route: "AccountLogin" },
-  { label: "Create account", route: "AccountRegister" },
   { label: "Listing detail (FR-APPLY)", route: "ApplicationListingDetail" },
   { label: "My applications (FR-APPLY)", route: "ApplicationMine" },
   { label: "Applicant pool (FR-APPLY)", route: "ApplicationApplicantPool" },
 ];
 
-export default function HomeScreen({ navigation }) {
+// Deliberately plain — not a designed screen, see the file header.
+function SignedOutScaffold({ navigation }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>YouthLink</Text>
-      <Text style={styles.subtitle}>
-        Navigation is wired up. Add your screens in{"\n"}
-        src/screens/&lt;module&gt;/&lt;module&gt;.screens.js
+    <View style={scaffoldStyles.container}>
+      <Text style={scaffoldStyles.note}>
+        Not signed in. M0 onboarding / 1.1 role selection aren't built yet — this is
+        engineering scaffolding to reach Login/Register, not app UI.
       </Text>
+      <RNButton title="Log in" onPress={() => navigation.navigate("AccountLogin")} />
+      <RNButton title="Create account" onPress={() => navigation.navigate("AccountRegister")} />
 
-      <View style={styles.links}>
+      <View style={scaffoldStyles.links}>
         {TEST_LINKS.map(({ label, route }) => (
           <Pressable
             key={route}
-            style={styles.linkButton}
+            style={scaffoldStyles.linkButton}
             onPress={() => navigation.navigate(route)}
           >
-            <Text style={styles.linkLabel}>{label}</Text>
+            <Text style={scaffoldStyles.linkLabel}>{label}</Text>
           </Pressable>
         ))}
       </View>
-
-      <StatusBar style="auto" />
     </View>
   );
 }
 
+function SignedInShell({ user, signOut }) {
+  const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
+  const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
+  const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
+
+  return (
+    <View style={styles.flex}>
+      <View style={styles.hubContent}>
+        <Text style={styles.title}>{shellCopy.title}</Text>
+        <Text style={styles.subtitle}>{shellCopy.hosts}</Text>
+        <View style={styles.buttonStack}>
+          <RNButton title="Sign out" onPress={signOut} />
+        </View>
+      </View>
+      <TabBar role={tabBarRole} activeTab={activeTab} onTabPress={setActiveTab} />
+      <StatusBar style="dark" />
+    </View>
+  );
+}
+
+export default function HomeScreen({ navigation }) {
+  const { status, user, signOut } = useAuth();
+
+  if (status === "loading") {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.brand.primary} />
+      </View>
+    );
+  }
+
+  if (status === "signedIn") {
+    return <SignedInShell user={user} signOut={signOut} />;
+  }
+
+  return <SignedOutScaffold navigation={navigation} />;
+}
+
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+    backgroundColor: colors.bg.default,
+  },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+    backgroundColor: colors.bg.default,
+  },
+  hubContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  title: {
+    ...typography.title,
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
+    textAlign: "center",
+  },
+  subtitle: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+    textAlign: "center",
+  },
+  buttonStack: {
+    marginTop: spacing.xl,
+    gap: spacing.md,
+    width: "100%",
+  },
+});
+
+// Intentionally not using theme tokens here — see the file header on why
+// this stays a plain scaffold rather than designed UI.
+const scaffoldStyles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
+    gap: 12,
     backgroundColor: "#fff",
   },
-  title: { fontSize: 28, fontWeight: "600", marginBottom: 12 },
-  subtitle: {
+  note: {
     fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
     color: "#555",
+    textAlign: "center",
+    marginBottom: 12,
   },
   links: { marginTop: 32, width: "100%", gap: 12 },
   linkButton: {

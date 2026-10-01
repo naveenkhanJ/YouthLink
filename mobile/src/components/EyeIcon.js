@@ -1,14 +1,14 @@
 /**
- * Password-visibility eye icon — Account Management module only. No icon
- * library is installed (checked before adding one — see TextField.js's
- * note); built from plain Views instead, same avoid-the-dependency
- * precedent as Checkbox.js's Unicode "✓". Two states: a plain eye (tap to
- * reveal) and an eye with a diagonal slash through it (tap to hide).
+ * Password-visibility eye icon, shared version — ported from
+ * mobile/src/screens/account/components/EyeIcon.js onto the real design
+ * tokens. No icon library is installed (an established precedent, checked
+ * before this project ever added one); plain Views instead, same as
+ * TabBar.js's tab glyphs.
  */
 import { View, StyleSheet } from "react-native";
-import { colors } from "../theme";
+import { colors } from "../theme/tokens";
 
-const SIZE = 22;
+const SIZE = 24;
 
 /**
  * @param {boolean} revealed - true renders the "hide" (slashed) state.
@@ -35,20 +35,20 @@ const styles = StyleSheet.create({
     height: 13,
     borderRadius: 7,
     borderWidth: 1.6,
-    borderColor: colors.textSecondary,
+    borderColor: colors.text.secondary,
   },
   pupil: {
     position: "absolute",
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.textSecondary,
+    backgroundColor: colors.text.secondary,
   },
   slash: {
     position: "absolute",
     width: SIZE - 3,
     height: 1.6,
-    backgroundColor: colors.textSecondary,
+    backgroundColor: colors.text.secondary,
     transform: [{ rotate: "45deg" }],
   },
 });

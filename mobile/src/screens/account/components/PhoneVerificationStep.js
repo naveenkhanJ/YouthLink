@@ -8,11 +8,11 @@
  * renders.
  */
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors, spacing, typography } from "../theme";
+import { colors, spacing, typography } from "../../../theme/tokens";
 import { LOCAL_DIGITS } from "../phoneFormat";
-import Button from "./Button";
-import PhoneField from "./PhoneField";
-import TextField from "./TextField";
+import Button from "../../../components/Button";
+import PhoneField from "../../../components/PhoneField";
+import TextField from "../../../components/TextField";
 
 /**
  * @param {ReturnType<typeof import("../hooks/usePhoneVerification").default>} verification
@@ -33,6 +33,7 @@ export default function PhoneVerificationStep({ verification, onConfirm, confirm
     formattedPhone,
     sendCode,
     changeNumber,
+    codeExpired,
   } = verification;
 
   if (!confirmationResult) {
@@ -74,7 +75,7 @@ export default function PhoneVerificationStep({ verification, onConfirm, confirm
         title={confirmLabel}
         onPress={onConfirm}
         loading={confirmingCode}
-        disabled={code.length !== 6}
+        disabled={code.length !== 6 || codeExpired}
       />
 
       {/* Disabled on resendCooldown > 0 (the normal case), sendingCode, and
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   },
   sentText: {
     fontSize: typography.caption.fontSize,
-    color: colors.textSecondary,
+    color: colors.text.secondary,
     flexShrink: 1,
   },
   resendRow: {
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   link: {
     fontSize: typography.caption.fontSize,
     fontWeight: typography.caption.fontWeight,
-    color: colors.primary,
+    color: colors.brand.primary,
   },
   linkDisabled: {
     color: colors.textPlaceholder,

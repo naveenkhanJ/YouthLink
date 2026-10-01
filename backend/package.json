@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare": "node ../scripts/install-hooks.mjs",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "dev": "nodemon --experimental-strip-types index.js",
     "start": "node --experimental-strip-types index.js"
@@ -29,5 +30,8 @@
     "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "prisma": "^7.9.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

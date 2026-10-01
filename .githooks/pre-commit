@@ -1,0 +1,11 @@
+#!/bin/sh
+# Installed via core.hooksPath by scripts/install-hooks.mjs (runs on npm install).
+# The check itself is Node, so it behaves the same on Windows, macOS and Linux.
+# If Node is not on this shell's PATH (GitHub Desktop sometimes has a shorter
+# PATH than your terminal), the check is skipped with a warning rather than
+# blocking you - fix the PATH, don't live without the check.
+if ! command -v node >/dev/null 2>&1; then
+  echo "youthlink pre-commit hook: node not found on PATH - check skipped" >&2
+  exit 0
+fi
+exec node "$(git rev-parse --show-toplevel)/scripts/hooks/pre-commit.mjs" "$@"

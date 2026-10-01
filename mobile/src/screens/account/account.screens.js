@@ -18,17 +18,59 @@
  *   ];
  */
 import LoginScreen from "./LoginScreen";
+import AccountLoginOtpScreen from "./AccountLoginOtpScreen";
 import RegisterScreen from "./RegisterScreen";
+import AccountForgotPasswordScreen from "./AccountForgotPasswordScreen";
+import AccountForgotPasswordCodeScreen from "./AccountForgotPasswordCodeScreen";
+import AccountRecoveryConfirmScreen from "./AccountRecoveryConfirmScreen";
+import AccountRecoveryStatusScreen from "./AccountRecoveryStatusScreen";
+import AccountResetPasswordScreen from "./AccountResetPasswordScreen";
+import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
 
 export default [
   {
     name: "AccountLogin",
     component: LoginScreen,
-    options: { title: "Log in" },
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountLoginOtp",
+    component: AccountLoginOtpScreen,
+    options: { headerShown: false },
   },
   {
     name: "AccountRegister",
     component: RegisterScreen,
-    options: { title: "Create account" },
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountForgotPassword",
+    component: AccountForgotPasswordScreen,
+    options: { title: "Forgot password" },
+  },
+  {
+    name: "AccountForgotPasswordCode",
+    component: AccountForgotPasswordCodeScreen,
+    options: { title: "Verify code" },
+  },
+  {
+    name: "AccountRecoveryConfirm",
+    component: AccountRecoveryConfirmScreen,
+    options: { title: "Recover account" },
+  },
+  {
+    name: "AccountRecoveryStatus",
+    component: AccountRecoveryStatusScreen,
+    options: { title: "Recovery status" },
+  },
+  {
+    name: "AccountResetPassword",
+    component: AccountResetPasswordScreen,
+    options: { title: "Reset password" },
+  },
+  {
+    name: "AccountPhoneChange",
+    component: AccountPhoneChangeScreen,
+    options: { headerShown: false },
   },
 ];
