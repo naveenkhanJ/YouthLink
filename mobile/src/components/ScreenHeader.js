@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
+    gap: spacing.xs, // Figma 48:2: gap 4 between back target, title and action
     paddingHorizontal: spacing.xs,
     backgroundColor: colors.bg.default,
     borderBottomWidth: 1,
