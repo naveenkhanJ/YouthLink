@@ -1,32 +1,33 @@
 /**
- * Registration screen (FR-ACC-01) — Afham.
+ * Registration (FR-ACC-01) — Afham.
  *
- * Four steps, matching spec 1.1 → 1.2 → 1.3 → 1.4:
- *   Step 1 — Role selection (1.1)  — which of the three roles they are
- *   Step 2 — Phone entry (1.2)     — Firebase Phone Auth, send code
- *   Step 3 — Code entry (1.3)      — OTP verify, sets idToken
- *   Step 4 — Details (1.4)         — password, email, NIC, birthdate, legal name, ToS
+ * Prototype frames (docs/prototype/M1-account.md): 1.1 role, 1.2 phone, 1.3 code, 1.4 details,
+ * plus the failure frames 1.2err, 1.3err1/err2, 1.3rs2, 1.4err1/err2/err3 and 1.4cnt. They are
+ * the same four steps with different state, so this is one screen holding a `step`.
  *
- * All steps share the same registration topBar chrome pattern: a backHit
- * 44×44, TEXT "Create account" (mobile/display), TEXT "Step X of 4"
- * (mobile/caption), and a pinned ctaBar at the bottom — NOT Chrome/ScreenHeader
- * (that's only for settings/form screens per the component's own comment).
+ * Chrome (every step): content pad 6/16/4/16, gap 16, a 44px top bar (back chevron left, ✕
+ * right — step 1 has an empty 44px "ghost" instead, nothing to go back to), the display title
+ * "Create account", the "Step N of 4" caption, and a pinned ctaBar. The details step is the
+ * exception drawn tighter: pad 6/16/0/16, gap 8, and a 52px top bar (8px bottom padding).
  *
- * Every step except the last keeps a "Go to log in" link above the ctaBar.
+ * - Back goes one step back; ✕ abandons registration and returns to role selection (1.1).
+ * - The phone is verified through Firebase (FR-ACC-08); the resulting ID token is held in
+ *   state and submitted with the details, where the server validates it.
+ * - A failed field is State=Error plus a separate Feedback/FieldError beneath it — the
+ *   server's terse field codes ("Already registered") are mapped to the sentences drawn in
+ *   1.2err, 1.4err1 and 1.4err2.
+ * - Create account stays enabled when the terms are unticked, so the attempt can produce the
+ *   explanation (1.4err3).
+ * - The ToS / Privacy links open 1.20 (AccountTerms).
  *
- * Navigation note: the X button (step 1) and back (steps 2–4) both go to
- * step 1, and ✕ always exits to 1.1 (not goBack()), matching the spec.
- *
- * Phone verification state lives in usePhoneVerification.js, shared with
- * AccountLoginOtpScreen.js.
+ * Phone verification state lives in usePhoneVerification.js, shared with AccountLoginOtpScreen.
  */
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { register, checkAvailability } from "../../api/account";
-import { parseApiError } from "../../api/client";
 import { colors, spacing, typography } from "../../theme/tokens";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
@@ -35,77 +36,97 @@ import Checkbox from "../../components/Checkbox";
 import Link from "../../components/Link";
 import CodeInputNumeric from "../../components/CodeInputNumeric";
 import CountdownText from "../../components/CountdownText";
+import DateTimeField from "../../components/DateTimeField";
 import FieldError from "../../components/FieldError";
+import FormBanner from "../../components/FormBanner";
 import CtaBar from "../../components/CtaBar";
 import PhoneField from "../../components/PhoneField";
 import BackButton from "./components/BackButton";
+import CloseButton from "./components/CloseButton";
 import usePhoneVerification from "./hooks/usePhoneVerification";
-import { COUNTRY_CODE } from "./phoneFormat";
+import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
-// Client-side email check — see RegisterScreen comment for rationale.
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ROLES = [
-  {
-    value: "YOUTH_JOB_SEEKER",
-    title: "Youth Job-Seeker",
-    description: "Find part-time work and gigs",
-  },
-  {
-    value: "EMPLOYER",
-    title: "Local Business/Employer",
-    description: "Post gigs and hire workers",
-  },
-  {
-    value: "COMMUNITY_ENDORSER",
-    title: "Community Verifier",
-    description: "Vouch for people you know",
-  },
+  { value: "YOUTH_JOB_SEEKER", title: "Youth Job-Seeker", description: "Find part-time work and gigs" },
+  { value: "EMPLOYER", title: "Local Business/Employer", description: "Post gigs and hire workers" },
+  { value: "COMMUNITY_ENDORSER", title: "Community Verifier", description: "Vouch for people you know" },
 ];
 
-// Employer gets 5 steps (the extra "posting as" step 1.4e/1.5); others get 4.
-// Note: the extra employer step is a separate screen not yet built. The step
-// counter shows the total that applies to this role so it's correct from step 1.
-function totalSteps(role) {
-  return role === "EMPLOYER" ? 5 : 4;
+// The sentences the prototype draws for the failures a registration can meet.
+const PHONE_TAKEN_MESSAGE =
+  "This number is already registered. Log in instead — you can reset your password from there.";
+const NIC_TAKEN_MESSAGE =
+  "This NIC is already registered. You can log in instead, or check the number for a typo.";
+const UNDER_AGE_MESSAGE = "YouthLink is for people aged 18 and over. Please check your birthdate is right.";
+const TERMS_MESSAGE = "Please accept the Terms of Service and Privacy Policy to continue.";
+// Not drawn (no frame for these): kept short and in the same voice.
+const EMAIL_TAKEN_MESSAGE = "This email address is already in use.";
+const EMAIL_INVALID_MESSAGE = "Enter a valid email address.";
+const PASSWORD_LENGTH_MESSAGE = "8 to 64 characters — spaces allowed, no other rules.";
+const PASSWORD_MISMATCH_MESSAGE = "Passwords do not match.";
+const NAME_REQUIRED_MESSAGE = "Enter your full legal name.";
+const NIC_FORMAT_MESSAGE = "A NIC is 12 digits, or 9 digits followed by V or X.";
+const BIRTHDATE_FORMAT_MESSAGE = "Enter your birthdate as YYYY-MM-DD.";
+const NIC_SHAPE = /^(\d{12}|\d{9}[VvXx])$/;
+const LEGAL_NAME_CAP = 100;
+
+/**
+ * The employer's fifth step ("posting as", FR-ACC-02) is not built yet (YL-82, backlog), so
+ * every role registers in four steps and the counter says so rather than promising a step that
+ * does not exist.
+ */
+const TOTAL_STEPS = 4;
+
+/** Whether `value` is a real calendar date written as YYYY-MM-DD. */
+function isValidDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const d = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
+}
+
+/** Maps a server field code to the drawn sentence; unknown codes pass through readably. */
+function fieldMessage(field, code) {
+  if (field === "phone") return PHONE_TAKEN_MESSAGE;
+  if (field === "nic" && /already/i.test(code)) return NIC_TAKEN_MESSAGE;
+  if (field === "birthdate" && /18/.test(code)) return UNDER_AGE_MESSAGE;
+  if (field === "email" && /already/i.test(code)) return EMAIL_TAKEN_MESSAGE;
+  if (field === "tosAccepted") return TERMS_MESSAGE;
+  return code;
 }
 
 export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  // step: 1 | 2 | 3 | 4
   const [step, setStep] = useState(1);
-
-  // Step 1 — role
   const [role, setRole] = useState(null);
 
-  // Steps 2–3 — phone verification
+  // Steps 2–3: phone verification. onBeforeSend turns "already registered" into 1.2err.
   const verification = usePhoneVerification({
-    onBeforeSend: async (phone) => {
-      const result = await checkAvailability({ phone: `${COUNTRY_CODE}${phone}` });
-      if (result.phoneTaken) {
-        throw new Error("This number is already registered. Log in instead — you can reset your password from there.");
-      }
+    onBeforeSend: async (digits) => {
+      const result = await checkAvailability({ phone: `${COUNTRY_CODE}${digits}` });
+      if (result.phoneTaken) throw new Error(PHONE_TAKEN_MESSAGE);
     },
   });
   const {
     phone,
-    setPhone,
-    confirmationResult,
+    editPhone,
     code,
     setCode,
     error: verificationError,
     sendingCode,
     confirmingCode,
     resendCooldown,
+    codeExpired,
     formattedPhone,
     sendCode,
     changeNumber,
-    codeExpired,
+    confirmCode,
   } = verification;
   const [idToken, setIdToken] = useState(null);
 
-  // Step 4 — details form
+  // Step 4: details.
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -113,90 +134,89 @@ export default function RegisterScreen({ navigation }) {
   const [birthdate, setBirthdate] = useState("");
   const [legalName, setLegalName] = useState("");
   const [tosAccepted, setTosAccepted] = useState(false);
-  const [tosError, setTosError] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [registeredUser, setRegisteredUser] = useState(null);
 
-  // Back-press guard — once phone has been entered or step 2 reached,
-  // warn before discarding (spec: ✕ goes to 1.1 after confirmation).
+  // Hardware back follows the on-screen back: one step back, and out of the screen only from
+  // the first step.
   useEffect(() => {
-    const hasUnsavedInput =
-      !registeredUser && (step > 1 || (phone && phone.length > 0));
-    if (!hasUnsavedInput) return undefined;
-
-    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert(
-        "Discard registration?",
-        "The details you've entered will be lost.",
-        [
-          { text: "Stay", style: "cancel" },
-          {
-            text: "Discard",
-            style: "destructive",
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ],
-      );
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (registeredUser || step === 1) return false;
+      goBackOneStep();
+      return true;
     });
-    return unsubscribe;
-  }, [navigation, registeredUser, step, phone]);
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, registeredUser]);
 
-  // Step 2 — send code advances to step 3 on success
-  async function handleSendCode() {
-    await sendCode();
-    if (verification.confirmationResult || !verification.error) {
-      // confirmationResult is set by the hook asynchronously; step 3 reads it.
-      setStep(3);
-    }
+  function goBackOneStep() {
+    if (step === 3) changeNumber();
+    setStep((s) => Math.max(1, s - 1));
   }
 
-  // Step 3 — verify code, advance to step 4 on success
+  /** ✕ — abandon registration and return to role selection (1.1). */
+  function abandon() {
+    changeNumber();
+    setIdToken(null);
+    setPassword("");
+    setConfirmPassword("");
+    setEmail("");
+    setNic("");
+    setBirthdate("");
+    setLegalName("");
+    setTosAccepted(false);
+    setFieldErrors({});
+    setFormError(null);
+    setStep(1);
+  }
+
+  async function handleSendCode() {
+    if (await sendCode()) setStep(3);
+  }
+
+  async function handleResend() {
+    await sendCode();
+  }
+
   async function handleConfirmCode() {
-    await verification.confirmCode(async (token) => {
+    await confirmCode(async (token) => {
       setIdToken(token);
       setStep(4);
     });
   }
 
   async function handleEmailBlur() {
-    if (!email.trim() || !EMAIL_FORMAT.test(email.trim())) return;
+    const trimmed = email.trim();
+    if (!trimmed || !EMAIL_FORMAT.test(trimmed)) return;
     try {
-      const result = await checkAvailability({ email: email.trim() });
-      if (result.emailTaken) {
-        setFieldErrors((prev) => ({ ...prev, email: "Already in use" }));
-      } else {
-        setFieldErrors((prev) => {
-          const next = { ...prev };
-          if (next.email === "Already in use") delete next.email;
-          return next;
-        });
-      }
-    } catch (err) {
-      // Ignore network errors on blur, let the submit catch them
+      const result = await checkAvailability({ email: trimmed });
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        if (result.emailTaken) next.email = EMAIL_TAKEN_MESSAGE;
+        else if (next.email === EMAIL_TAKEN_MESSAGE) delete next.email;
+        return next;
+      });
+    } catch {
+      // A failed pre-check must not block the form; the submit reports a real conflict.
     }
   }
 
-  // Step 4 — submit registration
-  async function handleSubmitRegistration() {
-    setFieldErrors({});
+  async function handleSubmit() {
     setFormError(null);
 
-    const preErrors = {};
-    if (password !== confirmPassword) {
-      preErrors.confirmPassword = "Passwords do not match";
-    }
-    if (email.trim() && !EMAIL_FORMAT.test(email.trim())) {
-      preErrors.email = "Must be a valid email address";
-    }
-    setTosError(!tosAccepted);
-
-    if (Object.keys(preErrors).length > 0 || !tosAccepted) {
-      setFieldErrors(preErrors);
-      return;
-    }
+    // Client-side checks mirror the server's so the common mistakes get an answer at once.
+    const errors = {};
+    if (password.length < 8 || password.length > 64) errors.password = PASSWORD_LENGTH_MESSAGE;
+    else if (password !== confirmPassword) errors.confirmPassword = PASSWORD_MISMATCH_MESSAGE;
+    if (email.trim() && !EMAIL_FORMAT.test(email.trim())) errors.email = EMAIL_INVALID_MESSAGE;
+    if (!NIC_SHAPE.test(nic.trim())) errors.nic = NIC_FORMAT_MESSAGE;
+    if (!isValidDate(birthdate)) errors.birthdate = BIRTHDATE_FORMAT_MESSAGE;
+    if (!legalName.trim()) errors.legalName = NAME_REQUIRED_MESSAGE;
+    if (!tosAccepted) errors.tosAccepted = TERMS_MESSAGE;
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     setSubmitting(true);
     try {
@@ -205,50 +225,67 @@ export default function RegisterScreen({ navigation }) {
         idToken,
         password,
         email: email.trim() || undefined,
-        nic,
+        nic: nic.trim(),
         birthdate,
-        legalName,
+        legalName: legalName.trim(),
         tosAccepted,
       });
       setRegisteredUser(user);
     } catch (err) {
-      const { formError, fieldErrors } = parseApiError(err);
-      setFormError(formError);
-      setFieldErrors(fieldErrors);
+      if (err.fields) {
+        const mapped = {};
+        for (const [field, text] of Object.entries(err.fields)) mapped[field] = fieldMessage(field, text);
+        // The number was free when the code was sent but is taken now: back to phone entry.
+        if (mapped.phone) {
+          changeNumber();
+          setStep(2);
+        }
+        setFieldErrors(mapped);
+      } else {
+        setFormError(err.message);
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
-  // ── Shared registration chrome ──────────────────────────────────────────
-  // Per spec: backHit 44×44, TEXT "Create account" (mobile/display),
-  // TEXT "Step X of Y" (mobile/caption). The ✕ is spec-named but is actually
-  // the back button on step 1 (no back on step 1 in spec — topBarGhost 44×44).
-  function RegHeader({ stepNum, onBack }) {
-    const total = totalSteps(role);
+  const loginLink = (
+    <Link title="Go to log in" onPress={() => navigation.navigate("AccountLogin")} />
+  );
+
+  /** The registration top bar: back chevron, spacer, ✕ (a ghost on step 1). */
+  function topBar({ ghost = false, tight = false } = {}) {
     return (
-      <View style={styles.topBar}>
-        <View style={styles.backHitArea}>
-          {onBack ? <BackButton onPress={onBack} /> : <View style={styles.topBarGhost} />}
-        </View>
-        <Text style={styles.screenTitle}>Create account</Text>
-        {stepNum ? (
-          <Text style={styles.stepLabel}>Step {stepNum} of {total}</Text>
-        ) : null}
+      <View style={[styles.topBar, tight && styles.topBarTight]}>
+        {ghost ? <View style={styles.ghost} /> : <BackButton onPress={goBackOneStep} />}
+        {ghost ? null : <CloseButton onPress={abandon} />}
       </View>
     );
   }
 
-  // ── Success screen ──────────────────────────────────────────────────────
+  function heading() {
+    return (
+      <>
+        <Text style={styles.screenTitle}>Create account</Text>
+        <Text style={styles.stepLabel}>
+          Step {step} of {TOTAL_STEPS}
+        </Text>
+      </>
+    );
+  }
+
+  // ── Success ─────────────────────────────────────────────────────────────
+  // The prototype continues into the app (M3 3.9); the registration endpoint issues no session,
+  // so the person logs in with the number and password they just chose.
   if (registeredUser) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <StatusBar style="dark" />
-        <View style={styles.successContent}>
+        <View style={styles.content}>
+          <View style={styles.ghost} />
           <Text style={styles.screenTitle}>Account created</Text>
-          <Text style={styles.successBody}>
-            Welcome, {registeredUser.legalName}. You can now log in with your
-            phone number and password.
+          <Text style={styles.sentTo}>
+            Welcome, {registeredUser.legalName}. Log in with your phone number and password to get started.
           </Text>
         </View>
         <CtaBar>
@@ -258,19 +295,14 @@ export default function RegisterScreen({ navigation }) {
     );
   }
 
-  // ── Step 1 — Role Selection (1.1) ───────────────────────────────────────
+  // ── 1.1 Role selection ──────────────────────────────────────────────────
   if (step === 1) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <StatusBar style="dark" />
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* topBarGhost — no back arrow on step 1 */}
-          <RegHeader stepNum={1} onBack={null} />
-
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar({ ghost: true })}
+          {heading()}
           {ROLES.map((option) => (
             <RoleOption
               key={option.value}
@@ -280,114 +312,69 @@ export default function RegisterScreen({ navigation }) {
               onPress={() => setRole(option.value)}
             />
           ))}
-
           <View style={styles.spacer} />
-          <View style={styles.linkGroup}>
-            <Link
-              title="Go to log in"
-              onPress={() => navigation.navigate("AccountLogin")}
-            />
-          </View>
+          {loginLink}
         </ScrollView>
         <CtaBar>
-          <Button
-            title="Continue"
-            onPress={() => setStep(2)}
-            disabled={!role}
-          />
+          <Button title="Continue" onPress={() => setStep(2)} disabled={!role} />
         </CtaBar>
       </View>
     );
   }
 
-  // ── Step 2 — Phone Entry (1.2) ──────────────────────────────────────────
+  // ── 1.2 Phone entry (1.2err when the number is taken) ───────────────────
   if (step === 2) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <StatusBar style="dark" />
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          <RegHeader stepNum={2} onBack={() => setStep(1)} />
-
-          <PhoneField
-            value={phone}
-            onChangeText={setPhone}
-            error={verificationError}
-          />
-
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar()}
+          {heading()}
+          <PhoneField value={phone} onChangeText={editPhone} error={Boolean(verificationError)} />
+          <FieldError message={verificationError} />
           <View style={styles.spacer} />
-          <View style={styles.linkGroup}>
-            <Link
-              title="Go to log in"
-              onPress={() => navigation.navigate("AccountLogin")}
-            />
-          </View>
+          {loginLink}
         </ScrollView>
         <CtaBar>
           <Button
             title="Send code"
             onPress={handleSendCode}
             loading={sendingCode}
-            disabled={phone.length !== 9}
+            disabled={phone.length !== LOCAL_DIGITS}
           />
         </CtaBar>
       </View>
     );
   }
 
-  // ── Step 3 — Code Entry (1.3) ───────────────────────────────────────────
+  // ── 1.3 Code entry (1.3err1 / 1.3err2 / 1.3rs2) ─────────────────────────
   if (step === 3) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
         <StatusBar style="dark" />
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
-          <RegHeader stepNum={3} onBack={() => setStep(2)} />
-
-          <Text style={styles.sentTo}>
-            We sent a 6-digit code to {formattedPhone}.
-          </Text>
-
-          <CodeInputNumeric
-            value={code}
-            onChangeText={setCode}
-            error={verificationError}
-          />
-
-          {/* CountdownText shows "Resend in 0:XX" during cooldown, then
-              Resend code link when cooldown expires — spec 1.3 / 1.3rs2 */}
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar()}
+          {heading()}
+          <Text style={styles.sentTo}>We sent a 6-digit code to {formattedPhone}.</Text>
+          <CodeInputNumeric value={code} onChangeText={setCode} error={Boolean(verificationError)} />
+          <FieldError message={verificationError} />
           {resendCooldown > 0 ? (
             <CountdownText
               text={`Resend in ${Math.floor(resendCooldown / 60)}:${String(resendCooldown % 60).padStart(2, "0")}`}
             />
           ) : (
-            <Link
-              title="Resend code"
-              onPress={sendCode}
-              disabled={sendingCode || confirmingCode}
-            />
+            <Link title="Resend code" onPress={handleResend} />
           )}
-
-          {verificationError ? (
-            <FieldError message={verificationError} />
-          ) : null}
-
           <View style={styles.spacer} />
           <View style={styles.linkGroup}>
             <Link
               title="Change number"
-              onPress={() => { changeNumber(); setStep(2); }}
+              onPress={() => {
+                changeNumber();
+                setStep(2);
+              }}
             />
-            <Link
-              title="Go to log in"
-              onPress={() => navigation.navigate("AccountLogin")}
-            />
+            {loginLink}
           </View>
         </ScrollView>
         <CtaBar>
@@ -402,68 +389,87 @@ export default function RegisterScreen({ navigation }) {
     );
   }
 
-  // ── Step 4 — Details (1.4) ──────────────────────────────────────────────
+  // ── 1.4 Details (1.4err1 / err2 / err3 / 1.4cnt) ────────────────────────
+  const termsLabel = (
+    <>
+      I accept the{" "}
+      <Text style={styles.underlined} onPress={() => navigation.navigate("AccountTerms")}>
+        Terms of Service
+      </Text>{" "}
+      and{" "}
+      <Text style={styles.underlined} onPress={() => navigation.navigate("AccountTerms")}>
+        Privacy Policy
+      </Text>
+    </>
+  );
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
       <KeyboardAwareScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, styles.contentDetails]}
         keyboardShouldPersistTaps="handled"
         enableOnAndroid
         extraScrollHeight={120}
       >
-        <RegHeader stepNum={4} onBack={() => setStep(3)} />
+        {topBar({ tight: true })}
+        {heading()}
 
-        {formError ? <FieldError message={formError} /> : null}
+        {formError ? <FormBanner kind="error" message={formError} /> : null}
 
         <TextField
           label="Password"
           value={password}
           onChangeText={setPassword}
-          placeholder="••••••••••"
+          placeholder="8–64 characters"
           secureTextEntry
-          error={fieldErrors.password}
+          maxLength={64}
+          error={Boolean(fieldErrors.password)}
         />
+        <FieldError message={fieldErrors.password} />
         <TextField
           label="Confirm password"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          placeholder="••••••••••"
+          placeholder="Re-enter password"
           secureTextEntry
-          error={fieldErrors.confirmPassword}
+          maxLength={64}
+          error={Boolean(fieldErrors.confirmPassword)}
         />
+        <FieldError message={fieldErrors.confirmPassword} />
         <Text style={styles.fieldHelp}>8–64 characters, spaces allowed.</Text>
 
         <TextField
           label="Email (optional)"
-            value={email}
-            onChangeText={setEmail}
-            onBlur={handleEmailBlur}
-            placeholder="you@example.com"
+          value={email}
+          onChangeText={setEmail}
+          onBlur={handleEmailBlur}
+          placeholder="you@example.com"
           keyboardType="email-address"
-          error={fieldErrors.email}
+          error={Boolean(fieldErrors.email)}
         />
+        <FieldError message={fieldErrors.email} />
 
         <TextField
           label="NIC"
           value={nic}
           onChangeText={setNic}
           placeholder="200412345678"
-          error={fieldErrors.nic}
+          autoCapitalize="characters"
+          maxLength={12}
+          error={Boolean(fieldErrors.nic)}
         />
-        <Text style={styles.fieldHelp}>
-          12 digits, or 9 digits + V or X — only the shape is checked.
-        </Text>
+        <FieldError message={fieldErrors.nic} />
+        <Text style={styles.nicHelp}>12 digits, or 9 digits + V or X — only the shape is checked.</Text>
 
-        <TextField
+        <DateTimeField
           label="Birthdate"
           value={birthdate}
           onChangeText={setBirthdate}
-          placeholder="YYYY-MM-DD"
-          keyboardType="numbers-and-punctuation"
-          error={fieldErrors.birthdate}
+          error={Boolean(fieldErrors.birthdate)}
         />
+        <FieldError message={fieldErrors.birthdate} />
 
         <TextField
           label="Legal name"
@@ -471,29 +477,25 @@ export default function RegisterScreen({ navigation }) {
           onChangeText={setLegalName}
           placeholder="Full legal name"
           autoCapitalize="words"
-          maxLength={100}
-          error={fieldErrors.legalName}
+          maxLength={LEGAL_NAME_CAP}
+          error={Boolean(fieldErrors.legalName)}
         />
+        <FieldError message={fieldErrors.legalName} />
 
         <Checkbox
           checked={tosAccepted}
           onToggle={() => {
             setTosAccepted((prev) => !prev);
-            setTosError(false);
+            setFieldErrors((prev) => ({ ...prev, tosAccepted: undefined }));
           }}
-          label="I accept the Terms of Service and Privacy Policy"
-          error={tosError || fieldErrors.tosAccepted}
-          onLabelPress={() => navigation.navigate("AccountTerms")}
+          label={termsLabel}
+          errorMessage={fieldErrors.tosAccepted}
         />
 
-        <View style={styles.spacer} />
+        <View style={styles.spacerTight} />
       </KeyboardAwareScrollView>
-      <CtaBar>
-        <Button
-          title="Create account"
-          onPress={handleSubmitRegistration}
-          loading={submitting}
-        />
+      <CtaBar shadow>
+        <Button title="Create account" onPress={handleSubmit} loading={submitting} />
       </CtaBar>
     </View>
   );
@@ -507,24 +509,30 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
+  // Spec: content pad 6/16/4/16, gap 16. 6 is a literal in the frames (no spacing token).
   content: {
     flexGrow: 1,
-    paddingTop: spacing.sm,          // 6px — spec: vertical pad 6/16/4/16
-    paddingHorizontal: spacing.lg,   // 16px sides
-    paddingBottom: spacing.xs,       // 4px
-    gap: spacing.lg,                 // 16px between children
+    paddingTop: 6,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xs,
+    gap: spacing.lg,
   },
-  // ── Registration header ──────────────────────────────────────────────
+  // 1.4 draws its content tighter: pad 6/16/0/16, gap 8.
+  contentDetails: {
+    paddingBottom: 0,
+    gap: spacing.sm,
+  },
+  // topBar 328×44: back chevron at the left, ✕ at the right.
   topBar: {
-    // No explicit height — the title text below sets it naturally.
-    // The 44×44 backHit is inside a Row to avoid competing with the title.
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
-  backHitArea: {
-    height: 44,
-    justifyContent: "center",
+  // On the details step the bar carries 8px of bottom padding (328×52).
+  topBarTight: {
+    paddingBottom: spacing.sm,
   },
-  topBarGhost: {
-    // 44×44 placeholder when step 1 has no back arrow
+  ghost: {
     width: 44,
     height: 44,
   },
@@ -536,7 +544,6 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.text.secondary,
   },
-  // ── Content elements ─────────────────────────────────────────────────
   sentTo: {
     ...typography.secondary,
     color: colors.text.secondary,
@@ -544,28 +551,22 @@ const styles = StyleSheet.create({
   fieldHelp: {
     ...typography.caption,
     color: colors.text.secondary,
-    marginTop: -spacing.md,   // pull up — gap:16 above already applied
+  },
+  nicHelp: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  underlined: {
+    textDecorationLine: "underline",
   },
   spacer: {
     flex: 1,
-    minHeight: spacing.xxl,
+    minHeight: spacing.lg,
+  },
+  spacerTight: {
+    height: spacing.md,
   },
   linkGroup: {
-    gap: 0,
     alignItems: "flex-start",
-    marginBottom: spacing.xs,
-  },
-  // ── Success screen ────────────────────────────────────────────────────
-  successContent: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xxl,
-  },
-  successBody: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginTop: spacing.md,
   },
 });
-
-
