@@ -25,6 +25,9 @@ function publicUser(user) {
     legalName: user.legalName,
     birthdate: user.birthdate,
     nicLast4: user.nicLast4,
+    // Settings (FR-ACC-18) shows the employer's posting type and business name.
+    postingAsType: user.postingAsType ?? null,
+    businessName: user.businessName ?? null,
     accountStatus: user.accountStatus,
     createdAt: user.createdAt,
   };
