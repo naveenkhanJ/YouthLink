@@ -17,4 +17,120 @@
  *     { name: "AccountExample", component: ExampleScreen, options: { title: "Example" } },
  *   ];
  */
-export default [];
+import LoginScreen from "./LoginScreen";
+import AccountLoginOtpScreen from "./AccountLoginOtpScreen";
+import RegisterScreen from "./RegisterScreen";
+import AccountForgotPasswordScreen from "./AccountForgotPasswordScreen";
+import AccountForgotPasswordCodeScreen from "./AccountForgotPasswordCodeScreen";
+import AccountRecoveryConfirmScreen from "./AccountRecoveryConfirmScreen";
+import AccountRecoveryStatusScreen from "./AccountRecoveryStatusScreen";
+import AccountResetPasswordScreen from "./AccountResetPasswordScreen";
+import AccountPhoneChangeScreen from "./AccountPhoneChangeScreen";
+import AccountTermsScreen from "./AccountTermsScreen";
+import AccountSettingsScreen from "./AccountSettingsScreen";
+import AccountChangePasswordScreen from "./AccountChangePasswordScreen";
+import AccountResetByEmailScreen from "./AccountResetByEmailScreen";
+import AccountDisplayNameScreen from "./AccountDisplayNameScreen";
+import AccountNicScreen from "./AccountNicScreen";
+import AccountEmailScreen from "./AccountEmailScreen";
+import AccountDeleteAccountScreen from "./AccountDeleteAccountScreen";
+import AccountPostingAsScreen from "./AccountPostingAsScreen";
+import AccountBusinessScreen from "./AccountBusinessScreen";
+
+export default [
+  {
+    name: "AccountLogin",
+    component: LoginScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountLoginOtp",
+    component: AccountLoginOtpScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountRegister",
+    component: RegisterScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountForgotPassword",
+    component: AccountForgotPasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountForgotPasswordCode",
+    component: AccountForgotPasswordCodeScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountRecoveryConfirm",
+    component: AccountRecoveryConfirmScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountRecoveryStatus",
+    component: AccountRecoveryStatusScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountResetPassword",
+    component: AccountResetPasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountPhoneChange",
+    component: AccountPhoneChangeScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountTerms",
+    component: AccountTermsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountSettings",
+    component: AccountSettingsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountChangePassword",
+    component: AccountChangePasswordScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountResetByEmail",
+    component: AccountResetByEmailScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountDisplayName",
+    component: AccountDisplayNameScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountNic",
+    component: AccountNicScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountEmail",
+    component: AccountEmailScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountDeleteAccount",
+    component: AccountDeleteAccountScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountPostingAs",
+    component: AccountPostingAsScreen,
+    options: { headerShown: false },
+  },
+  {
+    name: "AccountBusiness",
+    component: AccountBusinessScreen,
+    options: { headerShown: false },
+  },
+];

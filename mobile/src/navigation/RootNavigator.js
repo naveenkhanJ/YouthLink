@@ -11,10 +11,13 @@
  * people can add screens in parallel without ever editing the same file.
  * ============================================================================
  */
-import { NavigationContainer } from "@react-navigation/native";
+import { useEffect } from "react";
+import { KeyboardAvoidingView } from "react-native";
+import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "../screens/HomeScreen";
+import { useAuth } from "../auth/AuthContext";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -25,6 +28,7 @@ import engagementScreens from "../screens/engagement/engagement.screens";
 import ratingScreens from "../screens/rating/rating.screens";
 import profileScreens from "../screens/profile/profile.screens";
 import endorsementScreens from "../screens/endorsement/endorsement.screens";
+import helpScreens from "../screens/help/help.screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +43,7 @@ const moduleScreens = [
   ...ratingScreens,
   ...profileScreens,
   ...endorsementScreens,
+  ...helpScreens,
 ];
 
 // Fails loudly at startup rather than showing a blank screen later, which is
@@ -52,14 +57,38 @@ if (duplicates.length > 0) {
   );
 }
 
+const navigationRef = createNavigationContainerRef();
+
+/**
+ * When the app ends a session on its own (a suspension, a password change elsewhere, a deleted
+ * account: the server answers SESSION_ENDED), whatever screen the person was on is no longer
+ * usable. Send them to the login screen, which explains why (prototype 1.6s). A person who chose
+ * to sign out is moved by the Settings screen itself, so this only reacts to a recorded reason.
+ */
+function SessionEndRedirect() {
+  const { status, sessionEndReason } = useAuth();
+  useEffect(() => {
+    if (status !== "signedOut" || !sessionEndReason || !navigationRef.isReady()) return;
+    const current = navigationRef.getCurrentRoute()?.name;
+    if (current === "AccountLogin") return;
+    navigationRef.reset({ index: 0, routes: [{ name: "AccountLogin" }] });
+  }, [status, sessionEndReason]);
+  return null;
+}
+
 export default function RootNavigator() {
   return (
-    <NavigationContainer>
+    // Android draws edge to edge here, so the window does not shrink for the keyboard
+    // (adjustResize has no effect). Padding the whole navigator lifts every screen's pinned
+    // action bar above the keyboard.
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <NavigationContainer ref={navigationRef}>
+      <SessionEndRedirect />
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: "YouthLink" }}
+          options={{ headerShown: false }}
         />
         {moduleScreens.map(({ name, component, options }) => (
           <Stack.Screen
@@ -71,5 +100,6 @@ export default function RootNavigator() {
         ))}
       </Stack.Navigator>
     </NavigationContainer>
+    </KeyboardAvoidingView>
   );
 }

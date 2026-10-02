@@ -12,14 +12,16 @@ Aligned to **SDG 1** (No Poverty) and **SDG 8** (Decent Work and Economic Growth
 
 Read these before writing code. They're short, and most of the mechanisms here aren't guessable from the UI.
 
-| Document                                               | What it's for                                                                                                                                 |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`docs/product-overview.md`](docs/product-overview.md) | **Start here.** How the whole system works and why — check-in codes, the endorsement bootstrap, the applicant sort, the dispute pipeline.     |
-| [`docs/requirements.md`](docs/requirements.md)         | The normative baseline: 129 functional and 32 non-functional requirements, each with acceptance criteria. Your work is checked against these. |
-| [`docs/database-schema.md`](docs/database-schema.md)   | All 20 tables and 49 foreign keys, plus why each looks the way it does and what deliberately isn't modelled.                                  |
-| [`docs/module-ownership.md`](docs/module-ownership.md) | Who owns which module this sprint, and exactly which requirements each covers.                                                                |
-| [`docs/decisions.md`](docs/decisions.md)                | Why things are the way they are — read it when something looks arbitrary, wrong, or like an oversight. Includes sprint-planning decisions, not just technical ones. |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md)                   | Branching, commit format, pull requests, and the Definition of Done.                                                                          |
+| Document                                               | What it's for                                                                                                                                                       |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`docs/product-overview.md`](docs/product-overview.md) | **Start here.** How the whole system works and why — check-in codes, the endorsement bootstrap, the applicant sort, the dispute pipeline.                           |
+| [`docs/requirements.md`](docs/requirements.md)         | The normative baseline: 134 functional and 32 non-functional requirements, each with acceptance criteria. Your work is checked against these.                       |
+| [`docs/database-schema.md`](docs/database-schema.md)   | All 22 tables and 53 foreign keys, plus why each looks the way it does and what deliberately isn't modelled.                                                        |
+| [`docs/module-ownership.md`](docs/module-ownership.md) | Who owns which module this sprint, and exactly which requirements each covers.                                                                                      |
+| [`docs/prototype/`](docs/prototype/README.md)          | The interface specification: every screen, its components, tokens and exact copy, and the design system. UI is built to match it exactly.                           |
+| [`docs/workflow/`](docs/workflow/agent-protocol.md)    | How we work: the agent protocol every AI tool follows, who owns which paths, and the progress-file templates.                                                      |
+| [`docs/decisions.md`](docs/decisions.md)               | Why things are the way they are — read it when something looks arbitrary, wrong, or like an oversight. Includes sprint-planning decisions, not just technical ones. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)                   | Branching, commit format, pull requests, and the Definition of Done.                                                                                                |
 
 ---
 
@@ -82,7 +84,7 @@ Each surface has a `src/README.md` explaining its structure and the rules worth 
 - Node.js and npm
 - A PostgreSQL instance you can connect to
 - Access to the team's Firebase project (Phone Auth + FCM) — ask in the team channel, you need both Console access and two downloaded config files, see Mobile below
-- A way to run a **development build** of the mobile app — Expo Go cannot run it, the navigation packages and Firebase are native modules. See "Running the mobile app" below for what device/emulator options this actually requires
+- A way to run a **development build** of the mobile app — Expo Go cannot run it, the navigation packages and Firebase are native modules. The quickest is the team's shared build; see "Running the mobile app" below
 
 ### First-time setup
 
@@ -108,23 +110,6 @@ npm run dev
 
 Then check `http://localhost:3000/health` returns `{"status":"ok","database":"configured"}`.
 
-> **Known temporary blocker (as of 2026-08-19):** `npm run dev` currently fails
-> to boot at all — `src/modules/posting/` (Gig Posting) is still CommonJS while
-> the rest of the backend is ES modules, and that's a link-time failure, not a
-> routing one: Node fails resolving `app.js`'s imports before a single request
-> could be handled, on every branch, regardless of whether you'd ever call a
-> posting endpoint. The real fix is Lahiru's ESM conversion on
-> `feature/gig-posting` merging into `develop` — check whether that's landed
-> before assuming this still applies. Until it does, if you need a working
-> server locally: copy `src/app.js` to `src/app.local.js`, remove the posting
-> import and its `app.use("/api/postings", ...)` line from that copy, then
-> copy `index.js` to `index.local.js` **and change its `import app from
-> "./src/app.js"` to `"./src/app.local.js"`** — easy to miss, and if you
-> don't, `index.local.js` still loads the original, still-broken `app.js`
-> and you're back to the same crash. Run `node index.local.js` instead of
-> `npm run dev`. Never commit either copy — already covered by the root
-> `.gitignore`'s `*.local.js` pattern.
-
 **Mobile**
 
 ```bash
@@ -142,7 +127,7 @@ having one configured doesn't mean the other is. From Firebase Console
 
 Both are git-ignored (not secrets by Google's own design, but treated with the same care as the backend's Firebase key — not committed regardless).
 
-**Check `mobile/app.json` has these, and add them if it doesn't** — this depends on whether Account Management's Firebase setup has merged into your copy of `develop` yet:
+**`mobile/app.json` on `develop` already contains these** — shown here so you can recognise them, not to be changed:
 
 ```json
 {
@@ -176,20 +161,29 @@ npx expo install @react-navigation/native @react-navigation/native-stack react-n
 
 ### Running the mobile app
 
-**Android only for Sprints 1–2** (see `AGENTS.md`) — Options A and B below are the actual current choices. A development build is required either way; neither requires anyone else's pre-built APK, each produces your own.
+**Android only for now** (see `AGENTS.md`). A development build is required. The shared build below is the quickest route; Options A and B compile your own.
+
+**Shared development build — no native compile.** A development build contains only the native code; your JavaScript still loads from Metro on your own computer. So one build, made once and shared, runs everyone's code:
+
+1. Get the current APK from Afham (team chat) and install it — on an Android phone (allow installing from this source when asked), or by dragging it onto a running emulator.
+2. In `mobile/`: `npm install`, then copy `.env.example` to `.env` and set `EXPO_PUBLIC_API_URL` to where your backend runs — `http://10.0.2.2:3000` from an emulator, `http://<your computer's LAN IP>:3000` from a phone on the same Wi-Fi.
+3. Start the backend (above), then `npx expo start --dev-client` in `mobile/`, and open the installed app; it connects to Metro.
+
+You don't need Android Studio, the NDK, or the Firebase config files for this route — they are already inside the APK. **A new APK is needed only when a native dependency changes**, and Afham sends one then. If the app reports a missing native module, you have an older APK.
 
 **Option A — Android emulator (no Android device needed, free, no subscription).**
 
 1. Install [Android Studio](https://developer.android.com/studio). In its Device Manager, create a virtual device using a system image tagged **"Google Play"** specifically, not just "Google APIs" — Firebase phone-auth verification needs real Play Services, which only the Google-Play-tagged images include.
 2. **Hardware virtualization must be enabled in your BIOS/UEFI** (Intel VT-x / AMD-V), or the emulator will be unusably slow or refuse to start. Check Task Manager → Performance → CPU → "Virtualization" first; only reboot into BIOS if it says Disabled.
-3. **JDK version matters and the default may be wrong.** Gradle needs JDK 17+, but Android Studio's own bundled JDK can be *too new* — a JDK past what the Android Gradle Plugin's native/CMake tooling has caught up with will fail every native module's build with `WARNING: A restricted method in java.lang.System has been called`, not an obviously JDK-related error. **JDK 21 (LTS) is the safe, well-tested choice.** If you hit that error, install/point at a JDK 21 instead of whatever Android Studio bundled, and retry — the fix is just the JDK, nothing else needs to change.
-4. From `mobile/`, with the emulator running: `npx expo run:android`. First run compiles native code (including Firebase) and can genuinely take over an hour depending on your connection — it downloads the Android NDK (700MB+) and CMake. Subsequent runs are fast; `npx expo start --dev-client` after that gives normal fast-refresh for JS/UI changes. A rebuild via `expo run:android` is only needed again when a *native* dependency changes.
+3. **JDK version matters and the default may be wrong.** Gradle needs JDK 17+, but Android Studio's own bundled JDK can be _too new_ — a JDK past what the Android Gradle Plugin's native/CMake tooling has caught up with will fail every native module's build with `WARNING: A restricted method in java.lang.System has been called`, not an obviously JDK-related error. **JDK 21 (LTS) is the safe, well-tested choice.** If you hit that error, install/point at a JDK 21 instead of whatever Android Studio bundled, and retry — the fix is just the JDK, nothing else needs to change.
+4. From `mobile/`, with the emulator running: `npx expo run:android`. First run compiles native code (including Firebase) and can genuinely take over an hour depending on your connection — it downloads the Android NDK (700MB+) and CMake. Subsequent runs are fast; `npx expo start --dev-client` after that gives normal fast-refresh for JS/UI changes. A rebuild via `expo run:android` is only needed again when a _native_ dependency changes.
 
 **Option B — a real Android device.** Same `npx expo run:android` command, with the device connected via USB and USB debugging enabled in Developer Options, instead of an emulator running. No Android Studio strictly required if you already have the Android SDK platform-tools (`adb`) — Android Studio remains the easiest way to get them. No emulator-specific setup (virtualization, system images) applies; the JDK-version note above still does.
 
 **iOS — not needed for Sprints 1–2, kept here so this doesn't read as "Android because that's the only path we documented."** It's a real choice the team made (Android-only), not a limitation of the tooling. For when it becomes relevant: iOS needs either a Mac, or [EAS Build](https://docs.expo.dev/build/introduction/) (Expo's cloud build service, which itself needs no Mac — every build runs in a macOS VM on Expo's infrastructure). What you'd need beyond that depends on where you're running the result:
-   - **iOS Simulator:** free, no Apple Developer account needed — but the simulator itself only runs on macOS, so Mac access is needed regardless of who builds it.
-   - **A physical iPhone:** needs a paid Apple Developer Program membership ($99/year) for the device provisioning, whether built locally on a Mac or via EAS Build. There's no free path to installing a custom dev-client build on a physical iPhone.
+
+- **iOS Simulator:** free, no Apple Developer account needed — but the simulator itself only runs on macOS, so Mac access is needed regardless of who builds it.
+- **A physical iPhone:** needs a paid Apple Developer Program membership ($99/year) for the device provisioning, whether built locally on a Mac or via EAS Build. There's no free path to installing a custom dev-client build on a physical iPhone.
 
 **Dashboard**
 
@@ -237,11 +231,13 @@ The full list, with the reasoning behind each, is in [`docs/requirements.md`](do
 
 ## Team
 
-| Name                         | Role                      |
-| ---------------------------- | ------------------------- |
-| J. Naveenkhan                | Product Owner · Developer |
-| M. I. M. Afham               | Scrum Master · Developer  |
-| P. M. L. Lakmal _(Lahiru)_   | Developer                 |
-| H. P. Weliwitigoda _(Pawan)_ | Developer                 |
+Scrum Master and Product Owner rotate by sprint, so this table shows the **current** assignment (Sprint 3–4); it is not the full history. `docs/workflow/team.json`'s `sprintRoles` is the dated record, and `docs/decisions.md` explains why each rotation happened.
 
-All four write code regardless of Scrum role.
+| Name                         | Current role (Sprint 3–4) |
+| ---------------------------- | -------------------------- |
+| P. M. L. Lakmal _(Lahiru)_   | Scrum Master · Developer   |
+| H. P. Weliwitigoda _(Pawan)_ | Product Owner · Developer  |
+| M. I. M. Afham               | Developer (shared-components owner) |
+| J. Naveenkhan                | Developer                  |
+
+All four write code regardless of Scrum role. Sprint 1–2 held Afham as Scrum Master and Naveenkhan as Product Owner.

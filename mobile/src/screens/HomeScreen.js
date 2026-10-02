@@ -1,240 +1,161 @@
 /**
- * Home & Module Launch Hub
+ * The app's neutral entry point (docs/module-ownership.md Sprint 3, shared prerequisite item 1).
+ *
+ * There is no designed "generic Home" screen in docs/prototype/ — MNAV-shells.md defines three
+ * role-specific tab shells instead ("this frame is a definition, not a step"), each landing on
+ * that role's first hub tab. So this screen's job is routing:
+ *   - signed in   → that role's TabBar over the shell's host region, with the exact shell copy
+ *     MNAV-shells.md wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
+ *   - signed out  → first run (M0: the three cards; the splash is BrandSplash) the first time the app opens, then
+ *     straight to 1.1 role selection (the first step of AccountRegister) on every later launch,
+ *     per M0's "onboarding already seen" rule.
+ *
+ * The hub screens (Browse, My Postings, My Endorsements) belong to other modules and are not on
+ * `develop` yet, so the host region shows the prototype's own shell copy until they land
+ * (docs/workflow/agent-protocol.md §4.4's "clearly marked no-op"). Sign out lives in Settings.
  */
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import * as SecureStore from "expo-secure-store";
+import { StatusBar } from "expo-status-bar";
+import { useAuth } from "../auth/AuthContext";
+import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
+import { colors, spacing, typography } from "../theme/tokens";
+import FirstRun from "./firstrun/FirstRun";
 
-export default function HomeScreen({ navigation }) {
+const ONBOARDING_KEY = "youthlink.onboardingSeen";
+
+const ROLE_TO_TABBAR_ROLE = {
+  YOUTH_JOB_SEEKER: "worker",
+  EMPLOYER: "employer",
+  COMMUNITY_ENDORSER: "verifier",
+};
+
+const FIRST_TAB_BY_ROLE = {
+  worker: "browse",
+  employer: "postings",
+  verifier: "endorsements",
+};
+
+/** Signed out: the first-run cards once (the splash before them is BrandSplash), then 1.1 (role selection). */
+function SignedOutEntry({ navigation }) {
+  // null while the stored flag is being read.
+  const [seen, setSeen] = useState(null);
+
+  function goToRoleSelection() {
+    navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] });
+  }
+
+  // Home sits at the bottom of the stack, so it is also re-rendered as "signed out" while a screen
+  // above it (the account-deleted screen, Settings signing out) is still doing its own leaving.
+  // Only move the person when Home is the screen they are looking at.
+
+  useEffect(() => {
+    let cancelled = false;
+    SecureStore.getItemAsync(ONBOARDING_KEY)
+      .then((value) => {
+        if (cancelled) return;
+        if (value) {
+          if (navigation.isFocused()) goToRoleSelection();
+        }
+        else setSeen(false);
+      })
+      // An unreadable flag only means the cards are shown once more; never block the app on it.
+      .catch(() => !cancelled && setSeen(false));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function finish() {
+    try {
+      await SecureStore.setItemAsync(ONBOARDING_KEY, "1");
+    } catch (err) {
+      console.warn("Could not remember that onboarding was seen:", err);
+    }
+    goToRoleSelection();
+  }
+
+  // Brand-blue while reading the flag, so the splash does not flash white first.
+  if (seen === null) return <View style={styles.entryBlank} />;
+  return <FirstRun onDone={finish} />;
+}
+
+function SignedInShell({ user, navigation }) {
+  const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
+  const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
+  const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* App Branding */}
-        <View style={styles.header}>
-          <View style={styles.logoBadge}>
-            <Text style={styles.logoText}>YL</Text>
-          </View>
-          <Text style={styles.title}>YouthLink</Text>
-          <Text style={styles.subtitle}>
-            Empowering Sri Lankan youth with verified gigs & decent work opportunities
-          </Text>
-        </View>
-
-        {/* Module Section: Gig Posting (FR-POST — Lahiru) */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionBadge}>SLICE B • GIG POSTING</Text>
-            <Text style={styles.sectionTitle}>Employer Posting Flow</Text>
-          </View>
-
-          <Text style={styles.sectionDesc}>
-            Create, review, and manage verified gig listings with lead-time validation, computed
-            urgency, and privacy protection.
-          </Text>
-
-          <View style={styles.btnRow}>
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              onPress={() => navigation.navigate('PostingCreate')}
-            >
-              <Text style={styles.primaryBtnText}>+ Create a Gig Posting</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={() => navigation.navigate('PostingList')}
-            >
-              <Text style={styles.secondaryBtnText}>📋 View My Postings</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Feature Highlights */}
-        <View style={styles.highlightsContainer}>
-          <Text style={styles.highlightsHeading}>Verified Mechanics Built:</Text>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>🛡️</Text>
-            <Text style={styles.featureText}>
-              <Text style={styles.bold}>Category Allow-List (FR-POST-02):</Text> 7 curated,
-              youth-safe task categories with no free text.
-            </Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>⚡</Text>
-            <Text style={styles.featureText}>
-              <Text style={styles.bold}>Urgency Computation (FR-POST-07):</Text> Automatically
-              flagged for jobs starting in 24h–48h.
-            </Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>📍</Text>
-            <Text style={styles.featureText}>
-              <Text style={styles.bold}>Location Privacy (FR-POST-08):</Text> Coarse general-area
-              map halo for public; exact address released upon selection.
-            </Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>👥</Text>
-            <Text style={styles.featureText}>
-              <Text style={styles.bold}>Multi-Slot Fill Tracking (FR-POST-14):</Text> Plain "X of Y
-              filled" status tracking.
-            </Text>
-          </View>
-        </View>
-
-        <StatusBar style="dark" />
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.flex}>
+      <View style={styles.hubContent}>
+        <Text style={styles.title}>{shellCopy.title}</Text>
+        <Text style={styles.subtitle}>{shellCopy.hosts}</Text>
+      </View>
+      <TabBar
+        role={tabBarRole}
+        activeTab={activeTab}
+        onTabPress={(key) => {
+          // Profile (1.18) is built; the other hubs are other modules' and stay placeholders here.
+          if (key === "profile") navigation.navigate("ProfileOwn");
+          else setActiveTab(key);
+        }}
+      />
+      <StatusBar style="dark" />
+    </View>
   );
 }
 
+export default function HomeScreen({ navigation }) {
+  const { status, user } = useAuth();
+
+  if (status === "loading") {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.brand.primary} />
+      </View>
+    );
+  }
+
+  if (status === "signedIn") {
+    return <SignedInShell user={user} navigation={navigation} />;
+  }
+
+  return <SignedOutEntry navigation={navigation} />;
+}
+
 const styles = StyleSheet.create({
-  safeArea: {
+  // MNAV shells draw the host region on bg/subtle.
+  flex: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.bg.subtle,
   },
-  container: {
-    padding: 20,
-    paddingBottom: 40,
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+    backgroundColor: colors.bg.default,
   },
-  header: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 24,
-  },
-  logoBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#2563EB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '900',
+  hubContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing.xl,
+    gap: spacing.sm,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#0F172A',
-    marginBottom: 6,
+    ...typography.title,
+    color: colors.text.primary,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 13,
-    textAlign: 'center',
-    lineHeight: 18,
-    color: '#64748B',
-    paddingHorizontal: 20,
+    ...typography.secondary,
+    color: colors.text.secondary,
+    textAlign: "center",
   },
-  sectionCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 20,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  sectionHeader: {
-    marginBottom: 8,
-  },
-  sectionBadge: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#2563EB',
-    letterSpacing: 0.8,
-    marginBottom: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  sectionDesc: {
-    fontSize: 13,
-    color: '#475569',
-    lineHeight: 18,
-    marginBottom: 16,
-  },
-  btnRow: {
-    gap: 10,
-  },
-  primaryBtn: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  primaryBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  secondaryBtn: {
-    backgroundColor: '#F1F5F9',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    paddingVertical: 13,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryBtnText: {
-    color: '#334155',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  highlightsContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  highlightsHeading: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#334155',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 12,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  featureIcon: {
-    fontSize: 16,
-    marginRight: 10,
-    marginTop: 2,
-  },
-  featureText: {
+  entryBlank: {
     flex: 1,
-    fontSize: 12,
-    color: '#475569',
-    lineHeight: 18,
-  },
-  bold: {
-    fontWeight: '700',
-    color: '#1E293B',
+    backgroundColor: colors.brand.primary,
   },
 });
