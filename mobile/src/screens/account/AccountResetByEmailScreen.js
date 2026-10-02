@@ -85,7 +85,10 @@ export default function AccountResetByEmailScreen({ navigation }) {
           <>
             <FormBanner
               kind="info"
-              message={`We've sent a reset link to ${user.email}\u2060. Check your inbox, and your spam folder if it isn't there.`}
+              // The line break before the address is deliberate: when the address did not fit on the first
+              // line, Android moved the full stop to the start of the next one, and a zero-width joiner did
+              // not stop it. With the address starting its own line, the full stop stays attached to it.
+              message={`We've sent a reset link to\n${user.email}. Check your inbox, and your spam folder if it isn't there.`}
             />
             <Text style={styles.note}>You can keep using the app. The link opens in your browser.</Text>
           </>

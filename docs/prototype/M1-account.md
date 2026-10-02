@@ -3492,6 +3492,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 Sent — an `Info` banner naming the address and where to look. The person can keep using the app.
 
+**Built with a line break before the address** (decided 2026-10-03): Android's line breaker moved the full stop to the
+start of the second line when the address did not fit on the first, so the message always starts the address on its own line.
+
 ### `1.11r4` — Reset by email · no verified email on file
 
 **Reached from** in the demo `1.11r1`  ·  **Leads to** `1.14` ("Add an email")  ·  **Exits** back → `1.10`
