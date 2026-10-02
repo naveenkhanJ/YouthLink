@@ -312,3 +312,8 @@ developer's own git-ignored `.worklog/` and never reports on them.
 | any | yes | **Log in (`1.6`) with the last number filled in**, whether they signed out themselves or the app ended their session |
 
 A signed-in launch never reads this: the saved session opens the home shell, and a session the server has since ended is caught on the first request and sent to Log in with the notice. Signing in marks the onboarding as seen, because someone with an account has no use for the cards. **Deleting an account forgets the remembered number**, so the next launch starts at role selection, not at a Log in for an account that no longer exists. The splash is shown on every launch before any of this (see the entry above).
+
+## Delete account: the password step's button is pinned (2026-10-03)
+
+**Figma 1.17p draws "Delete my account" at the foot of the content, under a flexible spacer. The app pins it in a bottom action bar, like the other password and form screens.** With the keyboard open, the content-bound button ended 51 dp to 180 dp above the keyboard depending on the device, while every pinned bar in the app sits 24 dp above it. The inconsistency was visible on the test devices, so consistency won over the drawn position. Only this step changes: the first step (1.17, 1.17b and variants) has no keyboard and stays as drawn, and the account-deleted screen (1.17d) keeps its own deviation recorded above. Figma is unchanged.
+
