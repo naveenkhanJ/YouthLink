@@ -99,8 +99,9 @@ export default function LoginScreen({ navigation, route }) {
         keyboardShouldPersistTaps="handled"
       >
         {/* 44px back target — or, for 1.6s, an empty 44px so the title stays where the
-            drawn frame has it (its content padding is 66 = 6 + 44 + 16). */}
-        {sessionEndReason ? (
+            drawn frame has it (its content padding is 66 = 6 + 44 + 16). A suspended account
+            (1.6sus) draws the chevron again, to role selection, so there is a way out. */}
+        {sessionEndReason && !suspended ? (
           <View style={styles.backHit} />
         ) : (
           <BackButton
@@ -123,7 +124,12 @@ export default function LoginScreen({ navigation, route }) {
           value={phone}
           onChangeText={(value) => {
             setPhone(value);
+            // The paused/incorrect-details banner and the suspended state belong to the number that
+            // produced them; a different number starts clean.
             setPaused(false);
+            setFormError(null);
+            setFieldErrors({});
+            setSuspended(false);
           }}
           error={Boolean(fieldErrors.phone)}
           editable={!suspended && !loading}

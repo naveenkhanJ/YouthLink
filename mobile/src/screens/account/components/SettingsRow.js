@@ -21,7 +21,7 @@ export default function SettingsRow({ label, value, danger = false, onPress }) {
     <Pressable onPress={onPress} style={styles.row} accessibilityRole="button">
       <Text style={[styles.label, danger && styles.danger]}>{label}</Text>
       {value ? (
-        <Text style={styles.value} numberOfLines={1} ellipsizeMode="middle">
+        <Text style={styles.value} numberOfLines={1} ellipsizeMode="tail">
           {value}
         </Text>
       ) : null}
@@ -47,11 +47,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingVertical: spacing.md,
   },
-  // The label keeps its natural width (never squeezed by a long value such as an email) and
-  // the gap to the value is taken up by growing, so the value stays right-aligned.
+  // The label takes its natural width and the gap to the value by growing, so the value stays
+  // right-aligned. When the row is too narrow (a long email, large text) the VALUE shrinks three
+  // times faster than the label, so the label stays readable and the chevron is never pushed out.
   label: {
     flexGrow: 1,
-    flexShrink: 0,
+    flexShrink: 1,
+    flexBasis: "auto",
     ...typography.body,
     color: colors.text.primary,
   },
@@ -59,9 +61,8 @@ const styles = StyleSheet.create({
     color: colors.state.danger,
   },
   value: {
-    flexShrink: 1,
+    flexShrink: 3,
     maxWidth: "65%",
-    textAlign: "right",
     ...typography.secondary,
     color: colors.text.secondary,
   },

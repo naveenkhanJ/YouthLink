@@ -22,10 +22,11 @@
  */
 import { useEffect, useRef, useState } from "react";
 import useForegroundRefresh from "../../auth/useForegroundRefresh";
-import { View, Text, ScrollView, Modal, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../auth/AuthContext";
 import { colors, spacing, typography } from "../../theme/tokens";
+import DialogModal from "../../components/DialogModal";
 import { useToast } from "../../components/Toast";
 import ScreenHeader from "../../components/ScreenHeader";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -129,29 +130,18 @@ export default function AccountSettingsScreen({ navigation }) {
       {toast}
 
       {/* 1.10s: the dialog sits over a 40% scrim; nothing behind it is interactive. */}
-      <Modal
-        visible={confirmingSignOut}
-        transparent
-        statusBarTranslucent
-        animationType="fade"
-        onRequestClose={() => setConfirmingSignOut(false)}
-      >
-        <View style={styles.dialogLayer}>
-          <View style={styles.scrim} />
-          <View style={styles.dialogWrap}>
-            <ConfirmDialog
-              title="Sign out of YouthLink?"
-              body="Other devices stay signed in. Sign back in any time with your phone and password, or a one-time code."
-              cancelLabel="Cancel"
-              cancelStyle="secondary"
-              confirmLabel="Sign out"
-              confirmStyle="primary"
-              onCancel={() => setConfirmingSignOut(false)}
-              onConfirm={handleSignOut}
-            />
-          </View>
-        </View>
-      </Modal>
+      <DialogModal visible={confirmingSignOut} onRequestClose={() => setConfirmingSignOut(false)}>
+        <ConfirmDialog
+          title="Sign out of YouthLink?"
+          body="Other devices stay signed in. Sign back in any time with your phone and password, or a one-time code."
+          cancelLabel="Cancel"
+          cancelStyle="secondary"
+          confirmLabel="Sign out"
+          confirmStyle="primary"
+          onCancel={() => setConfirmingSignOut(false)}
+          onConfirm={handleSignOut}
+        />
+      </DialogModal>
     </View>
   );
 }
@@ -171,20 +161,5 @@ const styles = StyleSheet.create({
   group: {
     ...typography.caption,
     color: colors.text.secondary,
-  },
-  dialogLayer: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: spacing.lg,
-  },
-  // color/overlay/scrim at 40% node opacity (design-system §4) — a separate layer so the
-  // dialog on top stays fully opaque.
-  scrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.overlay.scrim,
-    opacity: 0.4,
-  },
-  dialogWrap: {
-    alignSelf: "stretch",
   },
 });

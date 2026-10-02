@@ -21,6 +21,7 @@
  * 1px; Primary/Destructive/Text-default have no border at all.
  */
 import { ActivityIndicator, Pressable, Text, View, StyleSheet } from "react-native";
+import { fill } from "../theme/layout";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
 const STYLE_VARIANTS = {
@@ -87,7 +88,8 @@ export default function Button({
       onPress={onPress}
       disabled={isDisabled}
       accessibilityRole="button"
-      accessibilityState={{ disabled: isDisabled, busy: loading }}
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: isDisabled, ...(loading ? { busy: true } : null) }}
       style={({ pressed }) => [
         styles.button,
         {
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   spinner: {
-    ...StyleSheet.absoluteFillObject,
+    ...fill,
     alignItems: "center",
     justifyContent: "center",
   },

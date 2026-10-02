@@ -23,7 +23,7 @@ import Button from "./Button";
  * @param {string} title - Names the act, e.g. "Discard registration?".
  * @param {string} body - States what is lost and that it can't be undone.
  * @param {string} [cancelLabel] - Defaults to "Stay".
- * @param {() => void} onCancel
+ * @param {() => void} [onCancel] - Omit for a notice with a single action (no cancel button).
  * @param {string} confirmLabel - The explicit destructive verb, e.g. "Discard".
  * @param {() => void} onConfirm
  * @param {"text"|"secondary"} [cancelStyle] - Defaults to "text" (1.17-style destructive
@@ -45,7 +45,7 @@ export default function ConfirmDialog({
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       <View style={styles.actions}>
-        <Button title={cancelLabel} onPress={onCancel} style={cancelStyle} />
+        {onCancel ? <Button title={cancelLabel} onPress={onCancel} style={cancelStyle} /> : null}
         <Button title={confirmLabel} onPress={onConfirm} style={confirmStyle} />
       </View>
     </View>
