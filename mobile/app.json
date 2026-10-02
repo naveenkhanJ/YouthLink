@@ -45,8 +45,7 @@
           "imageWidth": 288,
           "resizeMode": "contain"
         }
-      ],
-      "./plugins/withAdaptiveRoundIcon.js"
+      ]
     ],
     "backgroundColor": "#0f3d91"
   }
