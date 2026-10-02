@@ -17,7 +17,7 @@
  * Phone verification itself is the shared usePhoneVerification hook; the Firebase ID token it
  * produces is exchanged for a YouthLink session at POST /login/otp.
  */
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -46,6 +46,8 @@ export default function AccountLoginOtpScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [suspendedMessage, setSuspendedMessage] = useState(null);
 
+  const scrollRef = useRef(null);
+
   const verification = usePhoneVerification();
   const {
     phone,
@@ -61,6 +63,14 @@ export default function AccountLoginOtpScreen({ navigation }) {
     confirmCode,
     codeExpired,
   } = verification;
+
+  // With the keyboard open the code error sits just under the pinned bar. When one appears, scroll
+  // to the end of the content so the error and the links below it are in view.
+  useEffect(() => {
+    if (!error || !confirmationResult) return undefined;
+    const timer = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 150);
+    return () => clearTimeout(timer);
+  }, [error, confirmationResult]);
 
   async function handleConfirmCode() {
     await confirmCode(async (idToken) => {
@@ -89,6 +99,7 @@ export default function AccountLoginOtpScreen({ navigation }) {
       <StatusBar style="dark" />
 
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"

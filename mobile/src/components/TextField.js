@@ -38,6 +38,8 @@ import EyeIcon from "./EyeIcon";
  *   design-system.md §8 ("hide the field's own built-in error line"); pass
  *   `showErrorLine` only where no FieldError is composed under it.
  * @param {() => void} [onBlur] - Called when the field loses focus (e.g. check an email on exit).
+ * @param {() => void} [onFocus] - Called when the field gains focus (e.g. scroll it into view).
+ * @param {(event: object) => void} [onLayout] - Layout of the whole field (label, input, footer).
  * @param {boolean} [showErrorLine] - Draw `error` (when it is a string) inside the field.
  * @param {number} [maxLength] - Hard cap on what can be typed.
  * @param {boolean} [showCounter] - Opt in to the "N / cap" caption, right-aligned beneath the field
@@ -57,6 +59,8 @@ export default function TextField({
   error,
   showErrorLine = false,
   onBlur,
+  onFocus,
+  onLayout,
   disabled = false,
   secureTextEntry = false,
   placeholder,
@@ -75,7 +79,7 @@ export default function TextField({
   const errorText = !disabled && showErrorLine && typeof error === "string" ? error : "";
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <Text style={styles.label}>{label}</Text>
       <View
         style={[
@@ -89,7 +93,10 @@ export default function TextField({
           style={[styles.input, disabled && styles.inputTextDisabled]}
           value={value}
           onChangeText={onChangeText}
-          onFocus={() => setFocused(true)}
+          onFocus={(event) => {
+            setFocused(true);
+            if (onFocus) onFocus(event);
+          }}
           onBlur={(event) => {
             setFocused(false);
             if (onBlur) onBlur(event);
