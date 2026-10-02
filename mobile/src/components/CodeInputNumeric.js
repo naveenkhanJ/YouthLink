@@ -6,14 +6,15 @@
  * deliberately shaped differently (see `CodeInputAlpha`, M8 rule: the two
  * must not look alike).
  *
- * Six separate boxes, each one digit, auto-advancing focus — the real
- * component only draws the static boxes; the auto-advance/backspace
- * behaviour is this file's own, standard implementation of "a 6-box code
- * input" on top of that shape.
+ * Six boxes are drawn, but they are only display: one real TextInput sits invisibly over the
+ * row and owns the value. That is what makes paste, backspace, the keyboard's one-time-code
+ * suggestion and Android SMS autofill work (six separate inputs each accept one character, so a
+ * pasted or autofilled code was lost — E2E-09). Tapping anywhere on the row focuses it.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { View, TextInput, Text, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme/tokens";
+import { fill } from "../theme/layout";
 
 const DIGIT_COUNT = 6;
 
@@ -22,45 +23,51 @@ const DIGIT_COUNT = 6;
  * @param {(value: string) => void} onChangeText
  * @param {string} [error] - Shown below the boxes; also reddens them.
  */
-export default function CodeInputNumeric({ value = "", onChangeText, error }) {
-  const inputRefs = useRef([]);
+export default function CodeInputNumeric({ value = "", onChangeText, error, showErrorLine = false }) {
+  const inputRef = useRef(null);
+  const [focused, setFocused] = useState(false);
   const digits = value.split("");
+  // The box the next digit will land in (none once all six are filled).
+  const activeIndex = Math.min(digits.length, DIGIT_COUNT - 1);
 
-  function handleChangeAt(index, text) {
-    const digit = text.replace(/[^0-9]/g, "").slice(-1);
-    const next = value.split("");
-    next[index] = digit ?? "";
-    const joined = next.join("").slice(0, DIGIT_COUNT);
-    onChangeText(joined);
-    if (digit && index < DIGIT_COUNT - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  }
-
-  function handleKeyPress(index, key) {
-    if (key === "Backspace" && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
+  function handleChange(text) {
+    onChangeText(text.replace(/[^0-9]/g, "").slice(0, DIGIT_COUNT));
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         {Array.from({ length: DIGIT_COUNT }).map((_, i) => (
-          <TextInput
+          <View
             key={i}
-            ref={(el) => (inputRefs.current[i] = el)}
-            style={[styles.box, error && styles.boxError]}
-            value={digits[i] ?? ""}
-            onChangeText={(text) => handleChangeAt(i, text)}
-            onKeyPress={({ nativeEvent }) => handleKeyPress(i, nativeEvent.key)}
-            keyboardType="number-pad"
-            maxLength={1}
-            accessibilityLabel={`Digit ${i + 1} of ${DIGIT_COUNT}`}
-          />
+            style={[
+              styles.box,
+              focused && i === activeIndex && styles.boxFocused,
+              error && styles.boxError,
+            ]}
+          >
+            <Text style={styles.digit}>{digits[i] ?? ""}</Text>
+          </View>
         ))}
+        <TextInput
+          ref={inputRef}
+          style={styles.hiddenInput}
+          value={value}
+          onChangeText={handleChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          keyboardType="number-pad"
+          maxLength={DIGIT_COUNT}
+          textContentType="oneTimeCode"
+          autoComplete="sms-otp"
+          caretHidden
+          contextMenuHidden={false}
+          accessibilityLabel={`${DIGIT_COUNT}-digit code`}
+        />
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {showErrorLine && typeof error === "string" && error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 }
@@ -80,9 +87,24 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
-    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  digit: {
     ...typography.displayNumber,
     color: colors.text.primary,
+  },
+  // Covers the whole row and is invisible, so any tap or long-press (paste) reaches it.
+  hiddenInput: {
+    ...fill,
+    opacity: 0.02,
+    color: "transparent",
+  },
+  // Figma draws every box with a 1px stroke and no focus state. The box about to receive a digit
+  // only changes colour here, never width, so the row does not shift and a red error border is
+  // the same thickness on every box.
+  boxFocused: {
+    borderColor: colors.brand.primary,
   },
   boxError: {
     borderColor: colors.border.error,

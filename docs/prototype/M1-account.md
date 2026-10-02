@@ -4151,6 +4151,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 Done. There is no back chevron — there is nothing to go back to — and the only action returns to the
 start.
 
+**Built without the header bar** (decided 2026-10-02, recorded in `decisions.md`): the screen is a dead end, so the
+bar's title adds nothing above "Account deleted". Everything else in the frame is as drawn.
+
 ## Who is who, and the sample data
 
 The same people on every screen that names them. Keep the names when reproducing a screen for review;

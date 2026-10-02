@@ -47,6 +47,7 @@ export default function DateTimeField({
   placeholder = "YYYY-MM-DD",
   onPressCalendar,
   error,
+  showErrorLine = false,
 }) {
   function handleChange(text) {
     onChangeText(formatDigits(text.replace(/[^0-9]/g, "")));
@@ -86,7 +87,9 @@ export default function DateTimeField({
           </Svg>
         </Pressable>
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {showErrorLine && typeof error === "string" && error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
     </View>
   );
 }

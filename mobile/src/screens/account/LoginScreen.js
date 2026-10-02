@@ -1,22 +1,21 @@
 /**
- * Login screen — password path (spec 1.6emp / 1.6) — Afham.
+ * Login, password path — Afham.
  *
- * This is the PASSWORD path only. The OTP path (spec 1.7) is a separate
- * screen; the user reaches it via "Log in with a code instead" link here.
- * The spec explicitly has two separate screens connected by a link — NOT a
- * tab switcher on one screen.
+ * Prototype frames (docs/prototype/M1-account.md): 1.6emp / 1.6 (empty and filled), 1.6sub
+ * (submitting), 1.6bnr1 / bnr2 / bnr3 (incorrect details, 2 attempts left, paused 15
+ * minutes), 1.6s (signed out for security) and 1.6sus (account suspended). They are all this
+ * one screen with different state.
  *
- * Layout per spec:
- *  - No ScreenHeader chrome — a bare backHit 44x44 only
- *  - TEXT "Welcome back" (mobile/display)
- *  - TEXT subtitle (mobile/caption, secondary colour)
- *  - PhoneField + password TextField
- *  - SPACER (grows to push link group down)
- *  - linkGroup: "Log in with a code instead" / "Forgot password?" / "Trouble getting in? Get help"
- *  - ctaBar (pinned): Button "Log in" (disabled until both fields filled)
+ * Layout (every frame): content pad 6/16/4/16, gap 16 — back target, "Welcome back",
+ * welcomeSub, [sessionBanner], [formBanner], PhoneField, password TextField, a growing
+ * spacer, the link group — and a pinned ctaBar with "Log in".
  *
- * A successful login hands the token/user to AuthContext's signIn()
- * (persists to SecureStore) and resets the stack back to Home.
+ * - 1.6s: the app signed the person out (session ended / password changed elsewhere), so
+ *   there is no back chevron (nothing is behind it) and a plain line explains why.
+ * - 1.6sus: a 403 from the server means the account is suspended — both inputs and the
+ *   button are Disabled and the only link is "What suspension means".
+ * - The error text is the server's own (it already matches 1.6bnr1/2/3 and 1.6sus), so the
+ *   remaining-attempts warning and the lockout wording stay in one place.
  */
 import { useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
@@ -31,23 +30,31 @@ import TextField from "../../components/TextField";
 import Link from "../../components/Link";
 import PhoneField from "../../components/PhoneField";
 import FormBanner from "../../components/FormBanner";
+import FieldError from "../../components/FieldError";
 import CtaBar from "../../components/CtaBar";
 import BackButton from "./components/BackButton";
 import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
-export default function LoginScreen({ navigation }) {
+const SESSION_BANNER =
+  "You were signed out — your session ended, or your password was changed on another device. Sign in again to continue. If that change wasn't you, reset your password now.";
+
+export default function LoginScreen({ navigation, route }) {
   const { signIn, sessionEndReason } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const [phone, setPhone] = useState("");
+  // Sign out (1.10s) lands here with the number remembered; every other way in starts empty.
+  const [phone, setPhone] = useState(route?.params?.phone ?? "");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState(null);
+  const [suspended, setSuspended] = useState(false);
   const [loading, setLoading] = useState(false);
+  // 1.6bnr3: after too many wrong passwords the server pauses password login for 15 minutes.
+  // It says so in its message; the button stays disabled until the number is changed.
+  const [paused, setPaused] = useState(false);
 
-  // Log in only becomes enabled once both fields have content — spec 1.6emp
-  // shows the button disabled, 1.6 shows it enabled.
-  const canSubmit = phone.length === LOCAL_DIGITS && password.length > 0;
+  // 1.6emp shows the button disabled, 1.6 enabled: it needs a full number and a password.
+  const canSubmit = !suspended && !paused && phone.length === LOCAL_DIGITS && password.length > 0;
 
   async function handleSubmit() {
     setFieldErrors({});
@@ -62,44 +69,72 @@ export default function LoginScreen({ navigation }) {
       await signIn(token, user);
       navigation.reset({ index: 0, routes: [{ name: "Home" }] });
     } catch (err) {
-      const { formError, fieldErrors } = parseApiError(err);
-      setFormError(formError);
-      setFieldErrors(fieldErrors);
+      const parsed = parseApiError(err);
+      setFormError(parsed.formError);
+      setFieldErrors(parsed.fieldErrors);
+      // 403 on this endpoint is only ever "suspended" (after the password was proven right).
+      setSuspended(err.status === 403);
+      setPaused(/paused/i.test(parsed.formError ?? ""));
     } finally {
       setLoading(false);
     }
   }
 
+  // 1.6emp / 1.6sub / 1.6 each draw their own line under the title.
+  const welcomeSub = loading
+    ? "Signing you in… fields are locked while we check."
+    : !phone && !password
+      ? "Enter your phone number and password to log in."
+      : "Log in to pick up where you left off.";
+
+  const helpTarget = () => navigation.navigate("HelpAccountAccess");
+
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
 
-      {/* Content — scrollable, grows to push link group down */}
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Bare 44×44 back hit — no ScreenHeader chrome per spec 1.6 */}
-        <BackButton onPress={() => navigation.goBack()} />
-
-        <Text style={styles.screenTitle}>Welcome back</Text>
-
-        {/* Subtitle changes depending on whether this is the first visit or a
-            return after signing out. sessionEndReason comes from AuthContext
-            and is set when the backend rejects a request mid-session; if it's
-            present we show it as a FormBanner instead of the static subtitle. */}
-        {sessionEndReason ? (
-          <View style={styles.bannerWrap}>
-            <FormBanner kind="info" message={sessionEndReason} />
-          </View>
+        {/* 44px back target — or, for 1.6s, an empty 44px so the title stays where the
+            drawn frame has it (its content padding is 66 = 6 + 44 + 16). A suspended account
+            (1.6sus) draws the chevron again, to role selection, so there is a way out. */}
+        {sessionEndReason && !suspended ? (
+          <View style={styles.backHit} />
         ) : (
-          <Text style={styles.welcomeSub}>
-            Log in to pick up where you left off.
-          </Text>
+          <BackButton
+            onPress={() =>
+              navigation.canGoBack()
+                ? navigation.goBack()
+                : navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] })
+            }
+          />
         )}
 
-        <PhoneField value={phone} onChangeText={setPhone} error={fieldErrors.phone} />
+        <Text style={styles.screenTitle}>Welcome back</Text>
+        <Text style={styles.welcomeSub}>{welcomeSub}</Text>
+
+        {sessionEndReason && !suspended ? <Text style={styles.sessionBanner}>{SESSION_BANNER}</Text> : null}
+
+        {formError ? <FormBanner kind="error" message={formError} /> : null}
+
+        <PhoneField
+          value={phone}
+          onChangeText={(value) => {
+            setPhone(value);
+            // The paused/incorrect-details banner and the suspended state belong to the number that
+            // produced them; a different number starts clean.
+            setPaused(false);
+            setFormError(null);
+            setFieldErrors({});
+            setSuspended(false);
+          }}
+          error={Boolean(fieldErrors.phone)}
+          editable={!suspended && !loading}
+        />
+        {fieldErrors.phone ? <FieldError message={fieldErrors.phone} /> : null}
 
         <TextField
           label="Password"
@@ -107,43 +142,35 @@ export default function LoginScreen({ navigation }) {
           onChangeText={setPassword}
           placeholder="8–64 characters"
           secureTextEntry
-          error={fieldErrors.password}
+          disabled={suspended || loading}
+          error={Boolean(fieldErrors.password)}
         />
+        {fieldErrors.password ? <FieldError message={fieldErrors.password} /> : null}
 
-        {formError ? (
-          <View style={styles.formBannerWrap}>
-            <FormBanner kind="error" message={formError} />
-          </View>
-        ) : null}
-
-        {/* Grows to push the link group toward the ctaBar */}
+        {/* Grows to push the link group down toward the ctaBar */}
         <View style={styles.spacer} />
 
-        {/* linkGroup — stacked links, no gap/border, left-aligned */}
         <View style={styles.linkGroup}>
-          <Link
-            title="Log in with a code instead"
-            onPress={() => navigation.navigate("AccountLoginOtp")}
-          />
-          <Link
-            title="Forgot password?"
-            onPress={() => navigation.navigate("AccountForgotPassword", { phone })}
-          />
-          <Link
-            title="Trouble getting in? Get help"
-            onPress={() => console.log("HF.5 — not yet built")}
-          />
+          {loading ? null : suspended ? (
+            <Link title="What suspension means" onPress={helpTarget} />
+          ) : (
+            <>
+              <Link
+                title="Log in with a code instead"
+                onPress={() => navigation.navigate("AccountLoginOtp")}
+              />
+              <Link
+                title="Forgot password?"
+                onPress={() => navigation.navigate("AccountForgotPassword", { phone })}
+              />
+              <Link title="Trouble getting in? Get help" onPress={helpTarget} />
+            </>
+          )}
         </View>
       </ScrollView>
 
-      {/* Pinned ctaBar — elevation.bar shadow only applied when content scrolls */}
       <CtaBar>
-        <Button
-          title="Log in"
-          onPress={handleSubmit}
-          loading={loading}
-          disabled={!canSubmit}
-        />
+        <Button title="Log in" onPress={handleSubmit} loading={loading} disabled={!canSubmit} />
       </CtaBar>
     </View>
   );
@@ -157,36 +184,36 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
+  // Spec: content pad 6/16/4/16, gap 16. 6 is a literal in the frames (no spacing token).
   content: {
     flexGrow: 1,
-    paddingTop: spacing.sm,             // 6px top — spec: vertical pad 6/16/4/16
-    paddingHorizontal: spacing.lg,      // 16px sides
-    paddingBottom: spacing.xs,          // 4px bottom before link group
+    paddingTop: 6,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xs,
+    gap: spacing.lg,
+  },
+  backHit: {
+    width: 44,
+    height: 44,
   },
   screenTitle: {
     ...typography.display,
     color: colors.text.primary,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
   },
   welcomeSub: {
     ...typography.caption,
     color: colors.text.secondary,
-    marginBottom: spacing.lg,
   },
-  bannerWrap: {
-    marginBottom: spacing.lg,
-  },
-  formBannerWrap: {
-    marginTop: spacing.md,
+  // 1.6s `sessionBanner`: plain text (mobile/secondary, text/primary), not a FormBanner.
+  sessionBanner: {
+    ...typography.secondary,
+    color: colors.text.primary,
   },
   spacer: {
     flex: 1,
-    minHeight: spacing.xxl,
+    minHeight: spacing.lg,
   },
   linkGroup: {
-    gap: 0,                             // Action/Link has its own 10px h-padding
-    marginBottom: spacing.xs,           // 4px before ctaBar
     alignItems: "flex-start",
   },
 });

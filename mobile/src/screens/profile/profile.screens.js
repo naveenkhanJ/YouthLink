@@ -1,5 +1,5 @@
 /**
- * Screen manifest for the FR-PROF module — TBD (Sprint 2).
+ * Screen manifest for the FR-PROF module — Afham (minimal slice: the person's own profile).
  *
  * This is the ONLY file you edit to add a screen. RootNavigator collects every
  * module's manifest automatically, so four people can add screens in parallel
@@ -17,4 +17,9 @@
  *     { name: "ProfileExample", component: ExampleScreen, options: { title: "Example" } },
  *   ];
  */
-export default [];
+import ProfileOwnScreen from "./ProfileOwnScreen";
+
+export default [
+  // M1 1.18 and its variants: the person's own profile, with the way into Settings.
+  { name: "ProfileOwn", component: ProfileOwnScreen, options: { headerShown: false } },
+];

@@ -174,5 +174,5 @@ would assert the art is brand-coloured *because* it is brand.
 
 | State | Build it as |
 | --- | --- |
-| Onboarding already seen | These four are shown once. On any later launch the app opens at `1.1` and none of `0.1`–`0.4` appears |
+| Onboarding already seen | The three cards (`0.2`–`0.4`) are shown once. On any later launch the app opens at `1.1` and no card appears. **The splash (`0.1`) is the exception, decided 2026-10-02: it is shown on every launch**, for at least two seconds while the app loads, because a bare blue flash read as a glitch |
 | Splash while the app is still loading | `0.1` is the loading state — it holds for its 2-second timeout or until tapped, whichever comes first |
