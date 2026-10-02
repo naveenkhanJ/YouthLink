@@ -1186,20 +1186,38 @@ async function getMe({ userId }) {
 // DISPUTED counts: a dispute is an unresolved engagement, not a finished one.
 const BLOCKING_ENGAGEMENT_STATUSES = ["ACTIVE", "DISPUTED"];
 
-/** The first engagement (as worker or employer) that still blocks this person's deletion. */
+/**
+ * The first engagement (as worker or employer) that still blocks this person's deletion, with the
+ * posting and both parties it is shown with.
+ *
+ * The three related rows are read one after another rather than with one `include`: with the pg
+ * driver adapter an `include` runs its relation queries in parallel on a single connection, which
+ * inside a transaction triggers pg's "client is already executing a query" deprecation warning
+ * (and fails outright in a future pg). Sequential reads cost three trivial queries on a path used
+ * once per deletion.
+ */
 async function findBlockingEngagement(db, userId) {
-  return db.engagement.findFirst({
+  const engagement = await db.engagement.findFirst({
     where: {
       status: { in: BLOCKING_ENGAGEMENT_STATUSES },
       OR: [{ workerId: userId }, { employerId: userId }],
     },
     orderBy: { createdAt: "asc" },
-    include: {
-      gigPosting: { select: { title: true, postedAsType: true } },
-      worker: { select: { legalName: true } },
-      employer: { select: { legalName: true, businessName: true } },
-    },
   });
+  if (!engagement) return null;
+  const gigPosting = await db.gigPosting.findUnique({
+    where: { id: engagement.gigPostingId },
+    select: { title: true, postedAsType: true },
+  });
+  const worker = await db.user.findUnique({
+    where: { id: engagement.workerId },
+    select: { legalName: true },
+  });
+  const employer = await db.user.findUnique({
+    where: { id: engagement.employerId },
+    select: { legalName: true, businessName: true },
+  });
+  return { ...engagement, gigPosting, worker, employer };
 }
 
 /**
