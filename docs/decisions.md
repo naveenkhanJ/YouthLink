@@ -292,3 +292,11 @@ developer's own git-ignored `.worklog/` and never reports on them.
 **First run is shown once.** The splash and three cards (`M0`) appear on the first launch only; the app remembers that they were seen in secure storage and every later signed-out launch opens at role selection (`1.1`), as `M0` says.
 
 **Built after Sprint 4 for the demo, in addition to the Sprint 4 cards:** account deletion (YL-91), email change (YL-88), NIC correction (YL-87), employer posting-as at signup (YL-82) and its later change (YL-90), the user side of account recovery (YL-176, with a developer script standing in for the Admin screen) and the own-profile screen (YL-72, YL-73, YL-74). Reset by email from Change password (`1.11r1`–`1.11r4`) is carried by YL-85 as an amendment rather than a new card. The Account list above under "left in the backlog" is superseded by this.
+
+## Launch splash on every launch; the Android system splash is styled, not removed (2026-10-02)
+
+**The branded splash (`M0` `0.1`) is shown every time the app opens, not only on first run.** `M0` said the four first-run screens appear once, but the first device runs showed that on later launches the person saw only a split second of blue before role selection or the home shell, which read as a glitch. The splash now appears on every launch for at least two seconds (while the fonts load and the saved session is read; a tap moves on once the app is ready). The three onboarding cards are still shown once.
+
+**The Android system splash cannot be switched off, so it is made to match instead.** From Android 12 the system always draws its own splash (the launcher icon on the window background, white by default) before any app code runs; an app cannot opt out. It is configured to the brand blue with the mark at the same size, dead centre, and held until the app's own splash has drawn its first frame, so the handoff looks like one screen: the mark stays still and the wordmark and tagline appear under it. This needs `expo-splash-screen` (a new dependency) and a new development build.
+
+**The app icon is the brand mark.** Launcher icon, adaptive icon (white mark on the brand blue), monochrome icon and favicon are drawn from the same `Brand/Mark` vector as the in-app mark.
