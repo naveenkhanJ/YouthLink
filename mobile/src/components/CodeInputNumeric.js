@@ -42,7 +42,7 @@ export default function CodeInputNumeric({ value = "", onChangeText, error, show
             key={i}
             style={[
               styles.box,
-              focused && i === activeIndex && styles.boxFocused,
+              focused && digits.length < DIGIT_COUNT && i === activeIndex && styles.boxFocused,
               error && styles.boxError,
             ]}
           >
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   // Covers the whole row and is invisible, so any tap or long-press (paste) reaches it.
   hiddenInput: {
     ...fill,
-    opacity: 0.02,
+    opacity: 0, // an invisible view still receives taps and keyboard focus on Android
     color: "transparent",
   },
   // Figma draws every box with a 1px stroke and no focus state. The box about to receive a digit

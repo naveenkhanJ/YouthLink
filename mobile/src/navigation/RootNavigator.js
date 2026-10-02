@@ -18,6 +18,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "../screens/HomeScreen";
 import { useAuth } from "../auth/AuthContext";
+import { readLaunchState } from "../auth/launchState";
+import { toLocalDigits } from "../screens/account/phoneFormat";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -71,7 +73,13 @@ function SessionEndRedirect() {
     if (status !== "signedOut" || !sessionEndReason || !navigationRef.isReady()) return;
     const current = navigationRef.getCurrentRoute()?.name;
     if (current === "AccountLogin") return;
-    navigationRef.reset({ index: 0, routes: [{ name: "AccountLogin" }] });
+    // Log in comes with the number of the account that was just signed out, as after a Sign out.
+    readLaunchState().then(({ lastPhone }) => {
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: "AccountLogin", params: lastPhone ? { phone: toLocalDigits(lastPhone) } : undefined }],
+      });
+    });
   }, [status, sessionEndReason]);
   return null;
 }

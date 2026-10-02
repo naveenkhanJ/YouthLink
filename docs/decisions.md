@@ -300,3 +300,15 @@ developer's own git-ignored `.worklog/` and never reports on them.
 **The Android system splash cannot be switched off, so it is made to match instead.** From Android 12 the system always draws its own splash (the launcher icon on the window background, white by default) before any app code runs; an app cannot opt out. It is configured to the brand blue with the mark at the same size, dead centre, and held until the app's own splash has drawn its first frame, so the handoff looks like one screen: the mark stays still and the wordmark and tagline appear under it. This needs `expo-splash-screen` (a new dependency) and a new development build.
 
 **The app icon is the brand mark.** Launcher icon, adaptive icon (white mark on the brand blue), monochrome icon and favicon are drawn from the same `Brand/Mark` vector as the in-app mark.
+
+## Where a signed-out launch begins (2026-10-02)
+
+**The first device runs showed a person who signed out and reopened the app landing on role selection, as if they had no account.** A signed-out launch now depends on what the device remembers (kept in secure storage, `auth/launchState.js`):
+
+| Onboarding seen | Someone signed in here | A signed-out launch opens at |
+| --- | --- | --- |
+| no | no | the three onboarding cards, then role selection (`1.1`) |
+| yes | no | role selection (`1.1`): nobody has signed in on this device, or their account was deleted |
+| any | yes | **Log in (`1.6`) with the last number filled in**, whether they signed out themselves or the app ended their session |
+
+A signed-in launch never reads this: the saved session opens the home shell, and a session the server has since ended is caught on the first request and sent to Log in with the notice. Signing in marks the onboarding as seen, because someone with an account has no use for the cards. **Deleting an account forgets the remembered number**, so the next launch starts at role selection, not at a Log in for an account that no longer exists. The splash is shown on every launch before any of this (see the entry above).
