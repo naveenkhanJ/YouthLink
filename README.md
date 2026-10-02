@@ -161,7 +161,9 @@ npx expo install @react-navigation/native @react-navigation/native-stack react-n
 
 ### Running the mobile app
 
-**Android only for now** (see `AGENTS.md`). A development build is required. The shared build below is the quickest route; Options A and B compile your own.
+**Android only for now** (see `AGENTS.md`). A development build is required.
+
+> **Phone verification needs an emulator image with Google Play** (the "Google Play" or Play Store images in Android Studio's device manager). On a "Google APIs" image without Play, Firebase falls back to a reCAPTCHA page in the browser, which hangs on a software-rendered emulator and ends with "missing initial state", so registration, code login and phone change cannot complete there. A physical phone works too. The shared build below is the quickest route; Options A and B compile your own.
 
 **Shared development build — no native compile.** A development build contains only the native code; your JavaScript still loads from Metro on your own computer. So one build, made once and shared, runs everyone's code:
 
