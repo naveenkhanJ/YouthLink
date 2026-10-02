@@ -29,7 +29,7 @@ const STATUS_COLOR = {
   WITHDRAWN: colors.textSecondary,
 };
 
-function ApplicationCard({ application, onWithdraw, withdrawing }) {
+function ApplicationCard({ application, onWithdraw, withdrawing, onViewEngagement }) {
   const { gigPosting, engagement } = application;
 
   return (
@@ -46,6 +46,15 @@ function ApplicationCard({ application, onWithdraw, withdrawing }) {
             {engagement.employer.businessName || engagement.employer.legalName}: {engagement.employer.phone}
           </Text>
           <Text style={styles.row}>Address: {engagement.gigPosting.locationAddress}</Text>
+          {onViewEngagement ? (
+            <View style={{ marginTop: spacing.sm }}>
+              <Button
+                title="View engagement"
+                variant="primary"
+                onPress={() => onViewEngagement(engagement.id)}
+              />
+            </View>
+          ) : null}
         </View>
       ) : null}
 
@@ -61,7 +70,7 @@ function ApplicationCard({ application, onWithdraw, withdrawing }) {
   );
 }
 
-export default function MyApplicationsScreen() {
+export default function MyApplicationsScreen({ navigation }) {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -128,6 +137,7 @@ export default function MyApplicationsScreen() {
             application={item}
             onWithdraw={handleWithdraw}
             withdrawing={withdrawingId === item.id}
+            onViewEngagement={(engId) => navigation.navigate("EngagementDetail", { engagementId: engId })}
           />
         )}
         ListEmptyComponent={<Text style={styles.body}>You haven't applied to anything yet.</Text>}
