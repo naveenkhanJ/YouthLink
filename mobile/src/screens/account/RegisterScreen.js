@@ -1,68 +1,147 @@
 /**
- * Registration screen (FR-ACC-01) — Afham.
+ * Registration (FR-ACC-01) — Afham.
  *
- * Two steps in one screen, not two navigator screens: phone verification
- * (via Firebase Phone Auth, client-side) first, then the rest of the
- * registration form, shown only once a verified Firebase ID token exists.
- * Matches FR-ACC-01 AC1 directly — "when the phone OTP is not yet
- * verified, then the account cannot be created" — by construction, since
- * the form fields required to submit don't even render until step one
- * succeeds.
+ * Prototype frames (docs/prototype/M1-account.md): 1.1 role, 1.2 phone, 1.3 code, 1.4 details,
+ * plus the failure frames 1.2err, 1.3err1/err2, 1.3rs2, 1.4err1/err2/err3 and 1.4cnt. They are
+ * the same steps with different state, so this is one screen holding a `step`. An employer has a
+ * fifth, 1.5 / 1.5b: how the account posts (FR-ACC-02).
  *
- * The phone-verification step itself (signInWithPhoneNumber,
- * ConfirmationResult#confirm, getIdToken — the modular
- * @react-native-firebase/auth API, verified directly against this
- * project's installed package version (26.2.0), no app verifier/reCAPTCHA
- * needed thanks to the native module) lives in
- * ./hooks/usePhoneVerification.js, shared with LoginScreen.js's OTP mode.
+ * Chrome (every step): content pad 6/16/4/16, gap 16, a 44px top bar (back chevron left, ✕
+ * right — step 1 has an empty 44px "ghost" instead, nothing to go back to), the display title
+ * "Create account", the "Step N of 4" (5 for an employer) caption, and a pinned ctaBar. The details step is the
+ * exception drawn tighter: pad 6/16/0/16, gap 8, and a 52px top bar (8px bottom padding).
+ *
+ * - Back goes one step back; ✕ abandons registration and returns to role selection (1.1).
+ * - "Create account" (step 4) creates the account and signs the person in. A worker or verifier
+ *   continues into the app; an employer continues to step 5, which saves how the account posts
+ *   (Individual/Household, or Business with a name and optional bio) and then enters the app.
+ *   From step 5 back and ✕ leave for the app: the account exists, so there is nothing to discard
+ *   (the prototype's back → 1.4e would offer to create it twice).
+ * - The phone is verified through Firebase (FR-ACC-08); the resulting ID token is held in
+ *   state and submitted with the details, where the server validates it.
+ * - A failed field is State=Error plus a separate Feedback/FieldError beneath it — the
+ *   server's terse field codes ("Already registered") are mapped to the sentences drawn in
+ *   1.2err, 1.4err1 and 1.4err2.
+ * - Create account stays enabled when the terms are unticked, so the attempt can produce the
+ *   explanation (1.4err3).
+ * - The ToS / Privacy links open 1.20 (AccountTerms).
+ *
+ * Phone verification state lives in usePhoneVerification.js, shared with AccountLoginOtpScreen.
  */
 import { useEffect, useRef, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import useFocusScroll from "../../hooks/useFocusScroll";
 import { StatusBar } from "expo-status-bar";
-import { register } from "../../api/account";
-import { parseApiError } from "../../api/client";
-import { colors, spacing, typography } from "./theme";
-import Button from "./components/Button";
-import TextField from "./components/TextField";
-import RoleOption from "./components/RoleOption";
-import Checkbox from "./components/Checkbox";
-import Link from "./components/Link";
-import PhoneVerificationStep from "./components/PhoneVerificationStep";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { register, checkAvailability, updatePostingAs } from "../../api/account";
+import { useAuth } from "../../auth/AuthContext";
+import { colors, spacing, typography } from "../../theme/tokens";
+import Button from "../../components/Button";
+import TextField from "../../components/TextField";
+import RoleOption from "../../components/RoleOption";
+import Checkbox from "../../components/Checkbox";
+import SegmentedControl from "../../components/SegmentedControl";
+import Link from "../../components/Link";
+import CodeInputNumeric from "../../components/CodeInputNumeric";
+import CountdownText from "../../components/CountdownText";
+import DateTimeField from "../../components/DateTimeField";
+import FieldError from "../../components/FieldError";
+import FormBanner from "../../components/FormBanner";
+import CtaBar from "../../components/CtaBar";
+import PhoneField from "../../components/PhoneField";
+import BackButton from "./components/BackButton";
+import CloseButton from "./components/CloseButton";
 import usePhoneVerification from "./hooks/usePhoneVerification";
+import { COUNTRY_CODE, LOCAL_DIGITS } from "./phoneFormat";
 
-// Mirrors backend/src/modules/account/account.service.js's EMAIL_FORMAT —
-// duplicated, not shared, since mobile/ and backend/ are separate deployable
-// apps with no shared module between them. This is a client-side pre-check
-// only; the server check is the authoritative one.
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ROLES = [
-  {
-    value: "YOUTH_JOB_SEEKER",
-    title: "Youth Job-Seeker",
-    description: "Find part-time work and gigs",
-  },
-  {
-    value: "EMPLOYER",
-    title: "Employer",
-    description: "Post gigs and hire workers",
-  },
-  {
-    value: "COMMUNITY_ENDORSER",
-    title: "Community Verifier",
-    description: "Vouch for people you know",
-  },
+  { value: "YOUTH_JOB_SEEKER", title: "Youth Job-Seeker", description: "Find part-time work and gigs" },
+  { value: "EMPLOYER", title: "Local Business/Employer", description: "Post gigs and hire workers" },
+  { value: "COMMUNITY_ENDORSER", title: "Community Verifier", description: "Vouch for people you know" },
 ];
 
+// The sentences the prototype draws for the failures a registration can meet.
+const PHONE_TAKEN_MESSAGE =
+  "This number is already registered. Log in instead — you can reset your password from there.";
+const NIC_TAKEN_MESSAGE =
+  "This NIC is already registered. You can log in instead, or check the number for a typo.";
+const UNDER_AGE_MESSAGE = "YouthLink is for people aged 18 and over. Please check your birthdate is right.";
+const TERMS_MESSAGE = "Please accept the Terms of Service and Privacy Policy to continue.";
+// Not drawn (no frame for these): kept short and in the same voice.
+// Same sentence the Settings email screen draws in 1.14err, so the two never disagree.
+const EMAIL_TAKEN_MESSAGE = "This email is already on another account. Try a different address.";
+const EMAIL_INVALID_MESSAGE = "Enter a valid email address.";
+const PASSWORD_LENGTH_MESSAGE = "Password must be 8 to 64 characters.";
+const PASSWORD_MISMATCH_MESSAGE = "Passwords do not match.";
+const NAME_REQUIRED_MESSAGE = "Enter your full legal name.";
+const NIC_FORMAT_MESSAGE = "A NIC is 12 digits, or 9 digits followed by V or X.";
+const BIRTHDATE_FORMAT_MESSAGE = "Enter your birthdate as YYYY-MM-DD.";
+const NIC_SHAPE = /^(\d{12}|\d{9}[VvXx])$/;
+const LEGAL_NAME_CAP = 100;
+
+/**
+ * Four steps for a worker or a verifier; the employer has a fifth (FR-ACC-02): how the account will
+ * post, Individual/Household or Business. The counter says so from step 1 (1.1e: "Step 1 of 5").
+ */
+function totalSteps(role) {
+  return role === "EMPLOYER" ? 5 : 4;
+}
+
+const BUSINESS_NAME_CAP = 100;
+const BUSINESS_BIO_CAP = 300;
+
+/** Whether `value` is a real calendar date written as YYYY-MM-DD. */
+function isValidDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const d = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
+}
+
+/** Maps a server field code to the drawn sentence; unknown codes pass through readably. */
+function fieldMessage(field, code) {
+  if (field === "phone") return PHONE_TAKEN_MESSAGE;
+  if (field === "nic" && /already/i.test(code)) return NIC_TAKEN_MESSAGE;
+  if (field === "birthdate" && /18/.test(code)) return UNDER_AGE_MESSAGE;
+  if (field === "email" && /already/i.test(code)) return EMAIL_TAKEN_MESSAGE;
+  if (field === "tosAccepted") return TERMS_MESSAGE;
+  return code;
+}
+
 export default function RegisterScreen({ navigation }) {
-  // Step 1 — phone verification.
-  const verification = usePhoneVerification();
+  const insets = useSafeAreaInsets();
+  const { signIn, updateUser } = useAuth();
+
+  const [step, setStep] = useState(1);
+  const [role, setRole] = useState(null);
+
+  // Steps 2–3: phone verification. onBeforeSend turns "already registered" into 1.2err.
+  const verification = usePhoneVerification({
+    onBeforeSend: async (digits) => {
+      const result = await checkAvailability({ phone: `${COUNTRY_CODE}${digits}` });
+      if (result.phoneTaken) throw new Error(PHONE_TAKEN_MESSAGE);
+    },
+  });
+  const {
+    phone,
+    editPhone,
+    code,
+    setCode,
+    error: verificationError,
+    sendingCode,
+    confirmingCode,
+    resendCooldown,
+    codeExpired,
+    formattedPhone,
+    sendCode,
+    changeNumber,
+    confirmCode,
+  } = verification;
   const [idToken, setIdToken] = useState(null);
 
-  // Step 2 — the rest of the form, only reachable once idToken is set.
-  const [role, setRole] = useState(null);
+  // Step 4: details.
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -70,148 +149,205 @@ export default function RegisterScreen({ navigation }) {
   const [birthdate, setBirthdate] = useState("");
   const [legalName, setLegalName] = useState("");
   const [tosAccepted, setTosAccepted] = useState(false);
-  const [tosError, setTosError] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   // Step 4 scrolls the focused field to a fixed place under the top (see useFocusScroll).
   const detailsScroll = useRef(null);
   const { field, scrollProps } = useFocusScroll(detailsScroll);
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [registeredUser, setRegisteredUser] = useState(null);
+  // True once the account exists (step 4 creates it). From then on there is nothing to go back to
+  // and nothing to discard, so back and ✕ leave the registration.
+  const [registered, setRegistered] = useState(false);
 
-  async function handleConfirmCode() {
-    await verification.confirmCode(async (token) => setIdToken(token));
+  // Step 5 (employer): how the account posts.
+  const [postingAs, setPostingAs] = useState("individual");
+  const [businessName, setBusinessName] = useState("");
+  const [businessBio, setBusinessBio] = useState("");
+  const [postingError, setPostingError] = useState(null);
+  const [savingPosting, setSavingPosting] = useState(false);
+
+  // Hardware back follows the on-screen back: one step back, and out of the screen only from
+  // the first step.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (registered) {
+        finishToHome();
+        return true;
+      }
+      if (step === 1) return false;
+      goBackOneStep();
+      return true;
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, registered]);
+
+  /** The account exists and the person is signed in: continue into the app. */
+  function finishToHome() {
+    navigation.reset({ index: 0, routes: [{ name: "Home" }] });
   }
 
-  // FR-ACC-01 is silent on this — found by hitting it live during testing
-  // (KEYCODE_BACK silently discarded a fully-filled step-2 form). Only
-  // warns once there's something to lose: a phone number typed in step 1,
-  // or step 2 reached at all. Never warns after a successful registration,
-  // where navigating away (via "Go to log in") is the intended exit.
-  useEffect(() => {
-    const hasUnsavedInput =
-      !registeredUser && (idToken || verification.phone.length > 0);
-    if (!hasUnsavedInput) {
-      return undefined;
-    }
+  function goBackOneStep() {
+    if (step === 3) changeNumber();
+    setStep((s) => Math.max(1, s - 1));
+  }
 
-    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert(
-        "Discard registration?",
-        "The details you've entered will be lost.",
-        [
-          { text: "Stay", style: "cancel" },
-          {
-            text: "Discard",
-            style: "destructive",
-            onPress: () => navigation.dispatch(e.data.action),
-          },
-        ],
-      );
-    });
-
-    return unsubscribe;
-  }, [navigation, registeredUser, idToken, verification.phone]);
-
-  const canSubmit =
-    role && password.length > 0 && confirmPassword.length > 0 &&
-    nic.trim().length > 0 && birthdate.trim().length > 0 &&
-    legalName.trim().length > 0;
-
-  async function handleSubmitRegistration() {
+  /** ✕ — abandon registration and return to role selection (1.1). */
+  function abandon() {
+    changeNumber();
+    setIdToken(null);
+    setPassword("");
+    setConfirmPassword("");
+    setEmail("");
+    setNic("");
+    setBirthdate("");
+    setLegalName("");
+    setTosAccepted(false);
     setFieldErrors({});
     setFormError(null);
+    setStep(1);
+  }
 
-    // Client-side pre-checks the backend can't express as a single field
-    // error (a mismatch spans two fields) or doesn't check at all today
-    // (email format) — caught here, before the network round-trip, same
-    // spirit as the phone-digit-count check gating "Send code" already
-    // does. The backend's own validateFields() is still the authoritative
-    // check for everything else. Computed alongside the ToS check (not
-    // before it, with its own early return) so a submit with both problems
-    // highlights both at once instead of only revealing the ToS checkbox
-    // on a second attempt.
-    const preErrors = {};
-    if (password !== confirmPassword) {
-      preErrors.confirmPassword = "Passwords do not match";
-    }
-    if (email.trim() && !EMAIL_FORMAT.test(email.trim())) {
-      preErrors.email = "Must be a valid email address";
-    }
+  async function handleSendCode() {
+    if (await sendCode()) setStep(3);
+  }
 
-    // FR-ACC-19: blocked with the checkbox highlighted, checked here before
-    // ever calling the API — the backend enforces this too, as the real,
-    // final guard, but the acceptance criterion describes an in-the-moment
-    // UI response to the submit attempt itself.
-    setTosError(!tosAccepted);
+  async function handleResend() {
+    await sendCode();
+  }
 
-    if (Object.keys(preErrors).length > 0 || !tosAccepted) {
-      setFieldErrors(preErrors);
-      return;
+  async function handleConfirmCode() {
+    await confirmCode(async (token) => {
+      setIdToken(token);
+      setStep(4);
+    });
+  }
+
+  /** Sets a details-step field and drops that field's error: editing it is the person's answer to it. */
+  function edit(field, setter, value) {
+    setter(value);
+    setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  }
+
+  async function handleEmailBlur() {
+    const trimmed = email.trim();
+    if (!trimmed || !EMAIL_FORMAT.test(trimmed)) return;
+    try {
+      const result = await checkAvailability({ email: trimmed });
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        if (result.emailTaken) next.email = EMAIL_TAKEN_MESSAGE;
+        else if (next.email === EMAIL_TAKEN_MESSAGE) delete next.email;
+        return next;
+      });
+    } catch {
+      // A failed pre-check must not block the form; the submit reports a real conflict.
     }
+  }
+
+  async function handleSubmit() {
+    setFormError(null);
+
+    // Client-side checks mirror the server's so the common mistakes get an answer at once.
+    const errors = {};
+    if (password.length < 8 || password.length > 64) errors.password = PASSWORD_LENGTH_MESSAGE;
+    else if (password !== confirmPassword) errors.confirmPassword = PASSWORD_MISMATCH_MESSAGE;
+    if (email.trim() && !EMAIL_FORMAT.test(email.trim())) errors.email = EMAIL_INVALID_MESSAGE;
+    if (!NIC_SHAPE.test(nic.trim())) errors.nic = NIC_FORMAT_MESSAGE;
+    if (!isValidDate(birthdate)) errors.birthdate = BIRTHDATE_FORMAT_MESSAGE;
+    if (!legalName.trim()) errors.legalName = NAME_REQUIRED_MESSAGE;
+    if (!tosAccepted) errors.tosAccepted = TERMS_MESSAGE;
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setSubmitting(true);
     try {
-      const user = await register({
+      const { token, user } = await register({
         role,
         idToken,
         password,
         email: email.trim() || undefined,
-        nic,
+        nic: nic.trim(),
         birthdate,
-        legalName,
+        legalName: legalName.trim(),
         tosAccepted,
       });
-      setRegisteredUser(user);
+      // The prototype continues into the app once the account is created; an employer's step 5
+      // needs the session too, so sign in now.
+      await signIn(token, user);
+      setRegistered(true);
+      if (role === "EMPLOYER") setStep(5);
+      else finishToHome();
     } catch (err) {
-      const { formError, fieldErrors } = parseApiError(err);
-      setFormError(formError);
-      setFieldErrors(fieldErrors);
+      if (err.fields) {
+        const mapped = {};
+        for (const [field, text] of Object.entries(err.fields)) mapped[field] = fieldMessage(field, text);
+        // The number was free when the code was sent but is taken now: back to phone entry.
+        if (mapped.phone) {
+          changeNumber();
+          setStep(2);
+        }
+        setFieldErrors(mapped);
+      } else {
+        setFormError(err.message);
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (registeredUser) {
+  /** Step 5 "Continue": save how the account posts, then into the app. */
+  async function handlePostingAs() {
+    setPostingError(null);
+    setSavingPosting(true);
+    try {
+      const saved = await updatePostingAs(
+        postingAs === "business"
+          ? { postingAsType: "BUSINESS", businessName: businessName.trim(), businessBio: businessBio.trim() }
+          : { postingAsType: "INDIVIDUAL" },
+      );
+      await updateUser(saved);
+      finishToHome();
+    } catch (err) {
+      setPostingError(err.message);
+    } finally {
+      setSavingPosting(false);
+    }
+  }
+
+  const loginLink = (
+    <Link title="Go to log in" onPress={() => navigation.navigate("AccountLogin")} />
+  );
+
+  /** The registration top bar: back chevron, spacer, ✕ (a ghost on step 1). */
+  function topBar({ ghost = false, tight = false } = {}) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Account created</Text>
-        <Text style={styles.body}>
-          Welcome, {registeredUser.legalName}. You can now log in with your
-          phone number and password.
-        </Text>
-        <Button title="Go to log in" onPress={() => navigation.navigate("AccountLogin")} />
-        <StatusBar style="dark" />
+      <View style={[styles.topBar, tight && styles.topBarTight]}>
+        {ghost ? <View style={styles.ghost} /> : <BackButton onPress={registered ? finishToHome : goBackOneStep} />}
+        {ghost ? null : <CloseButton onPress={registered ? finishToHome : abandon} />}
       </View>
     );
   }
 
-  return (
-    <KeyboardAwareScrollView
-      style={styles.flex}
-      contentContainerStyle={styles.scrollContainer}
-      keyboardShouldPersistTaps="handled"
-      enableOnAndroid
-      extraScrollHeight={120}
-    >
-      <Text style={styles.title}>Create your account</Text>
+  function heading() {
+    return (
+      <>
+        <Text style={styles.screenTitle}>Create account</Text>
+        <Text style={styles.stepLabel}>
+          Step {step} of {totalSteps(role)}
+        </Text>
+      </>
+    );
+  }
 
-      {!idToken ? (
-        <>
-          <Text style={styles.stepBody}>
-            Verify your phone number to get started.
-          </Text>
-          <PhoneVerificationStep
-            verification={verification}
-            onConfirm={handleConfirmCode}
-            confirmLabel="Verify"
-          />
-        </>
-      ) : (
-        <>
-          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-
-          <Text style={styles.sectionLabel}>I am a...</Text>
+  // ── 1.1 Role selection ──────────────────────────────────────────────────
+  if (step === 1) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <StatusBar style="dark" />
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar({ ghost: true })}
+          {heading()}
           {ROLES.map((option) => (
             <RoleOption
               key={option.value}
@@ -221,79 +357,161 @@ export default function RegisterScreen({ navigation }) {
               onPress={() => setRole(option.value)}
             />
           ))}
+          <View style={styles.spacer} />
+          {loginLink}
+        </ScrollView>
+        <CtaBar>
+          <Button title="Continue" onPress={() => setStep(2)} disabled={!role} />
+        </CtaBar>
+      </View>
+    );
+  }
 
-          <TextField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry
-            error={fieldErrors.password}
-          />
-          <TextField
-            label="Confirm password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            placeholder="Re-enter password"
-            secureTextEntry
-            error={fieldErrors.confirmPassword}
-          />
-          <TextField
-            label="Email (optional)"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="you@example.com"
-            keyboardType="email-address"
-            error={fieldErrors.email}
-          />
-          <TextField
-            label="NIC"
-            value={nic}
-            onChangeText={setNic}
-            placeholder="NIC number"
-            error={fieldErrors.nic}
-          />
-          <TextField
-            label="Birthdate"
-            value={birthdate}
-            onChangeText={setBirthdate}
-            placeholder="YYYY-MM-DD"
-            keyboardType="numbers-and-punctuation"
-            error={fieldErrors.birthdate}
-          />
-          <TextField
-            label="Legal name"
-            value={legalName}
-            onChangeText={setLegalName}
-            placeholder="Full legal name"
-            autoCapitalize="words"
-            maxLength={100}
-            error={fieldErrors.legalName}
-          />
-
-          <Checkbox
-            checked={tosAccepted}
-            onToggle={() => {
-              setTosAccepted((prev) => !prev);
-              setTosError(false);
-            }}
-            label="I accept the Terms of Service and Privacy Policy"
-            error={tosError || fieldErrors.tosAccepted}
-          />
-
+  // ── 1.2 Phone entry (1.2err when the number is taken) ───────────────────
+  if (step === 2) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <StatusBar style="dark" />
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar()}
+          {heading()}
+          <PhoneField value={phone} onChangeText={editPhone} error={Boolean(verificationError)} />
+          <FieldError message={verificationError} />
+          <View style={styles.spacer} />
+          {loginLink}
+        </ScrollView>
+        <CtaBar>
           <Button
-            title="Create account"
-            onPress={handleSubmitRegistration}
-            loading={submitting}
-            disabled={!canSubmit}
+            title="Send code"
+            onPress={handleSendCode}
+            loading={sendingCode}
+            disabled={phone.length !== LOCAL_DIGITS}
           />
-        </>
-      )}
+        </CtaBar>
+      </View>
+    );
+  }
 
-      <Link onPress={() => navigation.navigate("AccountLogin")}>
-        Already have an account? Log in
-      </Link>
+  // ── 1.3 Code entry (1.3err1 / 1.3err2 / 1.3rs2) ─────────────────────────
+  if (step === 3) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <StatusBar style="dark" />
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {topBar()}
+          {heading()}
+          <Text style={styles.sentTo}>We sent a 6-digit code to {formattedPhone}.</Text>
+          <CodeInputNumeric value={code} onChangeText={setCode} error={Boolean(verificationError)} />
+          <FieldError message={verificationError} />
+          {resendCooldown > 0 ? (
+            <CountdownText
+              text={`Resend in ${Math.floor(resendCooldown / 60)}:${String(resendCooldown % 60).padStart(2, "0")}`}
+            />
+          ) : (
+            <Link title="Resend code" onPress={handleResend} />
+          )}
+          <View style={styles.spacer} />
+          <View style={styles.linkGroup}>
+            <Link
+              title="Change number"
+              onPress={() => {
+                changeNumber();
+                setStep(2);
+              }}
+            />
+            {loginLink}
+          </View>
+        </ScrollView>
+        <CtaBar>
+          <Button
+            title="Verify"
+            onPress={handleConfirmCode}
+            loading={confirmingCode}
+            disabled={code.length !== 6 || codeExpired}
+          />
+        </CtaBar>
+      </View>
+    );
+  }
 
+  // ── 1.5 / 1.5b Employer posting-as ──────────────────────────────────────
+  if (step === 5) {
+    const business = postingAs === "business";
+    return (
+      <View style={[styles.root, { paddingTop: insets.top }]}>
+        <StatusBar style="dark" />
+        <KeyboardAwareScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          enableOnAndroid
+          extraScrollHeight={120}
+        >
+          {topBar()}
+          {heading()}
+          <Text style={styles.question}>How will you post gigs?</Text>
+          <SegmentedControl selected={postingAs} onChange={setPostingAs} />
+          <Text style={styles.postingDesc}>
+            Individual/Household — post occasional gigs as yourself: a house move, tutoring, help at an event.
+          </Text>
+          <Text style={styles.postingDesc}>
+            Business — you'll add a business name, and it appears on every posting you publish.
+          </Text>
+          <Text style={styles.sentTo}>
+            You can change this later in Settings. Postings you've already published keep the name they were posted
+            under.
+          </Text>
+          {business ? (
+            <>
+              <TextField
+                label="Business name"
+                value={businessName}
+                onChangeText={setBusinessName}
+                placeholder="Enter your business name"
+                autoCapitalize="words"
+                maxLength={BUSINESS_NAME_CAP}
+              />
+              <TextField
+                label="Business bio (optional)"
+                value={businessBio}
+                onChangeText={setBusinessBio}
+                placeholder="What your business does (optional)"
+                autoCapitalize="sentences"
+                maxLength={BUSINESS_BIO_CAP}
+              />
+            </>
+          ) : null}
+          {postingError ? <FormBanner kind="error" message={postingError} /> : null}
+          <View style={styles.spacer} />
+        </KeyboardAwareScrollView>
+        <CtaBar>
+          <Button
+            title="Continue"
+            onPress={handlePostingAs}
+            loading={savingPosting}
+            disabled={business && !businessName.trim()}
+          />
+        </CtaBar>
+      </View>
+    );
+  }
+
+  // ── 1.4 Details (1.4err1 / err2 / err3 / 1.4cnt) ────────────────────────
+  const termsLabel = (
+    <>
+      I accept the{" "}
+      <Text style={styles.underlined} onPress={() => navigation.navigate("AccountTerms")}>
+        Terms of Service
+      </Text>{" "}
+      and{" "}
+      <Text style={styles.underlined} onPress={() => navigation.navigate("AccountTerms")}>
+        Privacy Policy
+      </Text>
+    </>
+  );
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
       <ScrollView
         ref={detailsScroll}
@@ -397,21 +615,20 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  flex: {
+  root: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg.default,
   },
-  container: {
+  scroll: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: spacing.xl,
-    backgroundColor: colors.surface,
   },
-  scrollContainer: {
+  // Spec: content pad 6/16/4/16, gap 16. 6 is a literal in the frames (no spacing token).
+  content: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xxl,
+    paddingTop: 6,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xs,
+    gap: spacing.lg,
   },
   // 1.4 draws its content tighter: pad 6/16/0/16, gap 8.
   contentDetails: {
@@ -421,25 +638,59 @@ const styles = StyleSheet.create({
     paddingBottom: 160,
     gap: spacing.sm,
   },
-  stepBody: {
-    fontSize: typography.body.fontSize,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
+  // topBar 328×44: back chevron at the left, ✕ at the right.
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
-  body: {
-    fontSize: typography.body.fontSize,
-    color: colors.textSecondary,
-    marginBottom: spacing.xl,
+  // On the details step the bar carries 8px of bottom padding (328×52).
+  topBarTight: {
+    paddingBottom: spacing.sm,
   },
-  sectionLabel: {
-    fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
+  ghost: {
+    width: 44,
+    height: 44,
   },
-  formError: {
-    fontSize: typography.caption.fontSize,
-    color: colors.danger,
-    marginBottom: spacing.lg,
+  screenTitle: {
+    ...typography.display,
+    color: colors.text.primary,
+  },
+  stepLabel: {
+    ...typography.caption,
+    color: colors.text.secondary,
+  },
+  sentTo: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  fieldHelp: {
+    ...typography.caption,
+    color: colors.text.secondary,
+  },
+  question: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  postingDesc: {
+    ...typography.body,
+    color: colors.text.secondary,
+  },
+  nicHelp: {
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+  underlined: {
+    textDecorationLine: "underline",
+  },
+  spacer: {
+    flex: 1,
+    minHeight: spacing.lg,
+  },
+  spacerTight: {
+    height: spacing.md,
+  },
+  linkGroup: {
+    alignItems: "flex-start",
   },
 });

@@ -121,6 +121,64 @@ Found while drafting FR-APPLY-12, whose first draft claimed a guarantee the life
 
 **Several research recommendations described behaviour that already existed** and produced no change: reporting a listing before any engagement (FR-DISPUTE-01, FR-DISPUTE-03), endorsement withdrawal (FR-ENDORSE-07), the pre-submission listing preview (FR-POST-09), and saved listings (FR-DISC-06). Full per-item reasoning lives in the SPM project's reconciliation register, outside this repo.
 
+## Amendment batch of 2026-08-27 — decisions with no other home
+
+**Thirty-four amendments landed as one batch**, raised while writing screen specifications for every module. Most reasoning lives beside the amended requirement; the entries below are the ones that would otherwise look arbitrary.
+
+**User-facing error messages are full sentences with terminal periods.** Two registers had shipped — Account/Posting's `Title is required.` versus Application's `Posting not found` — and the prototype cannot show both. The sentence register won: it is the majority of shipped strings and the warmer voice for a consumer product. The Application module's eight terse fragments change to match, with its owner's sign-off.
+
+**Session lifetime is 30 days, and one behaviour covers every dead session.** `EXPIRES_IN = "30d"` was previously a fact only `jwt.js` knew. Expiry, `passwordChangedAt` rejection, and suspension all produce the same redirect-to-login with a neutral message — three triggers, one symptom, one screen.
+
+**Checkpoint codes record failed attempts and never lock.** A worker mistyping at the kerb must not brick an arrival; a guesser must not be invisible. Per-checkpoint counters render in the Moderator's code-exchange history, turning brute-force attempts into evidence instead of prevention theatre. Codes deliberately never expire — an expiring arrival code strands a legitimately delayed worker.
+
+**Email links land on minimal web pages, never mobile deep links.** The email-verification link (FR-ACC-14) opens a one-line confirmation page; the email password-reset link (FR-ACC-10) opens the reset form served on the web, token in the URL. Deferred deep-linking was already rejected once (FR-ENDORSE-02), app-link verification is real setup cost, and email is the fallback channel — the path used precisely when something already went wrong, which should have the fewest moving parts.
+
+### Staff accounts — named limitation and runbook
+
+> **Narrowed 2026-09-20 (openings O5, O6).** **Two of these four are no longer runbook items.** Deactivating a staff account and resetting a staff password now have flows on the Admin staff surface (`FR-ADM-06`, amended the same date), and a flow can do what SQL cannot: write an audit entry. The entry below is narrowed rather than deleted, because the limitation it names is still real for what remains, and because the reasoning is the record.
+
+**No role-change or early-unlock flow exists, and no super-admin outranks another Admin.** Accepted deliberately at founding-team scale, the same treatment `NFR-REL-03` gives concurrent case review. The mitigations are direct database access plus the audit log — with the caveat that **SQL interventions are invisible to the audit log by construction**, which is why each one below must be recorded by hand as a dated line appended to this entry.
+
+**Deactivation and password reset are no longer on this list.** Both are performed from the staff surface by an Admin, and both are recorded as `STAFF_ACCESS_REMOVED` and `STAFF_PASSWORD_RESET` in the audit log. Do **not** perform either by SQL now that a flow exists: doing so would lose the attribution the flow provides, which is the whole reason it was built.
+
+The sanctioned procedures that remain (the only approved shapes — do not improvise variants):
+
+- **Change a role:** `UPDATE "AdminAccount" SET role = 'ADMIN' /* or 'MODERATOR' */ WHERE phone = '<phone>';`
+- **Unlock early:** `UPDATE "AdminAccount" SET "lockedUntil" = NULL, "failedLoginAttempts" = 0 WHERE phone = '<phone>';`
+
+*Manual intervention log (append below, dated, with who ran it and why):*
+
+
+## Amendment batch of 2026-09-16 — the error and offline pass (E1–E10)
+
+Four decisions from that batch that are not requirement text and would otherwise live nowhere.
+
+### The OTP validity window is ours, not Firebase's (E4)
+
+`FR-ACC-01` promised a code *"valid for 5 minutes"* while `FR-ACC-08` recorded that Firebase's window is not configurable by us. **Three options were considered and two rejected.** Deleting the five minutes tells the user nothing. Quoting an *observed* Firebase value couples the product's copy to an undocumented third-party internal that can change without notice — the slower-acting version of simply inventing a number.
+
+**Firebase does not publish a code's validity.** The figures commonly quoted — 30 seconds to 2 minutes — are `timeout_milliseconds` on `PhoneAuthOptions`, the Android **auto-retrieval** window, which is how long the SDK waits to read the SMS automatically. That is not the code's lifetime. The `auth/code-expired` error exists, so codes do expire, but the duration is a server-side detail Firebase does not document.
+
+**So the application enforces its own, stricter window on top.** The client starts a timer when the code is sent; when it lapses the app invalidates the entry itself and offers Resend. *"Codes last 5 minutes"* becomes true because we make it true.
+
+**The risk, stated so it is validated rather than assumed:** if our window is *longer* than Firebase's, the interface shows a live countdown for a code Firebase has already killed. **Ours must sit safely inside theirs**, and since theirs is undocumented that must be established by observation during Sprint work. The design degrades gracefully either way — if Firebase rejects first, the generic *"this code is no longer valid"* response still fires correctly.
+
+### An in-progress posting is kept on the device, and that is not a draft feature (E9)
+
+`NFR-USE-01` requires tolerance of connectivity loss; `FR-POST-15` says a posting is completed in one sitting. Both stand. What `FR-POST-15` rules out is **draft-and-save as a feature** — a server-side draft the user manages, returns to and lists. Keeping what someone just typed on their own device until they submit or discard it is not that: no server state, no draft list, no lifecycle, and nothing for another surface to read. The distinction is the decision; recording it here is what stops the two requirements reading as a contradiction again.
+
+### Account recovery is bound to the requesting device (E8, ruling R1)
+
+The approval of an account recovery grants a password reset **on the device that submitted the request**, identified by an install-scoped identifier the app generates on first run. It is not a hardware identifier and needs no permission.
+
+**This is the security mechanism, not a convenience.** Without it an approved recovery is a bearer grant: anyone who reached the screen could set the password on an account an Admin had just judged recoverable. It is also the only delivery channel available — the path is defined by phone and email both being unreachable — and it is what lets the flow tell the requester an outcome without confirming to an unauthenticated stranger that an account with those details exists.
+
+### Recovery submissions are purged after 90 days (E8, ruling R2)
+
+A recovery request stores the NIC, legal name and birthdate the requester submitted, because the Admin adjudicates that claim and a **partial** match is the case that matters — a single "matched/did not match" flag cannot express it. The cost is that identity data about a person who may hold no account sits in the table. **Rejected and completed requests are therefore purged of those details after 90 days**, which bounds the exposure without removing what the Admin needs while the request is live.
+
+---
+
 ## Code organisation
 
 **Both `backend/src/` and `mobile/src/` are organised by module, not by layer** —

@@ -1,6 +1,6 @@
 # YouthLink — Database Schema
 
-The complete entity-relationship specification for YouthLink: **20 tables, 49 foreign keys**, covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
+The complete entity-relationship specification for YouthLink: **22 tables, 53 foreign keys**, covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
 
 ## About this document
 
@@ -31,6 +31,7 @@ The single identity table for all three self-selected actor types (Youth Job-See
 | `phone`                        | String                | required, partial-unique (see Uniqueness Notes) | Login credential + contact-reveal + dedup key (FR-ACC-05, FR-APPLY-07)                                                |
 | `phoneVerifiedAt`              | DateTime              | nullable                                        | Set once OTP confirmed (FR-ACC-08)                                                                                    |
 | `passwordHash`                 | String                | required                                        | bcrypt/argon2 only (NFR-SEC-01, FR-ACC-09)                                                                            |
+| `passwordChangedAt`            | DateTime              | nullable                                        | Batch A3–A5 (2026-08-27): any JWT with `iat` earlier than this is rejected by `requireAuth`, so a password reset or change signs out every device |
 | `failedLoginAttempts`          | Int                   | default 0                                       | Consecutive failed password attempts (NFR-SEC-02, FR-ACC-09)                                                          |
 | `lockedUntil`                  | DateTime              | nullable                                        | Now + 15 min on the 5th consecutive failure (NFR-SEC-02)                                                              |
 | `email`                        | String                | nullable, partial-unique                        | Optional recovery channel (FR-ACC-01)                                                                                 |
@@ -47,6 +48,8 @@ The single identity table for all three self-selected actor types (Youth Job-See
 | `endorsementSuggestionShownAt` | DateTime              | nullable                                        | One-time nudge tracker, fires after 3 unselected applications (FR-ENDORSE-14)                                         |
 | `notifyUrgentOptIn`            | Boolean               | default `false`                                 | Opt-**in** (FR-NOTIF-01, FR-NOTIF-03)                                                                                 |
 | `notifyNewGigOptOut`           | Boolean               | default `false`                                 | Opt-**out**-by-default (FR-NOTIF-02, FR-NOTIF-03)                                                                     |
+| `lastBrowseLat` / `lastBrowseLng` | Float              | nullable                                        | Centre of the worker's most recent Browse search, rounded to 2 decimals (~1 km), overwritten each browse. The point FR-POST-10's fan-out measures "within radius" from. Added 2026-09-25 |
+| `lastBrowseAt`                 | DateTime              | nullable                                        | When that location was recorded. Fan-out ignores a location older than 30 days, and deleted or suspended accounts. Added 2026-09-25 |
 | `tosAcceptedAt`                | DateTime              | required at signup completion                   | FR-ACC-19                                                                                                             |
 | `accountStatus`                | Enum(`AccountStatus`) | default `PENDING_SIGNUP`                        | Registration writes `ACTIVE` directly — `PENDING_SIGNUP` is currently never persisted. See FR-ACC-06's amendment note |
 | `signupExpiresAt`              | DateTime              | nullable                                        | **Currently unused.** Supported a staged signup that FR-ACC-01 no longer performs; see FR-ACC-06's amendment note     |
@@ -58,7 +61,9 @@ The single identity table for all three self-selected actor types (Youth Job-See
 | `deletedAt`                    | DateTime              | nullable                                        | Soft-delete marker (FR-ACC-17, NFR-PRIV-03)                                                                           |
 | `createdAt` / `updatedAt`      | DateTime              |                                                 |                                                                                                                       |
 
-**On deletion (FR-ACC-17, NFR-PRIV-03):** the row is not removed. `phone`, `email`, `nicEncrypted`, `legalName`, `passwordHash` are overwritten with anonymized placeholders and `deletedAt` is set — every `Rating`, `CompletionRecord`, and `Engagement` referencing this `id` stays intact, satisfying "preserve engagement history under an anonymized reference." Deletion is blocked at the application layer while any `Engagement.status = ACTIVE` exists (NFR-REL-04, FR-ACC-17).
+**On deletion (FR-ACC-17, NFR-PRIV-03):** the row is not removed. `phone`, `email`, `nicEncrypted`, `legalName`, `passwordHash` are overwritten with anonymized placeholders, `lastBrowseLat`/`lastBrowseLng`/`lastBrowseAt` are cleared to null (added 2026-09-25), and `deletedAt` is set — every `Rating`, `CompletionRecord`, and `Engagement` referencing this `id` stays intact, satisfying "preserve engagement history under an anonymized reference." Deletion is blocked at the application layer while any `Engagement.status = ACTIVE` exists (NFR-REL-04, FR-ACC-17).
+
+**A suspension records its grounds (FR-ADM-03, amended 2026-09-24).** `suspensionReason` is set whenever `suspendedAt` is — an application-layer rule; the column stays nullable so an unsuspended account carries none.
 
 **Suspension must not cascade (FR-ADM-03).** Setting `suspendedAt` blocks the account's _new_ actions — applying, posting, endorsing — and takes effect on the very next request (NFR-REL-02). It must **not** touch that person's existing `Engagement` rows: those belong to uninvolved counterparties who did nothing wrong, and they resolve normally through completion, cancellation, or dispute. No cascade, no bulk status update, no automatic cancellation.
 
@@ -129,9 +134,12 @@ Deliberately **not** a role flag on `User` — FR-ADM-07 requires Admin/Moderato
 | -------------------------- | ----------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `id`                       | String            | PK                                           |                                                                                                 |
 | `phone`                    | String            | unique (within this table), required         | FR-ADM-07                                                                                       |
-| `passwordHash`             | String            | required                                     | NFR-SEC-01                                                                                      |
+| `passwordHash`             | String            | **nullable**                                 | NFR-SEC-01. Nullable since 2026-09-20 (O5/A34): a promoted account has no password until its holder sets one at first sign-in, which FR-ADM-06's amendment makes OTP-only — "no password yet" is a real state and a placeholder hash would be a lie. The admin-assisted reset added by `FR-ADM-06`'s amendment returns an account to that state. The login path must reject null explicitly |
 | `failedLoginAttempts`      | Int               | default 0                                    | NFR-SEC-02 — arguably more warranted here, per NFR-SEC-04's own "higher-value target" reasoning |
 | `lockedUntil`              | DateTime          | nullable                                     |                                                                                                 |
+| `passwordChangedAt`            | DateTime              | nullable                                        | Batch A33 (2026-08-27): staff sessions terminable — same `iat` rejection as `User`, re-checked per dashboard request |
+| `deactivatedAt`                | DateTime              | nullable                                        | Batch A33: set via the `decisions.md` runbook; dashboard auth rejects on next request. No flow exists, deliberately |
+| `lastSignInAt`             | DateTime          | nullable                                     | O6 (2026-09-20). The staff surface's Status column is **derived, not stored** — it is the sign-in state of the account, separate from its role. `deactivatedAt` set → *Access removed* · `lastSignInAt` null → *First sign-in pending* · a long gap → *Inactive — N days* · otherwise *Active*. The audit log cannot stand in for this: it records actions on things, not sessions, so it would conflate "has not signed in" with "has not done anything" |
 | `role`                     | Enum(`AdminRole`) | required                                     | `ADMIN`, `MODERATOR`                                                                            |
 | `promotedByAdminAccountId` | String            | FK → `AdminAccount`, nullable, self-relation | Null for Phase-1 backend-seeded accounts (FR-ADM-06)                                            |
 | `createdAt`                | DateTime          |                                              |                                                                                                 |
@@ -141,6 +149,52 @@ Deliberately **not** a role flag on `User` — FR-ADM-07 requires Admin/Moderato
 **FR-ADM-06 Phase 2 ("promote an already-registered user")** creates a _new_ `AdminAccount` row for that person; it does not flip a flag on their `User` row, because FR-ADM-07 requires the two identities to stay separate. The promotion is recorded via `promotedByAdminAccountId` plus an `AuditLogEntry`.
 
 **No `Session` or `RefreshToken` table, for either `User` or `AdminAccount`.** The requirements explicitly accept multiple simultaneous logins with no session-invalidation logic, as a deliberate simplification. The assumption: stateless JWTs, with every authenticated request re-checking live `accountStatus`/`suspendedAt`/`lockedUntil` — which is what actually delivers NFR-REL-02's "suspension takes effect on the very next request" without a session store. Recorded under Design Decisions below, since the requirements don't state a token strategy outright.
+
+---
+
+### `AccountRecoveryRequest`
+
+Added 2026-09-20 (batch **E8**, signed off 2026-09-16). `FR-ACC-10` says that with neither phone nor a
+verified email reachable *"no automated path succeeds — this is a named limitation."* That was a dead
+end rather than a policy: the account holds ratings, completion history and endorsements, which are the
+product's entire value to a job-seeker, so losing a SIM destroyed a worker's reputation and the platform
+offered nothing back. This table is the identity-verified, Admin-assisted route back.
+
+Deliberately **not** a `Report` and **not** a `DisputeCase`: `FR-ACC-10`'s amendment reserves this review
+to an **Admin**, never a Moderator, and `NFR-OPS-01` already denies Moderators the audit log entirely.
+This never enters Moderator triage.
+
+| Field | Type | Constraints | Notes / Traceability |
+| ----- | ---- | ----------- | -------------------- |
+| `id` | String | PK | |
+| `userId` | String | FK → `User`, **nullable** | The account the submitted details resolve to. Nullable deliberately — a submission matching no account is still a submission, and telling the requester otherwise is an enumeration leak — nothing identifying is disclosed to the requester at any point (`FR-ACC-10`) |
+| `nicSubmittedEncrypted` | String | required | What the requester submitted, encrypted with the same deterministic scheme as `User.nicEncrypted`; that determinism is what makes the match possible |
+| `legalNameSubmitted` | String(100) | required | Retained rather than reduced to a verdict: the Admin adjudicates the claim, and the case that matters in practice is the **partial** match, which one flag cannot express |
+| `birthdateSubmitted` | DateTime | required | As above. Retention is bounded by the requirement, not by this table |
+| `deviceId` | String | required | **The device binding.** An install-scoped identifier the **server** generates when the request is submitted (32 random bytes, 64 hex characters) and returns to the app, which keeps it in secure storage — not a hardware id, needing no permission, and the app needs no secure random source of its own. The outcome is shown, and the password reset granted, on that device and no other (`FR-ACC-10`). Without it an approved recovery is a bearer grant |
+| `status` | Enum(`AccountRecoveryStatus`) | default `AWAITING_REVIEW` | A queued request awaits **Admin** review; there is no Moderator stage for it to pass through |
+| `createdAt` | DateTime | | |
+| `reviewedByAdminAccountId` | String | FK → `AdminAccount`, nullable | The ruling is attributable to the acting Admin and is written to the audit log (`NFR-SEC-06`) |
+| `reviewedAt` | DateTime | nullable | |
+| `completedAt` | DateTime | nullable | Set when the requester has used the grant to set a new password; consumed once |
+
+Indexed on (`status`, `createdAt`) — the Admin queue is ordered oldest first, so the longest-waiting request surfaces first.
+
+**There is no notification, and that is a finding rather than an omission.** A `Notification` row needs a
+`userId`, and the requester is unauthenticated by
+definition — binding the notice to the account would decide the identity question the Admin has not yet
+ruled on. Both transports, phone and email, are unreachable by the definition of this path. And a push
+would confirm to whoever filled in the form that such an account exists, the same enumeration weakness
+`FR-ENDORSE-03`'s deliberately generic *"no eligible match found"* already guards against. Delivery is
+therefore **device-bound and pull-based**: the app that made the request renders the outcome in place.
+
+**Everything the reviewing Admin is shown is derived, not stored** — the rating average, the completion
+percentage, the named endorsements, *"No disputes · no warnings"* — from `User`, `Rating`,
+`CompletionRecord`, `Endorsement`, `DisputeCase` and `Warning`.
+
+**The rejected *outcome* screen is ruled Tier C** (ruled on 2026-09-20): `REJECTED` exists in data and is
+acted on when a request is reviewed. The worker-facing app presents only the approved outcome — a
+recorded scope decision, not an omission.
 
 ---
 
@@ -215,7 +269,7 @@ One row per affected `Engagement` per change event — FR-ENG-11 requires indepe
 | `engagementId`  | String                       | FK → `Engagement` |                                                                                                                                                          |
 | `changeSummary` | Json                         | required          | What changed: pay / start time / location / workersNeeded / category (FR-ENG-09)                                                                         |
 | `proposedAt`    | DateTime                     |                   |                                                                                                                                                          |
-| `deadline`      | DateTime                     | required          | The window whose closure routes a non-acceptance into cancellation (FR-ENG-09 AC). **Duration not fixed by the requirements — see Implementation Notes** |
+| `deadline`      | DateTime                     | required          | The window whose closure routes a non-acceptance into cancellation (FR-ENG-09 AC). **The shorter of 48 hours and half the time remaining before the start** (48 hours fixed 2026-08-27, batch A15; capped 2026-09-23). Every worker's row for one change event carries the same value (FR-ENG-11) |
 | `status`        | Enum(`MaterialChangeStatus`) | default `PENDING` | `PENDING`, `ACCEPTED`, `DECLINED_ROUTED_TO_CANCELLATION`                                                                                                 |
 | `respondedAt`   | DateTime                     | nullable          |                                                                                                                                                          |
 
@@ -235,7 +289,7 @@ Minor changes (title/description only) create no row — no re-confirmation requ
 | `note`         | String(300)               | nullable          | Pre-filled from `User.bio`, editable per application, never writing back to the bio (FR-APPLY-02, FR-PROF-04) |
 | `status`       | Enum(`ApplicationStatus`) | default `PENDING` | FR-APPLY-02/03/08/09                                                                                          |
 | `appliedAt`    | DateTime                  |                   |                                                                                                               |
-| `decidedAt`    | DateTime                  | nullable          |                                                                                                               |
+| `decidedAt`    | DateTime                  | nullable          | Set for every decided state — Selected, Declined and Not selected, including FR-APPLY-09's automatic closure. Anchors FR-APPLY-12's 30-day list window (amended 2026-09-24) |
 | `withdrawnAt`  | DateTime                  | nullable          | FR-APPLY-03                                                                                                   |
 
 App-level constraint: at most one `Application` per (`gigPostingId`, `workerId`) in status `PENDING` or `SELECTED` — a withdrawn applicant may reapply while the posting is still Open (FR-APPLY-03 AC), so a plain composite unique key would be wrong. No cap on pool size (FR-APPLY-11).
@@ -264,13 +318,16 @@ Spawned the moment an `Application` is selected. Every per-worker mechanism (che
 | `paymentCode`             | String(6)                  | nullable                   | **Worker** holds, Employer enters — the holder deliberately flips (FR-ENG-01)                                                                                                                                                                          |
 | `paymentStatus`           | Enum(`CheckpointStatus`)   | nullable                   | Null, not `PENDING`, when the checkpoint doesn't exist at all — Unpaid internships (FR-ENG-02)                                                                                                                                                         |
 | `paymentConfirmedAt`      | DateTime                   | nullable                   |                                                                                                                                                                                                                                                        |
+| `arrivalFailedAttempts`   | Int                        | default 0                  | Batch A17 (2026-08-27): wrong entries recorded, never locked — rendered in FR-MOD-01's code-exchange history as evidence |
+| `completionFailedAttempts`| Int                        | default 0                  | Batch A17 |
+| `paymentFailedAttempts`   | Int                        | default 0                  | Batch A17 |
 | `startedAt`               | DateTime                   | nullable                   | Gates End Engagement vs. cancellation (FR-ENG-12 AC)                                                                                                                                                                                                   |
 | `ratingOpenedAt`          | DateTime                   | nullable                   | **Anchors FR-RATE-02's 14-day reveal timer.** Set on completion confirmed, End Engagement with no issue, a dispute ruling that the engagement genuinely happened (FR-ADM-08), **or cancellation** — see the rating-eligibility note below (FR-RATE-05) |
 | `ratingEnforced`          | Boolean                    | default `true`             | `false` for a cancelled Engagement: rating stays available but is never prompted or chased (FR-RATE-05)                                                                                                                                                |
 | `cancelledAt`             | DateTime                   | nullable                   | Effective cancellation moment (FR-ENG-05/06)                                                                                                                                                                                                           |
 | `cancelledByUserId`       | String                     | FK → `User`, nullable      |                                                                                                                                                                                                                                                        |
 | `cancellationReason`      | Enum(`CancellationReason`) | nullable                   | Fixed list (FR-ENG-05)                                                                                                                                                                                                                                 |
-| `isLateCancellation`      | Boolean                    | nullable                   | <24h regular, <6h urgent — weighs more heavily on completion rate (FR-ENG-05/06/07)                                                                                                                                                                    |
+| `isLateCancellation`      | Boolean                    | nullable                   | Amended 2026-09-24: a regular cancellation (start more than 48 h away when made) is never late; an urgent one is late within 6 h of the start, or within 24 h when `createdAt` was more than 48 h before the start (FR-ENG-05/06/07) |
 | `endedAt`                 | DateTime                   | nullable                   | Part-time End Engagement (FR-ENG-12)                                                                                                                                                                                                                   |
 | `endedByUserId`           | String                     | FK → `User`, nullable      |                                                                                                                                                                                                                                                        |
 | `endIssueFlag`            | Boolean                    | nullable                   | "Did something go wrong?" — `true` opens a dispute _before_ rating (FR-ENG-12)                                                                                                                                                                         |
@@ -290,7 +347,7 @@ FR-ENG-05 makes cancellation on a regular gig a _request_ — reason required, 4
 | `engagementId`       | String                            | FK → `Engagement` |                                                                                                                                       |
 | `requestedByUserId`  | String                            | FK → `User`       | Either party may request (FR-ENG-05)                                                                                                  |
 | `reason`             | Enum(`CancellationReason`)        | required          | Fixed list, no free text                                                                                                              |
-| `isUrgentEngagement` | Boolean                           | required          | Determines whether a window applies at all                                                                                            |
+| `isUrgentEngagement` | Boolean                           | required          | Determines whether a window applies at all. Decided **at `requestedAt`** — start 48 h away or less — and never recomputed (FR-ENG-05/06, amended 2026-09-24) |
 | `deadline`           | DateTime                          | nullable          | `requestedAt` + 48h for a regular gig; **null for an urgent one**, which takes effect immediately with no approval window (FR-ENG-06) |
 | `status`             | Enum(`CancellationRequestStatus`) | default per type  | `PENDING`, `ACCEPTED`, `REJECTED`, `AUTO_RESOLVED_NO_RESPONSE`, `IMMEDIATE`                                                           |
 | `requestedAt`        | DateTime                          |                   |                                                                                                                                       |
@@ -298,7 +355,7 @@ FR-ENG-05 makes cancellation on a regular gig a _request_ — reason required, 4
 
 An urgent-gig cancellation is written directly as `IMMEDIATE` with a null deadline, so the same table covers both paths without a second mechanism. A request that reaches `ACCEPTED` or `AUTO_RESOLVED_NO_RESPONSE` is what sets `Engagement.cancelledAt` and writes the `CompletionRecord` row — the request tracks the negotiation, the `Engagement` fields record the settled outcome.
 
-A material change that isn't accepted (FR-ENG-09) routes into this same table rather than a parallel mechanism.
+A material change that isn't accepted (FR-ENG-09) routes into this same table rather than a parallel mechanism. Since 2026-09-24 (FR-ENG-09 rules 4 and 5) that row is written directly as `IMMEDIATE` — whether the worker declined or the window closed — with the cancellation attributed to the Employer (`Engagement.cancelledByUserId` = the Employer) and no worker `CompletionRecord`.
 
 ---
 
@@ -315,10 +372,10 @@ A material change that isn't accepted (FR-ENG-09) routes into this same table ra
 | `score`                   | Int      | required, integer 1–5             | Whole stars only, no half-stars, no free-text review field (FR-RATE-01)                                               |
 | `submittedAt`             | DateTime |                                   |                                                                                                                       |
 | `revealedAt`              | DateTime | nullable                          | Set when both parties have submitted, or at `Engagement.ratingOpenedAt` + 14 days, whichever comes first (FR-RATE-02) |
-| `publicResponse`          | String   | nullable                          | The rated party's self-service reply (FR-RATE-06)                                                                     |
+| `publicResponse`          | String(300) | nullable                       | The rated party's self-service reply (FR-RATE-06); capped at 300 — bio-class (batch A20)                                                                     |
 | `removedAt`               | DateTime | nullable                          | Admin-only, clear policy violation — never ordinary disagreement (FR-RATE-06)                                         |
 | `removedByAdminAccountId` | String   | FK → `AdminAccount`, nullable     |                                                                                                                       |
-| `removalReason`           | String   | nullable                          |                                                                                                                       |
+| `removalReason`           | String(300) | nullable                          | Batch A27 cap — Admin's stated grounds |
 | —                         | —        | unique(`engagementId`, `raterId`) | One rating per party per engagement (FR-RATE-04)                                                                      |
 
 Indexed on (`rateeId`, `revealedAt`) for average-rating and applicant-pool-sort queries.
@@ -330,6 +387,19 @@ Indexed on (`rateeId`, `revealedAt`) for average-rating and applicant-pool-sort 
 A `NO_SHOW_CONFIRMED` dispute ruling is the one case where rating is skipped entirely rather than merely unenforced: `ratingOpenedAt` stays null and two `CompletionRecord` rows are written instead (FR-ADM-08).
 
 Deliberately **not** linked to `DisputeCase`: FR-RATE-06 is explicit that a rating-fairness disagreement never enters the Moderator-triage pipeline; only a policy-violation removal reaches Admin, and directly.
+
+### `RatingRemovalRequest`
+
+Added 2026-08-27 (batch A21). The removal *request*'s vehicle — the ruling itself stays on `Rating`'s `removedAt`/`removedByAdminAccountId`/`removalReason`. Deliberately not a `Report`: FR-RATE-06 routes this path directly to Admin, never through Moderator triage, so reusing the report pipeline would rebuild exactly the routing the requirement forbids.
+
+| Field               | Type        | Constraints    | Notes / Traceability                                       |
+| ------------------- | ----------- | -------------- | ----------------------------------------------------------- |
+| `id`                | String      | PK             |                                                             |
+| `ratingId`          | String      | FK → `Rating`  |                                                             |
+| `requestedByUserId` | String      | FK → `User`    | The rated party                                             |
+| `grounds`           | String(300) | required       | The claimed clear policy violation, prompt-class cap        |
+| `createdAt`         | DateTime    |                |                                                             |
+| `ruledAt`           | DateTime    | nullable       | Set when Admin acts, either way; the outcome lives on `Rating` |
 
 ### `CompletionRecord`
 
@@ -365,7 +435,13 @@ Completion rate is computed at query time; no stored aggregate.
 
 **`attributes` is an enum array, not free text, and it is optional.** Added 2026-08-27 for FR-ENDORSE-04's amendment. A fixed list (`PUNCTUALITY`, `HONESTY`, `RELIABILITY`, `SPECIFIC_SKILL`, `LENGTH_OF_ACQUAINTANCE`) rather than free text, because the value is in an employer being able to compare like with like across endorsements — free text would not be comparable and would duplicate what `reason` already does. An empty array is valid and must stay valid: the requirement's single-action principle means a Verifier can vouch without selecting anything. **Display rule with a real failure mode:** only selected attributes may be shown. Rendering the unselected ones greyed out, or as an implied "not attested" list, would turn an optional field into a negative signal about the worker — the opposite of what the endorsement exists to do.
 
-**No unique constraint on (`endorserId`, `workerId`)** and no per-worker cap — FR-ENDORSE-08 explicitly allows unlimited endorsers per worker.
+**No per-worker cap** — FR-ENDORSE-08 allows unlimited endorsers per worker — **but one active endorsement per endorser per worker** (FR-ENDORSE-08 as amended 2026-09-24): a repeated vouch would count twice in "Endorsed ×n" and in the endorser's track record. A plain composite unique key would be wrong, because a revoked endorsement may be replaced while the worker is still eligible, so the constraint is partial:
+
+```
+UNIQUE INDEX ON Endorsement(endorserId, workerId) WHERE revokedAt IS NULL
+```
+
+Prisma cannot declare a partial index, so it is created in a raw-SQL migration, like the `User` indexes above. The application also checks before submit and maps the constraint failure (two devices submitting at once) to the same refusal.
 
 **One endorsement covers every application** made while the worker is still zero-history (FR-ENDORSE-06) — so nothing links an `Endorsement` to an `Application`. Tier-2 placement in the applicant pool is computed from "an active endorsement exists," not from a per-application record.
 
@@ -393,7 +469,7 @@ Completion rate is computed at query time; no stored aggregate.
 | `targetGigPostingId` | String               | FK → `GigPosting`, nullable |                                                                                                     |
 | `targetEngagementId` | String               | FK → `Engagement`, nullable |                                                                                                     |
 | `reason`             | Enum(`ReportReason`) | required                    | Fixed list; a discovered false birthdate (FR-DISPUTE-06) files under this same list, no sixth value |
-| `detail`             | String               | nullable                    | Optional (FR-DISPUTE-01)                                                                            |
+| `detail`             | String(1000)         | nullable                    | Optional (FR-DISPUTE-01); description-class cap (batch A27)                                                                            |
 | `status`             | Enum(`ReportStatus`) | default `QUEUED`            |                                                                                                     |
 | `createdAt`          | DateTime             |                             |                                                                                                     |
 
@@ -414,7 +490,7 @@ One report queues without hiding anything; the **third report from three distinc
 | `moderatorAccountId` | String                     | FK → `AdminAccount`, nullable | Stage 1 triage (FR-MOD-01)                                      |
 | `adminAccountId`     | String                     | FK → `AdminAccount`, nullable | Stage 2 ruling (FR-ADM-01)                                      |
 | `resolution`         | Enum(`DisputeResolution`)  | nullable                      |                                                                 |
-| `resolutionNotes`    | String                     | nullable                      | Moderator triage notes, visible to Admin at stage 2 (FR-ADM-01) |
+| `resolutionNotes`    | String(1000)               | nullable                      | Batch A27 cap. Moderator triage notes, visible to Admin at stage 2 (FR-ADM-01) |
 | `resolvedAt`         | DateTime                   | nullable                      | Final — no appeals mechanism exists (FR-ADM-01, NFR-OPS-04)     |
 | `createdAt`          | DateTime                   |                               |                                                                 |
 
@@ -444,9 +520,9 @@ App-level: max 3 per (`disputeCaseId`, `submittedByUserId`), 5MB each (FR-DISPUT
 | `disputeCaseId`             | String   | FK → `DisputeCase`  |                                            |
 | `requestedByAdminAccountId` | String   | FK → `AdminAccount` | Moderator **or** Admin may ask (FR-MOD-03) |
 | `requestedFromUserId`       | String   | FK → `User`         | Either party                               |
-| `question`                  | String   | required            |                                            |
+| `question`                  | String(300) | required — prompt-class cap (batch A27) |                                            |
 | `deadline`                  | DateTime | required            | +24h (FR-MOD-03)                           |
-| `response`                  | String   | nullable            |                                            |
+| `response`                  | String(1000)| nullable — narrative-class cap (batch A27) |                                            |
 | `respondedAt`               | DateTime | nullable            |                                            |
 | `createdAt`                 | DateTime |                     |                                            |
 
@@ -458,7 +534,7 @@ App-level: max 3 per (`disputeCaseId`, `submittedByUserId`), 5MB each (FR-DISPUT
 | `userId`                 | String   | FK → `User`                  |                                        |
 | `disputeCaseId`          | String   | FK → `DisputeCase`, nullable |                                        |
 | `issuedByAdminAccountId` | String   | FK → `AdminAccount`          | Moderator-issued at triage (FR-MOD-01) |
-| `reason`                 | String   | required                     |                                        |
+| `reason`                 | String(300)   | required                     | Batch A27 cap                          |
 | `issuedAt`               | DateTime |                              |                                        |
 
 Three warnings against the same `userId` within a **rolling 90-day** window auto-escalate to Admin for suspension review (FR-MOD-02) — a trailing-window count, not a lifetime total, so the query must be date-bounded.
@@ -473,8 +549,8 @@ Three warnings against the same `userId` within a **rolling 90-day** window auto
 | ---------------- | -------- | ------------------- | ------------------------------------------------------------------------ |
 | `id`             | String   | PK                  |                                                                          |
 | `adminAccountId` | String   | FK → `AdminAccount` |                                                                          |
-| `action`         | String   | required            | e.g. `SUSPEND_USER`, `RULE_DISPUTE`, `REMOVE_POSTING`, `PROMOTE_ACCOUNT` |
-| `targetType`     | String   | required            |                                                                          |
+| `action`         | Enum(`AuditAction`) | required        | Batch A29 (2026-08-27): fixed vocabulary, one value per acting surface — `CASE_WARNING_CLOSED` `CASE_ESCALATED` `CLARIFICATION_REQUESTED` `DISPUTE_RULED` `ACCOUNT_SUSPENDED` `POSTING_REMOVED` `RATING_REMOVED` `CONTENT_RESTORED` `CONTENT_ESCALATED` `USER_PROMOTED`. Free strings meant every developer would invent verbs |
+| `targetType`     | Enum(`AuditTargetType`) | required    | Batch A29: `USER` `POSTING` `RATING` `DISPUTE_CASE` `REPORT` `ADMIN_ACCOUNT` |
 | `targetId`       | String   | nullable            |                                                                          |
 | `details`        | Json     | nullable            |                                                                          |
 | `createdAt`      | DateTime |                     |                                                                          |
@@ -505,6 +581,8 @@ Indexed on (`userId`, `readAt`) and (`adminAccountId`, `readAt`).
 
 The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counting `type = URGENT_GIG` rows with a non-null `pushSentAt` in the trailing 24 hours — no counter column, so it can't drift out of sync.
 
+**History retention** (FR-NOTIF-08 as amended 2026-09-24) is a query window, not a column: the history shows rows with `createdAt` in the last 30 days, and `WARNING_RECORDED` rows for 90 days. The same shape bounds the worker's application list (FR-APPLY-12, from `Application.decidedAt`/`withdrawnAt`) and the engagements list (FR-ENG-14, from the end of the rating window). Whether old rows are also purged is an operational choice; the lists never show them.
+
 **Preferences** live on `User` as two booleans, not a separate table — FR-NOTIF-03 defines exactly two toggles.
 
 **Urgent vs. regular channel separation** (FR-NOTIF-10) is a send-time decision driven by `type`; the enum already carries the distinction, so no extra column is needed.
@@ -530,7 +608,7 @@ The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counti
 | `CancellationRequestStatus` | `PENDING`, `ACCEPTED`, `REJECTED`, `AUTO_RESOLVED_NO_RESPONSE`, `IMMEDIATE`                                                                                                                                                                                                                                                                             |
 | `ApplicationStatus`         | `PENDING`, `SELECTED`, `DECLINED`, `WITHDRAWN`, `NOT_SELECTED`                                                                                                                                                                                                                                                                                          |
 | `EngagementStatus`          | `ACTIVE`, `COMPLETED`, `CANCELLED`, `ENDED`, `DISPUTED`                                                                                                                                                                                                                                                                                                 |
-| `CheckpointStatus`          | `PENDING`, `CONFIRMED`, `UNABLE_TO_CONFIRM`                                                                                                                                                                                                                                                                                                             |
+| `CheckpointStatus`          | `PENDING`, `CONFIRMED`, `UNABLE_TO_CONFIRM`, `SETTLED_BY_RULING` — the last added 2026-09-24 for FR-ADM-08's amendment: an arrival or completion checkpoint that was never confirmed, settled by a ruling that the Engagement happened (the matching `…ConfirmedAt` holds the ruling time) |
 | `CancellationReason`        | `SCHEDULE_CONFLICT`, `DETAILS_NO_LONGER_SUITABLE`, `FOUND_OTHER_WORK`, `PERSONAL_EMERGENCY`, `OTHER`                                                                                                                                                                                                                                                    |
 | `CompletionOutcome`         | `COMPLETED`, `LATE_CANCELLATION`, `EARLY_CANCELLATION`, `NO_SHOW_RELIABLE_CREDIT`, `NO_SHOW_UNRELIABLE_MARK`                                                                                                                                                                                                                                            |
 | `EndorsementEntryPoint`     | `CODE`, `PHONE_SEARCH`                                                                                                                                                                                                                                                                                                                                  |
@@ -540,7 +618,10 @@ The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counti
 | `DisputeTriggerType`        | `UNABLE_TO_CONFIRM`, `END_ENGAGEMENT_ISSUE`, `STALLED_AUTO_FLAG`, `REPORT`                                                                                                                                                                                                                                                                              |
 | `DisputeStatus`             | `AWAITING_RESPONSE`, `UNDER_REVIEW`, `ESCALATED`, `RESOLVED`                                                                                                                                                                                                                                                                                            |
 | `DisputeResolution`         | `RULED_FOR_RAISER`, `RULED_FOR_OTHER`, `INCONCLUSIVE`, `WARNING_ONLY`, `NO_SHOW_CONFIRMED`                                                                                                                                                                                                                                                              |
-| `NotificationType`          | `URGENT_GIG`, `NEW_GIG`, `URGENT_DIGEST`, `APPLICATION_RECEIVED`, `APPLICATION_SELECTED`, `APPLICATION_DECLINED`, `APPLICATION_NOT_SELECTED`, `MATERIAL_CHANGE`, `CANCELLATION_REQUEST`, `END_ENGAGEMENT`, `STALLED_ENGAGEMENT_PROMPT`, `NEW_DISPUTE_CASE`, `CLARIFICATION_REQUEST`, `ENDORSEMENT_RECEIVED`, `ENDORSEMENT_PAYOFF`, `NO_APPLICANT_NUDGE` |
+| `AuditAction`               | `CASE_REVIEW_OPENED`, `CLARIFICATION_REQUESTED`, `WARNING_RECORDED`, `CASE_CLOSED_NO_ACTION`, `CASE_ESCALATED`, `DISPUTE_RULED`, `CONTENT_RESTORED`, `CONTENT_ESCALATED`, `POSTING_REMOVED`, `RATING_REMOVED`, `ACCOUNT_SUSPENDED`, `USER_PROMOTED`, `STAFF_PASSWORD_RESET`, `STAFF_ACCESS_REMOVED`, `METRICS_EXPORTED`, `ACCOUNT_RECOVERY_APPROVED`, `ACCOUNT_RECOVERY_REJECTED` — batch A29 (2026-08-27), **corrected 2026-09-20 against the actions the dashboard actually performs.** A closed enum is only safe when it is closed over the vocabulary that exists; A29's ten values were derived from "one per Module 10 acting surface", and the audit log is a Module 11 surface that also receives staff-administration and metrics actions. Six values were missing outright, and `CASE_WARNING_CLOSED` was renamed — recording a warning against a **user** and closing a case against a **report** are two acts, not one |
+| `AuditTargetType`           | `USER`, `POSTING`, `RATING`, `DISPUTE_CASE`, `REPORT`, `ADMIN_ACCOUNT`, `PLATFORM_METRICS` — batch A29; `PLATFORM_METRICS` added 2026-09-20 as the target of a metrics export (`FR-DASH-04`, `NFR-OPS-02`), which none of the other six covers |
+| `AccountRecoveryStatus`     | `AWAITING_REVIEW`, `APPROVED`, `REJECTED` — added 2026-09-20 (batch E8). Three values and no more: the review offers exactly two actions, and there is no Moderator stage for a request to be under review for |
+| `NotificationType`          | `URGENT_GIG`, `NEW_GIG`, `URGENT_DIGEST`, `APPLICATION_RECEIVED`, `APPLICATION_SELECTED`, `APPLICATION_DECLINED`, `APPLICATION_NOT_SELECTED`, `APPLICATION_TERMS_CHANGED`, `MATERIAL_CHANGE`, `CANCELLATION_REQUEST`, `END_ENGAGEMENT`, `STALLED_ENGAGEMENT_PROMPT`, `NEW_DISPUTE_CASE`, `CLARIFICATION_REQUEST`, `ENDORSEMENT_RECEIVED`, `ENDORSEMENT_PAYOFF`, `NO_APPLICANT_NUDGE`, `CANCELLATION_RESOLVED`, `RATING_WINDOW_OPEN`, `RATING_REVEALED`, `DISPUTE_OPENED`, `DISPUTE_RESOLVED`, `FLAGGED_CONTENT_OUTCOME`, `WARNING_RECORDED`, `ENDORSEMENT_REVOKED` *(six added 2026-08-27, batches A18/A23/A25; `APPLICATION_TERMS_CHANGED` added 2026-09-23 for FR-APPLY-10; `WARNING_RECORDED` added 2026-09-24 for FR-NOTIF-12; `ENDORSEMENT_REVOKED` added 2026-09-24 for FR-ENDORSE-07)* |
 
 ---
 
@@ -578,6 +659,10 @@ erDiagram
     User ||--o{ Rating : "gives"
     User ||--o{ Rating : "receives"
     AdminAccount ||--o{ Rating : "removes (policy violation)"
+    User ||--o{ AccountRecoveryRequest : "requests recovery of"
+    AdminAccount ||--o{ AccountRecoveryRequest : "reviews"
+    Rating ||--o| RatingRemovalRequest : "removal requested via"
+    User ||--o{ RatingRemovalRequest : "requests"
     Engagement ||--o{ CompletionRecord : "produces"
     User ||--o{ CompletionRecord : "accrues"
 
@@ -634,6 +719,7 @@ NFR-PERF-02 targets 1 second for common round-trip actions and NFR-PERF-03 caps 
 | `Rating`       | (`rateeId`, `revealedAt`)                               | Average rating for pool sort and profile display                        |
 | `Warning`      | (`userId`, `issuedAt`)                                  | Rolling 90-day threshold check (FR-MOD-02)                              |
 | `Notification` | (`userId`, `readAt`), (`adminAccountId`, `readAt`)      | Notification history (FR-NOTIF-08)                                      |
+| `User`         | (`lastBrowseLat`, `lastBrowseLng`)                      | Posting fan-out to youth within radius (FR-POST-10, FR-NOTIF-01/02)     |
 
 ---
 
@@ -684,7 +770,7 @@ None of the following were specified directly by the requirements — each is a 
 8. **No `Session`/`RefreshToken` table** — inferred from the multiple-simultaneous-logins allowance and NFR-REL-02 together; the requirements don't state a token strategy directly.
 9. **Admin removal reuses `GigStatus.WITHDRAWN`** rather than a fifth `REMOVED` value, because FR-DASH-01 enumerates exactly four dashboard-visible statuses. Distinguishing the two relies on `AuditLogEntry`. If a dashboard filter for "Admin-removed only" is wanted, this needs a fifth value.
 10. **`COMMUNITY_ENDORSER` is a code-facing name only** — the requirements use the actor's full name, "Community Verifier/Endorser." Same role; see the terminology note at the top of this document.
-11. **`CompletionRecord.weight` added to make FR-ENG-07's "weigh more heavily" implementable**, defaulting to 1.0. The requirements don't specify the actual multiplier — agree one deliberately (e.g. 2.0) rather than letting each developer assume a different value.
+11. **`CompletionRecord.weight` added to make FR-ENG-07's "weigh more heavily" implementable**, defaulting to 1.0. **Resolved 2026-08-27 (batch A16): a Late cancellation writes weight 2.0** — the deliberate single value this note asked for.
 12. **`Notification.batchedDigestId` as a self-relation** for FR-NOTIF-01's digest batching, rather than a separate `NotificationDigest` table — lighter, and a digest is itself a notification.
 
 ---
@@ -694,6 +780,7 @@ None of the following were specified directly by the requirements — each is a 
 - Stack: PostgreSQL + Prisma behind a Node.js/Express backend.
 - Suggested build order if implementing incrementally: `User` → `OtpCode` / `EmailVerificationToken` / `AdminAccount` → `GigPosting` → `Application` / `Engagement` → everything else. This matches the order the module slices depend on them; see [`module-ownership.md`](module-ownership.md).
 - Everything lands in **one** initial migration before feature work begins — including the indexes and the partial unique indexes, which are cheap to add now and painful to retrofit once real data exists.
-- **One value still needs agreeing before the engagement-lifecycle work starts:** how long the material-change re-confirmation window is. FR-ENG-09 and FR-ENG-11 both depend on a window closing but neither states its length, unlike every other window in the system (48h for cancellation and dispute response, 24h for clarification, 14 days for rating reveal, 5 minutes for OTP). `MaterialChangeRequest.deadline` exists either way, so this doesn't block the migration — only the value written into it is open. 48 hours would match the cancellation window it routes into.
+- **The material-change re-confirmation window was agreed 2026-08-27 (batch A15): 48 hours**, matching the cancellation window it routes into. `MaterialChangeRequest.deadline` now has its value. *(This note previously read "One value still needs agreeing before the engagement-lifecycle work starts.")*
+- **Capped by the start time, 2026-09-23 (M2 review):** the window is now the shorter of 48 hours and half the time remaining before the start, because a flat 48 hours outlasts every urgent posting (FR-ENG-09's amendment). Two application-layer consequences with no new columns: a posting with any `PENDING` `MaterialChangeRequest` cannot be edited again, and a cancellation reached through `DECLINED_ROUTED_TO_CANCELLATION` writes **no** `CompletionRecord` for the worker — the change was the Employer's, so it must not lower the worker's completion rate.
 - **A related rule to confirm:** FR-ENG-05 says an unanswered cancellation request "auto-resolves against the non-responder" without stating what that resolves _to_ in each direction. `CancellationRequestStatus.AUTO_RESOLVED_NO_RESPONSE` supports either reading; agree the business rule before implementing.
 - FR-ENG-13's stalled-engagement trigger applies to `arrangementType = GIG` only (see the Gig Posting section). The scheduler that fires it must filter on that explicitly rather than sweeping every engagement.

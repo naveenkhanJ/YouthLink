@@ -11,7 +11,9 @@
  * people can add screens in parallel without ever editing the same file.
  * ============================================================================
  */
-import { NavigationContainer } from "@react-navigation/native";
+import { useEffect } from "react";
+import { KeyboardAvoidingView } from "react-native";
+import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "../screens/HomeScreen";
@@ -28,6 +30,7 @@ import engagementScreens from "../screens/engagement/engagement.screens";
 import ratingScreens from "../screens/rating/rating.screens";
 import profileScreens from "../screens/profile/profile.screens";
 import endorsementScreens from "../screens/endorsement/endorsement.screens";
+import helpScreens from "../screens/help/help.screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +45,7 @@ const moduleScreens = [
   ...ratingScreens,
   ...profileScreens,
   ...endorsementScreens,
+  ...helpScreens,
 ];
 
 // Fails loudly at startup rather than showing a blank screen later, which is
@@ -82,12 +86,17 @@ function SessionEndRedirect() {
 
 export default function RootNavigator() {
   return (
-    <NavigationContainer>
+    // Android draws edge to edge here, so the window does not shrink for the keyboard
+    // (adjustResize has no effect). Padding the whole navigator lifts every screen's pinned
+    // action bar above the keyboard.
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <NavigationContainer ref={navigationRef}>
+      <SessionEndRedirect />
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: "YouthLink" }}
+          options={{ headerShown: false }}
         />
         {moduleScreens.map(({ name, component, options }) => (
           <Stack.Screen
@@ -99,5 +108,6 @@ export default function RootNavigator() {
         ))}
       </Stack.Navigator>
     </NavigationContainer>
+    </KeyboardAvoidingView>
   );
 }

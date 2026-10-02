@@ -18,23 +18,35 @@
  * the 2026-08-23 UI/UX audit, see .worklog/progress.md.
  */
 import { useEffect, useRef, useState } from "react";
-import { getAuth, signInWithPhoneNumber, getIdToken } from "@react-native-firebase/auth";
-import { COUNTRY_CODE, LOCAL_DIGITS } from "../phoneFormat";
+import { getAuth, signInWithPhoneNumber, getIdToken, signOut } from "@react-native-firebase/auth";
+import { COUNTRY_CODE, LOCAL_DIGITS, formatLocalNumber } from "../phoneFormat";
 
 // 30s is a judgment call, not a spec'd value — long enough to discourage
 // spamming Firebase's own rate limits, short enough that a genuinely
 // undelivered SMS doesn't leave someone stuck waiting.
 const RESEND_COOLDOWN_SECONDS = 30;
+const APP_EXPIRY_SECONDS = 5 * 60;
 
-function formatLocalNumber(digits) {
-  // "771234567" -> "77 123 4567", matching how Sri Lankan mobile numbers
-  // are conventionally grouped (carrier prefix, then 3+4).
-  return [digits.slice(0, 2), digits.slice(2, 5), digits.slice(5)]
-    .filter(Boolean)
-    .join(" ");
+// The strings the prototype draws for these two situations (1.3err2, 1.3err1). Firebase's
+// own messages ("[auth/invalid-verification-code] The SMS verification code used ...") are
+// developer text and never reach the screen.
+export const CODE_MISMATCH_MESSAGE = "That code doesn't match. Check the 6 digits and try again.";
+export const CODE_EXPIRED_MESSAGE = "This code is no longer valid. Tap Resend for a new one.";
+// Not drawn anywhere in M1 (there is no frame for these two), so kept plain and neutral.
+const SEND_FAILED_MESSAGE = "We couldn't send the code. Check the number and try again.";
+const TOO_MANY_MESSAGE = "Too many attempts. Wait a few minutes and try again.";
+
+/** Maps a Firebase phone-auth error to the screen copy for the step it happened in. */
+function messageFor(err, step) {
+  const code = err?.code || "";
+  if (code === "auth/code-expired" || code === "auth/session-expired") return CODE_EXPIRED_MESSAGE;
+  if (code === "auth/too-many-requests") return TOO_MANY_MESSAGE;
+  if (step === "confirm" && code === "auth/invalid-verification-code") return CODE_MISMATCH_MESSAGE;
+  return step === "send" ? SEND_FAILED_MESSAGE : CODE_MISMATCH_MESSAGE;
 }
 
-export default function usePhoneVerification() {
+export default function usePhoneVerification(options = {}) {
+  const { onBeforeSend } = options;
   const [phone, setPhone] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [code, setCode] = useState("");
@@ -42,10 +54,15 @@ export default function usePhoneVerification() {
   const [sendingCode, setSendingCode] = useState(false);
   const [confirmingCode, setConfirmingCode] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [codeExpired, setCodeExpired] = useState(false);
   const cooldownTimer = useRef(null);
+  const expiryTimer = useRef(null);
 
   useEffect(() => {
-    return () => clearInterval(cooldownTimer.current);
+    return () => {
+      clearInterval(cooldownTimer.current);
+      clearTimeout(expiryTimer.current);
+    };
   }, []);
 
   function startCooldown() {
@@ -62,26 +79,35 @@ export default function usePhoneVerification() {
     }, 1000);
   }
 
+  /** @returns {Promise<boolean>} True when a code was sent (so the caller can move on). */
   async function sendCode() {
     setError(null);
-    // Defensive, not reachable through the UI as built — PhoneField caps
-    // input at 9 digits and every "Send code"/"Resend code" button is
-    // disabled until this is true. Kept anyway: this hook doesn't control
-    // how it's consumed, and a cheap boundary check here is the same
-    // "trust internal code, validate at the edge" reasoning the backend
-    // already applies to itself.
     if (phone.length !== LOCAL_DIGITS) {
       setError(`Enter a ${LOCAL_DIGITS}-digit phone number.`);
-      return;
+      return false;
     }
     setSendingCode(true);
     try {
+      if (onBeforeSend) {
+        await onBeforeSend(phone);
+      }
       const result = await signInWithPhoneNumber(getAuth(), COUNTRY_CODE + phone);
       setConfirmationResult(result);
       setCode("");
+      setCodeExpired(false);
       startCooldown();
+      
+      clearTimeout(expiryTimer.current);
+      expiryTimer.current = setTimeout(() => {
+        setCodeExpired(true);
+        setError(CODE_EXPIRED_MESSAGE);
+      }, APP_EXPIRY_SECONDS * 1000);
+      return true;
     } catch (err) {
-      setError(err.message || "Could not send a verification code.");
+      // onBeforeSend failures (number already registered, password missing) are our own
+      // sentences and pass through untouched; only Firebase errors are translated.
+      setError(err?.code?.startsWith?.("auth/") ? messageFor(err, "send") : err.message || SEND_FAILED_MESSAGE);
+      return false;
     } finally {
       setSendingCode(false);
     }
@@ -93,9 +119,11 @@ export default function usePhoneVerification() {
    * explicit, working replacement. */
   function changeNumber() {
     clearInterval(cooldownTimer.current);
+    clearTimeout(expiryTimer.current);
     setConfirmationResult(null);
     setCode("");
     setError(null);
+    setCodeExpired(false);
     setResendCooldown(0);
   }
 
@@ -108,29 +136,54 @@ export default function usePhoneVerification() {
    */
   async function confirmCode(onVerified) {
     setError(null);
+    if (codeExpired) {
+      setError(CODE_EXPIRED_MESSAGE);
+      return;
+    }
     if (code.length !== 6) {
-      setError("Enter the 6-digit code.");
+      setError(CODE_MISMATCH_MESSAGE);
       return;
     }
     setConfirmingCode(true);
     try {
       const userCredential = await confirmationResult.confirm(code);
       if (!userCredential) {
-        setError("That code didn't work. Try again.");
+        setError(CODE_MISMATCH_MESSAGE);
         return;
       }
       const idToken = await getIdToken(userCredential.user);
+      // Firebase signed this device in as a side effect of confirming the code. YouthLink
+      // keeps its own session (the JWT); the Firebase one is not needed afterwards, and a
+      // phone number left signed in would sit on the device until the next verification.
+      try {
+        await signOut(getAuth());
+      } catch {
+        /* harmless: the ID token is already in hand */
+      }
       await onVerified(idToken);
     } catch (err) {
-      setError(err.message || "That code didn't work. Try again.");
+      // An "auth/..." error came from Firebase; anything else came from our own API call in
+      // onVerified (e.g. "No account found for this phone number.") and is already readable.
+      setError(err?.code?.startsWith?.("auth/") ? messageFor(err, "confirm") : err.message || CODE_MISMATCH_MESSAGE);
     } finally {
       setConfirmingCode(false);
     }
   }
 
+  /**
+   * Edits the phone number. If a code was already sent to the old number it is dropped
+   * first — the sent code belongs to the number it was sent to, so keeping it would let
+   * someone verify one number and submit another.
+   */
+  function editPhone(value) {
+    if (confirmationResult) changeNumber();
+    setPhone(value);
+  }
+
   return {
     phone,
     setPhone,
+    editPhone,
     confirmationResult,
     code,
     setCode,
@@ -138,6 +191,7 @@ export default function usePhoneVerification() {
     sendingCode,
     confirmingCode,
     resendCooldown,
+    codeExpired,
     formattedPhone: `${COUNTRY_CODE} ${formatLocalNumber(phone)}`,
     sendCode,
     confirmCode,

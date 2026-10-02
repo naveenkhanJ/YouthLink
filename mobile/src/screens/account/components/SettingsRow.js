@@ -1,0 +1,69 @@
+/**
+ * One tappable row of the Settings screen (prototype 1.10 `row-*`): 328×48, padding 12/0,
+ * gap 12 — a label that fills the row (mobile/body), an optional current value on the right
+ * (mobile/secondary, text/secondary) and a 6×12 chevron (stroke text/secondary 1.8, the exact Figma path).
+ * "Delete account" draws its label in state/danger.
+ *
+ * Local to Account Management: no other screen in the prototype uses this row.
+ */
+import { Pressable, Text, StyleSheet } from "react-native";
+import Svg, { Path } from "react-native-svg";
+import { colors, spacing, typography } from "../../../theme/tokens";
+
+/**
+ * @param {string} label
+ * @param {string} [value] - The current value shown before the chevron.
+ * @param {boolean} [danger] - Draw the label in state/danger.
+ * @param {() => void} onPress
+ */
+export default function SettingsRow({ label, value, danger = false, onPress }) {
+  return (
+    <Pressable onPress={onPress} style={styles.row} accessibilityRole="button">
+      <Text style={[styles.label, danger && styles.danger]}>{label}</Text>
+      {value ? (
+        <Text style={styles.value} numberOfLines={1} ellipsizeMode="tail">
+          {value}
+        </Text>
+      ) : null}
+      {/* The Figma vector (6×12): "M 0 0 L 6 6 L 0 12", stroke text/secondary 1.8, round cap,
+          miter join. overflow visible because the stroke extends past the 6×12 box. */}
+      <Svg width={6} height={12} viewBox="0 0 6 12" fill="none" overflow="visible">
+        <Path
+          d="M0 0L6 6L0 12"
+          stroke={colors.text.secondary}
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="miter"
+        />
+      </Svg>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  // The label takes its natural width and the gap to the value by growing, so the value stays
+  // right-aligned. When the row is too narrow (a long email, large text) the VALUE shrinks three
+  // times faster than the label, so the label stays readable and the chevron is never pushed out.
+  label: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "auto",
+    ...typography.body,
+    color: colors.text.primary,
+  },
+  danger: {
+    color: colors.state.danger,
+  },
+  value: {
+    flexShrink: 3,
+    maxWidth: "65%",
+    ...typography.secondary,
+    color: colors.text.secondary,
+  },
+});

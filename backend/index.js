@@ -3,8 +3,6 @@ import config from "./src/config/index.js";
 import { startPostingExpirySweep } from "./src/modules/posting/posting.expiry.js";
 
 async function startServer() {
-  await prisma.ready;
-
   app.listen(config.port, () => {
     console.log(`API listening on http://localhost:${config.port}`);
   });

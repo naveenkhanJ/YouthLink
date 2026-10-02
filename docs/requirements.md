@@ -4,8 +4,10 @@ Functional and non-functional requirements for YouthLink, a mobile platform conn
 
 ## About this document
 
-This is the normative requirements baseline the codebase is built against: **131 Functional Requirements** across 13 modules and **32 Non-Functional Requirements** across 7 categories, each with a stable ID and Given/When/Then acceptance criteria.
+This is the normative requirements baseline the codebase is built against: **134 Functional Requirements** across 13 modules and **32 Non-Functional Requirements** across 7 categories, each with a stable ID and Given/When/Then acceptance criteria.
 
+> **Count changed 2026-08-27 (second pass), from 131 to 134.** Three requirements were added by the prototype-specification amendment batch: FR-ENG-14 (engagements list), FR-NOTIF-11 (rating notifications), FR-NOTIF-12 (dispute-lifecycle notifications to the parties). Twenty-plus existing requirements carry dated batch amendment notes from the same pass. House style for user-facing messages, settled in the same batch (A12): **full sentences with terminal periods** — the Account/Posting register; the Application module's terse fragments change to match.
+>
 > **Count changed 2026-08-27, from 129 to 131.** Two requirements were added following the UEE user-research validation: FR-APPLY-12 (a worker's own application list) and FR-DISPUTE-07 (dispute case status visibility). Four existing requirements were amended in the same pass — FR-ENDORSE-04, FR-ENDORSE-11, FR-DISC-01 and, for reference only, no change to FR-POST-04. Each carries a dated amendment note beneath it explaining what changed and which research finding drove it. The Sprint 0 baseline of 129 is preserved in the frozen copy held in the SPM coursework project; this file is the live version.
 
 **Referencing requirements in your work.** Every requirement has a permanent ID (`FR-POST-01`, `NFR-SEC-03`). Use them in commit messages, per [`CONTRIBUTING.md`](../CONTRIBUTING.md) — list every requirement a commit touches:
@@ -90,6 +92,12 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given the user provides an email, when they do not click the confirmation link, then the email remains unverified but registration is not blocked by this alone.
 - Given all fields are submitted together with a verified Firebase ID token, when the request succeeds, then exactly one `User` row is created with `accountStatus = ACTIVE` — registration is a single atomic submission, not a staged one.
 
+> **Amended 2026-09-16 (batch E3, E4).** Two clarifications, neither changing what the requirement asks for.
+>
+> **E3 — how the 100-character legal-name cap is enforced.** The cap was stated and its mechanism was not, while the house convention elsewhere is explicit: `FR-PROF-02` and `FR-POST-01` both say *"input is blocked or truncated at the cap"*. The same applies here — **input is blocked at 100 characters**, with the remaining count shown as the cap is approached, and the server rejects over-length independently of the client. Prevention rather than an error message, so **no error state exists or should be built** for a condition the field cannot reach.
+>
+> **E4 — the "valid for 5 minutes" clause is retained and becomes a specification.** It appeared to contradict `FR-ACC-08`'s statement that Firebase's window *"is not configurable by this system"*. It does not: the application enforces **its own, stricter validity window on top of Firebase's**, so five minutes is true because the app makes it true. See `FR-ACC-08`'s amendment of the same date for the mechanism and its one risk.
+
 #### FR-ACC-02 — Employer posting-as type
 
 | Actor(s)                | Priority |
@@ -122,12 +130,17 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | --------------- | -------- |
 | All actor types | Must     |
 
-**Requirement:** The system shall collect an NIC number as a required signup field, store it as entered, and not run it through any verification service or derive any data (including age) from it.
+**Requirement:** The system shall collect an NIC number as a required signup field, validate its **format** — 12 digits, or 9 digits followed by V or X (case-insensitive) — store the normalised value, and not run it through any verification service or derive any data (including age) from it.
 
 **Acceptance Criteria:**
 
 - Given a user enters an NIC number, when the account is created, then no external verification call is made against it.
 - Given the NIC field is populated, when the age gate (FR-ACC-03) evaluates eligibility, then it uses only the self-declared birthdate, never the NIC.
+
+
+> **Amended 2026-08-27 (batch A1).** Format validation added on top of the existing 4-character minimum. `nicEncrypted` holds a permanent uniqueness slot (FR-ACC-05), so a typo that happens to match a real NIC silently locks that person out of ever registering, with no diagnosable symptom on either side — shape validation closes the accidental case.
+>
+> Three constraints on how: the stored value is the **normalised** one (`normalizeNic()`'s `trim().toUpperCase()`, already on `develop` — "store as entered" was always read as *not reformatted, not parsed, not verified*, never byte-for-byte case preservation); error copy describes **shape only** and must not imply any registry check exists (FR-PROF-02); and the ban on deriving data — specifically age — holds absolutely.
 
 #### FR-ACC-05 — Duplicate account prevention
 
@@ -140,6 +153,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given an NIC, verified phone, or verified email already exists on an account, when a new signup attempts to use the same value, then registration is blocked for that field.
+
+> **Amended 2026-09-16 (batch E1, E2).** Uniqueness was specified; *when* it is checked, and what the user is told, were not.
+>
+> **E1 — phone availability is checked at entry, before an SMS is spent.** As written, a person who already has an account completes Firebase verification — an SMS the project pays for, and three screens of their time — before being told the number is taken. The system shall perform a **read-only availability check on the phone number at the point of entry**, before OTP delivery is requested. This does not breach `FR-ACC-01`'s *"single atomic submission"*, which is about **account creation**: the check creates no row.
+>
+> **E2 — a duplicate unverified email no longer fails silently.** Uniqueness is on the *verified* email, so two accounts may hold the same unverified address and the second person's confirmation link simply fails, with nothing explaining why — `FR-ACC-01` says an unverified email *"is not blocked by this alone"*. The system shall check the address at entry and state plainly that it is already in use on another account, rather than accepting it and failing later at a step the user cannot connect to the cause.
+>
+> **Acceptance criteria added:** Given a phone number already belongs to an account, when it is entered at signup, then the user is told before any OTP is sent. · Given an email address is already held by another account, when it is entered, then the user is told at entry rather than at confirmation-link time.
 
 #### FR-ACC-06 — Incomplete signup expiry
 
@@ -172,6 +193,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user has forgotten their password, when they choose the OTP login path, then they can log in without needing the password.
 - Given SMS delivery is failing, when a user has a working password, then they can log in via the password path regardless of OTP availability.
 
+
+> **Amended 2026-08-27 (batch A32).** Session lifetime stated: tokens live **30 days** (`EXPIRES_IN = "30d"` — previously known only to `jwt.js`). One redirect-to-login behaviour covers all three ways a session ends between requests — token expiry, `passwordChangedAt` rejection (batches A3–A5), and suspension — the user is returned to login with a neutral message, never three different failure screens for one symptom.
+
 #### FR-ACC-08 — OTP mechanism
 
 | Actor(s)        | Priority |
@@ -188,18 +212,37 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-15.** As originally written, this requirement described a single self-implemented OTP covering all four purposes, and the schema's `OtpPurpose` enum still carries `SIGNUP` and `LOGIN` values from that version. The Sprint 0 tech-stack decision of 2026-08-13 selected Firebase for OTP delivery, and Firebase Phone Authentication generates and verifies its own code — an application cannot inject its own into it. The two decisions were never reconciled at the time; the conflict surfaced on the first day of Sprint 1 implementation and was resolved by the Product Owner in favour of Firebase for the two user-facing paths. The `OtpCode` table is retained for the three purposes above, including dashboard admin login, where no Firebase client exists.
 
+> **Amended 2026-09-16 (batch E4).** The Firebase-delivered codes gain an **application-enforced validity window**, independent of Firebase's own.
+>
+> The contradiction this resolves: `FR-ACC-01` states a 6-digit OTP *"valid for 5 minutes"*, while this requirement states that Firebase's window is not configurable by us. Deleting the five minutes was rejected — stating nothing is unhelpful, and quoting an *observed* Firebase value would couple the product's copy to an undocumented third-party internal that can change without notice. **Firebase does not publish how long a delivered code stays valid**; the figures commonly quoted (30 seconds to 2 minutes) are `timeout_milliseconds` on `PhoneAuthOptions`, which is the Android auto-retrieval window, not the code's validity.
+>
+> So the application owns the window instead: the client starts a timer when the code is sent, and when it lapses the app invalidates the entry itself and offers Resend, without waiting for Firebase. `FR-ACC-01`'s five minutes is that window's value.
+>
+> **One risk, stated because it is real and must be validated in implementation.** If our window is *longer* than Firebase's, the interface would show a live countdown for a code Firebase has already rejected. **Ours must sit safely inside theirs**, and since theirs is undocumented that has to be established by observation during Sprint work rather than assumed here. The design degrades gracefully either way: if Firebase rejects first, the generic *"This code is no longer valid"* response still fires correctly.
+
 #### FR-ACC-09 — Password security
 
 | Actor(s)        | Priority |
 | --------------- | -------- |
 | All actor types | Must     |
 
-**Requirement:** The system shall hash passwords using bcrypt or argon2 (never plaintext or reversibly encrypted) and lock an account for 15 minutes after 5 consecutive failed password attempts.
+**Requirement:** The system shall hash passwords using bcrypt or argon2 (never plaintext or reversibly encrypted), accept passwords of **8 to 64 characters, all Unicode including spaces, with no composition rules**, and lock an account for 15 minutes after 5 consecutive failed password attempts.
 
 **Acceptance Criteria:**
 
 - Given 5 consecutive failed login attempts on the password path, when the 5th failure occurs, then further password attempts are blocked for 15 minutes.
 - Given a password is stored, when the database is inspected, then no plaintext or reversibly-encrypted password value is present.
+
+
+> **Amended 2026-08-27 (batch A2).** Password rules added — previously `validateFields()` accepted any single character, and nothing anywhere stated a minimum. Values follow NIST SP 800-63B Rev 4: minimum 8 (not 15) because a second factor exists — every account has a verified phone and FR-ACC-07's independent OTP path; maximum 64 to bound hashing cost; no composition rules, since they push users toward predictable substitutions. A compromised-credential blocklist is deferred future scope, noted rather than required.
+
+> **Amended 2026-09-16 (batch E6, E7).** The lockout existed; neither its warning nor its exit was stated.
+>
+> **E6 — remaining attempts are surfaced before the threshold.** The requirement specified the lock but never that the count leading up to it is shown, so the behaviour was assumed on the dashboard and absent on mobile, with nothing stating which was correct. A lockout that arrives unannounced is not recoverable; it is a wall.
+>
+> **E7 — the lockout names its own way out.** That the **OTP login path stays open** during a password lockout is inferable, since the block is scoped to password attempts, but it was never stated, and a developer reading this requirement alone could reasonably implement a full account lock — a materially worse product. `FR-ACC-08`'s own criterion already grants the OTP path to a user who has forgotten their password. The system shall keep that path available during a password lockout, **and the lockout message shall offer it.**
+>
+> **Acceptance criteria added:** Given fewer than 5 attempts have failed, when a password attempt fails, then the number of remaining attempts is shown. · Given an account is locked on the password path, when the lockout message is shown, then it names the OTP login path as the available route, and that path succeeds.
 
 #### FR-ACC-10 — Password reset
 
@@ -215,6 +258,25 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user has a verified email on file and SMS delivery is failing, when they request a reset, then an email-based reset link is available as an alternative.
 - Given neither phone nor a verified email is reachable, when a user attempts self-service reset, then no automated path succeeds — this is a named limitation, not silently masked as solved.
 
+
+> **Amended 2026-08-27 (batch A3).** A completed password reset **invalidates every existing session**. Previously a stolen token outlived the password change — by omission, not by design: stateless JWTs with no session table meant nothing rejected old tokens. Mechanism (batch A5): `User.passwordChangedAt`, with `requireAuth` rejecting any token whose `iat` predates it — no new query, since the middleware already re-reads the user row per request.
+>
+> The email reset link opens the reset form **served as a minimal web page** (token in the URL), not a mobile deep link — deferred deep-linking was already rejected once (FR-ENDORSE-02), and the fallback channel should have the fewest moving parts.
+
+> **Amended 2026-09-16 (batch E8) — an identity-verified, Admin-assisted recovery path.**
+>
+> The third acceptance criterion above says that with neither channel reachable *"no automated path succeeds — this is a named limitation."* **That was a dead end rather than a policy.** A search of this document for support-assisted or manual recovery returned nothing: there was no route back at all. And the account is not merely a login — it holds ratings, completion history and endorsements, which are the product's entire value to a job-seeker. As written, losing a SIM permanently destroyed a worker's accumulated reputation and the platform offered them nothing. For a product aligned to SDG 1 and SDG 8, that is the wrong answer to give the exact person it exists to serve.
+>
+> **The system shall provide an Admin-adjudicated account recovery path.** A user with no reachable phone and no verified email may submit their NIC, legal name and birthdate from the app; the system matches the NIC against the account record using the deterministic encryption already in place for that purpose; an **Admin** — never a Moderator — reviews the match alongside the account's engagement and rating history and either approves or rejects it; an approval is recorded in the audit log like any other privileged action (`NFR-SEC-06`).
+>
+> **The outcome is delivered to the device that made the request, and by no other channel.** This is not a presentation detail. Both notification transports are, by the definition of this path, unreachable; the requester is unauthenticated, so binding a notice to the account would decide the identity question before the Admin has ruled on it; and pushing anything to the account would confirm to whoever filled in the form that an account with those details exists — the same enumeration weakness `FR-ENDORSE-03`'s deliberately generic *"no eligible match found"* already guards against. **No identifying data is revealed to the requester at any point**, and the approval grants a password reset only on the requesting device.
+>
+> **Retention.** Submitted identity details are kept while the request is open because the Admin adjudicates the claim itself and a partial match is the case that matters. Requests that are **rejected or completed shall be purged of those details after 90 days**, which bounds how long identity data about a person who may hold no account is retained at all.
+>
+> **Acceptance criteria added:** Given a user has neither a reachable phone nor a verified email, when they request recovery, then they can submit identity details for Admin review. · Given a recovery request is submitted, when a Moderator opens the case queue, then it is not visible to them. · Given an Admin approves a recovery, when the requester returns **on the device that made the request**, then they may set a new password, and their ratings, completed engagements and endorsements are unchanged. · Given a recovery request is approved or rejected, when the requester is on any other device, then no outcome is shown and no notification is sent by any channel.
+>
+> **E5 (same batch) puts a self-service floor under the case that leads here most often** — see `FR-ACC-12`.
+
 #### FR-ACC-11 — Password change
 
 | Actor(s)        | Priority |
@@ -226,6 +288,13 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a logged-in user submits their current and new password, when the current password is correct, then the password is updated immediately.
+
+
+> **Amended 2026-08-27 (batch A4).** The same session invalidation as FR-ACC-10 applies to a Settings password change — otherwise the reset guarantee has a hole: change the password from Settings and a stolen token survives. Same `passwordChangedAt` mechanism (batch A5). The screen states the consequence — this signs you out everywhere — before submission, not after.
+
+> **Amended 2026-10-02 (found when the screens were built against the prototype).** The Change password screen carries a **"Forgotten your current password?"** link, which `FR-ACC-12`'s E5 amendment needs but this requirement never said where it lives. A logged-in user who no longer knows their current password can reset it through the **verified email** on the account (`FR-ACC-10`'s secondary channel): the screen offers to email a reset link (`1.11r2`), confirms it was sent (`1.11r3`), and, where the account has no verified email, says so and offers to add one (`1.11r4`). The new password is chosen on the same minimal web page the login-side email reset opens; completing it invalidates every other session exactly as above. No new endpoint: it is `FR-ACC-10`'s email reset request for the signed-in account's own phone number, so its rate limit applies unchanged. The change-with-current-password path above is unchanged and still needs neither OTP nor email.
+>
+> **Acceptance criterion added:** Given a logged-in user has forgotten their current password and has a verified email, when they choose "Forgotten your current password?" on the change screen, then a reset link is sent to that address and they can keep using the app; and given the account has no verified email, then the screen says so and offers to add one instead of sending anything.
 
 #### FR-ACC-12 — Phone number change
 
@@ -240,6 +309,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user requests a phone number change, when they have not re-entered their password, then the change is blocked.
 - Given the new number has not yet completed OTP verification, when checked, then the old number still satisfies the uniqueness constraint.
 - Given the new number completes OTP verification, when the swap finalizes, then the old number is released from the uniqueness constraint atomically with the new number taking effect.
+
+> **Amended 2026-09-16 (batch E5).** Closing a dead end neither requirement could see on its own.
+>
+> **The trap.** This requirement gates a phone-number change behind password re-entry; `FR-ACC-10` routes password reset by OTP **to the phone**. So a logged-in user who has lost their phone *and* forgotten their password can neither change their number (no password) nor reset their password (no phone) — and losing the phone is the single most likely reason anyone needs to change their number. The two requirements are individually sensible and jointly a dead end.
+>
+> **Resolution.** A logged-in user with a **verified email** on file may reset their password through that channel, reusing `FR-ACC-10`'s existing secondary channel, and may then satisfy this requirement's password gate normally. The alternative — gating the phone change on OTP-to-the-new-number plus email confirmation — was considered and rejected as the larger change for the same outcome.
+>
+> Where no verified email exists either, the route is `FR-ACC-10`'s Admin-assisted recovery (batch E8). A self-service path remains strictly better than an Admin ticket, which is why both exist.
+>
+> **Acceptance criterion added:** Given a logged-in user has a verified email and cannot receive SMS, when they request a password reset, then the email channel is available to them without first satisfying the phone gate.
 
 #### FR-ACC-13 — NIC correction
 
@@ -303,17 +382,22 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a user has at least one active (not completed, ended, or cancelled) Engagement, when they attempt deletion, then the system blocks it and requires resolving every active Engagement first.
 - Given a user with no active Engagements confirms deletion with their password, when deletion completes, then their identifying data is removed but past ratings and engagement records remain, attributed to an anonymized reference rather than deleted.
 
+> **Amended 2026-09-25.** The data deletion removes includes the last browse location (`User.lastBrowseLat`, `lastBrowseLng`, `lastBrowseAt`), cleared to null — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-ACC-18 — Unified Settings screen
 
 | Actor(s)        | Priority |
 | --------------- | -------- |
 | All actor types | Must     |
 
-**Requirement:** The system shall provide one Settings screen housing password change, contact-detail editing (phone/NIC/email), notification preferences, posting-as type (Employer), and account deletion — not scattered across separate screens.
+**Requirement:** The system shall provide one Settings screen housing password change, contact-detail editing (phone/NIC/email), notification preferences, posting-as type (Employer), **logout**, and account deletion — not scattered across separate screens.
 
 **Acceptance Criteria:**
 
 - Given a user navigates to Settings, when the screen loads, then password, contact details, notification preferences, posting-as type (if Employer), and account deletion are all reachable from that one screen.
+
+
+> **Amended 2026-08-27 (batch A31).** Logout added — no requirement, screen, or code previously contained a sign-out, in a population where shared phones are common. A row plus confirm; the client discards its token, and other devices are unaffected, consistent with the multiple-simultaneous-logins decision.
 
 #### FR-ACC-19 — Terms of Service and Privacy Policy acceptance
 
@@ -340,6 +424,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given any user-facing surface displays a person's identity, when rendered, then it shows their full legal name as entered at signup or subsequently edited (FR-ACC-15), never a chosen handle.
+
+> **Amended 2026-09-24 (M1 review) — a Business employer is shown by its business name.** FR-ACC-02 makes the business name part of every posting from a Business account, and FR-DISC-02 shows it to the worker, so the requirement as written put two names on one account: the business name on its postings and the account holder's legal name on its profile, applicant pools and ratings. A worker who applied to *Lanka Events (Pvt) Ltd* would then be rated by, and see the profile of, a person whose name appeared nowhere in the listing. **A Business employer is shown to other parties by its business name** — profile, postings, engagements, ratings and contact reveal. The legal name stays on the account: it is what Settings shows and edits (FR-ACC-15), and what staff see on the dashboard. Individual/Household employers, workers and verifiers are unchanged: their legal name is their display name. Switching posting-as type (FR-ACC-02) switches which name is shown. The ban on handles stands — a business name is a registered or trading name the employer declares, not a username. In the prototype, Settings carries a *Business name & bio* row beside the legal name, which opens its own edit screen (M1 `1.15eb`).
 
 #### FR-PROF-02 — Verification badges
 
@@ -446,6 +532,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given arrangement type is Part-time job or Internship, when the Employer proceeds without entering a Schedule value, then submission is blocked.
 - Given arrangement type is Gig, when the Employer proceeds without a Schedule value, then submission is not blocked on this basis.
 
+
+> **Amended 2026-08-27 (batch A8) — implementation alignment, requirement unchanged.** The validator marks `schedule` `.optional()` unconditionally, where this requirement says "shall require" for Part-time and Internship. The field becomes required for those two arrangement types.
+
 #### FR-POST-04 — Pay format by arrangement type
 
 | Actor(s)                | Priority |
@@ -460,6 +549,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given arrangement type is Part-time job, when the pay field renders, then it accepts a rate with a day/week/month unit selector.
 - Given arrangement type is Internship, when the pay field renders, then Unpaid, Stipend, and Paid are all selectable options.
 - Given workers needed is 3 and pay is stated as Rs 3000, when three workers are selected, then each of the three earns Rs 3000, not a divided share.
+
+
+> **Amended 2026-08-27 (batch A7) — implementation alignment, requirement unchanged.** The validator's `PAY_KINDS_WITHOUT_AMOUNT` is an empty array, so `payAmount` and `payRateUnit` are required for **every** pay kind — an Unpaid internship must state an amount ≥ 0.01 and a fixed-total Gig must supply a rate unit it does not have, both directly contradicting this requirement and making two legitimate postings impossible to create. Both fields become conditional on `payKind`, exactly as the text above already describes.
 
 #### FR-POST-05 — Minimum lead time
 
@@ -492,13 +584,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | -------- | -------- |
 | System   | Must     |
 
-**Requirement:** The system shall compute a posting's urgency status automatically from whether its start time falls within 24–48 hours of the posting time. Urgency shall never be a manually set employer toggle.
+**Requirement:** The system shall compute a posting's urgency status automatically: a posting is urgent when its start time is **48 hours or less away, with no lower bound**. Urgency shall never be a manually set employer toggle.
 
 **Acceptance Criteria:**
 
 - Given a start time 30 hours after posting, when the posting is created, then it is automatically flagged Urgent.
 - Given a start time 5 days after posting, when created, then it is not flagged Urgent.
 - Given no UI control exists for the Employer to set urgency directly, when the posting form is inspected, then this holds true.
+
+
+> **Amended 2026-08-27 (batch A6).** "Within 24–48 hours" was ambiguous, and `computeIsUrgent()` read it as a *band* (`24h ≤ t ≤ 48h`) — so a gig starting in 3 hours was not urgent while one starting in 40 hours was, and FR-NOTIF-01's proactive push therefore gave the shortest-notice gigs the least reach, backwards against the 42% short-notice-hiring finding. Urgent now means ≤ 48h. The band reading was deliberate and test-asserted (`gigPosting.urgency.test.js`), so the fix order is: this amendment, then the test, then `computeIsUrgent()` — the Gig Posting owner's work, not a drive-by.
 
 #### FR-POST-08 — Location precision display
 
@@ -538,6 +633,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given an urgent posting is submitted, when fan-out triggers, then only opted-in youth within radius receive a proactive push.
 - Given a non-urgent posting is submitted, when fan-out triggers, then all non-opted-out youth within radius receive the standard notification.
 
+> **Amended 2026-09-25 — what "within radius" is measured from.** Nothing recorded where a youth is, so the radius in this requirement, `FR-NOTIF-01` and `FR-NOTIF-02` had no point to measure from, and an implementation could only notify everyone nationwide. **The radius is measured from the youth's last browse location**: the centre of their most recent Browse search — the device location, or the centre of the manually chosen area (`FR-DISC-02`) — stored as `User.lastBrowseLat`/`lastBrowseLng` with `lastBrowseAt`, **rounded to two decimal places (about 1 km)** and overwritten on every browse, never kept as a history. **The radius is the 5 km default of `FR-DISC-01`**, without auto-expansion: expansion exists to fill an empty results screen, and there is no screen to fill here. **Only an active account with a recent location is notified:** a youth who has never browsed, whose location is more than 30 days old (`lastBrowseAt`), or whose account is deleted or suspended receives no location-based notification. The stored location is never shown to anyone, and account deletion (`FR-ACC-17`) clears it along with the other identifying data. The acceptance criteria above are unchanged; this says how "within radius" is decided.
+
 #### FR-POST-11 — Posting editing
 
 | Actor(s)                | Priority |
@@ -562,8 +659,10 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given a posting has zero filled slots, when the Employer withdraws it, then it is removed from active browse/search results.
-- Given at least one slot has filled, when the Employer attempts Withdraw, then the system directs them to the cancellation flow (FR-ENG-05/06) instead.
+- Given at least one slot has filled, when the Employer views the posting, then Withdraw is unavailable and the system names the two actions that do apply: lowering workers needed through editing to stop further hiring (a material change, FR-ENG-09), or cancelling an Engagement (FR-ENG-05/06).
 - Given a withdrawn posting had Pending applicants, when the withdrawal completes, then those applications are set to Not selected and the applicants are notified (FR-APPLY-09).
+
+> **Amended 2026-09-23 (M2 review).** The rule itself stands; only the second criterion's redirect changes. As written, an Employer who had filled one slot of three and wanted to stop hiring was sent to the cancellation flow — which ends a committed worker's Engagement to achieve something that has nothing to do with them. Stopping further hiring is already expressible without a new mechanism: lowering workers needed to the number already filled makes the posting Filled (FR-POST-18), which resolves the remaining Pending applicants (FR-APPLY-09), and because crew size is a material change the engaged worker is asked to re-confirm (FR-ENG-09) — correctly, since a three-person crew and a one-person crew are different jobs. Allowing Withdraw after a fill was considered and rejected for exactly that reason: it would change the crew size without the re-confirmation the glossary requires.
 
 > **Acceptance criterion added 2026-08-27.** The Withdraw action itself is unchanged. What was missing is what withdrawal does to people who had already applied: as originally written this requirement removed the posting from browse and said nothing about its applicants, leaving them Pending indefinitely. That is now covered by FR-APPLY-09's broadened trigger, and stated here so the consequence is visible from the action that causes it.
 
@@ -583,6 +682,13 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given an expiring posting has Pending applicants, when expiry occurs, then those applications are set to Not selected and the applicants are notified (FR-APPLY-09).
 
 > **Amended 2026-08-27, and raised from Should to Must.** Three defects were corrected together. **(1) The "zero filled slots" condition** meant a multi-slot posting that filled one slot and then stalled could never expire — it satisfied neither this rule nor FR-APPLY-09's Filled trigger nor FR-POST-12's Withdraw window, so its remaining applicants had no terminating event of any kind. **(2) The flat 30-day window** ignored the posting's own start time: FR-POST-05 requires a start only 2 hours out, so a Gig posted Monday for Tuesday stayed live and applicable-to for another month, well after the work had happened. Anchoring Gigs to start time follows the same reasoning and the same Gig-only scoping already used in FR-ENG-13. **(3) Expiry had no stated effect on Pending applications**, which is now handled by FR-APPLY-09's broadened trigger. **Priority raised** because this is no longer housekeeping — it is one of the three mechanisms guaranteeing an application reaches a definite outcome. See the project's reconciliation register, ref C1.
+
+
+> **Amended 2026-08-27 (batch A9) — implementation note.** Expiry is specified and schema-backed but unimplemented: `GigPosting.expiresAt` exists, `posting.service.js` never sets it, and no expiry job exists. Since the 2026-08-27 lifecycle rewiring made this requirement one of the three load-bearing guarantees that every application reaches a definite outcome (with FR-APPLY-09 and FR-APPLY-12), implementation is required before Sprint 3 features build on it.
+
+> **Amended 2026-09-24 (prototype completion review) — how long a closed posting stays on its owner's list.** "Archive" said where an expired posting goes but not how long its owner still sees it, and no requirement bounded the employer's own postings list. **An Open posting always shows on its owner's list; a closed one (Filled, expired, withdrawn, removed) shows for 30 days after it closed**, the same window as the worker's application list (FR-APPLY-12) and the engagements list (FR-ENG-14). Its engagements continue in Engagements under their own rule.
+>
+> **Acceptance Criteria (added 2026-09-24):** Given a posting closed more than 30 days ago, when its owner opens their postings list, then it is not shown.
 
 #### FR-POST-14 — Slot-fill status display
 
@@ -607,6 +713,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 **Acceptance Criteria:**
 
 - Given an Employer exits the posting flow before submitting, when they return, then no partially-completed posting is recoverable.
+
+> **Amended 2026-09-16 (batch E9).** This requirement stands unchanged; what it rules out is narrowed to what it was written to rule out.
+>
+> **The tension.** `NFR-USE-01` requires the product to tolerate connectivity loss, while this requirement says a posting *"is completed in one sitting or not submitted"*. So an Employer on a 2G connection who composes a posting and loses signal loses the entire form — inside a product whose own non-functional requirement anticipates exactly that connectivity.
+>
+> **The resolution is a distinction, not a reversal.** This requirement and the out-of-scope table rule out **draft-and-save as a feature**: a server-side draft the user manages, returns to and lists. They do not rule out **local retention of an in-progress form** as connectivity tolerance. Those are different things with different costs — one is a feature with a lifecycle, storage and UI; the other is not losing what someone just typed.
+>
+> **The system shall retain an in-progress posting on the device only**, unsent, until it is submitted or explicitly discarded. **No server state, no draft list, no lifecycle** — so this requirement's decision stands intact, and the acceptance criterion above remains true as written: nothing partially-completed is recoverable *from the system*.
 
 #### FR-POST-16 — Posted-as auto-population
 
@@ -664,17 +778,22 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-27.** The pay-on-result requirement was added following UEE Lab 04's finding that "legitimate job offers paying too little to be worth pursuing" was the single most-selected challenge among youth respondents (71%, n=14), ahead of every scam-related concern. Pay was already available for sorting (FR-DISC-05) but was not required to be visible while scanning results, which meant the most common reason for rejecting a listing could only be discovered by opening it. See the project's reconciliation register, ref C17.
 
+> **Amended 2026-09-25.** Each browse also records its centre on the user, rounded to about 1 km (`User.lastBrowseLat`/`lastBrowseLng`/`lastBrowseAt`), because gig notifications are targeted from it — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-DISC-02 — Manual location fallback
 
 | Actor(s)         | Priority |
 | ---------------- | -------- |
 | Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall provide a manual location-entry fallback (area/city selection) when location permission is denied.
+**Requirement:** The system shall provide a manual location-entry fallback (area/city selection) when location permission is denied. The permission request itself shall fire on first entry to browse, preceded by one line of context stating why location is asked for; a permanently-denied state (the OS no longer shows the dialogue) shall route directly to the manual fallback with a hint that permission can be restored in system settings.
 
 **Acceptance Criteria:**
 
 - Given a user denies location permission, when they open browse, then a manual area/city selector is available instead of a blocked or empty screen.
+
+
+> **Amended 2026-08-27 (batch A10).** Previously this requirement — like FR-NOTIF-09 — defined only the *denied consequence* and never the *ask*: when the prompt fires, what context precedes it, and what happens on permanent denial were all unspecified, leaving the request screens to be inferred. Both halves of the ask are now stated here and in FR-NOTIF-09's note.
 
 #### FR-DISC-03 — Category and arrangement-type filters
 
@@ -790,6 +909,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given a pool with rated, endorsed-unrated, and unendorsed-unrated applicants, when displayed, then tier 1 (by rating) appears first, tier 2 (endorsed) next, tier 3 (unendorsed) last.
 - Given two tier-1 applicants share the same average rating, when sorted, then the one with the higher completion rate ranks first.
+- Given two applicants share tier 2 or tier 3, when sorted, then the earlier application ranks first.
+
+> **Amended 2026-09-23 (M4 review).** Tiers 2 and 3 had no order within them, so two developers would sort the same pool differently. Earliest application first: it is stable, needs no data the tier does not already have, and rewards applying promptly — which matters most for the urgent postings these pools usually belong to.
 
 #### FR-APPLY-05 — Employer applicant view
 
@@ -871,6 +993,8 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 - Given a Pending applicant exists and the Employer changes pay or start time before selection, when the change is saved, then that applicant receives a notification of the change.
 
+> **Amended 2026-09-23 (M4 review).** The notification this requirement promises had no `NotificationType`, so nothing could send it. It is **`APPLICATION_TERMS_CHANGED`** — title *"{title} changed"*, body *what changed · you can withdraw if it no longer suits you*, opening the applicant's own application list (FR-APPLY-12). It is distinct from `MATERIAL_CHANGE`, which asks an engaged worker to re-confirm (FR-ENG-09): a pending applicant is informed, not asked. It fires for every material change while the application is Pending, before or after other slots fill.
+
 #### FR-APPLY-11 — No application cap
 
 | Actor(s) | Priority                 |
@@ -893,7 +1017,7 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 **Acceptance Criteria:**
 
-- Given a worker has submitted applications, when they open their application list, then every application they have submitted appears with its current state.
+- Given a worker has submitted applications, when they open their application list, then every pending application, and every decided or withdrawn one from the last 30 days, appears with its current state.
 - Given an application is Pending, when displayed, then its posting's expiry date is shown alongside it.
 - Given an application is Pending on a multi-slot posting, when displayed, then the posting's fill status is shown as well.
 - Given a posting closes for any reason — Filled, expired, or withdrawn — when the list is next rendered, then no application on that posting is still shown as Pending (FR-APPLY-09).
@@ -903,6 +1027,15 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 > **Added 2026-08-27.** This requirement did not exist in the Sprint 0 baseline. FR-APPLY-01 through FR-APPLY-11 cover the Employer's applicant view, the apply action and withdrawal, but nowhere gave the worker a view of what they had applied to. UEE Lab 04's research identified this as the strongest single finding on the job-seeker side: P2 reported submitting over one hundred internship applications and receiving almost no responses, "not even rejections," and "application processes that take too long or never get a response" was among the challenges reported by the youth questionnaire segment. Lab 05 recorded the same point as its highest-priority change (C1), observing that the original flow terminated at "application sent" — precisely where the reported harm begins. **Deliberately narrower than Lab 05's recommendation**, which proposed Viewed and Shortlisted states in addition: neither has an employer action behind it in this system, so both would be inferred signals that mislead the worker rather than inform them. See the project's reconciliation register, ref C1.
 >
 > **This requirement's guarantee required fixing the lifecycle beneath it, not just wording it carefully.** The first draft claimed no application stays unresolved indefinitely. Checking that against the baseline showed it was false — and the reason turned out to be broader than a single edge case: FR-APPLY-09 was the only automatic resolution path in the system and fired on one trigger only (Filled), leaving expiry, withdrawal, and stalled partially-filled postings with no effect on Pending applications at all. Since complete fill is the least likely outcome for the population the research describes, most applications had no defined end. Rather than narrow this requirement to describe that gap, FR-APPLY-09, FR-POST-13 and FR-POST-12 were amended in the same pass so that **every** way a posting can close now resolves its applicants. The guarantee above is therefore true as written.
+
+
+> **Amended 2026-08-27 (batch A13) — implementation alignment, requirement unchanged.** `getMyApplications()` predates this requirement (written 19 August; requirement added 27 August): it orders by `appliedAt: "desc"` and returns neither the posting-expiry date nor fill status. The query changes to order by soonest posting expiry and return both fields — the code is wrong here, not the requirement.
+
+> **Amended 2026-09-24 (prototype completion review) — how long a resolved application stays.** "Every application they have submitted" was unbounded: a worker with a year of history would scroll past dozens of outcomes they learned long ago to find the one that matters, and no drawn list could be true for anyone established. **A pending application always shows; a decided (Selected, Declined, Not selected — including the automatic closure of FR-APPLY-09) or withdrawn application shows for 30 days after it resolved, then leaves the list.** The purpose this requirement was added for — every application reaches a definite, visible outcome — is untouched: the outcome is on the list for 30 days, and a Selected application's work continues in Engagements (FR-ENG-14). The list states the rule in its footer. No schema change: the window runs from `Application.decidedAt` or `withdrawnAt`.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given an application was decided or withdrawn more than 30 days ago, when the worker opens the list, then it is not shown; a pending application is shown however old it is.
 
 ### 3.6 FR-ENG — Engagement Lifecycle
 
@@ -920,6 +1053,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given the completion checkpoint, when reached, then the same code-holder pattern applies (Employer holds, worker enters).
 - Given the payment checkpoint, when reached, then the pattern flips (worker holds, Employer enters).
 - Given a code from one checkpoint, when entry is attempted at a different checkpoint, then it is rejected as invalid.
+
+
+> **Amended 2026-08-27 (batch A17).** Failed code entries are **recorded, never locked out**: a per-checkpoint failed-attempt counter (schema batch) increments on each wrong entry and is displayed in the Moderator's code-exchange history (FR-MOD-01). No lockout — a worker mistyping at the kerb must not brick the arrival checkpoint — but guessing stops being silently free: an implausible attempt count is visible evidence in any later dispute. Codes do not expire, deliberately: an expiring arrival code would strand a legitimately delayed worker.
+
+> **Amended 2026-09-24 (M5 review) — order and scope of the codes.** Two things the criteria above assumed without stating. **(1) The checkpoints are sequential.** Completion becomes enterable only once arrival is confirmed, and payment only once completion is — a later checkpoint shows *Not reached* until then. Without this, a worker could confirm completion of work nobody saw them arrive for, and the order FR-MOD-01's code-exchange history reads in would not be the order events happened. **(2) One set of three codes per Engagement, whatever the arrangement.** A Part-time Engagement is not issued fresh codes per session or shift; its arrival checkpoint is the first session, and it reaches closure through End Engagement (FR-ENG-12). This is FR-ENG-04's per-Engagement scoping applied along time rather than across workers — each Engagement has its own codes, and only one set of them.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given arrival has not been confirmed, when the worker opens the Engagement, then completion shows as not yet reached and cannot be entered.
+- Given a Part-time Engagement with sessions on several days, when its checkpoints are generated, then there is one arrival, one completion and one payment code for the whole Engagement.
 
 #### FR-ENG-02 — Unpaid internship checkpoint exception
 
@@ -963,13 +1106,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall let either party request cancellation of a not-yet-started regular Engagement, requiring a reason from a fixed list (Schedule conflict, Gig details no longer suitable, Found other work, Personal or family emergency, Other), with a 48-hour response window for the other party to accept or reject. No response within 48 hours shall auto-resolve against the non-responder. A cancellation submitted within 24 hours of start shall be classified Late.
+**Requirement:** The system shall let either party request cancellation of a not-yet-started Engagement whose start is **more than 48 hours away at the moment the request is made**, requiring a reason from a fixed list (Schedule conflict, Gig details no longer suitable, Found other work, Personal or family emergency, Other), with a 48-hour response window for the other party to accept or reject. No response within 48 hours shall auto-resolve against the non-responder. The regime is fixed when the request is sent. A regular cancellation is never classified Late.
 
 **Acceptance Criteria:**
 
 - Given a cancellation request is submitted with a reason from the fixed list, when sent, then the other party has 48 hours to accept or reject.
 - Given no response arrives within 48 hours, when the window closes, then the request auto-resolves against whoever did not respond.
-- Given a cancellation is submitted less than 24 hours before start, when classified, then it is marked Late.
+- Given a request was sent under regular rules, when the posting's start is later edited, then the request keeps the regime it was sent under.
+- Given a regular cancellation takes effect, when it is classified, then it is not marked Late.
+
+> **Amended 2026-09-24 (M5 review) — the regime is decided at the moment of cancellation.** As written, this requirement and FR-ENG-06 split on the *posting's* urgency, while FR-POST-07 makes urgency dynamic: every posting becomes urgent in its last 48 hours. So a regular Engagement could never reach its last 24 hours as regular, and the *"within 24 hours of start → Late"* rule above could never fire. Deciding the regime **at the moment of cancellation** — more than 48 hours to the start is regular, 48 hours or less is urgent (FR-ENG-06) — gives every Engagement exactly one rule at every moment, and it is what the prototype's own copy already said (*"fixed when you sent it"*). A regular request is always sent more than 48 hours out, so it cannot be late; the late-cancellation case it was meant to catch moves to FR-ENG-06 as its 24-hour clause.
 
 #### FR-ENG-06 — Cancellation (urgent gig)
 
@@ -977,12 +1123,16 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall apply cancellation on an urgent Engagement immediately, with no approval window, still requiring a reason from the fixed list. A cancellation submitted within 6 hours of start shall be classified Late.
+**Requirement:** The system shall apply cancellation immediately, with no approval window, to a not-yet-started Engagement whose start is **48 hours away or less at the moment of cancellation**, still requiring a reason from the fixed list. The cancellation shall be classified Late if it is submitted within 6 hours of the start, or within 24 hours of the start when the Engagement was created more than 48 hours before the start.
 
 **Acceptance Criteria:**
 
 - Given a cancellation is submitted on an urgent Engagement, when sent, then it takes effect immediately without awaiting the other party's response.
 - Given the cancellation is submitted less than 6 hours before start, when classified, then it is marked Late.
+- Given an Engagement created three days before its start is cancelled 12 hours before the start, when classified, then it takes effect immediately and is marked Late.
+- Given an Engagement created 30 hours before its start is cancelled 12 hours before the start, when classified, then it takes effect immediately and is not marked Late.
+
+> **Amended 2026-09-24 (M5 review).** Paired with FR-ENG-05's amendment: *urgent* here means the start is 48 hours away or less **when the cancellation is made**, not when the posting was published. Two Late thresholds follow from how far ahead the Engagement was agreed. One booked inside the urgent window was always short-notice work, so only the last 6 hours count as late — the rule this requirement always had. One booked more than 48 hours ahead gave the other party a reasonable expectation of the work; cancelling it within the final 24 hours is exactly the case FR-ENG-05's retired 24-hour clause existed to catch, and it keeps that weight here. Neither threshold changes FR-ENG-07's weight of 2.0.
 
 #### FR-ENG-07 — Completion-rate tracking
 
@@ -990,11 +1140,14 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | -------- | -------- |
 | System   | Must     |
 
-**Requirement:** The system shall track a completion-rate statistic separately from the star rating, reflecting reliability (cancellations, no-shows) as distinct from work quality. Late cancellations shall weigh more heavily against this stat than early ones.
+**Requirement:** The system shall track a completion-rate statistic separately from the star rating, reflecting reliability (cancellations, no-shows) as distinct from work quality. Late cancellations shall weigh more heavily against this stat than early ones, at **weight 2.0** against 1.0 for an early cancellation.
 
 **Acceptance Criteria:**
 
 - Given a Late cancellation occurs, when the completion-rate stat recalculates, then it is weighted more heavily against the responsible party than an early cancellation would be.
+
+
+> **Amended 2026-08-27 (batch A16).** The Late-cancellation weight is fixed at **2.0** — `CompletionRecord.weight` existed so "more heavily" had somewhere to live, and Design Decision 11 asked for one deliberate value rather than each developer assuming their own. Completion rate renders on profiles and the applicant pool; it cannot show a figure derived from an undecided formula.
 
 #### FR-ENG-08 — Per-Engagement cancellation scope
 
@@ -1014,13 +1167,38 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall classify a post-selection change as material (pay, start date/time, location, workers needed, or task category) or minor (title/description only). A material change shall require the affected worker's active re-confirmation, routing to cancellation (FR-ENG-05/06) if not accepted; a minor change shall require no re-confirmation.
+**Requirement:** The system shall classify a post-selection change as material (pay, start date/time, location, workers needed, or task category) or minor (title/description only). A material change shall require the affected worker's active re-confirmation within a response window of **48 hours or half the time remaining before the start, whichever is shorter**, routing to cancellation (FR-ENG-05/06) if not accepted when the window closes; a minor change shall require no re-confirmation.
 
 **Acceptance Criteria:**
 
 - Given the Employer changes pay on a posting with a selected worker, when saved, then that worker receives a re-confirmation request rather than a silent update.
 - Given the worker does not accept the re-confirmation, when the response window closes, then the Engagement routes into the cancellation flow.
 - Given the Employer edits only the description text, when saved, then no re-confirmation is triggered.
+
+
+> **Amended 2026-08-27 (batch A15).** The re-confirmation window is fixed at **48 hours** — previously the only window in the system with no stated length (`database-schema.md`'s Implementation Notes flagged it as *"one value still needs agreeing"*). 48 matches the cancellation window this flow routes into; a different length would mean two adjacent windows with two durations for no stated reason. Applies equally to FR-ENG-11's per-worker windows; `MaterialChangeRequest.deadline` now has its value.
+
+> **Amended 2026-09-23 (M2 review) — the window is capped by the start time.** A flat 48 hours outlasts every urgent posting: urgent means the start is 48 hours away or less (FR-POST-07), so a material change to an urgent posting with an engaged worker always left the window open past the moment work begins — and the cancellation flow it routes into applies only to Engagements that have not started. Four rules now apply:
+>
+> 1. **The window is 48 hours or half the time remaining before the start, whichever is shorter.** Halving follows FR-POST-17's halfway rule for urgent postings, and it leaves the Employer time to find a replacement if the worker does not accept — a window that closed at the start itself would tell them only when the work was due to begin. *Example:* a change saved at 7:00 PM on Thursday to a gig now starting at 7:00 AM on Saturday leaves 36 hours, so the window closes at 1:00 PM on Friday.
+> 2. **No material change within 2 hours of the start** — the same lead time FR-POST-05 requires of a new posting. Minor changes stay allowed.
+> 3. **One pending re-confirmation at a time.** While any worker's re-confirmation on the posting is still open, the posting cannot be edited again; stacked changes would leave a worker accepting terms that had already moved.
+> 4. **A worker's non-acceptance is not held against them.** When the window closes without acceptance, the Engagement routes into cancellation as before, but that cancellation is attributed to the Employer's change and does not count against the worker's completion rate (FR-ENG-07).
+>
+> Applies equally to FR-ENG-11's per-worker windows, and `MaterialChangeRequest.deadline` is computed from rule 1 rather than fixed.
+
+> **Amended 2026-09-24 (M5 review) — rule 5.** 5. **Declining cancels at once.** A worker who answers *can't make it* does not wait for the window to close: the Engagement is cancelled immediately, attributed to the Employer's change exactly as non-acceptance is under rule 4, so it does not count against the worker's completion rate. Either party may still rate the cancelled Engagement (FR-RATE-05). Holding a declined Engagement open until the deadline would only delay the Employer's search for a replacement, which is the reason rule 1 caps the window in the first place. Under rules 4 and 5 the cancellation is written directly rather than as an FR-ENG-05 request — there is nothing left for anyone to accept.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given a worker declines a material change before its window closes, when the answer is submitted, then the Engagement is cancelled immediately, recorded as the Employer's change, and the worker's completion rate is unaffected.
+
+**Acceptance Criteria (added 2026-09-23):**
+
+- Given a material change is saved 36 hours before the start, when the re-confirmation request is created, then its window closes 18 hours later.
+- Given the start is less than 2 hours away, when the Employer attempts a material change, then it is blocked with an explanation.
+- Given a re-confirmation is pending on a posting, when the Employer opens the posting, then editing is unavailable until every pending re-confirmation is answered or its window closes.
+- Given a worker does not accept a re-confirmation before the window closes, when the Engagement is cancelled, then the worker's completion rate is unaffected.
 
 #### FR-ENG-10 — Urgency recomputation on time change
 
@@ -1032,7 +1210,9 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 **Acceptance Criteria:**
 
-- Given a posting's start time is edited such that it now falls within 24–48 hours of the original posting time, when saved, then urgency status updates to Urgent, and vice versa.
+- Given a posting's start time is edited such that it is now 48 hours or less away, when saved, then urgency status updates to Urgent, and vice versa.
+
+> **Amended 2026-09-23 (M2 review).** The criterion above still carried the *"within 24–48 hours of the original posting time"* band that FR-POST-07's batch A6 amendment removed, and it measured from the original posting time rather than from the moment of the edit. Urgency is 48 hours or less from now, with no lower bound, whether the posting is new or edited.
 
 #### FR-ENG-11 — Multi-slot material change re-confirmation
 
@@ -1047,6 +1227,11 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 - Given a 3-slot posting with 3 selected workers and a material change is made, when saved, then each of the 3 workers independently receives a re-confirmation request.
 - Given one worker declines re-confirmation, when their window closes, then only that worker's Engagement routes to cancellation — the other 2 remain active.
 - Given a posting has unfilled slots when a material change is saved, when a new applicant views the posting, then they see the updated terms directly, with no re-confirmation step involved since they were never committed to the old terms.
+
+
+> **Amended 2026-08-27 (batch A15).** Each worker's independent re-confirmation window is the same **48 hours** fixed in FR-ENG-09.
+
+> **Amended 2026-09-23 (M2 review).** The window is now FR-ENG-09's *48 hours or half the time remaining before the start, whichever is shorter*; every worker on the posting gets the same deadline, because they are answering the same change.
 
 #### FR-ENG-12 — Part-time End Engagement
 
@@ -1082,6 +1267,42 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 - Given an Engagement on a Part-time or Internship posting, when its start date/time passes, then this mechanism does not apply to it.
 - Given a one-off Gig that genuinely runs longer than 24 hours from its start, when the prompt fires while work is still in progress, then neither party is obliged to act and the Engagement continues normally — an accepted edge case of anchoring to start rather than end.
 
+> **Amended 2026-09-24 (M5 review) — what the prompt offers.** The requirement said when the prompt fires but not what a party can do with it. It offers two things. **Dismiss** (*still running*) closes the prompt and changes nothing, which is the fourth criterion's edge case made into a control. **Update status** opens the earliest unresolved checkpoint (FR-ENG-01's order), where the code can still be entered — codes do not expire — or *unable to confirm* opens a dispute (FR-ENG-03). The prompt does not end or close the Engagement itself. For a one-off Gig, the only routes to closure are the checkpoints and a dispute ruling (FR-ADM-08); End Engagement is Part-time only (FR-ENG-12).
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given the stalled prompt is shown, when a party chooses to dismiss it, then the Engagement is unchanged.
+- Given the stalled prompt is shown with arrival still unconfirmed, when a party chooses to update the status, then the arrival code entry opens, including the unable-to-confirm option.
+
+#### FR-ENG-14 — Engagements list
+
+| Actor(s)                                  | Priority |
+| ----------------------------------------- | -------- |
+| Local Business/Employer, Youth Job-Seeker | Must     |
+
+**Requirement:** The system shall provide each party with a list of every Engagement they are party to, showing for each its counterparty, its posting, its current status, and its next required action (an unresolved checkpoint, a pending re-confirmation, an open cancellation request, or an available rating).
+
+**Acceptance Criteria:**
+
+- Given a user has one or more Engagements in any state, when they open their engagements list, then every Engagement they are party to that is still running or owes them an action, and every finished one within the window below, appears with counterparty, posting, status, and next required action.
+- Given an Engagement requires something of the viewing party (a code entry, a re-confirmation, a cancellation response, an unclaimed rating), when the list renders, then that Engagement surfaces the required action rather than only a status label.
+
+> **Added 2026-08-27 (batch A14).** FR-ENG previously specified thirteen state transitions and no container — every engagement screen hung off a list no requirement described, while `Engagement`'s `@@index([workerId, status])` and `@@index([employerId, status])` already encoded exactly this query. FR-APPLY-12 was added for precisely the same reason on the applications side.
+
+> **Amended 2026-09-24 (M5 review) — status and owed action are separate.** The status label is always the Engagement's `EngagementStatus` (Active, Completed, Cancelled, Ended, Disputed). The next required action is a separate line, and it names only what **the viewing party** owes, with its deadline where one applies (*"Respond to the dispute — by Wed 2 Sep 2026"*). A row where the viewer owes nothing shows the status alone, even while the other party owes something. The prototype had put an owed action (*Needs response*) inside the status badge, which made one label carry two facts and hid the real status. The two parties' rows for the same Engagement can therefore differ in their action line, never in their status.
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given an Engagement where only the other party owes an action, when the viewer's list renders, then the row shows its status and no action line.
+- Given an Engagement with an open cancellation request, when the list renders, then its status reads Active and the responding party's row carries the response and its deadline as the action.
+
+> **Amended 2026-09-24 (prototype completion review) — how long a finished engagement stays.** "Every Engagement they are party to" was unbounded, so no established account's list could be drawn truthfully — an employer with 23 completed engagements would see them all above today's work. **An Active or Disputed Engagement, and any Engagement where the viewer still owes an enforced action (a code, a re-confirmation, a cancellation response, an enforced rating), always shows. A finished Engagement (Completed, Cancelled, Ended) with nothing left for the viewer shows until 30 days after its rating window closes** — at reveal, or 14 days after rating opened (FR-RATE-02); for a no-show ruling that skips rating (FR-ADM-08), 30 days after the ruling. A cancelled Engagement's optional rating (FR-RATE-05) opens at the cancellation, so the same window applies without making the rating an owed action. After that the engagement leaves the list; the profile keeps the aggregate record (ratings, completion, jobs), and **a rating received stays reachable from the profile's rating summary**, so a public response or a removal request (FR-RATE-06) has no time limit. No schema change — the window is computed from `ratingOpenedAt`, the reveal, and the case record.
+
+**Acceptance Criteria (added 2026-09-24, retention):**
+
+- Given a finished Engagement whose rating window closed more than 30 days ago and which owes the viewer nothing, when the list renders, then it is not shown.
+- Given an Engagement that has left the list, when the viewer opens their profile's rating summary, then any rating received on it is still reachable, with its response and removal actions.
+
 ### 3.7 FR-RATE — Ratings & Reputation
 
 #### FR-RATE-01 — Rating scale and submission
@@ -1102,13 +1323,16 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 | -------- | -------- |
 | System   | Must     |
 
-**Requirement:** The system shall withhold each party's rating from the other until both have submitted, or until 14 days pass since eligibility, whichever comes first.
+**Requirement:** The system shall withhold each party's rating from the other until both have submitted, or until 14 days pass since eligibility, whichever comes first. **Submission closes at reveal:** once ratings become visible by either route, a party who has not submitted can no longer do so.
 
 **Acceptance Criteria:**
 
 - Given only one party has submitted a rating, when the other party views it, then it remains hidden until they also submit or 14 days elapse.
 - Given both parties have submitted, when the second submission completes, then both ratings become visible to both parties simultaneously.
 - Given 14 days pass with only one rating submitted, when the window closes, then whatever rating(s) exist become visible.
+
+
+> **Amended 2026-08-27 (batch A22).** Nothing previously closed submission, so after a one-sided 14-day reveal the non-submitter could read the other rating and then rate with full knowledge — the exact retaliation incentive the double-blind exists to remove. The non-submitter chose silence; the window was two weeks.
 
 #### FR-RATE-03 — Completion-rate as a distinct stat
 
@@ -1160,6 +1384,9 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 - Given a rating is revealed, when the rated party disagrees, then they can attach a public response visible alongside it, without needing Admin involvement.
 - Given a rating is reported as a clear policy violation (e.g., on an engagement that never happened), when Admin reviews it, then Admin can remove it; ordinary "unfair but accurate" disagreement is not grounds for removal.
 - Given a rating-fairness disagreement, when it occurs, then it never creates a case in the Moderator dispute queue (FR-DASH-03) — only a policy-violation removal request reaches Admin, and directly rather than via Moderator escalation.
+
+
+> **Amended 2026-08-27 (batches A19–A21).** Three additions. **A19:** a removed rating is excluded from every aggregate — average, completion-adjacent tiering, the applicant-pool sort — or removal is cosmetic; the pool computation currently filters `revealedAt` only and gains `removedAt: null`. **A20:** `publicResponse` is capped at **300 characters**, matching bio and note — it was the only user-authored field with no cap. **A21:** the removal *request* gains a vehicle — a minimal `RatingRemovalRequest` row (schema batch) carrying the requester and 300-character grounds directly to Admin; `Report` is not reused, since this path bypasses Moderator triage by the paragraph above, and the ruling itself stays on `Rating`'s existing removal fields.
 
 ### 3.8 FR-ENDORSE — Community Endorsement
 
@@ -1254,6 +1481,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a Verifier revokes an endorsement, when the revocation is submitted, then the endorsement badge no longer displays on the worker's profile going forward; any hire that already occurred while it was active is unaffected.
+- Given a Verifier revokes an endorsement, when the revocation is submitted, then the worker is notified (`ENDORSEMENT_REVOKED`, FR-NOTIF-07); no reason is given, because none is recorded. *(Added 2026-09-24: the help content promised that the person is told, and no notification type could tell them. A zero-history worker drops from the endorsed tier to the new tier of every applicant pool when an endorsement goes, so silence would leave them wondering why.)*
 
 #### FR-ENDORSE-08 — Uncapped endorsements per worker
 
@@ -1266,6 +1494,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a worker already has one active endorsement, when a second Verifier submits a vouch for the same worker, then it is accepted alongside the first.
+- Given a Verifier already has an active endorsement of a worker, when they try to vouch for the same worker again, then the second vouch is refused; after revoking, they may vouch again while the worker is still eligible (FR-ENDORSE-05). *(Added 2026-09-24: the cap is on Verifiers, not on one Verifier's vouches — a repeated vouch would count twice in the applicant pool's "Endorsed ×n" and in the Verifier's own track record, FR-ENDORSE-11. Enforced by a partial unique index on active endorsements.)*
 
 #### FR-ENDORSE-09 — Endorsement notification to worker
 
@@ -1278,6 +1507,7 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a vouch is submitted via either FR-ENDORSE-02 or FR-ENDORSE-03, when it completes, then the endorsed worker receives a notification.
+- Given an endorsement is revoked, when the revocation completes, then the worker is notified as well (FR-ENDORSE-07, added 2026-09-24).
 
 #### FR-ENDORSE-10 — Endorsement display
 
@@ -1285,11 +1515,15 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 | -------- | -------- |
 | System   | Must     |
 
-**Requirement:** The system shall display an active endorsement as a real, named badge — the Verifier's actual name attached — never anonymous.
+**Requirement:** The system shall display an active endorsement as a real, named badge — never anonymous. On detail surfaces (profile, applicant detail) every endorsing Verifier's actual name is shown with their selected attributes; on space-constrained card surfaces the badge may render with a count, with every name one tap away at the detail surface.
 
 **Acceptance Criteria:**
 
 - Given an active endorsement is displayed on a worker's profile or applicant card, when rendered, then the endorsing Verifier's real name is shown alongside it.
+
+- Given a worker's endorsement eligibility has closed (FR-ENDORSE-05), when their profile renders, then their active endorsements still display; only new vouches are refused. *(Added 2026-09-24: eligibility governs who can be vouched for, not how long an endorsement shows.)*
+
+> **Amended 2026-08-27 (batch A24).** Reconciled with FR-ENDORSE-08's uncapped count: five endorsers cannot render five names on an applicant-pool card. Never-anonymous is preserved where it matters — every name and its attributes present at the detail surface — while the card carries badge + count. The previous AC required the name alongside the badge wherever rendered, which was written before anyone multiplied it by an uncapped N.
 
 #### FR-ENDORSE-11 — Verifier track record
 
@@ -1344,6 +1578,9 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 **Acceptance Criteria:**
 
 - Given a zero-history, unendorsed worker has submitted 3 applications with no selection, when the 3rd unselected outcome is reached, then the one-time suggestion with a direct link is shown.
+- Given one of those applications was withdrawn by the worker, when unselected outcomes are counted, then the withdrawal does not count — only Declined and Not selected do.
+
+> **Amended 2026-09-23 (M4 review).** "Unselected outcome" was undefined. A withdrawal is the worker's own choice and says nothing about how employers see them, so it does not count; Declined (FR-APPLY-08) and Not selected (FR-APPLY-09) do.
 
 #### FR-ENDORSE-15 — Verifier code-entry prompt
 
@@ -1383,6 +1620,11 @@ _Design note: this trigger is anchored to the posting's **start** time, not its 
 
 - Given one report is filed against a listing, when submitted, then the listing remains visible and the report queues for review.
 - Given a third independent report is filed against the same content, when submitted, then the content is automatically hidden pending Moderator review.
+
+
+> **Amended 2026-08-27 (batch A25, pointer).** The content's owner is **not notified at the third-report moment** — deliberately: notifying at the threshold reveals when it fired and, in small pools, helps identify reporters (NFR-PRIV-05). The owner sees a *hidden pending review* status on their own posting views, and is notified only of the review's **outcome** (restored or removed) — FR-NOTIF-12.
+
+> **Amended 2026-09-23 (M2 review).** Two consequences for the owner's own view, both following from the reasoning above. **(1) The status never shows a report count** — "3 reports" beside the hidden status would reveal the threshold that fired, the very thing the pointer above withholds. **(2) The owner cannot edit or withdraw the content while it is under review**, so the Moderator decides on the version that was reported; the outcome notification (FR-NOTIF-12) ends the pause either way.
 
 #### FR-DISPUTE-03 — Dispute entry points
 
@@ -1498,11 +1740,14 @@ _Moderator handles high-volume, lower-stakes work. Every requirement below is Mo
 | --------- | -------- |
 | Moderator | Must     |
 
-**Requirement:** The system shall allow a Moderator to review flagged listings and profiles as part of routine triage, independent of a specific dispute case.
+**Requirement:** The system shall allow a Moderator to review flagged listings and profiles as part of routine triage, independent of a specific dispute case. The Moderator's action set on auto-hidden content is exactly: **restore** visibility (dismissing the reports), **warn** the content's owner, or **escalate** to Admin for removal — never removal itself (NFR-SEC-05).
 
 **Acceptance Criteria:**
 
 - Given content is auto-hidden by the 3-report threshold (FR-DISPUTE-02), when it appears in Moderator's queue, then the Moderator can review and act on it directly.
+
+
+> **Amended 2026-08-27 (batch A26).** "Act on it directly" previously implied actions NFR-SEC-05 forbids a Moderator (removal), and restore — un-hiding content three users reported — existed in no requirement at all. The action set is now explicit; the outcome notifies the content's owner per FR-NOTIF-12.
 
 ### 3.11 FR-ADM — Admin Functions
 
@@ -1546,6 +1791,10 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 - Given Admin suspends an account, when that account's current session makes its next request, then the request is rejected.
 - Given a suspended account attempts to apply to a gig, post a gig, or submit an endorsement, when attempted, then the action is blocked.
 - Given a suspended account has existing, already-agreed Engagements with uninvolved parties, when checked, then those Engagements are not automatically cancelled — they proceed through normal resolution mechanisms.
+- Given an Admin opens the suspension of an account with no recorded violation, when the confirmation shows, then it states there are no grounds to record and the suspension cannot be confirmed.
+- Given an account with recorded grounds (for example, three warnings in 90 days), when an Admin suspends it, then the grounds are recorded with the suspension and shown on the confirmation.
+
+> **Amended 2026-09-24 (M11 review) — a suspension records its grounds.** "For policy violations" was the requirement's only condition, and nothing made the violation part of the act. The prototype's Admin tour suspended an account with a clean record and no stated reason. A suspension now records the violation it rests on (`User.suspensionReason`, which the schema already carries), shows it on the confirmation, and cannot be confirmed without one.
 
 #### FR-ADM-04 — Verification-document review (future-contingent)
 
@@ -1585,6 +1834,27 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 - Given no Admin account yet exists, when the system is first deployed, then the first Admin account(s) are created by direct backend assignment, not an in-app flow.
 - Given at least one Admin account exists, when that Admin promotes a registered user, then the promoted user gains Admin or Moderator access without a separate onboarding sequence.
 
+
+> **Amended 2026-08-27 (batch A34).** Credential establishment on promotion, previously unstated — the new `AdminAccount` carries its own `passwordHash` (FR-ADM-07 forbids credential sharing), and nothing said where it came from. First dashboard login for a freshly promoted account is **OTP-only to their own phone (`ADMIN_LOGIN`), then set-a-password**; every login after is the normal password-plus-OTP pair (FR-DASH-06). No secret is transmitted or known to anyone else. This is the minimal onboarding step that separate credentials make unavoidable; "without a separate onboarding sequence" was written before the question was asked.
+>
+> Also recorded: promotion **creates** accounts and never edits them — changing an existing staff account's role, deactivating it, or resetting its password have no flows in this build, deliberately; see the staff-account runbook in `decisions.md`.
+
+> **Amended 2026-09-20 (openings O5, O6).** **The paragraph directly above is superseded for two of its three cases.**
+>
+> **O6 — staff accounts had no management surface at all.** `FR-ADM-07` separates staff accounts from consumer accounts, so `FR-DASH-02`'s *"any user account"* is the consumer population and Admins and Moderators never appear there. Yet nothing gave an Admin a way to **see** who holds a staff account. The system shall provide an **Admin-only** staff-account surface listing each staff account's name, role, staff phone, promoting account and promotion date, and its **sign-in state** — *active*, *first sign-in pending*, *inactive*, or *access removed*. Moderators shall not have access to it.
+>
+> **O5 — no staff password-reset path existed anywhere.** Consumer users have `FR-ACC-10`; a staff member who forgot their password had no specified recovery short of direct database access. The system shall allow an Admin to trigger an **admin-assisted reset**: a one-time code is sent to the staff member's own phone, their current password stops working immediately, and they set a new one at next sign-in — the same mechanism as a first sign-in under this requirement's 2026-08-27 amendment, rather than a second one invented for the purpose. No secret is transmitted or known to anyone else, which is the same property that amendment established.
+>
+> **Removal of access** likewise becomes a flow: an Admin may deactivate a staff account, after which it cannot sign in to the dashboard. **Case history and audit entries are retained** — accountability does not depend on the account still being active — and any consumer account belonging to the same person is untouched, per `FR-ADM-07`.
+>
+> **What remains backend-only, and stays in `decisions.md`'s runbook: changing a role, and unlocking early.** Both actions are rarer, neither has a screen, and the honest position is that they are SQL with a hand-written log entry.
+>
+> Every action on this surface is a privileged action under `NFR-SEC-06` and is recorded in the audit log with the acting account.
+>
+> **Acceptance criteria added:** Given an Admin opens the staff surface, when it loads, then every staff account is listed with its role and sign-in state, and no consumer account appears. · Given a Moderator is signed in, when the dashboard navigation renders, then the staff surface is not offered, and a request for it from a Moderator account is rejected *(amended 2026-09-24, as NFR-OPS-01)*. · Given an Admin resets a staff account's password, when the reset is issued, then that account's current password stops working immediately and a one-time code is sent to its own phone. · Given an Admin removes a staff account's access, when the next dashboard request is made by that account, then it is rejected, and the account's audit entries and case history remain intact.
+
+> **Amended 2026-09-24 (M11 review) — where promotion starts.** Promotion starts from the Staff accounts page (*Promote user*, then search the registered user), not from a user's record. One entry point: a record-level Promote duplicated it, and the prototype's version opened the flow for a different person.
+
 #### FR-ADM-07 — Separate Admin/Moderator accounts
 
 | Actor(s) | Priority |
@@ -1610,6 +1880,13 @@ _Admin handles lower-volume, higher-stakes, harder-to-reverse actions. Every req
 - Given Admin's ruling confirms the Engagement happened and was completed, when the ruling is recorded, then the standard double-blind rating step opens for both parties as normal.
 - Given Admin's ruling confirms a genuine no-show (the Engagement did not happen at all), when the ruling is recorded, then no rating step opens — the reliable party's completion-rate stat receives a positive credit, the unreliable party's a negative mark, and the case closes.
 
+> **Amended 2026-09-24 (M5 review) — what a "happened and completed" ruling does to checkpoints nobody reached.** The first criterion opened the rating step but left the checkpoints where the dispute found them. In the typical case, arrival could not be confirmed, so completion was never reached either, and the Engagement had no path to *Completed*. The ruling now settles every arrival and completion checkpoint it covers that was never confirmed. Each is marked **settled by ruling** with the ruling's date, the Engagement becomes Completed, and the rating step opens. **The payment checkpoint stays open.** A ruling establishes that the work happened, not that the worker was paid, and codes do not expire (FR-ENG-01), so payment is still confirmed the normal way: the worker shares their code once paid. If payment is disputed later, that is a separate case (FR-DISPUTE-03). This needs one new `CheckpointStatus` value, `SETTLED_BY_RULING` (see `database-schema.md`).
+
+**Acceptance Criteria (added 2026-09-24):**
+
+- Given a dispute opened because arrival could not be confirmed, when Admin rules that the Engagement happened and was completed, then arrival and completion show as settled by ruling with the ruling's date, the Engagement's status becomes Completed, and the rating step opens.
+- Given the same ruling, when the worker opens the Engagement, then the payment checkpoint is still open and their payment code is still available to share.
+
 ### 3.12 FR-DASH — Shared Dashboard Infrastructure
 
 _Read access below is shared by Moderator and Admin; write and action privileges stay split exactly as FR-MOD and FR-ADM describe._
@@ -1625,7 +1902,10 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given a Moderator or Admin is on the dashboard, when they search or filter postings by status, category, arrangement type, employer, or date, then matching results return regardless of report status.
-- Given a Moderator attempts to remove a posting directly from this view, when they act, then the system blocks the action and requires escalation to Admin instead.
+- Given a Moderator views a posting, when the view renders, then no removal action is offered to them; the way forward is escalating the report to Admin.
+- Given a removal request arrives from a Moderator account by any other route, when the server receives it, then it is rejected.
+
+> **Amended 2026-09-24 (M11 review).** The second criterion used to read *"the system blocks the action and requires escalation"*, which the prototype drew as a Remove button that opened a "blocked" dialog. An action the role can never take is not offered at all — the dashboard's rule since M10 is that the boundary between Moderator and Admin is **which controls exist, not which are disabled** — and the server still refuses the call, which is where the security actually lives (NFR-SEC-05). The same wording change applies to FR-DASH-02 and NFR-OPS-01.
 
 #### FR-DASH-02 — Full user-account visibility
 
@@ -1638,7 +1918,10 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given either role opens a user account from the dashboard, when viewed, then verification status, rating/completion history, endorsement activity, and full case history (not just currently active cases) are all visible.
-- Given a Moderator attempts to suspend an account or approve verification directly from this view, when they act, then the system blocks the action and requires Admin instead.
+- Given a Moderator views an account, when the view renders, then no suspend, promote or verification-approval action is offered to them.
+- Given such a request arrives from a Moderator account by any other route, when the server receives it, then it is rejected.
+
+> **Amended 2026-09-24 (M11 review).** As FR-DASH-01: not offered in the interface, rejected by the server.
 
 #### FR-DASH-03 — Case queue
 
@@ -1685,12 +1968,15 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 | ---------------- | -------- |
 | Moderator, Admin | Must     |
 
-**Requirement:** The system shall require both password and OTP together for dashboard login (not either-or, unlike the mobile app's two independent paths per FR-ACC-07), reusing the same backend and account credentials as the mobile app.
+**Requirement:** The system shall require both password and OTP together for dashboard login (not either-or, unlike the mobile app's two independent paths per FR-ACC-07), reusing the same backend authentication machinery as the mobile app — the `AdminAccount`'s own credentials, never a consumer account's (FR-ADM-07). Five consecutive failed attempts shall lock dashboard login for 15 minutes.
 
 **Acceptance Criteria:**
 
 - Given an Admin or Moderator attempts dashboard login with only a password or only an OTP, when submitted, then login is rejected — both are required together.
 - Given both password and OTP are correctly provided, when submitted, then dashboard login succeeds using the same account credentials as the mobile app.
+
+
+> **Amended 2026-08-27 (batches A28, A30).** **A30:** "the same account credentials as the mobile app" invited building the credential sharing FR-ADM-07 forbids; the intended reading — shared *machinery* (one hashing implementation, one `OtpCode` table), separate credentials — is now the text. **A28:** the lockout policy is stated (5 / 15 minutes, mirroring NFR-SEC-02) — `AdminAccount.failedLoginAttempts` and `lockedUntil` existed with no threshold or duration anywhere. Dashboard sessions are terminable: `AdminAccount.passwordChangedAt` and `deactivatedAt` (schema batch A33) are re-checked per request, mirroring `requireAuth`.
 
 ### 3.13 FR-NOTIF — Notifications
 
@@ -1708,6 +1994,8 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 - Given a youth has already received 5 urgent pushes that day, when a 6th matching urgent gig is posted, then it is queued into a batched digest rather than sent individually.
 - Given a youth has not opted in, when an urgent gig matches them, then they see the urgent label in-app but receive no proactive push.
 
+> **Amended 2026-09-25.** "Within the search radius" is measured from the youth's last browse location, within the 5 km default — see `FR-POST-10`'s amendment of the same date.
+
 #### FR-NOTIF-02 — Non-urgent gig notifications
 
 | Actor(s)         | Priority |
@@ -1720,6 +2008,8 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 
 - Given a youth has not opted out, when a non-urgent posting matches their radius, then they receive the standard notification.
 - Given a youth has opted out, when a non-urgent posting matches, then no notification is sent.
+
+> **Amended 2026-09-25.** "Within radius" is measured from the youth's last browse location, within the 5 km default — see `FR-POST-10`'s amendment of the same date.
 
 #### FR-NOTIF-03 — Notification preferences
 
@@ -1752,13 +2042,16 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 | ----------------------------------------- | -------- |
 | Local Business/Employer, Youth Job-Seeker | Must     |
 
-**Requirement:** The system shall notify the relevant party for material-change proposals (FR-ENG-09), End Engagement triggers (FR-ENG-12), and stalled-engagement prompts (FR-ENG-13).
+**Requirement:** The system shall notify the relevant party for material-change proposals (FR-ENG-09), End Engagement triggers (FR-ENG-12), stalled-engagement prompts (FR-ENG-13), **cancellation requests (FR-ENG-05 — the responding party, whose 48-hour window starts on delivery), and cancellation outcomes (accepted, rejected, or auto-resolved — the requesting party)**.
 
 **Acceptance Criteria:**
 
 - Given a material change is proposed, when saved, then the affected worker is notified.
 - Given End Engagement is triggered, when submitted, then the other party is notified immediately regardless of the "did something go wrong?" answer.
 - Given a stalled-engagement prompt fires, when triggered, then both parties are notified.
+
+
+> **Amended 2026-08-27 (batch A23).** Cancellation requests and outcomes added — `CANCELLATION_REQUEST` already existed in `NotificationType` with no requirement firing it, and FR-ENG-05 auto-resolves its window *against whoever didn't respond*, which presupposes they were told a request existed. `CANCELLATION_RESOLVED` joins the enum (schema batch).
 
 #### FR-NOTIF-06 — Dispute/case notifications
 
@@ -1778,12 +2071,13 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 | --------------------------------------------- | -------- |
 | Youth Job-Seeker, Community Verifier/Endorser | Should   |
 
-**Requirement:** The system shall notify a worker when they receive an endorsement (FR-ENDORSE-09) and notify a Verifier when their endorsement "pays off" (FR-ENDORSE-12).
+**Requirement:** The system shall notify a worker when they receive an endorsement (FR-ENDORSE-09) or one is revoked (FR-ENDORSE-07), and notify a Verifier when their endorsement "pays off" (FR-ENDORSE-12).
 
 **Acceptance Criteria:**
 
 - Given an endorsement is submitted, when it completes, then the worker is notified.
 - Given an endorsed worker's first rated Engagement reaches ≥4.0, when finalized, then the Verifier is notified.
+- Given a Verifier revokes an endorsement, when it completes, then the worker is notified (`ENDORSEMENT_REVOKED`, added 2026-09-24).
 
 #### FR-NOTIF-08 — In-app notification history
 
@@ -1797,6 +2091,42 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 
 - Given a user dismisses or misses a push notification, when they open the notification history screen, then that notification's content is still retrievable there.
 
+> **Amended 2026-09-24 (prototype completion review) — how long the history keeps a row.** Unbounded retention made every drawn history untrue for an established account. **The history keeps a row for 30 days; a `WARNING_RECORDED` row stays for 90 days**, the window warnings count in (FR-MOD-02), so the warned party can see every warning that still counts. 30 days covers every action a row can lead to — rating windows (14 days), dispute and clarification windows, re-confirmations — and the outcome of an application stays on its own list for the same 30 days (FR-APPLY-12).
+>
+> **Acceptance Criteria (added 2026-09-24):** Given a row older than 30 days (90 for `WARNING_RECORDED`), when the history renders, then it is not shown.
+
+
+> **Amended 2026-08-27 (batch A11).** Per-type presentation defined — `NotificationType` has 22 values (after batch additions) rendering from an untyped `Json` payload, and nothing previously stated what any history row contains. Row = title · one body line · tap target. Staff-directed `NEW_DISPUTE_CASE` renders on the dashboard queue, never here. The urgent **digest row expands** in place to its batched children (`batchedDigestId`), a notification containing notifications.
+>
+> | Type | Title | Body | Opens |
+> |---|---|---|---|
+> | `URGENT_GIG` | Urgent gig near you | title · pay + basis · distance · starts | listing detail |
+> | `NEW_GIG` | New gig near you | same as urgent | listing detail |
+> | `URGENT_DIGEST` | {n} more urgent gigs today | top title + count | expands in place |
+> | `APPLICATION_RECEIVED` | New applicant for {title} | applicant display name | applicant pool |
+> | `APPLICATION_SELECTED` | You're selected for {title} | start time · employer name | engagement detail |
+> | `APPLICATION_DECLINED` | Update on {title} | you weren't selected this time | own application |
+> | `APPLICATION_NOT_SELECTED` | Update on {title} | the posting has closed | own application |
+> | `APPLICATION_TERMS_CHANGED` | {title} changed | what changed · you can withdraw if it no longer suits you | own application list *(added 2026-09-23, FR-APPLY-10)* |
+> | `MATERIAL_CHANGE` | {title} changed | what changed · respond by {deadline} (FR-ENG-09) | re-confirmation |
+> | `CANCELLATION_REQUEST` | Cancellation requested | reason · respond within 48h | respond screen |
+> | `CANCELLATION_RESOLVED` | Cancellation {outcome} | accepted / rejected / auto-resolved | engagement detail |
+> | `END_ENGAGEMENT` | {name} ended the engagement | what happens next | rating or dispute |
+> | `STALLED_ENGAGEMENT_PROMPT` | Did this happen? | gig title · start date | stalled prompt |
+> | `CLARIFICATION_REQUEST` | Question about your case | reviewer's question · 24h window | clarification reply |
+> | `DISPUTE_OPENED` | A case was opened | engagement/report context · 48h to respond | case view |
+> | `DISPUTE_RESOLVED` | Your case is resolved | outcome recorded | case view |
+> | `FLAGGED_CONTENT_OUTCOME` | Update on your posting | restored / removed | own posting |
+> | `ENDORSEMENT_RECEIVED` | {name} vouched for you | badge now shows on applications | own profile |
+> | `ENDORSEMENT_PAYOFF` | Your endorsement paid off | {name} went on to build a good rating | my endorsements |
+> | `RATING_WINDOW_OPEN` | Rate your engagement | counterparty · closes in 14 days | rating screen |
+> | `RATING_REVEALED` | Ratings are in | both ratings now visible | revealed ratings |
+> | `NO_APPLICANT_NUDGE` | No applicants yet on {title} | consider widening details | own posting |
+> | `WARNING_RECORDED` | A warning was recorded on your account | why (the kind of case) · how many in 90 days, and that a third leads to a suspension review | — *(no target; added 2026-09-24, FR-NOTIF-12)* |
+> | `ENDORSEMENT_REVOKED` | {name} revoked their endorsement | {name}'s endorsement no longer shows on your profile · work you already got isn't affected | own profile *(added 2026-09-24, FR-ENDORSE-07)* |
+>
+> *Count corrected 2026-09-24:* with `APPLICATION_TERMS_CHANGED`, `WARNING_RECORDED` and `ENDORSEMENT_REVOKED`, `NotificationType` has **25** values; the "22" above is the count when this table was written.
+
 #### FR-NOTIF-09 — Notification permission handling
 
 | Actor(s) | Priority |
@@ -1808,6 +2138,9 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 **Acceptance Criteria:**
 
 - Given a user denies push notification permission, when a notifiable event occurs, then no push is delivered, but the event still appears in the in-app notification history.
+
+
+> **Amended 2026-08-27 (batch A10).** The request itself, previously unspecified (only the denied consequence was): the notification-permission prompt fires **after first successful registration**, preceded by one line of context (what notifications are for); denial is the working state this requirement already describes; a permanently-denied state surfaces a settings hint on the notification-history screen, never a blocking prompt.
 
 #### FR-NOTIF-10 — Distinct treatment for urgent vs. regular notifications
 
@@ -1822,6 +2155,45 @@ _Read access below is shared by Moderator and Admin; write and action privileges
 - Given an urgent gig notification and a regular gig notification are both delivered, when either arrives, then they use different platform-level notification channels or priority settings, not merely different label text inside the same channel.
 
 ---
+
+
+> **Amended 2026-08-27 (batch A11, pointer).** OS-level presentation belongs here (channel/priority); in-history row treatment per type is defined under FR-NOTIF-08's amendment.
+
+#### FR-NOTIF-11 — Rating notifications
+
+| Actor(s)                                  | Priority |
+| ----------------------------------------- | -------- |
+| Local Business/Employer, Youth Job-Seeker | Should   |
+
+**Requirement:** The system shall notify both parties when their engagement's rating window opens (enforced engagements only — not cancelled ones, per FR-RATE-05), and notify both parties when ratings reveal (FR-RATE-02), by either route.
+
+**Acceptance Criteria:**
+
+- Given an engagement completes or ends with no issue, when rating eligibility opens with `ratingEnforced` true, then both parties receive a rating-window notification.
+- Given an engagement was cancelled, when rating eligibility opens unenforced, then no prompt is sent — rating stays quietly available.
+- Given ratings reveal (both submitted, or 14 days elapse), when the reveal occurs, then both parties are notified.
+
+> **Added 2026-08-27 (batch A18).** The reveal notification was already a Slice B implementation task and `ratingEnforced` existed to suppress "the prompting and chasing" — yet no `NotificationType` value and no FR-NOTIF entry covered ratings at all. `RATING_WINDOW_OPEN` and `RATING_REVEALED` join the enum (schema batch). Copy never shows the 4.0 threshold as a number.
+
+#### FR-NOTIF-12 — Dispute-lifecycle notifications to the parties
+
+| Actor(s)                                  | Priority |
+| ----------------------------------------- | -------- |
+| Local Business/Employer, Youth Job-Seeker | Must     |
+
+**Requirement:** The system shall notify the respondent when a dispute case opens against them (starting their FR-DISPUTE-04 response window), notify a party when clarification is requested of them (FR-MOD-03), notify both parties when a case's outcome is recorded, and notify a content owner of the outcome — restored or removed — when their auto-hidden content (FR-DISPUTE-02) completes review.
+
+**Acceptance Criteria:**
+
+- Given a dispute case opens, when the respondent is identified, then they receive a case-opened notification and their 48-hour response window runs from a case they have actually been told about.
+- Given a Moderator requests clarification from a party, when sent, then that party is notified with the 24-hour window.
+- Given a case reaches its outcome, when recorded, then both parties are notified.
+- Given auto-hidden content completes review, when the Moderator restores or Admin removes it, then the content's owner is notified of the outcome — and deliberately **not** at the moment the third report fired.
+- Given a Moderator records a warning against a party (FR-MOD-02, FR-MOD-04), when it is recorded, then that party is notified that a warning was recorded, why, and what a third warning inside 90 days leads to.
+
+> **Added 2026-08-27 (batch A25).** The baseline's only dispute notification was FR-NOTIF-06, to staff — FR-DISPUTE-04 proceeded to review on the silence of a respondent who was never told the case existed. `DISPUTE_OPENED`, `DISPUTE_RESOLVED` and `FLAGGED_CONTENT_OUTCOME` join the enum (schema batch); `CLARIFICATION_REQUEST` already existed with nothing firing it. Threshold-silence on auto-hide is deliberate: notifying at report #3 reveals the threshold moment and, in small pools, helps identify reporters (NFR-PRIV-05).
+
+> **Amended 2026-09-24 (M1 review) — the warned party is told.** A warning is recorded against an account, and three inside a rolling 90 days auto-escalate it for suspension review (FR-MOD-02). Nothing notified the party it was recorded against: `DISPUTE_RESOLVED` reaches only the two parties of a dispute, and `FLAGGED_CONTENT_OUTCOME` carries only *restored* or *removed*. So an employer warned twice over reported postings could be escalated, and suspended, on warnings they never knew existed — the same defect batch A25 closed for dispute respondents. **`WARNING_RECORDED`** (*"A warning was recorded on your account"*) goes to the warned party whenever a warning is recorded, whatever case produced it, with the reason and the 90-day consequence in its body. It has no tap target: the message is the whole outcome, and the reporters stay anonymous (NFR-PRIV-05). The enum value joins the schema batch.
 
 ## 4. Non-Functional Requirements
 
@@ -1888,6 +2260,10 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 **Requirement:** The system shall log every Admin and Moderator action, with the full log visible to every Admin account (not just the acting individual). Moderator accounts shall not have access to the audit log — an asymmetry distinct from the shared read access described in FR-DASH-01/02.
 
 **Acceptance Criteria:** See NFR-OPS-01.
+
+> **Amended 2026-09-20 (batch A29, corrected).** *"Every action"* is now a **closed vocabulary** rather than free text, enumerated as `AuditAction` and `AuditTargetType` in `database-schema.md`. Free strings meant each developer would invent their own verb for the same act, and a log whose vocabulary drifts cannot be filtered or counted at the moment accountability matters.
+>
+> **A closed enumeration is only safe when it is closed over the actions that exist.** A29's original list was derived from the Module 10 moderation surfaces and was seven values short of what the dashboard actually performs: opening a case review, closing a case with no action, resetting a staff password, removing staff access, exporting metrics, and approving or rejecting an account recovery. One value was also renamed, because recording a warning against a **user** and closing a case against a **report** are two acts, not one. **Adding an action to the dashboard therefore means adding a value here** — which is the point of the closure, not a cost of it.
 
 ### 4.2 NFR-PRIV — Privacy & Compliance
 
@@ -2005,6 +2381,8 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 
 **Acceptance Criteria:** Given a user has loaded a listing and then loses connectivity, when they view that listing again, then it remains viewable from local cache.
 
+> **Amended 2026-09-16 (batch E9).** Offline tolerance extends to **an in-progress posting form**, retained on the device until submitted or explicitly discarded. This is the counterpart of `FR-POST-15`'s amendment of the same date, and it does not reopen that requirement's decision: there is no server state and no draft list. Recorded here as well so the connectivity requirement and the no-draft requirement cannot be read as contradicting one another again.
+
 #### NFR-USE-02 — Low data usage
 
 | Priority |
@@ -2080,7 +2458,9 @@ _For NFRs, the Metric/Acceptance Criteria field is combined into one — where t
 **Acceptance Criteria:**
 
 - Given any Admin or Moderator performs a logged action, when any Admin account opens the audit log, then that action appears regardless of which account performed it.
-- Given a Moderator account attempts to open the audit log, when they navigate to it, then access is denied.
+- Given a Moderator is signed in, when the dashboard navigation renders, then the audit log is not offered; a request for it from a Moderator account is rejected by the server.
+
+> **Amended 2026-09-24 (M11 review).** The Moderator's navigation no longer lists the audit log (or Staff accounts) and leads to an "access denied" page; both surfaces are simply absent for the role, as FR-DASH-01/02's actions are, and the server refuses the request.
 
 #### NFR-OPS-02 — Metrics dashboard export
 
@@ -2125,6 +2505,8 @@ _The response-time thresholds below follow Nielsen Norman Group's interaction-de
 **Requirement:** The system shall respond to any direct-manipulation interaction with no network round-trip (filter toggles, category selection, opening a menu) within 0.1 seconds, the threshold for a user to feel they're directly manipulating the interface rather than issuing a command to it.
 
 **Acceptance Criteria:** Given a user taps a filter, toggle, or menu that requires no server round-trip, when tapped, then visible feedback appears within 0.1 seconds.
+
+> **Amended 2026-09-16 (batch E10).** This requirement covers direct manipulation; **nothing covered what the interface shows while a network operation is in flight.** The system shall present a loading or skeleton state for any operation that can exceed the perceptible threshold, so that no network wait is indistinguishable from a frozen interface. Absence of that state is what weakens visibility of system status, the first of Nielsen's heuristics, and it is why a loading component existed in the design system with nothing requiring it.
 
 #### NFR-PERF-02 — Common-action response time
 
@@ -2297,6 +2679,7 @@ _Every requirement ID and title in one place, for navigation. Use these IDs in b
 | FR-ENG-11     | Multi-slot material change re-confirmation              |
 | FR-ENG-12     | Part-time End Engagement                                |
 | FR-ENG-13     | Stalled engagement handling                             |
+| FR-ENG-14     | Engagements list                                        |
 | FR-RATE-01    | Rating scale and submission                             |
 | FR-RATE-02    | Double-blind submission                                 |
 | FR-RATE-03    | Completion-rate as a distinct stat                      |
@@ -2352,6 +2735,8 @@ _Every requirement ID and title in one place, for navigation. Use these IDs in b
 | FR-NOTIF-08   | In-app notification history                             |
 | FR-NOTIF-09   | Notification permission handling                        |
 | FR-NOTIF-10   | Distinct treatment for urgent vs. regular notifications |
+| FR-NOTIF-11   | Rating notifications                                    |
+| FR-NOTIF-12   | Dispute-lifecycle notifications to the parties          |
 
 ### 7.2 Non-Functional Requirements
 

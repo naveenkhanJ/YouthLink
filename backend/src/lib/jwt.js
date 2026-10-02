@@ -4,9 +4,11 @@
  * The sole authentication mechanism for every module — no Session/RefreshToken
  * table exists (see docs/database-schema.md's Design Decisions). Verifying a
  * token here only proves it was signed by this server and hasn't expired;
- * requireAuth.js still re-reads accountStatus/suspendedAt/lockedUntil from the
- * database on every request, since none of that can be trusted from the token
- * itself once issued.
+ * requireAuth.js still re-reads accountStatus, suspendedAt and passwordChangedAt
+ * from the database on every request, since none of that can be trusted from the token
+ * itself once issued. (lockedUntil is deliberately NOT part of that
+ * check: it applies only at the password-login endpoint — see requireAuth.js
+ * and docs/decisions.md.)
  *
  * 30-day expiry: chosen because there is deliberately no refresh-token flow,
  * so this is the de facto session length for the whole app, not just this

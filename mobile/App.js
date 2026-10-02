@@ -1,8 +1,24 @@
 /**
- * App entry point. Deliberately trivial — all routing lives in
- * src/navigation/RootNavigator.js, and screens live in src/screens/<module>/.
+ * App entry point. Routing lives in src/navigation/RootNavigator.js, and screens live in
+ * src/screens/<module>/.
+ *
+ * Launch sequence, every time the app opens:
+ *   1. The native splash (brand blue with the mark, configured in app.json) is held on screen.
+ *   2. Inter and Archivo load; the saved session is read.
+ *   3. BrandSplash (M0 0.1) takes over the same blue and the same mark, adds the wordmark and the
+ *      tagline, and stays for at least two seconds (a tap moves on early once the app is ready).
+ *   4. The navigator appears.
+ *
+ * Fonts: Inter (400/500/600, the UI type ramp) and Archivo Bold (the wordmark, the only place
+ * Archivo appears; `Wordmark.js` assumes it is already loaded by the time anything renders).
  */
+import { useEffect, useState } from "react";
+import { useFonts, Archivo_700Bold } from "@expo-google-fonts/archivo";
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-google-fonts/inter";
+import * as SplashScreen from "expo-splash-screen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthProvider, useAuth } from "./src/auth/AuthContext";
+import BrandSplash from "./src/components/BrandSplash";
 import RootNavigator from "./src/navigation/RootNavigator";
 
 // Keep the native splash up until BrandSplash has drawn its first frame.
@@ -43,9 +59,18 @@ function Launcher({ fontsLoaded }) {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Archivo_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
+
   return (
     <SafeAreaProvider>
-      <RootNavigator />
+      <AuthProvider>
+        <Launcher fontsLoaded={fontsLoaded} />
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
