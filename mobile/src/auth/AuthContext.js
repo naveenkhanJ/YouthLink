@@ -15,6 +15,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken, setAuthFailureCallback } from "../api/client";
+import { markOnboardingSeen, rememberLastPhone, forgetLastPhone } from "./launchState";
 
 const TOKEN_KEY = "youthlink.authToken";
 const USER_KEY = "youthlink.authUser";
@@ -90,6 +91,8 @@ export function AuthProvider({ children }) {
     setUser(signedInUser);
     setSessionEndReason(null); // a fresh login clears any "signed out for security" notice
     setStatus("signedIn");
+    markOnboardingSeen(); // someone with an account has no use for the first-run cards
+    rememberLastPhone(signedInUser.phone);
   }
 
   /** Replaces the stored user after an edit (phone, name) so every screen shows the new value. */
@@ -105,7 +108,16 @@ export function AuthProvider({ children }) {
     setAuthToken(token);
   }
 
-  async function signOut(reason = null) {
+  /**
+   * @param {string|null} [reason] - Set when the app ends the session (the login screen explains it).
+   * @param {{ forget?: boolean }} [options] - `forget: true` when the account no longer exists
+   *   (deletion): the next launch then starts at role selection instead of Log in.
+   */
+  async function signOut(reason = null, { forget = false } = {}) {
+    // The failure callback registered at start-up outlives renders, so read the user from the ref.
+    const phone = userRef.current?.phone;
+    if (forget) await forgetLastPhone();
+    else if (phone) await rememberLastPhone(phone);
     await Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEY),
       SecureStore.deleteItemAsync(USER_KEY),
@@ -130,7 +142,7 @@ export function AuthProvider({ children }) {
  *   user: object | null,
  *   sessionEndReason: string | null,
  *   signIn: (token: string, user: object) => Promise<void>,
- *   signOut: (reason?: string) => Promise<void>,
+ *   signOut: (reason?: string|null, options?: { forget?: boolean }) => Promise<void>,
  *   updateUser: (changes: object) => Promise<void>,
  *   replaceToken: (token: string) => Promise<void>,
  * }}

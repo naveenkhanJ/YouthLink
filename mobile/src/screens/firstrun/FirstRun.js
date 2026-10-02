@@ -49,17 +49,24 @@ export default function FirstRun({ onDone }) {
   const last = step === CARDS.length;
 
   return (
-    <View style={[styles.card, { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, spacing.xl) }]}>
+    <View style={[styles.card, { paddingBottom: Math.max(insets.bottom, spacing.xl) }]}>
       <StatusBar style="dark" />
-      <View style={styles.skipRow}>
-        {last ? null : (
-          <Pressable onPress={onDone} hitSlop={12} accessibilityRole="button">
-            <Text style={styles.skip}>Skip</Text>
-          </Pressable>
-        )}
-      </View>
+      {/* M0 positions these screens absolutely (the only ones in the product): Skip @284,24
+          right-aligned, art @80,150, title @24,392, body right under it. They are anchored to the
+          top (below the status bar, which the 360×800 frames do not draw), so the art, title and
+          body sit at the same place on every card and do not move when paging. */}
+      {last ? null : (
+        <Pressable
+          onPress={onDone}
+          hitSlop={12}
+          accessibilityRole="button"
+          style={[styles.skipWrap, { top: insets.top + 24 }]}
+        >
+          <Text style={styles.skip}>Skip</Text>
+        </Pressable>
+      )}
 
-      <View style={styles.center}>
+      <View style={[styles.content, { top: insets.top + 150 }]}>
         <View style={styles.art}>
           <OnboardingArt variant={card.art} />
         </View>
@@ -67,6 +74,7 @@ export default function FirstRun({ onDone }) {
         <Text style={styles.body}>{card.body}</Text>
       </View>
 
+      <View style={styles.spacer} />
       <View style={styles.bottom}>
         <PagerDots active={step} />
         <View style={styles.buttonWrap}>
@@ -82,37 +90,40 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg.default,
   },
-  skipRow: {
-    height: 44,
-    paddingHorizontal: 24,
-    alignItems: "flex-end",
-    justifyContent: "center",
+  // Skip: 60 wide, right-aligned, right edge at 344 of 360.
+  skipWrap: {
+    position: "absolute",
+    right: 16,
+    width: 60,
   },
   skip: {
     ...typography.secondary,
     color: colors.text.secondary,
     textAlign: "right",
   },
-  center: {
-    flex: 1,
+  content: {
+    position: "absolute",
+    left: 0,
+    right: 0,
     paddingHorizontal: spacing.xl,
-    justifyContent: "center",
-    gap: spacing.sm,
   },
   art: {
     alignSelf: "center",
   },
+  spacer: {
+    flex: 1,
+  },
   // Inter SemiBold 24 sets "Local work, verified people" at 313.7 dp, just over the 312 dp column
   // the prototype draws it in on one line; a hair of negative tracking (about 2 dp over the line)
-  // keeps it on one line without changing the size.
+  // keeps it on one line without changing the size. art 150–350, title at 392, body 16 below it.
   title: {
-    marginTop: 42 - spacing.sm,
+    marginTop: 42,
     letterSpacing: -0.1,
     ...typography.display,
     color: colors.text.primary,
   },
   body: {
-    marginTop: spacing.sm,
+    marginTop: spacing.lg,
     ...typography.body,
     color: colors.text.secondary,
   },

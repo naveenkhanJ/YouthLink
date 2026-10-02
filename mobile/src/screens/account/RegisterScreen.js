@@ -622,7 +622,10 @@ const styles = StyleSheet.create({
   },
   // 1.4 draws its content tighter: pad 6/16/0/16, gap 8.
   contentDetails: {
-    paddingBottom: 0,
+    // The prototype ends the content flush (0), which is right with the keyboard closed. The extra
+    // slack is invisible then, but lets the scroll lift the focused last field and its counter
+    // clear of the pinned bar when the keyboard is open (the field was ending flush with the bar).
+    paddingBottom: 96,
     gap: spacing.sm,
   },
   // topBar 328×44: back chevron at the left, ✕ at the right.

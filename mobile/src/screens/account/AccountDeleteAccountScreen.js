@@ -102,7 +102,7 @@ export default function AccountDeleteAccountScreen({ navigation }) {
     setLoading(true);
     try {
       await deleteAccount({ password });
-      await signOut();
+      await signOut(null, { forget: true }); // the account is gone: no Log in offer next launch
       setPassword("");
       setStep("deleted");
     } catch (err) {

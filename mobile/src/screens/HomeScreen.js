@@ -6,9 +6,9 @@
  * that role's first hub tab. So this screen's job is routing:
  *   - signed in   → that role's TabBar over the shell's host region, with the exact shell copy
  *     MNAV-shells.md wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
- *   - signed out  → first run (M0: the three cards; the splash is BrandSplash) the first time the app opens, then
- *     straight to 1.1 role selection (the first step of AccountRegister) on every later launch,
- *     per M0's "onboarding already seen" rule.
+ *   - signed out  → depends on what the device remembers (auth/launchState.js): Log in with the
+ *     last number filled in if someone signed in here before; otherwise role selection (1.1) once the
+ *     first-run cards (M0 0.2–0.4; the splash is BrandSplash) have been seen; otherwise the cards.
  *
  * The hub screens (Browse, My Postings, My Endorsements) belong to other modules and are not on
  * `develop` yet, so the host region shows the prototype's own shell copy until they land
@@ -16,14 +16,13 @@
  */
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
-
-const ONBOARDING_KEY = "youthlink.onboardingSeen";
+import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
+import { toLocalDigits } from "./account/phoneFormat";
 
 const ROLE_TO_TABBAR_ROLE = {
   YOUTH_JOB_SEEKER: "worker",
@@ -37,47 +36,53 @@ const FIRST_TAB_BY_ROLE = {
   verifier: "endorsements",
 };
 
-/** Signed out: the first-run cards once (the splash before them is BrandSplash), then 1.1 (role selection). */
+/**
+ * Signed out. Where the launch begins depends on what this device remembers (auth/launchState.js):
+ *   - someone signed in here before (a remembered phone) → Log in with the number filled in;
+ *   - otherwise, onboarding already seen → role selection (1.1);
+ *   - otherwise → the three first-run cards, then role selection.
+ */
 function SignedOutEntry({ navigation }) {
-  // null while the stored flag is being read.
-  const [seen, setSeen] = useState(null);
+  // null while the saved state is being read; false = show the first-run cards.
+  const [showCards, setShowCards] = useState(null);
 
   function goToRoleSelection() {
     navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] });
   }
 
-  // Home sits at the bottom of the stack, so it is also re-rendered as "signed out" while a screen
-  // above it (the account-deleted screen, Settings signing out) is still doing its own leaving.
-  // Only move the person when Home is the screen they are looking at.
-
   useEffect(() => {
     let cancelled = false;
-    SecureStore.getItemAsync(ONBOARDING_KEY)
-      .then((value) => {
-        if (cancelled) return;
-        if (value) {
-          if (navigation.isFocused()) goToRoleSelection();
+    readLaunchState().then(({ onboardingSeen, lastPhone }) => {
+      if (cancelled) return;
+      // Home sits at the bottom of the stack, so it is also re-rendered as "signed out" while a
+      // screen above it (the account-deleted screen, Settings signing out) is still doing its own
+      // leaving. Only move the person when Home is the screen they are looking at.
+      const atHome = navigation.isFocused();
+      if (lastPhone) {
+        if (atHome) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AccountLogin", params: { phone: toLocalDigits(lastPhone) } }],
+          });
         }
-        else setSeen(false);
-      })
-      // An unreadable flag only means the cards are shown once more; never block the app on it.
-      .catch(() => !cancelled && setSeen(false));
+      } else if (onboardingSeen) {
+        if (atHome) goToRoleSelection();
+      } else {
+        setShowCards(true);
+      }
+    });
     return () => {
       cancelled = true;
     };
   }, []);
 
   async function finish() {
-    try {
-      await SecureStore.setItemAsync(ONBOARDING_KEY, "1");
-    } catch (err) {
-      console.warn("Could not remember that onboarding was seen:", err);
-    }
+    await markOnboardingSeen();
     goToRoleSelection();
   }
 
-  // Brand-blue while reading the flag, so the splash does not flash white first.
-  if (seen === null) return <View style={styles.entryBlank} />;
+  // Brand-blue while the saved state is read, so nothing white flashes between the splash and the screen.
+  if (!showCards) return <View style={styles.entryBlank} />;
   return <FirstRun onDone={finish} />;
 }
 

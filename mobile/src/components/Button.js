@@ -89,7 +89,9 @@ export default function Button({
       disabled={isDisabled}
       accessibilityRole="button"
       accessibilityLabel={title}
-      accessibilityState={{ disabled: isDisabled, ...(loading ? { busy: true } : null) }}
+      // busy must be written every time: RN only applies the keys it is given, so omitting it after a
+      // loading cycle left the native view announcing "busy" on an idle button.
+      accessibilityState={{ disabled: isDisabled, busy: Boolean(loading) }}
       style={({ pressed }) => [
         styles.button,
         {
