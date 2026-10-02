@@ -70,7 +70,8 @@ const NIC_TAKEN_MESSAGE =
 const UNDER_AGE_MESSAGE = "YouthLink is for people aged 18 and over. Please check your birthdate is right.";
 const TERMS_MESSAGE = "Please accept the Terms of Service and Privacy Policy to continue.";
 // Not drawn (no frame for these): kept short and in the same voice.
-const EMAIL_TAKEN_MESSAGE = "This email address is already in use.";
+// Same sentence the Settings email screen draws in 1.14err, so the two never disagree.
+const EMAIL_TAKEN_MESSAGE = "This email is already on another account. Try a different address.";
 const EMAIL_INVALID_MESSAGE = "Enter a valid email address.";
 const PASSWORD_LENGTH_MESSAGE = "Password must be 8 to 64 characters.";
 const PASSWORD_MISMATCH_MESSAGE = "Passwords do not match.";
@@ -216,6 +217,12 @@ export default function RegisterScreen({ navigation }) {
       setIdToken(token);
       setStep(4);
     });
+  }
+
+  /** Sets a details-step field and drops that field's error: editing it is the person's answer to it. */
+  function edit(field, setter, value) {
+    setter(value);
+    setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
   }
 
   async function handleEmailBlur() {
@@ -517,7 +524,7 @@ export default function RegisterScreen({ navigation }) {
         <TextField
           label="Password"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(value) => edit("password", setPassword, value)}
           placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
@@ -527,7 +534,7 @@ export default function RegisterScreen({ navigation }) {
         <TextField
           label="Confirm password"
           value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          onChangeText={(value) => edit("confirmPassword", setConfirmPassword, value)}
           placeholder="••••••••••"
           secureTextEntry
           maxLength={64}
@@ -539,7 +546,7 @@ export default function RegisterScreen({ navigation }) {
         <TextField
           label="Email (optional)"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(value) => edit("email", setEmail, value)}
           onBlur={handleEmailBlur}
           placeholder="you@example.com"
           keyboardType="email-address"
@@ -550,7 +557,7 @@ export default function RegisterScreen({ navigation }) {
         <TextField
           label="NIC"
           value={nic}
-          onChangeText={setNic}
+          onChangeText={(value) => edit("nic", setNic, value)}
           placeholder="Enter your NIC"
           autoCapitalize="characters"
           maxLength={12}
@@ -562,7 +569,7 @@ export default function RegisterScreen({ navigation }) {
         <DateTimeField
           label="Birthdate"
           value={birthdate}
-          onChangeText={setBirthdate}
+          onChangeText={(value) => edit("birthdate", setBirthdate, value)}
           error={Boolean(fieldErrors.birthdate)}
         />
         <FieldError message={fieldErrors.birthdate} />
@@ -570,7 +577,7 @@ export default function RegisterScreen({ navigation }) {
         <TextField
           label="Legal name"
           value={legalName}
-          onChangeText={setLegalName}
+          onChangeText={(value) => edit("legalName", setLegalName, value)}
           autoCapitalize="words"
           maxLength={LEGAL_NAME_CAP}
           showCounter

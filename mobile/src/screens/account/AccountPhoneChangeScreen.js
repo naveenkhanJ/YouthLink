@@ -17,7 +17,7 @@
  * Reachable from Settings (YL-92, Sprint 4); until then no screen navigates here.
  */
 import { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
@@ -26,6 +26,8 @@ import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import PhoneField from "../../components/PhoneField";
 import CtaBar from "../../components/CtaBar";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import DialogModal from "../../components/DialogModal";
 import Link from "../../components/Link";
 import CodeInputNumeric from "../../components/CodeInputNumeric";
 import CountdownText from "../../components/CountdownText";
@@ -42,6 +44,7 @@ export default function AccountPhoneChangeScreen({ navigation }) {
   const { updateUser } = useAuth();
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(null);
+  const [updated, setUpdated] = useState(false); // the "Phone number updated" dialog
 
   const verification = usePhoneVerification({
     onBeforeSend: async (digits) => {
@@ -74,8 +77,9 @@ export default function AccountPhoneChangeScreen({ navigation }) {
       try {
         const result = await changePhone({ password, idToken });
         await updateUser({ phone: result.phone });
-        Alert.alert("Phone number updated", "Your new number is now active.");
-        navigation.goBack();
+        // Not drawn in Figma: a ConfirmDialog with one action, over the same scrim as the other
+        // dialogs, instead of the system alert. Done returns to Settings.
+        setUpdated(true);
       } catch (err) {
         if (err.fields?.password) {
           // Back to 1.12err with the code dropped: it cannot be used again.
@@ -166,6 +170,16 @@ export default function AccountPhoneChangeScreen({ navigation }) {
           />
         )}
       </CtaBar>
+
+      <DialogModal visible={updated} onRequestClose={() => navigation.goBack()}>
+        <ConfirmDialog
+          title="Phone number updated"
+          body="Your new number is now active."
+          confirmLabel="Done"
+          confirmStyle="primary"
+          onConfirm={() => navigation.goBack()}
+        />
+      </DialogModal>
     </View>
   );
 }

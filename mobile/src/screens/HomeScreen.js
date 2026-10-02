@@ -6,7 +6,7 @@
  * that role's first hub tab. So this screen's job is routing:
  *   - signed in   → that role's TabBar over the shell's host region, with the exact shell copy
  *     MNAV-shells.md wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
- *   - signed out  → first run (M0: splash + three cards) the first time the app opens, then
+ *   - signed out  → first run (M0: the three cards; the splash is BrandSplash) the first time the app opens, then
  *     straight to 1.1 role selection (the first step of AccountRegister) on every later launch,
  *     per M0's "onboarding already seen" rule.
  *
@@ -37,7 +37,7 @@ const FIRST_TAB_BY_ROLE = {
   verifier: "endorsements",
 };
 
-/** Signed out: first-run cards once, then 1.1 (role selection) from then on. */
+/** Signed out: the first-run cards once (the splash before them is BrandSplash), then 1.1 (role selection). */
 function SignedOutEntry({ navigation }) {
   // null while the stored flag is being read.
   const [seen, setSeen] = useState(null);
@@ -46,12 +46,18 @@ function SignedOutEntry({ navigation }) {
     navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] });
   }
 
+  // Home sits at the bottom of the stack, so it is also re-rendered as "signed out" while a screen
+  // above it (the account-deleted screen, Settings signing out) is still doing its own leaving.
+  // Only move the person when Home is the screen they are looking at.
+
   useEffect(() => {
     let cancelled = false;
     SecureStore.getItemAsync(ONBOARDING_KEY)
       .then((value) => {
         if (cancelled) return;
-        if (value) goToRoleSelection();
+        if (value) {
+          if (navigation.isFocused()) goToRoleSelection();
+        }
         else setSeen(false);
       })
       // An unreadable flag only means the cards are shown once more; never block the app on it.

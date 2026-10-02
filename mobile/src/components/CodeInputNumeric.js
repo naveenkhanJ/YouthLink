@@ -14,6 +14,7 @@
 import { useRef, useState } from "react";
 import { View, TextInput, Text, StyleSheet } from "react-native";
 import { colors, spacing, radius, typography } from "../theme/tokens";
+import { fill } from "../theme/layout";
 
 const DIGIT_COUNT = 6;
 
@@ -95,13 +96,15 @@ const styles = StyleSheet.create({
   },
   // Covers the whole row and is invisible, so any tap or long-press (paste) reaches it.
   hiddenInput: {
-    ...StyleSheet.absoluteFillObject,
+    ...fill,
     opacity: 0.02,
     color: "transparent",
   },
+  // Figma draws every box with a 1px stroke and no focus state. The box about to receive a digit
+  // only changes colour here, never width, so the row does not shift and a red error border is
+  // the same thickness on every box.
   boxFocused: {
     borderColor: colors.brand.primary,
-    borderWidth: 2,
   },
   boxError: {
     borderColor: colors.border.error,
