@@ -4136,6 +4136,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 **The second step**: the password, and a last restatement of what goes and what stays. The button reads
 *Delete my account*.
 
+**Built with the button pinned** (decided 2026-10-03, recorded in `decisions.md`): in a bottom action bar like the other
+forms, not at the foot of the content as drawn, so it sits 24 dp above the keyboard on every device.
+
 ### `1.17d` — Account deletion · deleted
 
 **Reached from** `1.17p`  ·  **Leads to** `1.1` ("Back to the start")

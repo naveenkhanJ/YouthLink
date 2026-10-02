@@ -85,7 +85,7 @@ export default function AccountResetByEmailScreen({ navigation }) {
           <>
             <FormBanner
               kind="info"
-              message={`We've sent a reset link to ${user.email}. Check your inbox, and your spam folder if it isn't there.`}
+              message={`We've sent a reset link to ${user.email}\u2060. Check your inbox, and your spam folder if it isn't there.`}
             />
             <Text style={styles.note}>You can keep using the app. The link opens in your browser.</Text>
           </>
