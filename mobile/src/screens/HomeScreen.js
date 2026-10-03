@@ -19,7 +19,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
-import { isRouteRegistered, routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
+import { routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
 import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
@@ -89,18 +89,6 @@ function SignedInShell({ user, navigation, route }) {
     if (requestedTab) setActiveTab(requestedTab);
   }, [requestedTab]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
-
-  // An employer's first tab is My postings (2.10), a real screen that draws its own tab bar. Home
-  // forwards there instead of showing placeholder copy: `replace` so Back from My postings leaves the
-  // app rather than returning to a blank shell. Another tab's placeholder still opens this shell.
-  const forwardToPostings =
-    tabBarRole === "employer" &&
-    (requestedTab === undefined || requestedTab === "postings") &&
-    isRouteRegistered(navigation, "PostingList");
-  useEffect(() => {
-    if (forwardToPostings && navigation.isFocused()) navigation.replace("PostingList");
-  }, [forwardToPostings, navigation]);
-  if (forwardToPostings) return <View style={styles.flex} />;
 
   return (
     <View style={styles.flex}>
