@@ -18,8 +18,10 @@ import { colors, spacing, radius, typography } from "../theme/tokens";
  * @param {"select"|"display"} [kind]
  * @param {boolean} [selected] - Select kind only; ignored for Display.
  * @param {() => void} [onPress] - Select kind only.
+ * @param {boolean} [touch] - Select kind only: the 44-tall instance M3's Browse and Filters draw
+ *   (3.1, 3.5 — pad 12/14, selected 10/14, a 44dp touch target) instead of the component's 32.
  */
-export default function Chip({ label, kind = "select", selected = false, onPress }) {
+export default function Chip({ label, kind = "select", selected = false, onPress, touch = false }) {
   if (kind === "display") {
     return (
       <Text style={[styles.base, styles.displayChip]} accessibilityRole="text">
@@ -30,7 +32,11 @@ export default function Chip({ label, kind = "select", selected = false, onPress
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.base, selected ? styles.selectSelected : styles.selectDefault]}
+      style={[
+        styles.base,
+        selected ? styles.selectSelected : styles.selectDefault,
+        touch ? (selected ? styles.touchSelected : styles.touchDefault) : null,
+      ]}
       accessibilityRole="button"
       accessibilityState={{ selected }}
     >
@@ -57,6 +63,14 @@ const styles = StyleSheet.create({
   },
   selectSelected: {
     backgroundColor: colors.brand.primary,
+  },
+  // The 44-tall instances (M3 3.1/3.5): default pad 12 inside its 1px stroke, selected pad 10 around
+  // its larger body-medium label — both come out 44 tall.
+  touchDefault: {
+    paddingVertical: 11,
+  },
+  touchSelected: {
+    paddingVertical: 10,
   },
   displayChip: {
     paddingHorizontal: 13,

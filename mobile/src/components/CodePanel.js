@@ -24,8 +24,21 @@ import CodeInputNumeric from "./CodeInputNumeric";
  * @param {string} [enteredCode] - "enterer" view only.
  * @param {(value: string) => void} [onChangeCode] - "enterer" view only.
  * @param {() => void} [onConfirmPaid] - "paymentGate" view only.
+ * @param {string} [instruction] - "holder"/"enterer" views: the screen's own instruction line
+ *   (each of 5.4/5.4b/5.5a/5.5 words it for its checkpoint). Defaults to the component's text.
+ * @param {string} [error] - "enterer" view: reddens the code boxes. The message itself is the
+ *   screen's Feedback/FieldError beneath the panel (design-system.md §8, first rule), so the
+ *   boxes' own error line stays hidden.
  */
-export default function CodePanel({ view, code, enteredCode, onChangeCode, onConfirmPaid }) {
+export default function CodePanel({
+  view,
+  code,
+  enteredCode,
+  onChangeCode,
+  onConfirmPaid,
+  instruction,
+  error,
+}) {
   return (
     <View style={[styles.card, elevation.card]}>
       {view === "paymentGate" ? (
@@ -42,8 +55,8 @@ export default function CodePanel({ view, code, enteredCode, onChangeCode, onCon
       ) : null}
       {view === "enterer" ? (
         <>
-          <Text style={styles.body}>Enter the code the employer shows you.</Text>
-          <CodeInputNumeric value={enteredCode} onChangeText={onChangeCode} />
+          <Text style={styles.body}>{instruction ?? "Enter the code the employer shows you."}</Text>
+          <CodeInputNumeric value={enteredCode} onChangeText={onChangeCode} error={error || undefined} />
         </>
       ) : null}
       {view === "holder" ? (
@@ -51,7 +64,7 @@ export default function CodePanel({ view, code, enteredCode, onChangeCode, onCon
           <View style={styles.codeBox}>
             <Text style={styles.code}>{code.split("").join(" ")}</Text>
           </View>
-          <Text style={styles.body}>Show this code to the worker when they arrive.</Text>
+          <Text style={styles.body}>{instruction ?? "Show this code to the worker when they arrive."}</Text>
         </>
       ) : null}
     </View>

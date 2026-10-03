@@ -15,8 +15,8 @@
  * contact-reveal/selected-worker surfaces only.
  */
 import { Text, View, StyleSheet } from "react-native";
-import Svg, { Path, Circle } from "react-native-svg";
-import { colors, radius, typography } from "../theme/tokens";
+import Svg, { Path, Circle, Ellipse } from "react-native-svg";
+import { colors, radius, spacing, typography } from "../theme/tokens";
 
 /**
  * @param {"area"|"precisePin"} kind
@@ -33,9 +33,15 @@ export default function MapArea({ kind = "area", areaLabel }) {
       <View style={[styles.gridLine, styles.gridV, { left: "60%" }]} />
       <View style={[styles.gridLine, styles.gridV, { left: "80%" }]} />
       {kind === "area" ? (
-        <View style={styles.areaShape}>
+        <>
+          {/* The shape is a true ellipse (React Native's borderRadius can only draw a pill), and the
+              label is centred across the whole map, not squeezed inside the shape, so a long area
+              name wraps at the map's width as in the frame. */}
+          <Svg width={180} height={110} viewBox="0 0 180 110">
+            <Ellipse cx={90} cy={55} rx={90} ry={55} fill={colors.brand.primary} fillOpacity={0.15} />
+          </Svg>
           <Text style={styles.areaLabel}>{areaLabel}</Text>
-        </View>
+        </>
       ) : (
         // Figma 40:138: the pin is a 24 x 32 path (brand.primary) with an 8px
         // bg/subtle dot, its top 48px down in the 160px map and centred across.
@@ -79,19 +85,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 1,
   },
-  // Figma 40:128 `areaShape`: a 180 x 110 ellipse, centred, black at 15% (the
-  // old 55%/70% sizing and an invented 16% slate overlay only approximated it).
-  areaShape: {
-    width: 180,
-    height: 110,
-    borderRadius: 999,
-    backgroundColor: "rgba(0, 0, 0, 0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  // Figma `areaShape` (40:136): a 180 x 110 ellipse filled color/brand/primary at 15% opacity, centred
+  // (read from the frame's own SVG; an earlier black-at-15% pill only approximated it).
   areaLabel: {
     ...typography.bodyMedium,
     color: colors.text.primary,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    paddingHorizontal: spacing.md,
   },
   pinWrap: {
     position: "absolute",

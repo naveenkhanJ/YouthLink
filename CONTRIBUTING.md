@@ -59,6 +59,10 @@ If you can't name an area you'd plausibly revisit, the work probably belongs on 
 
 **Branch names that predate this convention and are still in use are listed per person in [`docs/workflow/team.json`](docs/workflow/team.json)** (`acceptedBranches`) and are accepted as they are — renaming a branch with unmerged work gains nothing. Branches listed there as `ignoredBranches` are not working branches.
 
+### Demo integration branch
+
+`integration/viva-demo` (listed in `team.json` as `demoBranches`) is the one branch outside this naming scheme. The shared-components owner uses it to bring every member's work together and make each part demonstrable end to end, and may change any module and any shared file there. It is **never merged into `develop` or `main`**, and no pull request is opened from it (`node scripts/pr-check.mjs` refuses). Each member takes what applies to their own module from it — for example `git checkout origin/integration/viva-demo -- <your module's paths>` on their own branch — checks it, and opens their own pull request. Decided by the team on 2026-10-06; see [`docs/decisions.md`](docs/decisions.md).
+
 **The thirteen epics**, matching the modules in [`docs/requirements.md`](docs/requirements.md):
 
 | Module       | Epic                            | Branch segment             |

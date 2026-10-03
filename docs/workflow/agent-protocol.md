@@ -1,6 +1,6 @@
 # Agent protocol
 
-Protocol version 1 · 2026-09-25
+Protocol version 2 · 2026-10-06
 
 **How an AI coding agent works in this repository, from the first message of a chat to the pull request.** Written for any agent: Claude, Codex, Cursor, Windsurf, Copilot, Gemini, or a plain chat. [`AGENTS.md`](../../AGENTS.md) carries the short mandatory core; this is the full procedure it points to.
 
@@ -227,7 +227,7 @@ State the rule and its source in one line, then offer the correct route. Refuse 
 - suggest or use `--no-verify`, or disable the hooks
 - change `backend/prisma/schema.prisma` or migrations (members) — escalate instead
 - add or change a dependency (members) — escalate instead
-- edit another member's module (the one exception: a `fix/<their-epic>-<you>` branch the owner has agreed to), or a shared file (members) — escalate or tell the owner
+- edit another member's module (exceptions: a `fix/<their-epic>-<you>` branch the owner has agreed to, and the shared-components owner's demo integration branch, §8.4), or a shared file (members) — escalate or tell the owner
 - write a secret into a tracked file
 - build what [`requirements.md`](../requirements.md) §5 or [`product-overview.md`](../product-overview.md) §13 excludes
 - invent behaviour a requirement does not specify
@@ -255,6 +255,17 @@ Meanwhile: <the card parked; what you are doing next>
 ```
 
 Where a requirement and a Jira card differ but the requirement is clear, build to the requirement and send the escalation without blocking. When the owner is unavailable, the card stays parked and the escalation is repeated in the next stand-up.
+
+### 8.4 The demo integration branch
+
+A branch listed in `team.json` `demoBranches` (currently `integration/viva-demo`) is where the shared-components owner assembles every member's work so that each member's part can be demonstrated end to end. The team agreed it on 2026-10-06 (`docs/decisions.md`). On that branch only, and only for the shared-components owner:
+
+- any module and any shared file may be changed, including the schema and dependencies; the hooks warn instead of blocking;
+- the work still follows everything else here: the requirements and the prototype are the specification, nothing excluded is built, nothing is invented, and a decision the documents do not settle is put to the developer, not made by the agent;
+- modules no one owns are touched only as far as a member's demonstration needs them;
+- the branch is **never merged into `develop` or `main` and never the base of a pull request** (`pr-check.mjs` refuses it). Each member reads their part from it, carries what they accept to their own branch, and opens their own pull request as usual.
+
+A member's agent working from that branch treats it as reference only: it copies or re-does the changes on the member's own branch, inside the member's own module.
 
 ---
 

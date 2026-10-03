@@ -67,6 +67,9 @@ const DISABLED = {
  * @param {boolean} [loading] - Shows a spinner in place of the label and disables the button; the
  *   button does not change size or move.
  * @param {boolean} [disabled]
+ * @param {boolean} [compact] - Side padding 12 instead of 24, for two buttons sharing a row (M5 5.11's
+ *   "Accept change" / "Can't make it"): at 360 dp each is 160 wide, and a 116 px label does not fit
+ *   inside 24 px of padding on both sides, so it wrapped. Nothing else changes.
  */
 export default function Button({
   title,
@@ -74,6 +77,7 @@ export default function Button({
   style = "primary",
   loading = false,
   disabled = false,
+  compact = false,
 }) {
   const isDisabled = disabled || loading;
   const variant = STYLE_VARIANTS[style];
@@ -99,7 +103,7 @@ export default function Button({
           borderWidth: colorsForState.borderWidth,
           borderColor: colorsForState.border || "transparent",
         },
-        isText ? styles.textVariant : styles.defaultVariant,
+        isText ? styles.textVariant : compact ? styles.compactVariant : styles.defaultVariant,
         pressed && !isDisabled && styles.pressed,
       ]}
     >
@@ -118,13 +122,20 @@ export default function Button({
 
 const styles = StyleSheet.create({
   button: {
-    height: 48,
+    // 48 at normal text (24-high label + 12 above and below), but it grows when a long label has to
+    // wrap at large text sizes instead of clipping the second line (found on the emulator at font
+    // scale 2.0: "Send cancellation request" lost its second line in a fixed 48).
+    minHeight: 48,
+    paddingVertical: spacing.md,
     borderRadius: radius.input,
     alignItems: "center",
     justifyContent: "center",
   },
   defaultVariant: {
     paddingHorizontal: spacing.xl,
+  },
+  compactVariant: {
+    paddingHorizontal: spacing.md,
   },
   textVariant: {
     paddingHorizontal: spacing.sm,
@@ -146,5 +157,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.bodyMedium,
+    // A label that has to wrap (large text) stays centred instead of hugging the left edge.
+    textAlign: "center",
   },
 });

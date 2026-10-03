@@ -55,12 +55,21 @@ export default function ProfileTrustBlock({
         <>
           <StarsDisplay average={ratingAverage} count={ratingCount} />
           <Text style={styles.subtext}>
-            {subtext ?? `${completionRate}% completion · ${jobCount} job${jobCount === 1 ? "" : "s"}`}
+            {subtext ?? historySubtext(completionRate, jobCount)}
           </Text>
         </>
       )}
     </View>
   );
+}
+
+/**
+ * "92% completion · 12 jobs" (1.18). With no completion record yet (completionRate null) only the
+ * job count is shown, rather than "null% completion".
+ */
+function historySubtext(completionRate, jobCount) {
+  const jobs = `${jobCount ?? 0} job${jobCount === 1 ? "" : "s"}`;
+  return completionRate == null ? jobs : `${completionRate}% completion · ${jobs}`;
 }
 
 const styles = StyleSheet.create({
