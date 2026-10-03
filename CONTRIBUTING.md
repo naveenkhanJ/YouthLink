@@ -2,78 +2,218 @@
 
 How we branch, commit, review, and decide something is finished. Read this before your first pull request.
 
-**Related documents:** [`README.md`](README.md) covers stack and local setup · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every branch name and commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against.
+**Related documents:** [`README.md`](README.md) covers stack, repository layout and local setup · [`backend/src/README.md`](backend/src/README.md) and [`mobile/src/README.md`](mobile/src/README.md) explain how each surface is organised — read yours before your first commit · [`docs/requirements.md`](docs/requirements.md) is the requirements baseline every commit references · [`docs/module-ownership.md`](docs/module-ownership.md) says who owns which module · [`docs/database-schema.md`](docs/database-schema.md) is the schema everyone builds against · [`docs/prototype/`](docs/prototype/README.md) is the interface specification · [`docs/workflow/agent-protocol.md`](docs/workflow/agent-protocol.md) is how AI agents work here.
 
 ---
 
 ## Branching model
 
-Two long-lived branches.
+Two permanent branches.
 
 | Branch    | Purpose                                                                                                                          |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `main`    | Updated **only at sprint boundaries**, after the team has verified the demo actually works. It should never show a broken state. |
 | `develop` | The active integration branch. All work branches off it and merges back into it.                                                 |
 
-Everything else is a short-lived branch off `develop`.
+Everything else branches off `develop` and merges back into it. Epic branches are long-lived too — see below — but unlike these two they don't last the whole project.
 
 **Never commit directly to `main` or `develop`.** Both are integration branches — work reaches them through a pull request, never through a local commit pushed straight up.
 
 ### Branch naming
 
 ```
-<type>/<surface>/<fr-id>-<short-description>-<yourname>
+<type>/<epic>-<yourname>                    # work on an epic
+<type>/shared-<area>-<yourname>             # work outside any epic
 ```
 
 ```
-feature/backend/fr-post-01-posting-endpoint-naveenkhan
-feature/mobile/fr-disc-01-radius-browse-lahiru
-fix/dashboard/fr-dash-03-case-queue-sort-afham
+feature/account-management-afham
+feature/gig-posting-lahiru
+feature/discovery-search-pawan
+feature/applying-selection-naveenkhan
+
+chore/shared-tooling-afham
+docs/shared-documentation-afham
 ```
 
-| Segment    | Values                                                               |
-| ---------- | -------------------------------------------------------------------- |
-| `type`     | `feature`, `fix`, `chore`, `refactor`, `docs`, `test`                |
-| `surface`  | `backend`, `mobile`, `dashboard`, `shared`                           |
-| `fr-id`    | The requirement this work implements, lowercased — e.g. `fr-post-01` |
-| `yourname` | **Always included**, not only when it would otherwise clash          |
+| Segment    | Values                                                                               |
+| ---------- | ------------------------------------------------------------------------------------ |
+| `type`     | `feature`, `fix`, `chore`, `refactor`, `docs`, `test` — spelled out, never shortened |
+| `epic`     | The epic your card belongs to, written out in full. See the table below              |
+| `area`     | **Only for `shared` branches.** The lasting area of work, not a single change        |
+| `yourname` | **Always included**, not only when it would otherwise clash                          |
 
-Two segments earn their place. **`surface`** means two people can build the backend and mobile halves of the same requirement in parallel without colliding. **`fr-id`** makes "where is FR-POST-01 implemented?" answerable with a single `git branch --all | grep fr-post-01` instead of archaeology.
+**The middle of a branch name names a lasting area of work, never a single change.** Every branch here is long-lived and gets reused, so a name that describes one change is spent the moment that change merges.
 
-Your name is always included rather than only when ambiguous — one unconditional rule is easier to follow than a conditional one.
+For epic work the epic name already does the job — `feature/account-management-afham` is complete on its own, and adding more is wrong: `feature/account-management-registration-afham` names one piece of an epic the branch will cover for the whole project.
 
-> **Watch the one asymmetry:** branches use `feature/…`, commits use `feat(…)`. They're different conventions that happen to sit next to each other — Conventional Commits specifies `feat`, and the branch prefix reads better in full.
+For work outside any epic, `shared` describes nothing by itself, so an area is required — but it must be an area you'll return to, not today's task:
+
+| Good — you'll come back to it     | Bad — spent after one merge             |
+| --------------------------------- | --------------------------------------- |
+| `docs/shared-documentation-afham` | `docs/shared-fix-readme-typo-afham`     |
+| `chore/shared-tooling-lahiru`     | `chore/shared-add-gitignore-lahiru`     |
+| `chore/shared-ci-pawan`           | `chore/shared-conventions-update-pawan` |
+
+If you can't name an area you'd plausibly revisit, the work probably belongs on an epic branch instead.
+
+**Branch names that predate this convention and are still in use are listed per person in [`docs/workflow/team.json`](docs/workflow/team.json)** (`acceptedBranches`) and are accepted as they are — renaming a branch with unmerged work gains nothing. Branches listed there as `ignoredBranches` are not working branches.
+
+### Demo integration branch
+
+`integration/viva-demo` (listed in `team.json` as `demoBranches`) is the one branch outside this naming scheme. The shared-components owner uses it to bring every member's work together and make each part demonstrable end to end, and may change any module and any shared file there. It is **never merged into `develop` or `main`**, and no pull request is opened from it (`node scripts/pr-check.mjs` refuses). Each member takes what applies to their own module from it — for example `git checkout origin/integration/viva-demo -- <your module's paths>` on their own branch — checks it, and opens their own pull request. Decided by the team on 2026-10-06; see [`docs/decisions.md`](docs/decisions.md).
+
+**The thirteen epics**, matching the modules in [`docs/requirements.md`](docs/requirements.md):
+
+| Module       | Epic                            | Branch segment             |
+| ------------ | ------------------------------- | -------------------------- |
+| `FR-ACC`     | Account Management              | `account-management`       |
+| `FR-PROF`    | Profile & Trust Signals         | `profile-trust-signals`    |
+| `FR-POST`    | Gig Posting                     | `gig-posting`              |
+| `FR-DISC`    | Discovery & Search              | `discovery-search`         |
+| `FR-APPLY`   | Applying & Selection            | `applying-selection`       |
+| `FR-ENG`     | Engagement Lifecycle            | `engagement-lifecycle`     |
+| `FR-RATE`    | Ratings & Reputation            | `ratings-reputation`       |
+| `FR-ENDORSE` | Community Endorsement           | `community-endorsement`    |
+| `FR-DISPUTE` | Disputes & Reporting            | `disputes-reporting`       |
+| `FR-MOD`     | Moderator Functions             | `moderator-functions`      |
+| `FR-ADM`     | Admin Functions                 | `admin-functions`          |
+| `FR-DASH`    | Shared Dashboard Infrastructure | `dashboard-infrastructure` |
+| `FR-NOTIF`   | Notifications                   | `notifications`            |
+| —            | Anything outside an epic        | `shared-<area>`            |
+
+**One branch per epic, per developer — and it stays alive.** Sprint 1 gives you some of your epic's cards, Sprint 2 or 3 may give you more. You return to the same branch rather than creating a new one. Because slices are assigned so that no two people hold the same epic in a sprint, and because your name is in the branch anyway, collisions don't arise.
+
+This is a deliberate choice to keep the rule trivial: **the epic is written on your card, so there is never a judgement call about what to name a branch or which cards belong together.**
+
+**Three things follow from branches being long-lived.**
+
+**Do not delete the branch after a pull request merges.** GitHub offers a "Delete branch" button on the merged PR — don't press it. You will come back to this branch.
+
+**Pull `develop` into your branch regularly**, at least whenever someone else merges:
+
+```
+git fetch
+git checkout feature/account-management-afham
+git merge origin/develop
+```
+
+Merge `origin/develop`, not your local `develop`: the local copy only moves when you pull it, so merging it can quietly miss everyone's latest work.
+
+A branch that lives for weeks drifts from `develop`, and the longer you leave it the more painful the eventual merge. Merging `develop` in early and often keeps each one small.
+
+**Open several pull requests from the same branch over time.** A branch is not one pull request. When a coherent chunk of your epic is finished and working, open a PR, get it reviewed, merge it, and carry on committing to the same branch. This matters: the Definition of Done requires work to be merged into `develop`, so a card cannot be Done while it sits unmerged. Merging a few times per sprint is what lets cards close as you finish them instead of all at once at the end.
+
+**A `feature/` branch holds fixes to its own epic too.** Don't open `fix/account-management-afham` alongside it — the type reflects what the branch is for, not what every commit does. Use `fix/` only for a correction outside your own epic work — a bug in someone else's epic goes on `fix/<their-epic>-<yourname>`, which your name keeps distinct from their branch, **once the owner has agreed to it** (usually it's simpler to tell them and let them fix it). Shared files — anything outside every module — are changed by the shared-components owner, so a repo-wide fix is something to raise with them rather than a branch of your own.
+
+> **Watch the one asymmetry:** branches spell the type out — `feature/…` — while commits use the Conventional Commits abbreviation, `feat(…)`. Two conventions sitting next to each other, deliberately kept as they read best in each place.
 
 ---
 
 ## Commit messages
 
-[Conventional Commits](https://www.conventionalcommits.org/), with the requirement ID appended:
+[Conventional Commits](https://www.conventionalcommits.org/), with the requirement IDs appended:
 
 ```
-<type>(<surface>): <description> [<FR-ID>]
+<type>(<surface>): <description> [<FR-ID>, <FR-ID>]
 ```
 
 ```
 feat(backend): add posting creation endpoint [FR-POST-01]
+feat(backend): add NIC storage and duplicate checks [FR-ACC-04, FR-ACC-05]
 fix(mobile): correct radius auto-expansion step size [FR-DISC-01]
 refactor(shared): extract OTP validation helper [FR-ACC-08]
 chore(backend): add prisma seed script
 ```
 
+**`surface` lives here, not in the branch name.** Branches are named by epic; the commit's scope segment is what tells you which surface a change touched when you scan `git log`. Values: `backend`, `mobile`, `dashboard`, and `shared` — for a commit that spans more than one surface, or touches none of the three (documentation, tooling).
+
+**List every requirement the commit touches**, comma-separated. Several requirements are validation rules living inside another requirement's flow — the age gate, NIC handling, duplicate prevention and ToS acceptance all sit inside registration — so one commit legitimately closes several cards.
+
+**The commit message is where traceability lives.** `git log --grep "FR-ACC-03"` searches commit messages, not branch names, so this is the layer that answers "where is this implemented?" It is the one part of the convention that must not be skipped.
+
 **Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `chore`, `revert`.
 
 Drop the `[FR-ID]` tag when a commit genuinely has no requirement behind it — tooling setup, dependency bumps, config. Don't invent a tenuous link just to satisfy the format.
+
+### When to write a body
+
+Conventional Commits allows an optional body after the subject, separated by a blank line:
+
+```
+<type>(<surface>): <description> [<FR-ID>]
+
+Body explaining why, wrapped at around 72 characters.
+```
+
+Most commits don't need one. If the subject and the diff together tell the whole story, stop at the subject.
+
+Write a body when the **why** isn't visible in the diff:
+
+- A decision or trade-off you'd otherwise have to explain in review
+- A workaround, and what it works around
+- Something that looks wrong but is deliberate
+- A reason that lives outside the code — a requirement, a tool's behaviour, an external constraint
+
+_"Fix login redirect"_ needs no body. _"Anchor the stalled-engagement timer to start time"_ does — nothing in the diff explains that no end time is collected anywhere in the posting flow.
+
+In GitHub Desktop, the field below **Summary** is the body.
 
 ---
 
 ## Pull requests and merging
 
-**Every feature branch goes to `develop` through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
+**Work reaches `develop` only through a pull request**, and at least one teammate reviews it before it merges. The review doesn't need to be exhaustive — a second pair of eyes catching an obvious problem is the point.
+
+**A branch produces several pull requests over its life**, not one. Because epic branches stay alive across sprints, you open a PR each time a coherent chunk is finished and working, then keep committing to the same branch afterwards.
+
+**Check the base branch before you click Create.** GitHub shows `base: … ← compare: your-branch` at the top of the PR page. The repository default is `main`, so that dropdown pre-selects `main` — change it to `develop`. A feature branch merged into `main` breaks the sprint-boundary rule below, and it's an easy click to miss.
 
 **Use regular merge commits. Never squash.** Squashing collapses a branch's commits into one, which erases the individual per-author history along the way. That history is the record of who actually built what, and it can't be reconstructed afterwards. This applies at both levels: `feature → develop` and `develop → main`.
 
 **`develop → main` happens at sprint boundaries**, once the team has confirmed the increment demos correctly. Treat it as a deliberate step rather than a routine merge.
+
+### Writing the pull request
+
+**Title: same format as a commit subject** — `<type>(<surface>): <description> [<FR-ID>, …]`, listing the requirements the PR implements. GitHub puts the PR title into the merge commit, so a good one keeps `develop`'s history readable. The auto-filled branch name does not.
+
+**Description: three things, briefly.**
+
+- **What and why** — one or two sentences. Link the FR IDs it implements.
+- **How to check it** — the command to run, the screen to open, the endpoint to hit.
+- **Anything to watch** — a deliberate trade-off, something that looks odd but isn't, a follow-up you've left for later.
+
+If a PR needs more explanation than that, it's probably too big — consider splitting it.
+
+---
+
+## Local checks
+
+The repository has no server-side branch protection, so these run on your machine instead. **They are installed automatically by `npm install` in any of `backend/`, `mobile/` or `dashboard/`** (the `prepare` script runs [`scripts/install-hooks.mjs`](scripts/install-hooks.mjs), which sets `core.hooksPath` to `.githooks`). To install or check by hand:
+
+```bash
+node scripts/install-hooks.mjs
+git config --get core.hooksPath      # → .githooks
+```
+
+| Hook | Blocks |
+| --- | --- |
+| `commit-msg` | a subject that doesn't follow the commit format above; `fixup!`/`squash!` commits |
+| `pre-commit` | committing on `develop` or `main`, on an off-convention branch or someone else's; an address not in `team.json`; secrets and local-only files; files in another member's module; and, for members, the schema, migrations, dependency files and shared files — those go through the shared-components owner |
+| `pre-push` | pushing to `develop` or `main`, deleting a remote branch, force-pushing over history already on the remote |
+
+Merging `develop` into your branch is always allowed — files taken unchanged from either side aren't yours to own; anything you edit while resolving the merge is checked as usual. So is restoring your own earlier edit of a shared file to `develop`'s version. `git cherry-pick` doesn't run `pre-commit` (a git limitation), so `pr-check` is what catches a cherry-picked mistake. The hooks are Node scripts behind a small shell wrapper, so they behave the same on Windows (including GitHub Desktop), macOS and Linux; if Node isn't on the PATH the hook warns and lets the commit through. **They can be skipped with `--no-verify`. Don't:** they are what stands between a slip and `develop`'s history.
+
+Four scripts, all read-only apart from `git fetch` (and `state-report --save`, which writes one file into your git-ignored `.worklog/state/`):
+
+| Script | What it's for |
+| --- | --- |
+| `node scripts/state-report.mjs` | What the code in your modules actually contains — on your branch and on `develop` — plus unmerged work on your remote branches and what changed on `develop` since you last looked. `--save` keeps a copy in your `.worklog/state/` |
+| `node scripts/card-context.mjs FR-POST-04` | One requirement verbatim, with its prototype screens, design-system components and schema models |
+| `node scripts/pr-check.mjs` | A reviewer's checks on your branch before you open a pull request, and the PR skeleton |
+| `node scripts/check-docs.mjs` | Links, the agent core block, the protocol version and `team.json` stay consistent (run by `pr-check` when docs change) |
+
+**Working with an AI agent:** every tool the team uses is pointed at [`AGENTS.md`](AGENTS.md) and [`docs/workflow/agent-protocol.md`](docs/workflow/agent-protocol.md). If yours doesn't load `AGENTS.md` by itself, paste [`docs/workflow/session-start.md`](docs/workflow/session-start.md) as the first message of every chat.
 
 ---
 
@@ -87,6 +227,8 @@ git config user.email  "the-email-on-your-github-account"
 ```
 
 If the email doesn't match a verified address on your GitHub account, your commits won't be attributed to you — they'll show as an unlinked author, and no amount of correct branch naming fixes that afterwards.
+
+The addresses each of us commits under are listed in [`docs/workflow/team.json`](docs/workflow/team.json); the local hooks block a commit from an address that isn't there, because it may not be credited to you. [`.mailmap`](.mailmap) folds each person's name and address variants into one line for `git shortlog` — locally only; GitHub attribution still depends on the address being verified on your account.
 
 You can check what the history currently shows:
 
@@ -107,9 +249,13 @@ A story is Done when **all** of the following hold:
 2. **It's merged into `develop`** — not sitting on your machine, not waiting in an unmerged pull request.
 3. **It runs end to end in the actual app** — not verified in isolation, not only through Postman or a unit test.
 4. **It has no known critical or blocking bugs.**
-5. **For UI work, it functionally matches the relevant wireframe.** Functionally, not pixel-perfect — the flow and elements should be right, the visual polish doesn't have to be.
+5. **For UI work, it matches the prototype specification exactly** — the screens [`docs/prototype/`](docs/prototype/README.md) maps to the requirement, and every drawn state: the named design tokens (no raw colours or ad-hoc sizes), the named components and variants, the exact copy, the element order and layout, and the composed states [`design-system.md`](docs/prototype/design-system.md) §8 says to build. Pixel figures are what the prototype renders — rebuild from its layout properties, then compare. Changed 2026-09-25 from "functionally matches the wireframe": the prototype now specifies every screen completely, so there is nothing left to approximate.
 6. **It's committed with a descriptive message**, per the format above.
 7. **If it changed the database schema, every affected teammate was told first** — see below.
+
+**How clause 3 is recorded while not everyone can build the app yet.** Each pull request and progress entry states the end-to-end level honestly: **self** (you ran it on your own device or emulator), **integration** (it was run on the shared development build or a teammate's working setup), or **pending** (not run yet, and why). Pending doesn't stop you opening the pull request or starting the next card; the card moves to Done once it has been run at either of the other two levels. The clause itself is unchanged — this only makes its state visible instead of blocking work on it.
+
+**Jira status before the merge.** A member can explicitly ask their agent to move a card to Done in Jira before its pull request is merged. That waives the Jira move's wait for clause 2 only; clause 2 itself is still unmet until the merge, and clauses 1 and 3–7 must all hold before the card moves.
 
 **Automated test coverage is deliberately not part of this.** That's a conscious scope decision for this stage, not an oversight. Point 3 — actually running the thing end to end — is doing that job for now.
 
@@ -138,15 +284,25 @@ Points estimate relative effort and uncertainty, not hours. Current per-story es
 ## Quick reference
 
 ```bash
-# start work
+# first time on your epic — create the branch
 git checkout develop && git pull
-git checkout -b feature/backend/fr-post-01-posting-endpoint-yourname
+git checkout -b feature/gig-posting-yourname
+
+# every time after that — the branch already exists, just go back to it
+git checkout feature/gig-posting-yourname
+git fetch                         # then:
+git merge origin/develop          # stay current with everyone else's merges
 
 # commit
 git commit -m "feat(backend): add posting creation endpoint [FR-POST-01]"
 
 # open a PR into develop, get one review, merge with a merge commit (not squash)
+# DO NOT delete the branch after merging — you will come back to it
 
 # check your commits are attributed to you
 git shortlog -sn develop
+
+# before starting work, and before a pull request
+node scripts/state-report.mjs
+node scripts/pr-check.mjs
 ```

@@ -45,10 +45,10 @@ Everything is collected in one sitting (`FR-ACC-01`). There is no partial-save.
 | Field                | Rule                                                                                                                |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Role                 | One of the three consumer actors, chosen at signup                                                                  |
-| Phone number         | Verified by a 6-digit OTP, valid 5 minutes (`FR-ACC-08`)                                                            |
-| Password             | Hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`)                   |
+| Phone number         | Verified by a 6-digit OTP delivered through Firebase Phone Authentication (`FR-ACC-08`)                             |
+| Password             | 8–64 characters, any Unicode, no composition rules (amended 2026-08-27); hashed with bcrypt or argon2, never plaintext or reversibly encrypted (`FR-ACC-09`, `NFR-SEC-01`) |
 | Email                | **Optional.** If given, verified once by a confirmation link. Registration isn't blocked if the link goes unclicked |
-| NIC number           | Required. Stored as entered, **never verified** and never parsed — including for age (`FR-ACC-04`)                  |
+| NIC number           | Required. Format-validated (12 digits, or 9 + V/X), stored normalised, **never verified** and never parsed — including for age (`FR-ACC-04`, amended 2026-08-27) |
 | Birthdate            | Self-declared. Used solely for the 18+ gate                                                                         |
 | Full legal name      | Required, 100 characters. Not a username or handle                                                                  |
 | ToS / Privacy Policy | Single required checkbox, blocks registration until checked (`FR-ACC-19`)                                           |
@@ -63,9 +63,15 @@ The NIC is collected but never checked against anything. Accordingly, **no badge
 
 ### Logging in
 
-Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP. Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
+Two **fully independent** paths (`FR-ACC-07`): phone + password, or phone + a freshly requested OTP (delivered through Firebase Phone Authentication). Neither is a fallback for the other. This matters because the two failure modes — a forgotten password and an SMS delivery problem — are largely uncorrelated, so keeping both first-class is what actually buys resilience. Don't implement one as a degraded path off the other.
 
-Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock.
+Five consecutive failed password attempts locks the password path for 15 minutes (`NFR-SEC-02`). The OTP path is unaffected by that lock — and **the lockout message says so** (amended 2026-09-16, E7), because a lock that names no way out is a wall rather than a recoverable error. Remaining attempts are shown before the threshold is reached, not only once it has been (E6).
+
+**When neither channel works at all** (amended 2026-09-16, E8), there is now a route back rather than a named limitation. A person with no reachable phone and no verified email can submit their NIC, legal name and birthdate from the app; an **Admin** — never a Moderator — checks those against the account record alongside its engagement and rating history, and approves or rejects. This exists because the account is not just a login: it holds ratings, completion history and endorsements, which are the whole of what the product is worth to a job-seeker. Losing a SIM should not destroy a reputation someone spent months earning.
+
+**The outcome comes back only to the device that asked**, and that is deliberate rather than incidental. Both notification channels are unreachable by the definition of this path; the person is not signed in, so a notice attached to the account would assume the answer the Admin has not yet given; and anything pushed to the account would confirm to whoever filled in the form that an account with those details exists. Nothing identifying is shown to the requester at any point, and the approval unlocks a password reset on that device alone.
+
+**A smaller trap was closed at the same time** (E5). Changing a phone number requires the password; resetting the password sends an OTP to the phone. Someone who had lost their phone and forgotten their password could do neither — and losing the phone is the commonest reason to need a new number. A logged-in user with a verified email can now reset through that channel.
 
 Multiple simultaneous logins are allowed with no session-invalidation logic. A user may be signed in on several devices at once.
 
@@ -89,11 +95,13 @@ Two details that are easy to implement wrongly:
 
 **If neither phone nor a verified email is reachable, self-service password reset is a genuine dead end.** This is a named limitation, not something quietly handled. Don't build an automated workaround.
 
-All of the above lives on **one Settings screen** (`FR-ACC-18`), together with notification preferences and account deletion — not scattered across separate places.
+All of the above lives on **one Settings screen** (`FR-ACC-18`), together with notification preferences, **logout** (added 2026-08-27 — client-side token discard; other devices unaffected), and account deletion — not scattered across separate places.
 
 ### Abandoned signups
 
-Phone uniqueness only finalises once a complete account exists. A signup that verifies a phone number then stops expires after 24 hours, releasing that number (`FR-ACC-06`). Without this, an abandoned attempt would lock a real person's number forever.
+Registration is a single atomic submission (`FR-ACC-01`): the phone is verified through Firebase on the device, then every field is submitted together and one complete account is created. **Because nothing is persisted before that, there is no such thing as a half-finished signup holding a phone number hostage.**
+
+This was not always the design. Signup was originally staged, with phone verification persisted first — which is why `FR-ACC-06`, `PENDING_SIGNUP` and the partial index on phone still exist. See [`decisions.md`](decisions.md).
 
 ### Deleting an account
 
@@ -109,7 +117,7 @@ One account per NIC, one per verified phone, one per verified email (`FR-ACC-05`
 
 A profile is visible **only in the context of a specific interaction** (`FR-PROF-05`) — an applicant's profile while an employer reviews applications, an employer's profile while a worker views their listing. There is deliberately **no browsable directory of users**, because one would enable targeted harassment for no functional gain.
 
-A profile shows: legal name (`FR-PROF-01`), verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
+A profile shows: legal name (`FR-PROF-01`) — for a Business employer, its business name, with the legal name kept on the account (amended 2026-09-24) — verification badges (`FR-PROF-02`), the free-text bio (300 chars, `FR-PROF-03`), and trust signals — average rating and completion rate where history exists, or "New to YouthLink" plus an endorsement badge if endorsed (`FR-PROF-06`).
 
 The bio does double duty: it **pre-fills the note on every application** the worker submits, editable per application without changing the stored bio (`FR-PROF-04`). Both caps are 300 characters precisely so the bio can never overflow the note it populates.
 
@@ -156,7 +164,7 @@ Pay is always stated — there are no "negotiable" postings. Currency is always 
 
 ### What the system computes, and the employer cannot set
 
-**Urgency** (`FR-POST-07`) is derived purely from whether the start time falls within 24–48 hours of posting. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
+**Urgency** (`FR-POST-07`) is derived purely from whether the start time is 48 hours away or less, with no lower bound. There is no employer-facing toggle, and there must never be one — a self-declared urgency flag would be gamed for visibility until it meant nothing. Urgency is recomputed whenever the start time is edited (`FR-ENG-10`).
 
 **Public location precision** (`FR-POST-08`). The precise address is stored but never shown publicly. Browsing and applying workers see a coarse, suburb-level area on a map. Full precision is released only to a worker who has actually been selected, and only to them.
 
@@ -173,15 +181,29 @@ Lifecycle:
 | **Open**      | Filled slots < workers needed; still accepting applications        |
 | **Filled**    | Every slot has a selected worker; no longer accepting applications |
 | **Withdrawn** | Employer closed it before any slot filled (`FR-POST-12`)           |
-| **Expired**   | 30 days elapsed with zero filled slots (`FR-POST-13`)              |
+| **Expired**   | Its closing date passed while still Open (`FR-POST-13`)            |
 
 Status is computed from the fill count, not set manually (`FR-POST-18`). If a filled slot's Engagement is later cancelled or ended early, **that one slot reopens** and the posting returns to Open for it — every other Engagement on the posting is untouched.
+
+### Every way a posting closes, and what it does to applicants
+
+Amended 2026-08-27, and worth understanding as one mechanism rather than four separate rules.
+
+**Every posting has a closing date** (`FR-POST-13`). For a one-off **Gig** it is the posting's own start date/time — work that has begun cannot be applied to. For a **Part-time job** or **Internship**, whose start date opens an ongoing arrangement rather than setting a deadline, it is 30 days after posting. Expiry applies **regardless of how many slots have filled**; a partially-filled posting that expires closes only its unfilled slots, leaving every existing Engagement running.
+
+**Whichever way a posting closes, its Pending applicants are resolved** (`FR-APPLY-09`) — set to Not selected and notified. That holds for all three routes: Filled, expired, and withdrawn.
+
+Together those two rules are what make `FR-APPLY-12`'s promise real: no application can sit Pending forever, because its posting must close and closing resolves it.
+
+**The bug this replaced is worth knowing, because the old shape is the intuitive one.** Previously `FR-APPLY-09` fired only on Filled, expiry required _zero_ filled slots, and Withdraw was unavailable once any slot filled. A multi-slot posting that filled one slot and stalled therefore matched none of the three and its remaining applicants waited indefinitely — and since complete fill is the least likely outcome, most applications had no defined end at all. Don't reintroduce the Filled-only trigger.
 
 **Admin-removed postings** (`FR-ADM-05`) also take the Withdrawn state. The requirements don't name a status for removal; this is an implementation choice, made so the dashboard keeps filtering on four states rather than five. What distinguishes an Admin removal from an employer's own withdrawal is the audit-log entry, not the posting row — see [`database-schema.md`](database-schema.md).
 
 Fill status displays plainly throughout — "2 of 3 filled" (`FR-POST-14`).
 
 **Editing** (`FR-POST-11`): unrestricted before any slot fills. After a slot fills, a _material_ change requires the affected worker's re-confirmation; a _minor_ change doesn't. See §6.
+
+**Stopping hiring after a slot fills** (`FR-POST-12`, amended 2026-09-23): Withdraw is gone once any slot fills. To take no one else, the employer lowers workers needed to the number already filled — the posting becomes Filled, the remaining applicants are resolved, and the engaged worker re-confirms, because crew size is a material change. Ending a committed worker's engagement is a cancellation, never a side effect of closing the posting.
 
 **No drafts.** A posting is completed in one sitting or not submitted (`FR-POST-15`).
 
@@ -192,6 +214,8 @@ Fill status displays plainly throughout — "2 of 3 filled" (`FR-POST-14`).
 ## 5. Finding work
 
 **Radius browsing** (`FR-DISC-01`) starts at 5km and auto-expands in 5km steps up to 50km if fewer than 5 results come back. The expansion presents as one continuous loading operation, not a visible sequence of separate waits (`NFR-PERF-03`).
+
+**Pay is shown on every browse result** (`FR-DISC-01`, added 2026-08-27), not only inside the opened listing. Inadequate pay was the single most-selected challenge among youth respondents in the user research — 71%, ahead of every scam-related concern — so the most common reason for rejecting a listing was previously only discoverable by opening it. The figure and its basis both appear, since "5,000" means nothing without knowing whether that is per day or for the whole job.
 
 **Location permission can be denied**, so a manual area/city selector is required, not optional (`FR-DISC-02`).
 
@@ -239,9 +263,19 @@ An employer can select multiple applicants across one or more sessions, up to th
 
 Selection triggers **contact reveal** (`FR-APPLY-07`), which is bidirectional: both phone numbers become mutually visible, since both parties need to coordinate arrival and payment. The precise address becomes visible to that one selected worker alone. On a multi-slot posting, reveal happens per Engagement at each worker's own selection moment — not once for everyone.
 
-An employer may **decline** an applicant explicitly at any point, even with slots still open, which notifies them immediately (`FR-APPLY-08`). Any applicant still Pending when the posting reaches Filled gets an automatic not-selected notification (`FR-APPLY-09`). No reason or feedback is attached to a decline.
+An employer may **decline** an applicant explicitly at any point, even with slots still open, which notifies them immediately (`FR-APPLY-08`). Any applicant still Pending when the posting closes — Filled, expired, or withdrawn — is automatically set to Not selected and notified (`FR-APPLY-09`); see "Every way a posting closes" in §4. No reason or feedback is attached to a decline.
 
 If the employer makes a material change while applications are still Pending, those applicants are notified so they can withdraw if the new terms don't suit (`FR-APPLY-10`).
+
+### The worker's own application list
+
+Added 2026-08-27 (`FR-APPLY-12`). A job-seeker can see every application they have submitted, each with its current state — Pending, Selected, Declined, Not selected, or Withdrawn — and for anything still Pending, the date its posting expires, which is the latest point that application must reach an outcome. Multi-slot postings also show fill status (`FR-POST-14`), since that affects realistic chances.
+
+**Every application reaches a definite end.** That holds because a posting closing — by any route — now resolves its applicants (`FR-APPLY-09`), and because every posting has a closing date (`FR-POST-13`). See "Every way a posting closes" below for how those two combine; the guarantee depends on both, and reading this screen's design without them makes it look like an unbacked promise.
+
+This came directly from the user research, where the defining job-seeker experience was submitting applications at volume and receiving almost nothing back — not even rejections.
+
+Note what this deliberately does **not** include: there is no "viewed" or "shortlisted" state. Neither has an employer action behind it in this system, so both would be signals inferred from nothing — worse than silence, because they look like information.
 
 ### The Engagement is the unit of work
 
@@ -263,21 +297,25 @@ The holder deliberately **flips** at the payment step. The party best positioned
 
 This confirms payment _occurred_, not that the _amount_ was right — the stated pay figure is the reference point for an amount dispute. And it's cooperative, so it's not bulletproof: either party can refuse to share or enter a code. That's what the fallback is for.
 
+The checkpoints run **in order** — completion can only be entered once arrival is confirmed, and payment once completion is — and each Engagement has **one** set of three codes, including a part-time one, whose arrival checkpoint is its first session (`FR-ENG-01`, amended 2026-09-24).
+
 **"Unable to confirm"** is available at any checkpoint and routes into dispute resolution rather than leaving the engagement stuck (`FR-ENG-03`).
 
 ### Cancelling before work starts
 
-**Regular engagements** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A cancellation inside 24 hours of start is classified **Late**.
+Which rule applies is decided **at the moment of cancelling**, by how far away the start is then — not by how the posting was labelled when it was published (`FR-ENG-05/06`, amended 2026-09-24).
 
-**Urgent engagements** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. Late threshold scales down to 6 hours.
+**More than 48 hours to the start** (`FR-ENG-05`): cancellation is a _request_ to the other party, not a unilateral action. It requires a reason from a fixed list — schedule conflict, details no longer suitable, found other work, personal or family emergency, other. The other party has **48 hours** to accept or reject; no response auto-resolves against whoever didn't respond. A request made this far ahead is never Late.
+
+**48 hours or less to the start** (`FR-ENG-06`): immediate effect, **no approval window** — a 48-hour window is meaningless on a gig starting in 24. Still requires a reason. It is **Late** within 6 hours of the start — or within 24 hours, if the engagement was agreed more than 48 hours ahead.
 
 Late cancellations weigh more heavily against the completion-rate stat than early ones (`FR-ENG-07`).
 
-Cancellation is scoped to one Engagement: it reopens that one slot and leaves every other Engagement untouched (`FR-ENG-08`).
+Cancellation is scoped to one Engagement: it reopens that one slot and leaves every other Engagement untouched (`FR-ENG-08`). The responding party is **notified when a request arrives** — their 48-hour window runs from a request they have actually been told about — and the requester is notified of the outcome (`FR-NOTIF-05`, amended 2026-08-27).
 
 ### Changing an engagement's terms
 
-**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation**; if they don't accept, that Engagement routes into the cancellation flow (`FR-ENG-09`).
+**Material** — pay, start date/time, location, workers needed, or task category. Requires the selected worker's **active re-confirmation within 48 hours or half the time left before the start, whichever is shorter** (48 hours fixed 2026-08-27; capped 2026-09-23, because urgent gigs start sooner than 48 hours); if they don't accept by the window's close — or say they can't make it, which cancels at once — that Engagement is cancelled as the employer's change (`FR-ENG-09`), without counting against the worker's completion rate, and either party may still rate it. No material change is allowed in the last 2 hours before the start, and a posting can't be edited again while a re-confirmation is pending.
 
 **Minor** — title or description text only. No re-confirmation; nothing the worker committed to has changed.
 
@@ -291,7 +329,7 @@ The sequence: End Engagement → "did something go wrong?" → **yes** opens a d
 
 ### Stalled engagements
 
-For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
+For **one-off Gigs only** (`FR-ENG-13`, `NFR-REL-01`): if the completion checkpoint is still unresolved 24 hours after the posting's start time, both parties get an automatic "Did this happen?" prompt. It offers two things: dismiss it (still running — nothing changes), or go to the earliest unresolved checkpoint, where the code can still be entered or "unable to confirm" opens a dispute. After a further 7 days of total silence, the engagement is auto-flagged to Admin.
 
 The trigger is anchored to **start** time because no end time or duration is collected anywhere in the posting flow. The accepted trade-off is that a Gig genuinely running longer than 24 hours gets a slightly early prompt — harmless, since neither party is obliged to act.
 
@@ -303,7 +341,7 @@ Part-time and Internship engagements are excluded; they close through End Engage
 
 **Scale:** 1 to 5 whole stars. No half-stars, and no free-text review attached to the rating itself (`FR-RATE-01`).
 
-**Double-blind reveal** (`FR-RATE-02`): neither party sees the other's rating until both have submitted, or 14 days pass from the moment rating became eligible — whichever comes first. This removes the incentive to wait and retaliate after seeing a bad rating. The 14-day timer runs from eligibility, not from submission, so it still resolves when one party never submits at all.
+**Double-blind reveal** (`FR-RATE-02`): neither party sees the other's rating until both have submitted, or 14 days pass from the moment rating became eligible — whichever comes first. This removes the incentive to wait and retaliate after seeing a bad rating. The 14-day timer runs from eligibility, not from submission, so it still resolves when one party never submits at all. **Submission closes at reveal** (amended 2026-08-27) — once ratings are visible by either route, the non-submitter can no longer rate, or the retaliation incentive would return through the back door.
 
 **One independent rating pair per Engagement** (`FR-RATE-04`). A 3-slot gig produces three separate exchanges, each revealed on its own timeline.
 
@@ -311,7 +349,7 @@ Part-time and Internship engagements are excluded; they close through End Engage
 
 **Cancelled engagements** can still be rated, but rating is not enforced or prompted the same way (`FR-RATE-05`) — there's less to meaningfully assess when work never happened.
 
-**Disputing a rating** (`FR-RATE-06`) is deliberately lightweight and **entirely separate from the dispute pipeline in §9**. The rated party can attach a **public response** shown alongside the rating — self-service, no Admin involvement. Outright removal is reserved for clear policy violations (a rating on an engagement that never happened, for instance) and goes **directly to Admin**, never through Moderator triage. Ordinary disagreement with a negative-but-accurate rating is not grounds for removal.
+**Disputing a rating** (`FR-RATE-06`) is deliberately lightweight and **entirely separate from the dispute pipeline in §9**. The rated party can attach a **public response** shown alongside the rating — self-service, no Admin involvement. Outright removal is reserved for clear policy violations (a rating on an engagement that never happened, for instance) and goes **directly to Admin**, never through Moderator triage. Ordinary disagreement with a negative-but-accurate rating is not grounds for removal. A removed rating is **excluded from every aggregate** — averages, the applicant-pool tiers — or removal would be cosmetic (amended 2026-08-27); the removal *request* travels on its own minimal record straight to Admin, never through the `Report` pipeline.
 
 ---
 
@@ -335,7 +373,13 @@ The entire justification for endorsement is that the endorser _personally knows_
 
 ### The vouch itself
 
-A single action — "I vouch for this person" — plus an optional reason capped at 300 characters (`FR-ENDORSE-04`). It goes **live immediately**, with no Admin pre-review; the reporting mechanism is the backstop if one is abused.
+A single action — "I vouch for this person" (`FR-ENDORSE-04`). It goes **live immediately**, with no Admin pre-review; the reporting mechanism is the backstop if one is abused.
+
+Two optional additions sit alongside it, both added 2026-08-27 and neither able to block the single-action path. The endorser may select **attributes** from a fixed list — punctuality, honesty, reliability, a specific skill, length of acquaintance — saying what specifically they can attest to rather than vouching for the person as a whole. And the free-text **reason**, still capped at 300 characters, is now prompted as "How do you know this person?" instead of being an unlabelled box.
+
+Before either, a short **scope statement** explains in plain language what an endorsement does and does not commit the endorser to. It cannot be scrolled out of view.
+
+All three exist for the same measured reason: every community respondent in the user research named at least one hesitation about vouching, with liability for someone else's actions and reputational risk each raised by 43%. An endorsement whose scope is undefined asks the endorser to accept an unbounded commitment. Letting them bound it themselves is what makes the ask reasonable — and only what they actually select is ever displayed, since showing unselected attributes would turn an optional field into a negative signal about the worker.
 
 **Revocable but not retroactive** (`FR-ENDORSE-07`): revoking stops future display but doesn't undo a hire that already happened while it was live.
 
@@ -343,13 +387,17 @@ A single action — "I vouch for this person" — plus an optional reason capped
 
 **One endorsement covers every application** the worker makes while still zero-history (`FR-ENDORSE-06`). It is not per-gig.
 
-**Always displayed as a named badge** (`FR-ENDORSE-10`) with the endorser's real name attached. An anonymous vouch carries no social weight and would be meaningless.
+**Always displayed as a named badge** (`FR-ENDORSE-10`) — an anonymous vouch carries no social weight and would be meaningless. On detail surfaces every endorser's real name shows with their selected attributes; on a space-constrained applicant card the badge renders with a count, every name one tap away (amended 2026-08-27, reconciling the uncapped count).
 
 ### Endorser track record
 
 Displayed as "N endorsed, M went on to build a good rating" (`FR-ENDORSE-11`), where **N** is the endorser's currently-active, non-revoked endorsements and **M** is the subset whose worker now has at least one completed rated Engagement and a current average of **4.0 or higher**.
 
-This figure is **live and recalculated, never a stored snapshot.** If an endorsed worker's average later drops below 4.0, they drop out of M. A freshly-endorsed worker who hasn't earned a rating yet simply doesn't count toward M. A cached value would quietly become misleading, which defeats its purpose as a trust signal.
+This figure is **live and recalculated, never a stored snapshot.** If an endorsed worker's average later drops below 4.0, they drop out of M. A freshly-endorsed worker who hasn't earned a rating yet simply doesn't count toward M. A cached value would quietly become misleading, which defeats its purpose.
+
+**It is visible only to the endorser themselves** (amended 2026-08-27). No employer, worker, or other user ever sees it. This is a reversal of what the requirement previously left open, and the reason is worth understanding rather than treating as a privacy default: the user research measured reputational risk as one of the top three reasons community members hesitate to vouch at all. A public score tying an endorser's standing to how their endorsed workers later behave makes that risk concrete, permanent, and outside their control. Since the applicant-pool sort (`FR-APPLY-04`) only rewards endorsement when endorsements are plentiful, anything that discourages endorsing weakens the trust mechanic the whole platform rests on — the same reasoning that keeps disputes away from endorsers.
+
+What stays public is the endorser's **name** on each endorsement (`FR-ENDORSE-10`), because an employer needs to know who is vouching. What is now private is their aggregate scorecard. Those are different things, and only the second was ever a deterrent.
 
 ### Nudges
 
@@ -373,6 +421,10 @@ A Report action is available on listings, profiles, and within an active engagem
 
 A discovered false birthdate is filed as an ordinary report and routed to Admin, resulting in suspension — there's no correction path, because the person isn't eligible for the platform at all (`FR-DISPUTE-06`).
 
+**The parties are notified through the case's life** (`FR-NOTIF-12`, added 2026-08-27): the respondent when a case opens — their 48-hour window runs from a case they know exists — either party when clarification is asked of them, and both when the outcome is recorded. An auto-hidden posting's owner is told the review's **outcome**, restored or removed — deliberately not the moment the third report fired, which would reveal the threshold and, in small pools, the likely reporters.
+
+**On auto-hidden content the Moderator's actions are exactly: restore, warn, or escalate for removal** (`FR-MOD-04`, amended 2026-08-27) — removal itself stays Admin-only.
+
 ### The four ways a dispute case opens
 
 1. **"Unable to confirm"** at any check-in checkpoint (`FR-ENG-03`)
@@ -385,6 +437,14 @@ A discovered false birthdate is filed as an ordinary report and routed to Admin,
 Whichever party didn't raise the issue gets **48 hours** to respond and attach evidence (`FR-DISPUTE-04`). If they don't, review proceeds on whatever exists — the window gates progression, it doesn't block resolution.
 
 **Evidence** (`FR-DISPUTE-05`): up to 3 images, 5MB each, from either party. Entirely optional — a no-show has nothing to photograph — and its absence never blocks review.
+
+### Case status is visible to both parties throughout
+
+Added 2026-08-27 (`FR-DISPUTE-07`). From the moment a case opens, through the 48-hour response window and review, to its recorded outcome, **both** parties can see where it stands — not just whoever raised it. The response window's remaining time is visible to both, and the outcome is visible to both once recorded.
+
+The reasoning is what a platform-level process is actually for. In the informal market these disputes have no recourse at all — 42% of the employers surveyed named limited legal recourse as a hiring challenge. A process that produces a result is the thing YouthLink can offer that word-of-mouth hiring cannot, and a process whose progress is invisible doesn't deliver that, however well it works internally.
+
+What the status deliberately does **not** do is promise a completion date. `NFR-OPS-03`'s 3–5 business day target is a stated operational expectation given Phase 1's founding-team staffing, not something the system enforces — so a case under review says it is under review, not when it will finish.
 
 ### Stage 1 — Moderator triage
 
@@ -406,13 +466,15 @@ Three outcomes, not two (`FR-ADM-01`): ruled for the party who raised it, ruled 
 
 **What a ruling can actually change** (`FR-ADM-02`): since no money ever moves through the app, a payment-dispute ruling is a **reputational and record-keeping outcome only**. Admin cannot issue a refund or force a transaction. It affects the responsible party's completion-rate stat, and repeat or severe cases can lead to suspension.
 
-**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, the normal double-blind rating step opens. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
+**Effect on rating** (`FR-ADM-08`): if the ruling establishes the engagement genuinely happened and was completed, any arrival or completion checkpoint that was never confirmed is marked **settled by ruling**, the engagement becomes Completed, and the normal double-blind rating step opens. The payment checkpoint stays open — the ruling says the work happened, not that it was paid — so the worker still shares their payment code once paid. If it establishes a confirmed no-show — it didn't happen at all — the rating step is **skipped entirely**; the reliable party gets a positive completion-rate credit, the unreliable party a negative mark, and the case closes.
 
 Admin aims to resolve escalated cases within **3–5 business days** — an operational target, not a system-enforced rule (`NFR-OPS-03`).
 
 ### Suspension and removal
 
 **Suspension takes effect immediately** (`FR-ADM-03`, `NFR-REL-02`) — on the account's very next request, not at next login. A suspended account can't apply, post, or endorse.
+
+**A suspension records its grounds** (amended 2026-09-24). The violation it rests on — three warnings in 90 days, a ruled report — is stored with it and shown on the confirmation; an account with nothing recorded against it cannot be suspended. Suspension is the most consequential thing an Admin does to a user, and a reason is what makes it reviewable afterwards.
 
 **Suspension does not cascade.** Existing, already-agreed Engagements with uninvolved parties are **not** auto-cancelled — they resolve normally through completion, cancellation, or dispute. Voiding them would punish someone who did nothing wrong.
 
@@ -426,19 +488,28 @@ Admin aims to resolve escalated cases within **3–5 business days** — an oper
 
 Moderator handles volume; Admin handles consequence. Splitting them costs nothing when the same people hold both roles, but means the permission model doesn't need retrofitting when junior moderation help arrives without full account-termination power.
 
-Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`).
+Moderator **cannot** remove a posting, suspend an account, or issue a final ruling. Those are Admin-only, with Moderator escalating (`NFR-SEC-05`). **The dashboard does not offer them to a Moderator at all** (amended 2026-09-24) — no disabled button, no "ask an Admin" dialog; the server rejects the call if it arrives anyway. The audit log and staff management are likewise absent from a Moderator's navigation.
 
 ### Accounts
 
 Admin/Moderator accounts are **entirely separate** from any consumer account for the same person (`FR-ADM-07`) — not a flag on a `User` row. This avoids edge cases like an Admin account applying to its own posting.
 
-**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard.
+**Bootstrapping** (`FR-ADM-06`) is two-phase, because of a genuine chicken-and-egg problem: the first Admin accounts are created by **direct backend assignment**, since no in-app "grant admin" feature can exist before an Admin does. Once one exists, an Admin can promote an already-registered user from the dashboard's Staff accounts page (the one entry point, amended 2026-09-24) — into either role directly; there is no ladder, and only Admins grant.
+
+**A promoted account's first login sets its own credentials** (amended 2026-08-27): OTP to their phone, then set-a-password — nothing is copied from the consumer account and no secret passes through the promoting Admin.
+
+**Staff accounts now have a management surface** (amended 2026-09-20, openings O5/O6). Nothing previously let an Admin even *see* who held one — "Users" is the consumer population by `FR-ADM-07`, and staff never appear there. An **Admin-only** surface now lists each staff account with its role, staff phone, who promoted it and when, and its **sign-in state**: active, first sign-in pending, inactive, or access removed. Two actions sit on it:
+
+- **Reset password** — a one-time code goes to the staff member's own phone, their current password stops working immediately, and they set a new one at next sign-in. This is the *same* mechanism as a first sign-in rather than a second one invented for the purpose, which is why no secret passes through the acting Admin here either.
+- **Remove staff access** — the account is deactivated and cannot sign in again. **Case history and audit entries stay**, because accountability does not depend on the account still being usable, and any consumer account belonging to the same person is untouched.
+
+Both are recorded in the audit log against the acting Admin — which is the point of making them flows. **Changing a role and unlocking early remain backend-only**, and remain in [`decisions.md`](decisions.md)'s runbook with its honest caveat: SQL cannot write an audit entry, so those two must be logged by hand.
 
 ### The dashboard
 
 All case _handling_ is web-dashboard-only. All case _creation_ stays on mobile (`FR-DASH-05`) — reporting, "unable to confirm", and "did something go wrong?" are ordinary user actions. There is no admin functionality in the mobile app at all.
 
-**Dashboard login requires password AND OTP together** (`FR-DASH-06`, `NFR-SEC-04`) — not the either-or choice mobile users get. One dashboard account carries access to every user's NIC and every dispute's evidence, which is a materially higher-value target.
+**Dashboard login requires password AND OTP together** (`FR-DASH-06`, `NFR-SEC-04`) — not the either-or choice mobile users get. One dashboard account carries access to every user's NIC and every dispute's evidence, which is a materially higher-value target. Five failed attempts lock it for 15 minutes, and staff sessions are terminable per request via `passwordChangedAt`/`deactivatedAt` (amended 2026-08-27) — without that, a compromised dashboard session would have outlived every countermeasure short of a global secret rotation.
 
 What both roles can see:
 
@@ -469,6 +540,10 @@ Every Admin **and Moderator** action is logged (`NFR-SEC-06`). The full log is v
 | New dispute case (`FR-NOTIF-06`)                                                              | Admin / Moderator | Always      |
 | Endorsement received (`FR-ENDORSE-09`); endorsement paid off (`FR-ENDORSE-12`, `FR-NOTIF-07`) | Worker; Endorser  | Always      |
 | No-applicant nudge (`FR-POST-17`)                                                             | Employer          | Always      |
+| Cancellation request; cancellation outcome (`FR-NOTIF-05`, amended)                           | Affected party    | Always      |
+| Rating window opens (enforced only); ratings reveal (`FR-NOTIF-11`)                           | Both parties      | Always      |
+| Case opened → respondent; clarification → asked party; outcome → both (`FR-NOTIF-12`)         | Parties           | Always      |
+| Auto-hidden content's review outcome (`FR-NOTIF-12`)                                          | Content owner     | Always      |
 
 **Urgent pushes are rate-limited to 5 per user per day** (`FR-NOTIF-01`). Beyond that, further matching urgent gigs are batched into a single digest. An unthrottled burst risks someone disabling notifications entirely, which loses the feature permanently rather than just for that day.
 
@@ -537,3 +612,5 @@ The **internal dashboard stays English-only permanently** (`NFR-LOC-03`); it's s
 | Uptime (`NFR-PERF-04`)                                              | 99.9% stated target                                                        |
 
 The system is built to scale horizontally with **no hard-coded concurrent-user ceiling** (`NFR-PERF-05`).
+
+**Any operation that can exceed the perceptible threshold shows a loading or skeleton state** (amended 2026-09-16, E10). The table above set thresholds and said nothing about what the interface shows while one is being missed — so a slow network was indistinguishable from a frozen screen, which is the plainest way to fail visibility of system status.
