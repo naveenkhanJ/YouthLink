@@ -19,16 +19,11 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
+import { isRouteRegistered, routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
 import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
 import { toLocalDigits } from "./account/phoneFormat";
-
-const ROLE_TO_TABBAR_ROLE = {
-  YOUTH_JOB_SEEKER: "worker",
-  EMPLOYER: "employer",
-  COMMUNITY_ENDORSER: "verifier",
-};
 
 const FIRST_TAB_BY_ROLE = {
   worker: "browse",
@@ -86,10 +81,26 @@ function SignedOutEntry({ navigation }) {
   return <FirstRun onDone={finish} />;
 }
 
-function SignedInShell({ user, navigation }) {
-  const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
-  const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
+function SignedInShell({ user, navigation, route }) {
+  const tabBarRole = tabBarRoleFor(user);
+  const requestedTab = route.params?.tab; // set when another screen's tab bar opens this shell
+  const [activeTab, setActiveTab] = useState(requestedTab ?? FIRST_TAB_BY_ROLE[tabBarRole]);
+  useEffect(() => {
+    if (requestedTab) setActiveTab(requestedTab);
+  }, [requestedTab]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
+
+  // An employer's first tab is My postings (2.10), a real screen that draws its own tab bar. Home
+  // forwards there instead of showing placeholder copy: `replace` so Back from My postings leaves the
+  // app rather than returning to a blank shell. Another tab's placeholder still opens this shell.
+  const forwardToPostings =
+    tabBarRole === "employer" &&
+    (requestedTab === undefined || requestedTab === "postings") &&
+    isRouteRegistered(navigation, "PostingList");
+  useEffect(() => {
+    if (forwardToPostings && navigation.isFocused()) navigation.replace("PostingList");
+  }, [forwardToPostings, navigation]);
+  if (forwardToPostings) return <View style={styles.flex} />;
 
   return (
     <View style={styles.flex}>
@@ -101,8 +112,9 @@ function SignedInShell({ user, navigation }) {
         role={tabBarRole}
         activeTab={activeTab}
         onTabPress={(key) => {
-          // Profile (1.18) is built; the other hubs are other modules' and stay placeholders here.
-          if (key === "profile") navigation.navigate("ProfileOwn");
+          // A tab whose module has registered a screen opens it; the rest stay placeholders here.
+          const screen = routeForTab(navigation, tabBarRole, key);
+          if (screen) navigation.navigate(screen);
           else setActiveTab(key);
         }}
       />
@@ -111,7 +123,7 @@ function SignedInShell({ user, navigation }) {
   );
 }
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, route }) {
   const { status, user } = useAuth();
 
   if (status === "loading") {
@@ -123,7 +135,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (status === "signedIn") {
-    return <SignedInShell user={user} navigation={navigation} />;
+    return <SignedInShell user={user} navigation={navigation} route={route} />;
   }
 
   return <SignedOutEntry navigation={navigation} />;
