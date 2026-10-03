@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "YouthLink",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -47,6 +47,6 @@
         }
       ]
     ],
-    "backgroundColor": "#0f3d91"
+    "backgroundColor": "#ffffff"
   }
 }
