@@ -215,11 +215,15 @@ export function detailFill(p, workerName) {
   switch (p.status) {
     case 'WITHDRAWN':
       return `${fill} · Withdrawn by you${p.applicantCount === 0 ? ' — no one had applied' : ''}`;
-    case 'EXPIRED':
-      // 2.11ex / 2.11hx: with nobody selected the line says why nothing is left to manage.
+    case 'EXPIRED': {
+      // 2.11ex / 2.11hx: with nobody selected the line says why nothing is left to manage. Only a
+      // Gig expires at its start; a part-time job or internship expires 30 days after it was
+      // posted (FR-POST-13), so "before the start" would be wrong for it (round 4, L-6).
+      const reason = p.arrangementType === 'GIG' ? ' — no one was selected before the start' : ' — no one was selected';
       return `${fill} · Expired ${formatDate(p.expiresAt || p.startAt)}${
-        (p.filledCount ?? 0) === 0 ? ' — no one was selected before the start' : ''
+        (p.filledCount ?? 0) === 0 ? reason : ''
       }`;
+    }
     case 'FILLED':
       return `${fill}${workerName ? ` · ${workerName}` : ''} · Starts ${formatStartFull(p.startAt)}`;
     default:
