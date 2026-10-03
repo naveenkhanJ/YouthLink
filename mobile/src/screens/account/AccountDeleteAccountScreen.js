@@ -8,7 +8,8 @@
  *   "blocked"  1.17b / 1.17be / 1.17bn   the same page with the engagement named ("... — Shop
  *                     assistant — weekend with Saman Stores is still running") and the button
  *                     Disabled; the person has to complete or cancel it first
- *   "confirm"  1.17p  Password field, the deleteNote, Destructive "Delete my account"; a wrong
+ *   "confirm"  1.17p  Password field, the deleteNote, Destructive "Delete my account" (pinned in a
+ *                     ctaBar, see the deviation note below); a wrong
  *                     password is the field's State=Error with the 1.12err sentence
  *   "deleted"  1.17d  "Account deleted", ctaBar "Back to the start" → 1.1
  *
@@ -102,7 +103,7 @@ export default function AccountDeleteAccountScreen({ navigation }) {
     setLoading(true);
     try {
       await deleteAccount({ password });
-      await signOut();
+      await signOut(null, { forget: true }); // the account is gone: no Log in offer next launch
       setPassword("");
       setStep("deleted");
     } catch (err) {
@@ -157,7 +158,7 @@ export default function AccountDeleteAccountScreen({ navigation }) {
         <ScreenHeader title="Delete account" onBack={goBack} />
         <KeyboardAwareScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[styles.content, styles.contentPinned]}
           keyboardShouldPersistTaps="handled"
           enableOnAndroid
           extraScrollHeight={120}
@@ -181,8 +182,14 @@ export default function AccountDeleteAccountScreen({ navigation }) {
             gave and received stay, attributed to an anonymised reference.
           </Text>
           <View style={styles.spacer} />
-          <Button title="Delete my account" style="destructive" onPress={handleDelete} loading={loading} disabled={!password} />
         </KeyboardAwareScrollView>
+        {/* DELIBERATE DEVIATION from Figma 1.17p, which draws the button at the foot of the content:
+            it is pinned in a ctaBar like the other password and form screens, so with the keyboard
+            open it sits 24 dp above it everywhere instead of wherever the content happens to end
+            (51 dp to 180 dp above it on the test devices). Recorded in docs/decisions.md. */}
+        <CtaBar>
+          <Button title="Delete my account" style="destructive" onPress={handleDelete} loading={loading} disabled={!password} />
+        </CtaBar>
       </View>
     );
   }
@@ -236,6 +243,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.lg,
+  },
+  // 1.17p: the button is pinned in a ctaBar, so the content ends like the other pinned-bar forms.
+  contentPinned: {
+    paddingBottom: spacing.xs,
   },
   // 1.17d: pad 24/16/4/16, and the ctaBar below carries the button.
   contentDeleted: {
