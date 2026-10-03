@@ -21,6 +21,19 @@ import * as SecureStore from 'expo-secure-store';
 // SecureStore keys allow letters, digits, ".", "-" and "_" — a uuid user id is fine.
 const keyFor = (userId) => `youthlink.postingForm.${userId}`;
 
+/**
+ * The kept start as one ISO string. The form now keeps `startAt`; a form saved by the earlier
+ * version held `startDate` ("YYYY-MM-DD") and `startTime` ("HH:MM") instead, and still restores.
+ */
+export function draftStartAt(draft) {
+  if (!draft) return '';
+  if (draft.startAt) return draft.startAt;
+  const time = /^(\d{1,2}):(\d{2})$/.exec((draft.startTime || '').trim());
+  if (!draft.startDate || !time) return '';
+  const d = new Date(`${draft.startDate}T${time[1].padStart(2, '0')}:${time[2]}:00`);
+  return isNaN(d.getTime()) ? '' : d.toISOString();
+}
+
 /** The saved form fields, or null when nothing is kept for this account. */
 export async function loadPostingDraft(userId) {
   if (!userId) return null;
@@ -68,6 +81,7 @@ export function hasDraftContent(draft) {
       draft.payAmount ||
       draft.schedule?.trim() ||
       draft.locationAddress?.trim() ||
+      draft.startAt ||
       draft.startDate ||
       draft.startTime,
   );

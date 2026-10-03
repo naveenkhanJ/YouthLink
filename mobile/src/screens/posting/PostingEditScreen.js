@@ -9,41 +9,40 @@
  *       "Save these changes?" dialog (Keep editing / Save changes).
  *
  * The fields are exactly the ones drawn: Title, Pay, Workers needed, Schedule (part-time and
- * internship only) and the start. The start is the same Start date + Start time pair the
- * create form uses (there is no date-time picker dependency yet), where the prototype draws a
- * single "Start date & time" field.
+ * internship only) and one "Start date & time" picker field (the same StartDateTimeField the
+ * create form uses).
  *
- * What the server will do with a save is its rule, not this screen's: a change after a fill that
- * would need the engaged worker's re-confirmation (FR-ENG-09 — Engagement, not on develop) is
- * refused with a plain message, which is shown in the banner. A title change always saves.
+ * What the server does with a save is its rule, not this screen's: after a fill, a pay, timing or
+ * Workers-needed change is saved together with a re-confirmation request for the engaged worker
+ * (FR-POST-11 criterion 2), and a second one is refused while the first is waiting. A refusal is
+ * shown in the banner. A title change always saves.
  */
-import { useMemo, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useMemo, useRef, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { colors, spacing, radius, typography } from '../../theme/tokens';
 import ScreenHeader from '../../components/ScreenHeader';
 import TextField from '../../components/TextField';
-import DateTimeField from '../../components/DateTimeField';
 import Button from '../../components/Button';
 import CtaBar from '../../components/CtaBar';
 import FormBanner from '../../components/FormBanner';
 import FieldError from '../../components/FieldError';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import DialogModal from '../../components/DialogModal';
+import useFocusScroll from '../../hooks/useFocusScroll';
 import { updateGigPosting } from '../../api/posting.api.js';
 import { LIMITS, validateLeadTime } from './posting.constants.js';
 import {
   APPLY_NOTE,
   MATERIAL_CHANGE_WARNING,
-  combineStart,
+  digitsOnly,
   editChanges,
   editPayLabel,
   editedNotes,
+  groupDigits,
   saveDialogBody,
-  toDateInput,
-  toTimeInput,
 } from './posting.format.js';
+import StartDateTimeField from './components/StartDateTimeField.js';
 
 export default function PostingEditScreen({ route, navigation }) {
   const { posting } = route.params;
@@ -55,25 +54,27 @@ export default function PostingEditScreen({ route, navigation }) {
   const [payAmount, setPayAmount] = useState(hasPay ? String(Math.round(Number(posting.payAmount))) : '');
   const [workersNeeded, setWorkersNeeded] = useState(String(posting.workersNeeded));
   const [schedule, setSchedule] = useState(posting.schedule || '');
-  const [startDate, setStartDate] = useState(toDateInput(posting.startAt));
-  const [startTime, setStartTime] = useState(toTimeInput(posting.startAt));
+  const [startAt, setStartAt] = useState(posting.startAt);
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const form = { title, payAmount, workersNeeded, schedule, startDate, startTime };
+  // Scrolls a focused field to a fixed place under the top (see hooks/useFocusScroll.js).
+  const scrollRef = useRef(null);
+  const { field, scrollProps } = useFocusScroll(scrollRef);
+
+  const form = { title, payAmount, workersNeeded, schedule, startAt };
   const changes = useMemo(
     () => editChanges(posting, form),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [posting, title, payAmount, workersNeeded, schedule, startDate, startTime],
+    [posting, title, payAmount, workersNeeded, schedule, startAt],
   );
   const dirty = Object.keys(changes).length > 0;
   const notes = engaged ? editedNotes(posting, changes) : [];
 
   // Same rules as the create form (and the server): a changed start is held to the 2-hour minimum.
-  const startAt = combineStart(startDate, startTime);
   const startError =
     changes.startAt && startAt && !validateLeadTime(startAt).valid ? validateLeadTime(startAt).message : null;
 
@@ -121,12 +122,12 @@ export default function PostingEditScreen({ route, navigation }) {
       <StatusBar style="dark" />
       <ScreenHeader title="Edit posting" onBack={() => navigation.goBack()} />
 
-      <KeyboardAwareScrollView
+      <ScrollView
+        ref={scrollRef}
+        {...scrollProps}
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
-        enableOnAndroid
-        extraScrollHeight={120}
       >
         {error ? <FormBanner kind="error" message={error} /> : null}
 
@@ -146,6 +147,7 @@ export default function PostingEditScreen({ route, navigation }) {
           autoCapitalize="sentences"
           maxLength={LIMITS.TITLE_MAX}
           error={fieldErrors.title}
+          {...field('title')}
         />
         {fieldErrors.title ? <FieldError message={fieldErrors.title} /> : null}
 
@@ -153,10 +155,11 @@ export default function PostingEditScreen({ route, navigation }) {
           <>
             <TextField
               label={editPayLabel(posting)}
-              value={payAmount}
-              onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ''))}
+              value={groupDigits(payAmount)}
+              onChangeText={(v) => setPayAmount(digitsOnly(v).slice(0, 9))}
               keyboardType="number-pad"
               error={fieldErrors.payAmount}
+              {...field('pay')}
             />
             {fieldErrors.payAmount ? <FieldError message={fieldErrors.payAmount} /> : null}
           </>
@@ -165,10 +168,11 @@ export default function PostingEditScreen({ route, navigation }) {
         <TextField
           label="Workers needed"
           value={workersNeeded}
-          onChangeText={(v) => setWorkersNeeded(v.replace(/[^0-9]/g, ''))}
+          onChangeText={(v) => setWorkersNeeded(digitsOnly(v))}
           keyboardType="number-pad"
           maxLength={2}
           error={fieldErrors.workersNeeded}
+          {...field('workers')}
         />
         {fieldErrors.workersNeeded ? <FieldError message={fieldErrors.workersNeeded} /> : null}
 
@@ -181,20 +185,17 @@ export default function PostingEditScreen({ route, navigation }) {
               autoCapitalize="sentences"
               maxLength={LIMITS.SCHEDULE_MAX}
               error={fieldErrors.schedule}
+              {...field('schedule')}
             />
             {fieldErrors.schedule ? <FieldError message={fieldErrors.schedule} /> : null}
           </>
         ) : null}
 
-        <DateTimeField label="Start date" value={startDate} onChangeText={setStartDate} error={fieldErrors.start} />
-        <TextField
-          label="Start time (24-hour, e.g. 17:00)"
-          value={startTime}
-          onChangeText={setStartTime}
-          placeholder="HH:MM"
-          keyboardType="numbers-and-punctuation"
-          maxLength={5}
-          error={fieldErrors.start}
+        <StartDateTimeField
+          value={startAt}
+          onChange={setStartAt}
+          error={fieldErrors.start || startError}
+          {...field('start')}
         />
         {fieldErrors.start || startError ? <FieldError message={fieldErrors.start || startError} /> : null}
 
@@ -207,7 +208,7 @@ export default function PostingEditScreen({ route, navigation }) {
           : <Text style={styles.applyNote}>{APPLY_NOTE}</Text>}
 
         <View style={styles.spacer} />
-      </KeyboardAwareScrollView>
+      </ScrollView>
 
       <CtaBar>
         <Button
@@ -243,11 +244,13 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  // Figma content: pad 16/16/0/16, gap 12.
+  // Figma content: pad 16/16/0/16, gap 12. The bottom padding leaves room for a focused field
+  // to scroll clear of the pinned bar.
   content: {
     flexGrow: 1,
     paddingTop: spacing.lg,
     paddingHorizontal: spacing.gutter,
+    paddingBottom: 160,
     gap: spacing.md,
   },
   // materialChangeWarning: pad 10/14, gap 4, 1px color/state/urgent stroke, r10.
