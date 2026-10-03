@@ -19,9 +19,9 @@
  * The fill count ("1 of 3 filled") and the status badge are shown here as everywhere
  * else a posting appears (FR-POST-14, FR-POST-18).
  *
- * Two controls draw but cannot act yet, because the work they lead to is not built:
- * "See engagement" and "view pool" (Engagement and Applying & Selection screens, not on
- * develop). They are drawn disabled / as plain text rather than as buttons that do nothing.
+ * Links into the other modules (wired on integration/viva-demo): "view pool" opens Applying &
+ * Selection's applicant pool (M4 4.5b/4.5s), the re-confirmation note opens the engaged workers'
+ * responses (M5 5.12), and "See engagement" opens the engagement (M5 5.3t).
  */
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
@@ -151,12 +151,15 @@ export default function PostingDetailScreen({ route, navigation }) {
         <Text style={styles.fill}>{detailFill(posting, engagedWorkerName(posting))}</Text>
 
         {isOpen && !hidden ? (
-          // TODO(YL-174 / M4): link to the applicant pool (4.5b / 4.5s) once Applying & Selection's
-          // screens are on develop; until then it is drawn as the link but does not act.
-          // With applicants it is always the link (brand colour). With none, a part-time job's
-          // frame (2.11d, 2.11dw) draws a plain "No applicants yet"; a gig's still reads "— view pool".
+          // The link to the applicant pool (2.11p → M4 4.5b, 2.11 → 4.5s). With applicants it is
+          // always the link (brand colour). With none, a part-time job's frame (2.11d, 2.11dw)
+          // draws a plain "No applicants yet"; a gig's still reads "— view pool".
           waiting > 0 || isGig ? (
-            <Text style={styles.applicantsLink}>
+            <Text
+              style={styles.applicantsLink}
+              accessibilityRole="link"
+              onPress={() => navigation.navigate('ApplicationApplicantPool', { gigPostingId: posting.id })}
+            >
               {waiting > 0
                 ? `${waiting} ${waiting === 1 ? 'applicant' : 'applicants'} — view pool`
                 : 'No applicants yet — view pool'}
@@ -167,7 +170,14 @@ export default function PostingDetailScreen({ route, navigation }) {
         ) : null}
 
         {awaitingReconfirm ? (
-          <Text style={styles.changeNote}>{changeNote(posting.pendingChangeRequest, engagedFirstName(posting))}</Text>
+          // 2.11c: the change note leads to the engaged workers' responses (M5 5.12).
+          <Text
+            style={styles.changeNote}
+            accessibilityRole="link"
+            onPress={() => navigation.navigate('EngagementChangeResponses', { gigPostingId: posting.id })}
+          >
+            {changeNote(posting.pendingChangeRequest, engagedFirstName(posting))}
+          </Text>
         ) : null}
         {awaitingReconfirm ? <Text style={styles.note}>{PAUSED_NOTE}</Text> : null}
         {canEdit && hasFilled ? <Text style={styles.note}>{WITHDRAW_NOTE}</Text> : null}
@@ -203,8 +213,9 @@ export default function PostingDetailScreen({ route, navigation }) {
 
       {posting.status === 'FILLED' ? (
         <CtaBar surface="subtle">
-          {/* TODO(M5 5.3t): open the engagement when Engagement's screens are on develop. */}
-          <Button title="See engagement" style="secondary" disabled onPress={() => {}} />
+          {/* 2.11f → M5 5.3t. One engaged worker: open that engagement. Several (not drawn): the
+              Engagements hub, as the note above says ("Manage the work from Engagements"). */}
+          <Button title="See engagement" style="secondary" onPress={() => openEngagement(navigation, posting)} />
         </CtaBar>
       ) : null}
 
@@ -227,6 +238,16 @@ export default function PostingDetailScreen({ route, navigation }) {
       </DialogModal>
     </View>
   );
+}
+
+/** "See engagement" (2.11f): the one engaged worker's engagement, or the Engagements hub. */
+function openEngagement(navigation, posting) {
+  const engaged = posting.engagedWorkers ?? [];
+  if (engaged.length === 1 && engaged[0].engagementId) {
+    navigation.navigate('EngagementDetail', { engagementId: engaged[0].engagementId });
+  } else {
+    navigation.navigate('EngagementList');
+  }
 }
 
 const styles = StyleSheet.create({

@@ -1,8 +1,8 @@
 // gigPosting.validators.test.js
-// Tests for FR-POST-01, FR-POST-02, FR-POST-04, FR-POST-05, FR-POST-06 backend validators.
+// Tests for FR-POST-01, FR-POST-02, FR-POST-04, FR-POST-05, FR-POST-06, FR-POST-08 backend validators.
 
 import { validationResult } from 'express-validator';
-import { createGigPostingValidators, MIN_LEAD_TIME_MS } from '../posting.validators.js';
+import { createGigPostingValidators, MIN_LEAD_TIME_MS, AREA_NOT_LISTED_MESSAGE } from '../posting.validators.js';
 
 async function validate(body) {
   const req = { body };
@@ -22,9 +22,8 @@ describe('Posting Validators (FR-POST-01, 02, 04, 05, 06)', () => {
     payAmount: 3500,
     postedAsType: 'INDIVIDUAL',
     locationAddress: 'No. 120, Galle Road, Colombo 03',
-    locationLat: 6.892,
-    locationLng: 79.855,
-    locationAreaLabel: 'Kollupitiya, Colombo 03',
+    // FR-POST-08: the area chosen from the server's list; the label and point come from it.
+    locationArea: 'Colombo 03',
     workersNeeded: 2,
     startAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   };
@@ -194,6 +193,32 @@ describe('Posting Validators (FR-POST-01, 02, 04, 05, 06)', () => {
 
       const tooManyResult = await validate({ ...validPosting, workersNeeded: 21 });
       expect(tooManyResult.mapped().workersNeeded).toBeDefined();
+    });
+  });
+  describe('FR-POST-08: the area must be one from the list (round 4, L-1)', () => {
+    test('an area that is not on the list is a field error with the drawn message', async () => {
+      for (const locationArea of ['Nowhere', '77 Palm Grove Road Colombo 05', '', 42, ['Colombo 03']]) {
+        const result = await validate({ ...validPosting, locationArea });
+        expect(result.mapped().locationArea?.msg).toBe(AREA_NOT_LISTED_MESSAGE);
+      }
+    });
+
+    test('a missing area is the same field error', async () => {
+      const { locationArea, ...withoutArea } = validPosting;
+      const result = await validate(withoutArea);
+      expect(result.mapped().locationArea?.msg).toBe('Choose an area from the list.');
+    });
+
+    test('a listed area passes however it is written (case, spaces, "area", Colombo 4, an alias)', async () => {
+      for (const locationArea of ['colombo 03', '  Colombo   3 ', 'Colombo 03 area', 'Kollupitiya', 'Hambantota']) {
+        const result = await validate({ ...validPosting, locationArea });
+        expect(result.mapped().locationArea).toBeUndefined();
+      }
+    });
+
+    test('the old client-sent label and coordinates are no longer asked for', async () => {
+      const result = await validate(validPosting); // no locationAreaLabel / locationLat / locationLng
+      expect(result.isEmpty()).toBe(true);
     });
   });
 });

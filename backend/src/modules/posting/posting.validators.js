@@ -4,6 +4,7 @@
 // generated Prisma output and avoids the '.prisma/client/default' import error.
 
 import { body } from 'express-validator';
+import { findArea } from './posting.areas.js';
 
 const ALLOWED_GIG_CATEGORIES = [
   'RETAIL',
@@ -34,11 +35,13 @@ export const MIN_LEAD_TIME_LABEL = '2 hours';
 const PAY_KINDS_WITHOUT_AMOUNT = ['UNPAID'];
 
 // Technical bounds, not product rules. GigPosting.payAmount is Decimal(12,2), so anything
-// above this overflows the column and would surface as a 500; the address and area label
-// are unbounded text columns, so they get a generous cap rather than none.
+// above this overflows the column and would surface as a 500; the address is an unbounded
+// text column, so it gets a generous cap rather than none.
 export const PAY_AMOUNT_MAX = 9999999999.99;
 export const ADDRESS_MAX = 500;
-export const AREA_LABEL_MAX = 100;
+
+// FR-POST-08 (round 4, L-1): the field message when locationArea is missing or not on the list.
+export const AREA_NOT_LISTED_MESSAGE = 'Choose an area from the list.';
 
 // FR-POST-04: the pay format is determined by the arrangement type. A Gig
 // accepts a fixed total only; a Part-time job a rate (with a unit); an
@@ -116,24 +119,12 @@ export const createGigPostingValidators = [
     .isLength({ max: ADDRESS_MAX })
     .withMessage(`Location address must be ${ADDRESS_MAX} characters or fewer.`),
 
-  body('locationLat')
-    .notEmpty().withMessage('Location coordinates are required.')
-    .bail()
-    .isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude.'),
-
-  body('locationLng')
-    .notEmpty().withMessage('Location coordinates are required.')
-    .bail()
-    .isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude.'),
-
-  body('locationAreaLabel')
-    .isString().withMessage('Location area label must be text.')
-    .bail()
-    .trim()
-    .notEmpty().withMessage('Location area label is required.')
-    .bail()
-    .isLength({ max: AREA_LABEL_MAX })
-    .withMessage(`Location area label must be ${AREA_LABEL_MAX} characters or fewer.`),
+  // FR-POST-08: the area is chosen from the server's list (posting.areas.js), never typed
+  // freely, and the service takes the public label and the coordinates from that entry. Any
+  // locationAreaLabel / locationLat / locationLng the client sends is simply not read.
+  body('locationArea')
+    .custom((value) => typeof value === 'string' && findArea(value) !== null)
+    .withMessage(AREA_NOT_LISTED_MESSAGE),
 
   body('workersNeeded')
     .optional({ nullable: true })
