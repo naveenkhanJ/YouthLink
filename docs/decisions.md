@@ -317,3 +317,9 @@ A signed-in launch never reads this: the saved session opens the home shell, and
 
 **Figma 1.17p draws "Delete my account" at the foot of the content, under a flexible spacer. The app pins it in a bottom action bar, like the other password and form screens.** With the keyboard open, the content-bound button ended 51 dp to 180 dp above the keyboard depending on the device, while every pinned bar in the app sits 24 dp above it. The inconsistency was visible on the test devices, so consistency won over the drawn position. Only this step changes: the first step (1.17, 1.17b and variants) has no keyboard and stays as drawn, and the account-deleted screen (1.17d) keeps its own deviation recorded above. Figma is unchanged.
 
+
+## The tab bar is wired once, in `ShellTabBar`; an employer opens on My postings (2026-10-03)
+
+**Each role's bottom tab bar navigates through one shared component, `mobile/src/components/ShellTabBar.js`, instead of every screen writing its own `onTabPress`.** A screen that sits on a tab (My postings, the Post a Gig form's first step, Profile) draws `<ShellTabBar active="…" />` as its last child. A tab whose module has registered a screen opens it; any other tab opens the Home shell on that tab with the prototype's own shell copy, until its module lands. The map from tab to route is the one object `ROUTE_BY_TAB`, so a module makes its hub reachable with one line and never edits `HomeScreen.js` or the navigator. A route that no module registered in the build is never navigated to.
+
+**An employer's first tab is My postings (`2.10`), a real screen, so Home forwards there with `replace`** rather than showing placeholder copy; Back from My postings then leaves the app instead of returning to a blank shell. Before this, none of the Gig Posting screens could be reached from the running app, which kept their end-to-end run pending. The other roles keep the shell until Browse and My Endorsements exist.
