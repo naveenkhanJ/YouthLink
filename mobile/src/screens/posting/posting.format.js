@@ -86,10 +86,29 @@ export function payBasis(p) {
   return p.payKind !== 'UNPAID' && Number(p.workersNeeded) > 1 ? 'per worker' : null;
 }
 
-/** The owner detail's pay line: "Rs 6,000 for the job · per worker". */
+/**
+ * The owner detail's pay line: "Rs 6,000 for the job · per worker", and for a part-time job or
+ * internship the schedule follows: "Rs 1,800 per day · Mon, Wed, Fri — 4 to 6 pm" (2.11d).
+ */
 export function payDetailLine(p) {
-  const basis = payBasis(p);
-  return basis ? `${payLine(p)} · ${basis}` : payLine(p);
+  const parts = [payLine(p), payBasis(p)];
+  if (p.arrangementType && p.arrangementType !== 'GIG' && p.schedule) parts.push(p.schedule);
+  return parts.filter(Boolean).join(' · ');
+}
+
+// ---------------------------------------------------------------------------
+// Amount inputs (UI-04): the field shows "6,000", the state holds the digits "6000"
+// ---------------------------------------------------------------------------
+
+/** Only the digits of whatever was typed or pasted ("6,000" → "6000"). */
+export function digitsOnly(text) {
+  return String(text ?? '').replace(/[^0-9]/g, '');
+}
+
+/** "6000" → "6,000": what an amount field displays. Empty stays empty. */
+export function groupDigits(digits) {
+  const clean = digitsOnly(digits).replace(/^0+(?=\d)/, '');
+  return clean.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 /** The review's Pay row: "Rs 6,000 per worker", "Rs 1,800 per day", "Unpaid". */
@@ -197,7 +216,10 @@ export function detailFill(p, workerName) {
     case 'WITHDRAWN':
       return `${fill} · Withdrawn by you${p.applicantCount === 0 ? ' — no one had applied' : ''}`;
     case 'EXPIRED':
-      return `${fill} · Expired ${formatDate(p.expiresAt || p.startAt)}`;
+      // 2.11ex / 2.11hx: with nobody selected the line says why nothing is left to manage.
+      return `${fill} · Expired ${formatDate(p.expiresAt || p.startAt)}${
+        (p.filledCount ?? 0) === 0 ? ' — no one was selected before the start' : ''
+      }`;
     case 'FILLED':
       return `${fill}${workerName ? ` · ${workerName}` : ''} · Starts ${formatStartFull(p.startAt)}`;
     default:
@@ -226,31 +248,11 @@ export const HIDDEN_NOTE_DETAIL =
 
 const pad2 = (n) => String(n).padStart(2, '0');
 
-/** "2026-08-29" — the stored start as the Start date field holds it (device time). */
+/** "2026-08-29" — a start's calendar day on this device, to tell a same-day change from a new date. */
 export function toDateInput(value) {
   const d = new Date(value);
   if (isNaN(d.getTime())) return '';
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-}
-
-/** "05:00" — the stored start as the Start time field holds it (24-hour, as on the create form). */
-export function toTimeInput(value) {
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return '';
-  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-}
-
-/** The two start fields back into one ISO instant, or '' while either is missing or invalid. */
-export function combineStart(date, time) {
-  if (!date || !time) return '';
-  // "9:00" is as valid as "09:00", but only the padded form parses as an ISO time.
-  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
-  if (!match) return '';
-  const d = new Date(`${date}T${match[1].padStart(2, '0')}:${match[2]}:00`);
-  if (isNaN(d.getTime())) return '';
-  // A date that doesn't exist (2026-02-31) rolls over to the next month instead of failing.
-  if (toDateInput(d) !== date) return '';
-  return d.toISOString();
 }
 
 /** "Pay (Rs, per worker)" / "Pay (Rs, per day)" — the edit form's Pay label. */
@@ -274,8 +276,10 @@ export function editChanges(posting, form) {
   if (posting.arrangementType !== 'GIG' && form.schedule.trim() !== (posting.schedule || '')) {
     changes.schedule = form.schedule.trim();
   }
-  const startAt = combineStart(form.startDate, form.startTime);
-  if (startAt && new Date(startAt).getTime() !== new Date(posting.startAt).getTime()) changes.startAt = startAt;
+  // `form.startAt` is the picker's ISO value, or '' while it is empty.
+  if (form.startAt && new Date(form.startAt).getTime() !== new Date(posting.startAt).getTime()) {
+    changes.startAt = form.startAt;
+  }
   return changes;
 }
 
@@ -308,6 +312,21 @@ export function reconfirmDeadline(startAt, now = Date.now()) {
   return new Date(now + Math.min(48 * 60 * 60 * 1000, left / 2));
 }
 
+/**
+ * The owner view lists who is engaged (`engagedWorkers`, never sent to workers). Exactly one
+ * engaged worker can be named; with several the screens say "Each engaged worker".
+ * @returns {string|null} the worker's full legal name
+ */
+export function engagedWorkerName(posting) {
+  const workers = posting?.engagedWorkers;
+  return Array.isArray(workers) && workers.length === 1 && workers[0]?.legalName ? workers[0].legalName : null;
+}
+
+/** First name of the single engaged worker ("Nethmi"), or null. */
+export function engagedFirstName(posting) {
+  return engagedWorkerName(posting)?.trim().split(/\s+/)[0] ?? null;
+}
+
 /** 2.11e2's ConfirmDialog body: what moves, the re-confirm deadline, who else is told. */
 export function saveDialogBody(posting, changes, now = Date.now()) {
   const parts = [];
@@ -319,9 +338,9 @@ export function saveDialogBody(posting, changes, now = Date.now()) {
 
   if (hasMaterialChange(changes)) {
     const start = changes.startAt || posting.startAt;
-    // The worker's name isn't in the posting the server returns, so this says "each engaged worker".
+    const who = engagedFirstName(posting) ?? 'Each engaged worker';
     parts.push(
-      `Each engaged worker has until ${formatStartFull(reconfirmDeadline(start, now))} to re-confirm — if they don't accept by then, that engagement moves into cancellation.`,
+      `${who} has until ${formatStartFull(reconfirmDeadline(start, now))} to re-confirm — if they don't accept by then, that engagement moves into cancellation.`,
     );
     const waiting = posting.pendingApplicantCount ?? 0;
     if (waiting > 0) {
@@ -344,13 +363,22 @@ export const PAUSED_NOTE =
   "Editing is paused until the re-confirmation is answered. Withdraw isn't available once a place is filled — to end an engagement, cancel it from Engagements.";
 
 /**
- * 2.11c `changeNote`: what changed and when the worker must answer. The pending request's
- * `changeSummary` is Engagement's JSON (its keys aren't fixed in database-schema.md), so only
- * the deadline — a real column — is always shown; the start time is named when the summary has one.
+ * 2.11c `changeNote`: what changed and when the worker must answer.
+ *
+ * The server stores the request's `changeSummary` as `{ field: { from, to } }`
+ * (posting.reconfirm.js); older rows held the bare value. Both are read, and the start time is
+ * only named when it parses: a bad value must never print "NaN" — the deadline sentence stands alone.
+ * @param {object} request - `posting.pendingChangeRequest`
+ * @param {string|null} [workerFirstName] - the single engaged worker, if known
  */
-export function changeNote(request) {
+export function changeNote(request, workerFirstName = null) {
   if (!request) return '';
-  const start = request.changeSummary?.startAt ?? request.changeSummary?.startTime;
-  const what = start ? `Start time changed to ${formatTime(new Date(start))} · ` : '';
-  return `${what}Each engaged worker has until ${formatStartFull(request.deadline)} to re-confirm — see responses`;
+  const summary = request.changeSummary;
+  const raw = summary?.startAt ?? summary?.startTime;
+  const start = raw && typeof raw === 'object' ? raw.to : raw;
+  const startDate = start ? new Date(start) : null;
+  const what = startDate && !isNaN(startDate.getTime()) ? `Start time changed to ${formatTime(startDate)} · ` : '';
+  const deadline = formatStartFull(request.deadline);
+  const who = workerFirstName || 'Each engaged worker';
+  return `${what}${who} has until ${deadline} to re-confirm — see responses`;
 }
