@@ -1,6 +1,9 @@
 /**
- * Gig Posting Constants & Helper Utilities (FR-POST)
- * Curated allow-lists, field limits, and business rule validators.
+ * Gig Posting constants and rule helpers (FR-POST) — Lahiru.
+ * Field limits, the category / arrangement / rate-unit allow-lists (labels exact per the
+ * prototype), and the two start-time rules. These mirror
+ * backend/src/modules/posting/posting.validators.js, which is the authority — the app
+ * checks early for a better experience, the server checks for real.
  */
 
 // FR-POST-01 & FR-POST-06 Field Caps
@@ -16,157 +19,40 @@ export const LIMITS = {
 
 // FR-POST-05: Minimum 2-hour lead time in milliseconds
 export const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
-export const MIN_LEAD_TIME_LABEL = '2 hours';
 
-// FR-POST-07: Urgency window (24h to 48h from now)
-export const URGENCY_WINDOW_MIN_MS = 24 * 60 * 60 * 1000;
-export const URGENCY_WINDOW_MAX_MS = 48 * 60 * 60 * 1000;
+// FR-POST-07 (amended 2026-08-27): urgent = starts 48 hours or less from now,
+// with no lower bound. Mirrors backend/src/modules/posting/posting.urgency.js.
+export const URGENCY_MAX_MS = 48 * 60 * 60 * 1000;
 
-// FR-POST-02: Curated 7 task categories (Strict allow-list, no free text)
+// FR-POST-02: the seven allow-listed categories, nothing else (no "Other"). Labels are exact per
+// prototype screen 2.2.
 export const GIG_CATEGORIES = [
-  {
-    id: 'RETAIL',
-    label: 'Retail / Shop Assistant',
-    icon: '🛍️',
-    description: 'Cashiering, shelf stocking, sales assistance, customer support',
-  },
-  {
-    id: 'DELIVERY',
-    label: 'Delivery & Errands',
-    icon: '🛵',
-    description: 'Local dispatch, grocery/document runs, package courier',
-  },
-  {
-    id: 'EVENT_SETUP',
-    label: 'Event Setup',
-    icon: '🎪',
-    description: 'Stage rigging, booth assembly, chairs & audiovisual assistance',
-  },
-  {
-    id: 'MOVING',
-    label: 'Moving & Manual Labor',
-    icon: '📦',
-    description: 'Loading/unloading goods, furniture moving, packing',
-  },
-  {
-    id: 'FOOD_SERVICE',
-    label: 'Food Service',
-    icon: '🍽️',
-    description: 'Kitchen prep, table waiting, dishwashing, catering crew',
-  },
-  {
-    id: 'TUTORING',
-    label: 'Tutoring',
-    icon: '📚',
-    description: 'School subjects, languages, foundational IT, homework help',
-  },
-  {
-    id: 'CLEANING',
-    label: 'Cleaning',
-    icon: '🧹',
-    description: 'Commercial/residential cleaning, post-event sweeping, sanitizing',
-  },
+  { id: 'RETAIL', label: 'Retail' },
+  { id: 'DELIVERY', label: 'Delivery' },
+  { id: 'EVENT_SETUP', label: 'Event setup' },
+  { id: 'MOVING', label: 'Moving' },
+  { id: 'FOOD_SERVICE', label: 'Food service' },
+  { id: 'TUTORING', label: 'Tutoring' },
+  { id: 'CLEANING', label: 'Cleaning' },
 ];
 
-// FR-POST-01 & FR-POST-04: Arrangement Types
+// FR-POST-01: arrangement types. Labels exact per prototype screens 2.3 / 2.3t.
 export const ARRANGEMENT_TYPES = [
-  {
-    id: 'GIG',
-    label: 'One-off Gig',
-    description: 'Single discrete task with fixed pay upon completion',
-    badgeColor: '#3B82F6',
-  },
-  {
-    id: 'PART_TIME',
-    label: 'Part-time Job',
-    description: 'Ongoing recurring shifts (requires regular schedule & rate)',
-    badgeColor: '#10B981',
-  },
-  {
-    id: 'INTERNSHIP',
-    label: 'Internship',
-    description: 'Structured youth training & apprenticeship placement',
-    badgeColor: '#8B5CF6',
-  },
+  { id: 'GIG', label: 'One-off gig' },
+  { id: 'PART_TIME', label: 'Part-time job' },
+  { id: 'INTERNSHIP', label: 'Internship' },
 ];
 
-// FR-POST-04: Pay Kinds
-export const PAY_KINDS = {
-  FIXED_TOTAL: 'FIXED_TOTAL',
-  RATE: 'RATE',
-  UNPAID: 'UNPAID',
-  STIPEND: 'STIPEND',
-  PAID: 'PAID',
-};
-
-// FR-POST-04: Pay Rate Units
+// FR-POST-04: rate units for a part-time job. Chip labels exact per prototype screen 2.4t.
 export const PAY_RATE_UNITS = [
-  { id: 'DAY', label: 'Per Day', short: '/day' },
-  { id: 'WEEK', label: 'Per Week', short: '/week' },
-  { id: 'MONTH', label: 'Per Month', short: '/month' },
-];
-
-// FR-ACC-02 / FR-POST-16: Posting As Types
-export const POSTED_AS_TYPES = [
-  { id: 'INDIVIDUAL', label: 'Individual / Household', icon: '👤' },
-  { id: 'BUSINESS', label: 'Registered Business', icon: '🏢' },
-];
-
-// Popular Sri Lankan locations for fast map coordinate presets (FR-POST-08)
-export const PRESET_LOCATIONS = [
-  {
-    areaLabel: 'Bambalapitiya, Colombo 04',
-    address: 'No. 128, Galle Road, Bambalapitiya, Colombo 04',
-    lat: 6.8912,
-    lng: 79.8567,
-  },
-  {
-    areaLabel: 'Kollupitiya, Colombo 03',
-    address: 'No. 45, Dharmapala Mawatha, Kollupitiya, Colombo 03',
-    lat: 6.9147,
-    lng: 79.8516,
-  },
-  {
-    areaLabel: 'Nugegoda, Western Province',
-    address: 'No. 82, High Level Road, Nugegoda',
-    lat: 6.8649,
-    lng: 79.8997,
-  },
-  {
-    areaLabel: 'Dehiwala, Western Province',
-    address: 'No. 15, Station Road, Dehiwala',
-    lat: 6.8511,
-    lng: 79.8659,
-  },
-  {
-    areaLabel: 'Kandy City Center, Central Province',
-    address: 'No. 5, Dalada Veediya, Kandy',
-    lat: 7.2906,
-    lng: 80.6337,
-  },
-  {
-    areaLabel: 'Galle Fort, Southern Province',
-    address: 'No. 22, Church Street, Fort, Galle',
-    lat: 6.0305,
-    lng: 80.2170,
-  },
-  {
-    areaLabel: 'Gampaha Town, Western Province',
-    address: 'No. 64, Yakkala Road, Gampaha',
-    lat: 7.0840,
-    lng: 79.9939,
-  },
-  {
-    areaLabel: 'Negombo, Western Province',
-    address: 'No. 110, Main Street, Negombo',
-    lat: 7.2008,
-    lng: 79.8736,
-  },
+  { id: 'DAY', label: 'Per day' },
+  { id: 'WEEK', label: 'Per week' },
+  { id: 'MONTH', label: 'Per month' },
 ];
 
 /**
  * Computes whether a gig posting is urgent (FR-POST-07).
- * Urgent if start time is within 24–48 hours from now.
+ * Urgent if the start is 48 hours or less from now, with no lower bound.
  * @param {string|Date} startAt
  * @param {number} [nowMs]
  * @returns {boolean}
@@ -176,8 +62,7 @@ export function computeIsUrgent(startAt, nowMs = Date.now()) {
   const startMs = new Date(startAt).getTime();
   if (isNaN(startMs)) return false;
 
-  const diffMs = startMs - nowMs;
-  return diffMs >= URGENCY_WINDOW_MIN_MS && diffMs <= URGENCY_WINDOW_MAX_MS;
+  return startMs - nowMs <= URGENCY_MAX_MS;
 }
 
 /**
@@ -199,7 +84,8 @@ export function validateLeadTime(startAt, nowMs = Date.now()) {
   if (diffMs < MIN_LEAD_TIME_MS) {
     return {
       valid: false,
-      message: `Start time must be at least ${MIN_LEAD_TIME_LABEL} from now, so youth workers have sufficient time to discover and apply.`,
+      // Exact copy of prototype screen 2.8err.
+      message: "Gigs need at least 2 hours' notice. Please choose a later start time.",
     };
   }
 
@@ -207,34 +93,16 @@ export function validateLeadTime(startAt, nowMs = Date.now()) {
 }
 
 /**
- * Formats a currency amount in Sri Lankan Rupees (LKR)
+ * Formats a currency amount in Sri Lankan Rupees, per design-system.md §9 and
+ * NFR-LOC-04: "Rs" + a space + the amount with thousands separators and no
+ * decimals — e.g. "Rs 6,000". No period after "Rs", never a decimal.
  * @param {number|string} amount
- * @returns {string} e.g. "Rs. 3,500"
+ * @returns {string} e.g. "Rs 6,000"
  */
 export function formatLKR(amount) {
-  if (amount == null || amount === '') return 'Rs. 0';
+  if (amount == null || amount === '') return 'Rs 0';
   const num = Number(amount);
-  if (isNaN(num)) return 'Rs. 0';
-  return `Rs. ${num.toLocaleString('en-US')}`;
+  if (isNaN(num)) return 'Rs 0';
+  return `Rs ${Math.round(num).toLocaleString('en-US')}`;
 }
 
-/**
- * Formats a Date object or ISO string to a human-readable date & time
- * @param {string|Date} dateVal
- * @returns {string}
- */
-export function formatDateTime(dateVal) {
-  if (!dateVal) return '';
-  const d = new Date(dateVal);
-  if (isNaN(d.getTime())) return '';
-
-  return d.toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}

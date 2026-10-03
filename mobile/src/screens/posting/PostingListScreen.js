@@ -1,600 +1,162 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+/**
+ * My postings (prototype 2.10, 2.10p, 2.10w, 2.10z …; FR-POST-14, FR-POST-18) — Lahiru.
+ *
+ * The employer's own postings, newest first. Each card is a title, the status badge
+ * (Open / Filled / Withdrawn / Expired — computed by the server from the fill count,
+ * FR-POST-18) and a meta line that always begins with the plain fill count, "2 of 3
+ * filled" (FR-POST-14), then says what matters for that status. Reloads whenever the
+ * screen regains focus, so a withdrawal made on the detail shows here at once.
+ *
+ * States beyond the typical one come from design-system.md §8: loading →
+ * Feedback/LoadingState; nothing posted yet → Feedback/EmptyState {NoneExist} (2.10z);
+ * a failed load → Feedback/FormBanner with a retry. A posting hidden after reports (2.10g)
+ * reads "Hidden pending review" on its card, with the explanation beneath it.
+ */
+import { useCallback, useEffect, useState } from 'react';
+import { View, Text, Pressable, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, spacing, radius, typography } from '../../theme/tokens';
+import Badge from '../../components/Badge';
+import EmptyState from '../../components/EmptyState';
+import LoadingState from '../../components/LoadingState';
+import FormBanner from '../../components/FormBanner';
+import Button from '../../components/Button';
 import { getMyGigPostings } from '../../api/posting.api.js';
-import {
-  GIG_CATEGORIES,
-  ARRANGEMENT_TYPES,
-  PAY_RATE_UNITS,
-  formatLKR,
-  formatDateTime,
-} from './posting.constants.js';
-
-// Sample fallback postings for instant preview / offline dev
-const SAMPLE_POSTINGS = [
-  {
-    id: 'gig-1',
-    title: 'Weekend Retail Cashier & Shelf Helper',
-    category: 'RETAIL',
-    arrangementType: 'GIG',
-    payKind: 'FIXED_TOTAL',
-    payAmount: 3500,
-    workersNeeded: 2,
-    filledCount: 1,
-    status: 'OPEN',
-    isUrgent: true,
-    startAt: new Date(Date.now() + 30 * 60 * 60 * 1000).toISOString(),
-    locationAreaLabel: 'Bambalapitiya, Colombo 04',
-    locationAddress: 'No. 128, Galle Road, Bambalapitiya, Colombo 04',
-    locationLat: 6.8912,
-    locationLng: 79.8567,
-    postedAsType: 'BUSINESS',
-    postedBusinessName: 'Ceylon Urban Retailers Ltd',
-    description: 'Assist during Saturday peak shopping rush with cashiering and bag packing.',
-  },
-  {
-    id: 'gig-2',
-    title: 'Evening Delivery & Document Dispatch Runner',
-    category: 'DELIVERY',
-    arrangementType: 'PART_TIME',
-    payKind: 'RATE',
-    payAmount: 1800,
-    payRateUnit: 'DAY',
-    schedule: 'Mon–Fri, 4:30 PM – 7:30 PM',
-    workersNeeded: 1,
-    filledCount: 1,
-    status: 'FILLED',
-    isUrgent: false,
-    startAt: new Date(Date.now() + 96 * 60 * 60 * 1000).toISOString(),
-    locationAreaLabel: 'Kollupitiya, Colombo 03',
-    locationAddress: 'No. 45, Dharmapala Mawatha, Kollupitiya, Colombo 03',
-    locationLat: 6.9147,
-    locationLng: 79.8516,
-    postedAsType: 'INDIVIDUAL',
-    description: 'Local package courier around central commercial district.',
-  },
-  {
-    id: 'gig-3',
-    title: 'Exhibition Hall Setup & Chair Rigging Crew',
-    category: 'EVENT_SETUP',
-    arrangementType: 'GIG',
-    payKind: 'FIXED_TOTAL',
-    payAmount: 5000,
-    workersNeeded: 4,
-    filledCount: 0,
-    status: 'OPEN',
-    isUrgent: true,
-    startAt: new Date(Date.now() + 36 * 60 * 60 * 1000).toISOString(),
-    locationAreaLabel: 'Nugegoda, Western Province',
-    locationAddress: 'No. 82, High Level Road, Nugegoda',
-    locationLat: 6.8649,
-    locationLng: 79.8997,
-    postedAsType: 'BUSINESS',
-    postedBusinessName: 'Apex Event Productions',
-    description: 'Help assemble booths and arrange sound and lighting fixtures.',
-  },
-];
+import { HIDDEN_NOTE_LIST, badgeValue, cardMeta, isHiddenPending } from './posting.format.js';
 
 export default function PostingListScreen({ navigation }) {
-  const [postings, setPostings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
+  const [postings, setPostings] = useState(null); // null = not loaded yet
+  const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('ALL');
 
-  const fetchPostings = useCallback(async () => {
+  const load = useCallback(async () => {
     try {
-      const res = await getMyGigPostings();
-      if (res?.postings && Array.isArray(res.postings) && res.postings.length > 0) {
-        setPostings(res.postings);
-      } else {
-        // Use sample postings if backend returns empty or in dev environment
-        setPostings(SAMPLE_POSTINGS);
-      }
+      const { postings: list } = await getMyGigPostings();
+      setPostings(list);
+      setError(null);
     } catch (err) {
-      // Fallback for development without running backend
-      setPostings(SAMPLE_POSTINGS);
+      setError(err.message || "Your postings couldn't be loaded.");
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
+  // On open and every time the screen is returned to (after a withdrawal, a new posting…).
   useEffect(() => {
-    fetchPostings();
-  }, [fetchPostings]);
+    load();
+    return navigation.addListener('focus', load);
+  }, [load, navigation]);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchPostings();
-  };
-
-  // Filtered Postings
-  const filteredPostings = postings.filter((p) => {
-    if (selectedFilter === 'ALL') return true;
-    return p.status === selectedFilter;
-  });
-
-  const renderPostingCard = ({ item }) => {
-    const categoryObj = GIG_CATEGORIES.find((c) => c.id === item.category);
-    const arrangementObj = ARRANGEMENT_TYPES.find((a) => a.id === item.arrangementType);
-    const rateUnitObj = PAY_RATE_UNITS.find((u) => u.id === item.payRateUnit);
-
-    // Pay format string
-    let payStr = 'Unpaid';
-    if (item.payKind === 'FIXED_TOTAL') payStr = `${formatLKR(item.payAmount)} total`;
-    else if (item.payKind === 'RATE') payStr = `${formatLKR(item.payAmount)} ${rateUnitObj?.short || '/unit'}`;
-    else if (item.payKind === 'STIPEND') payStr = `${formatLKR(item.payAmount)} /mo stipend`;
-    else if (item.payKind === 'PAID') payStr = `${formatLKR(item.payAmount)} /mo`;
-
-    // Status Pill style
-    const isFilled = item.status === 'FILLED';
-    const isOpen = item.status === 'OPEN';
-    const isWithdrawn = item.status === 'WITHDRAWN';
-
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        activeOpacity={0.85}
-        onPress={() =>
-          navigation.navigate('PostingDetail', {
-            postingId: item.id,
-            postingData: item,
-          })
-        }
-      >
-        {/* Card Header Tags */}
-        <View style={styles.cardHeader}>
-          <View style={styles.leftTags}>
-            <View style={styles.categoryChip}>
-              <Text style={styles.categoryChipText}>
-                {categoryObj?.icon || '🛍️'} {categoryObj?.label || item.category}
-              </Text>
-            </View>
-            {item.isUrgent && (
-              <View style={styles.urgentChip}>
-                <Text style={styles.urgentChipText}>⚡ Urgent</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Status Badge (FR-POST-18) */}
-          <View
-            style={[
-              styles.statusPill,
-              isOpen && styles.statusOpen,
-              isFilled && styles.statusFilled,
-              isWithdrawn && styles.statusWithdrawn,
-            ]}
-          >
-            <Text
-              style={[
-                styles.statusPillText,
-                isOpen && styles.statusOpenText,
-                isFilled && styles.statusFilledText,
-                isWithdrawn && styles.statusWithdrawnText,
-              ]}
-            >
-              {item.status}
-            </Text>
-          </View>
-        </View>
-
-        {/* Title */}
-        <Text style={styles.cardTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-
-        {/* Slot-fill Status (FR-POST-14) */}
-        <View style={styles.slotContainer}>
-          <View style={styles.slotRow}>
-            <Text style={styles.slotLabel}>
-              👥 Slot Status:{' '}
-              <Text style={styles.slotValue}>
-                {item.filledCount || 0} of {item.workersNeeded} filled (FR-POST-14)
-              </Text>
-            </Text>
-            <Text style={styles.arrangementTag}>{arrangementObj?.label || item.arrangementType}</Text>
-          </View>
-
-          {/* Slot Progress Bar */}
-          <View style={styles.slotProgressTrack}>
-            <View
-              style={[
-                styles.slotProgressFill,
-                {
-                  width: `${Math.min(
-                    100,
-                    ((item.filledCount || 0) / (item.workersNeeded || 1)) * 100,
-                  )}%`,
-                },
-              ]}
-            />
-          </View>
-        </View>
-
-        {/* Details Footer */}
-        <View style={styles.cardFooter}>
-          <View style={styles.footerItem}>
-            <Text style={styles.footerKey}>Pay (per worker):</Text>
-            <Text style={styles.footerPay}>{payStr}</Text>
-          </View>
-
-          <View style={styles.footerItem}>
-            <Text style={styles.footerKey}>Starts:</Text>
-            <Text style={styles.footerVal}>{formatDateTime(item.startAt)}</Text>
-          </View>
-        </View>
-
-        <View style={styles.locationRow}>
-          <Text style={styles.locationText}>📍 {item.locationAreaLabel}</Text>
-          <Text style={styles.viewMoreText}>Manage Gig →</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const hasList = postings !== null;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Top Action Header */}
-      <View style={styles.topHeader}>
-        <View>
-          <Text style={styles.screenHeading}>My Gig Postings</Text>
-          <Text style={styles.screenSub}>Manage your active and previous listings</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.createBtn}
-          onPress={() => navigation.navigate('PostingCreate')}
-        >
-          <Text style={styles.createBtnText}>+ Post a Gig</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Filter Tabs */}
-      <View style={styles.filterRow}>
-        {['ALL', 'OPEN', 'FILLED', 'WITHDRAWN'].map((filter) => {
-          const isSelected = selectedFilter === filter;
-          return (
-            <TouchableOpacity
-              key={filter}
-              style={[styles.filterTab, isSelected && styles.filterTabSelected]}
-              onPress={() => setSelectedFilter(filter)}
+    <View style={styles.root}>
+      <StatusBar style="dark" />
+      <FlatList
+        data={postings ?? []}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 22 }]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              load();
+            }}
+          />
+        }
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.screenTitle}>My postings</Text>
+            {error ? <FormBanner kind="error" message={error} /> : null}
+            {error && !hasList ? <Button title="Try again" style="secondary" onPress={load} /> : null}
+          </View>
+        }
+        ListEmptyComponent={
+          !hasList ? (
+            // Still loading — or failed, in which case the banner above says so.
+            error ? null : <LoadingState />
+          ) : (
+            // 2.10z: a new employer's empty list.
+            <EmptyState
+              title="No postings yet"
+              body="Post a gig and it will appear here, with its applicants as they arrive."
+              actionLabel="Post a gig"
+              onAction={() => navigation.navigate('PostingCreate')}
+            />
+          )
+        }
+        renderItem={({ item }) => (
+          <View style={styles.item}>
+            <Pressable
+              onPress={() => navigation.navigate('PostingDetail', { postingId: item.id })}
+              accessibilityRole="button"
+              accessibilityLabel={item.title}
+              style={styles.card}
             >
-              <Text
-                style={[
-                  styles.filterTabText,
-                  isSelected && styles.filterTabTextSelected,
-                ]}
-              >
-                {filter === 'ALL' ? 'All Gigs' : filter}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
-      {/* Content */}
-      {loading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#2563EB" />
-          <Text style={styles.loadingText}>Loading your postings...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredPostings}
-          renderItem={renderPostingCard}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📋</Text>
-              <Text style={styles.emptyTitle}>No postings in "{selectedFilter}"</Text>
-              <Text style={styles.emptySub}>
-                Create a new gig posting to connect with enthusiastic local youth looking for work.
-              </Text>
-              <TouchableOpacity
-                style={styles.emptyBtn}
-                onPress={() => navigation.navigate('PostingCreate')}
-              >
-                <Text style={styles.emptyBtnText}>Create Your First Gig</Text>
-              </TouchableOpacity>
-            </View>
-          }
-        />
-      )}
-    </SafeAreaView>
+              <View style={styles.topRow}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Badge family="posting" value={badgeValue(item.status)} />
+              </View>
+              <Text style={styles.meta}>{cardMeta(item)}</Text>
+            </Pressable>
+            {isHiddenPending(item) ? <Text style={styles.hiddenNote}>{HIDDEN_NOTE_LIST}</Text> : null}
+          </View>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  root: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.bg.subtle,
   },
-  topHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+  // Figma content: pad 66/16/16/16 (66 = the status bar plus 22), gap 12.
+  content: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.gutter,
+    paddingBottom: spacing.lg,
+    gap: spacing.md,
   },
-  screenHeading: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
+  header: {
+    gap: spacing.md,
   },
-  screenSub: {
-    fontSize: 12,
-    color: '#64748B',
-    marginTop: 2,
+  screenTitle: {
+    ...typography.display,
+    color: colors.text.primary,
   },
-  createBtn: {
-    backgroundColor: '#2563EB',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 8,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+  // A card and, for a hidden posting (2.10g), its note — a sibling of the card, gap 12.
+  item: {
+    gap: spacing.md,
   },
-  createBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13,
+  hiddenNote: {
+    ...typography.secondary,
+    color: colors.text.secondary,
   },
-  filterRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    gap: 8,
-  },
-  filterTab: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#F1F5F9',
-  },
-  filterTabSelected: {
-    backgroundColor: '#2563EB',
-  },
-  filterTabText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  filterTabTextSelected: {
-    color: '#FFFFFF',
-  },
-  listContent: {
-    padding: 16,
-    paddingBottom: 30,
-  },
-  loaderContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 14,
-    color: '#64748B',
-  },
+  // posting-* card: pad 12/14, gap 6, r8 on color/bg/default.
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  leftTags: {
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: 6,
-    flexWrap: 'wrap',
-    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: 14,
+    borderRadius: radius.input,
+    backgroundColor: colors.bg.default,
   },
-  categoryChip: {
-    backgroundColor: '#F1F5F9',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  categoryChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#334155',
-  },
-  urgentChip: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FCA5A5',
-    borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  urgentChipText: {
-    color: '#DC2626',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  statusPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  statusOpen: {
-    backgroundColor: '#DCFCE7',
-    borderColor: '#86EFAC',
-  },
-  statusOpenText: {
-    color: '#15803D',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  statusFilled: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#93C5FD',
-  },
-  statusFilledText: {
-    color: '#1D4ED8',
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  statusWithdrawn: {
-    backgroundColor: '#F1F5F9',
-    borderColor: '#CBD5E1',
-  },
-  statusWithdrawnText: {
-    color: '#64748B',
-    fontSize: 11,
-    fontWeight: '700',
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 10,
-  },
-  slotContainer: {
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 12,
-  },
-  slotRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  slotLabel: {
-    fontSize: 12,
-    color: '#475569',
-  },
-  slotValue: {
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  arrangementTag: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#2563EB',
-  },
-  slotProgressTrack: {
-    height: 6,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  slotProgressFill: {
-    height: '100%',
-    backgroundColor: '#10B981',
-    borderRadius: 3,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-  },
-  footerItem: {
     flex: 1,
+    ...typography.bodyMedium,
+    color: colors.text.primary,
   },
-  footerKey: {
-    fontSize: 11,
-    color: '#64748B',
-    marginBottom: 2,
-  },
-  footerPay: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#059669',
-  },
-  footerVal: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1E293B',
-  },
-  locationRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-  },
-  locationText: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-  viewMoreText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#2563EB',
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: 32,
-    marginTop: 40,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 6,
-  },
-  emptySub: {
-    fontSize: 13,
-    color: '#64748B',
-    textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 20,
-  },
-  emptyBtn: {
-    backgroundColor: '#2563EB',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  emptyBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 14,
+  meta: {
+    ...typography.caption,
+    color: colors.text.secondary,
   },
 });
