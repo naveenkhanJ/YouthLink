@@ -152,7 +152,7 @@ export default function RegisterScreen({ navigation }) {
   const [fieldErrors, setFieldErrors] = useState({});
   // Step 4 scrolls the focused field to a fixed place under the top (see useFocusScroll).
   const detailsScroll = useRef(null);
-  const field = useFocusScroll(detailsScroll);
+  const { field, scrollProps } = useFocusScroll(detailsScroll);
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   // True once the account exists (step 4 creates it). From then on there is nothing to go back to
@@ -515,6 +515,7 @@ export default function RegisterScreen({ navigation }) {
       <StatusBar style="dark" />
       <ScrollView
         ref={detailsScroll}
+        {...scrollProps}
         style={styles.scroll}
         contentContainerStyle={[styles.content, styles.contentDetails]}
         keyboardShouldPersistTaps="handled"
@@ -634,7 +635,7 @@ const styles = StyleSheet.create({
     // The prototype ends the content flush (0), which is right with the keyboard closed. The extra
     // slack is invisible then, but lets the scroll lift the focused last field and its counter
     // clear of the pinned bar when the keyboard is open (the field was ending flush with the bar).
-    paddingBottom: 96,
+    paddingBottom: 160,
     gap: spacing.sm,
   },
   // topBar 328×44: back chevron at the left, ✕ at the right.
