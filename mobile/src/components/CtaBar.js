@@ -26,12 +26,17 @@ import { colors, spacing, elevation } from "../theme/tokens";
  *   the keyboard sits directly below this bar).
  * @param {boolean} [shadow] - Whether the scrolling content above is
  *   actually taller than the available space right now.
+ * @param {"default"|"subtle"} [surface] - The bar's fill is the screen's own fill
+ *   (design-system.md §5): `color/bg/default` for a white screen, `color/bg/subtle`
+ *   for the grey ones (the owner's posting detail, 2.11*). Pass "subtle" on a grey screen
+ *   so the bar is invisible until something scrolls under it.
  */
-export default function CtaBar({ children, onTabBar = false, shadow = false }) {
+export default function CtaBar({ children, onTabBar = false, shadow = false, surface = "default" }) {
   return (
     <View
       style={[
         styles.bar,
+        surface === "subtle" && styles.surfaceSubtle,
         onTabBar ? styles.paddingOnTabBar : styles.paddingBottomEdge,
         shadow && elevation.bar,
       ]}
@@ -45,6 +50,9 @@ const styles = StyleSheet.create({
   bar: {
     gap: spacing.sm,
     backgroundColor: colors.bg.default,
+  },
+  surfaceSubtle: {
+    backgroundColor: colors.bg.subtle,
   },
   paddingBottomEdge: {
     paddingTop: spacing.md,
