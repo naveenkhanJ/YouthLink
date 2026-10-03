@@ -1,18 +1,24 @@
 /**
- * Forgot password, request (spec 1.8 / 1.8e / 1.8v / 1.8rec1 / 1.8bnr) — Afham.
+ * Forgot password, request (FR-ACC-10) — Afham.
  *
- * Layout per spec 1.8:
- *  - Chrome/ScreenHeader title "Forgot password"
- *  - TEXT "Choose where we should send your reset code." (secondary)
- *  - Two RoleOption cards (SMS / Email)
- *  - linkGroup: "Neither of these works for me" (conditional) / "Trouble getting in? Get help"
- *  - SPACER grows
- *  - ctaBar: Button "Send reset code" / "Recover my account" (1.8bnr)
+ * Prototype frames: 1.8 / 1.8e / 1.8v (both channels), 1.8rec1 (no verified email: an extra
+ * "Neither of these works for me" link) and 1.8bnr (neither reachable: error banner, both
+ * options marked, button becomes "Recover my account"). One screen, three states.
  *
- * The FormBanner (error) only appears on the 1.8bnr state.
+ * Layout (all frames): Chrome/ScreenHeader "Forgot password", content pad 24/16/4/16 gap 16:
+ * [banner], explainer, two RoleOption cards, link group, growing spacer, pinned ctaBar.
+ *
+ * The channels come from the server (getResetChannels): the SMS option is always offered, the
+ * email option only when the account has a VERIFIED email (shown masked — this endpoint is
+ * unauthenticated). The server answers an unknown number exactly like one with no email, so the
+ * screen cannot tell them apart and neither can anyone typing numbers into it.
+ *
+ * Not drawn, built from the nearest frames: the person arrives without a number (the login
+ * screen was left empty) → a PhoneField asks for it; the email link has no code step (the link
+ * opens the reset page in the browser) → an Info banner says it was sent.
  */
-import { useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
@@ -21,113 +27,151 @@ import Button from "../../components/Button";
 import RoleOption from "../../components/RoleOption";
 import Link from "../../components/Link";
 import CtaBar from "../../components/CtaBar";
-import { requestPasswordReset } from "../../api/account";
-import { parseApiError } from "../../api/client";
+import PhoneField from "../../components/PhoneField";
+import { getResetChannels, requestPasswordReset } from "../../api/account";
+import { COUNTRY_CODE, LOCAL_DIGITS, formatLocalNumber, toLocalDigits } from "./phoneFormat";
 
 export default function AccountForgotPasswordScreen({ navigation, route }) {
-  // `phone` and `email` come from navigation params or API mock
-  const phone = route.params?.phone || "+94 77 123 4567";
-  const email = route.params?.email || "kavindu@example.com";
-  
-  // States: "sms", "email"
-  const [selectedChannel, setSelectedChannel] = useState("sms");
-  const [loading, setLoading] = useState(false);
+  // The login screen passes whatever was typed; keep the nine local digits.
+  const [localPhone, setLocalPhone] = useState(toLocalDigits(route.params?.phone));
+  const phoneKnown = localPhone.length === LOCAL_DIGITS;
+  const e164 = `${COUNTRY_CODE}${localPhone}`;
 
-  // Is this the "neither channel works" scenario?
-  const isEmailMissing = !email || email === "";
-  const isPhoneUnreachable = route.params?.phoneUnreachable || false;
-  
-  // 1.8bnr: Neither channel reachable
-  const isNeitherReachable = isPhoneUnreachable && isEmailMissing;
+  const [maskedEmail, setMaskedEmail] = useState(null);
+  const [channelsLoaded, setChannelsLoaded] = useState(false);
+  const [selected, setSelected] = useState("PHONE");
+  const [neither, setNeither] = useState(false); // 1.8bnr
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(null);
+  const [emailSent, setEmailSent] = useState(false);
 
-  async function handleSendResetCode() {
-    if (isNeitherReachable) {
-      // Leads to 1.8rec2
-      navigation.navigate("AccountRecoveryConfirm", { identifier: phone });
+  // Look up the channels once there is a full number.
+  useEffect(() => {
+    if (!phoneKnown) return undefined;
+    let cancelled = false;
+    setChannelsLoaded(false);
+    setError(null);
+    getResetChannels({ phone: e164 })
+      .then((result) => {
+        if (cancelled) return;
+        setMaskedEmail(result.emailVerified ? result.email : null);
+        setSelected("PHONE");
+        setChannelsLoaded(true);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [phoneKnown, e164]);
+
+  // 1.8bnr backs out to 1.8rec1, not off the screen.
+  function goBack() {
+    if (neither) setNeither(false);
+    else navigation.goBack();
+  }
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (!neither) return false;
+      setNeither(false);
+      return true;
+    });
+    return () => sub.remove();
+  }, [neither]);
+
+  async function handleSubmit() {
+    if (neither) {
+      navigation.navigate("AccountRecoveryConfirm");
       return;
     }
-    
-    // Proceed to OTP screen
-    setLoading(true);
+    setSending(true);
+    setError(null);
+    setEmailSent(false);
     try {
-      const destination = selectedChannel === "sms" ? phone : email;
-      const backendChannel = selectedChannel === "sms" ? "PHONE" : "EMAIL";
-      await requestPasswordReset({ phone, channel: backendChannel });
-      navigation.navigate("AccountForgotPasswordCode", {
-        channel: selectedChannel,
-        destination,
-        phone,
-      });
+      await requestPasswordReset({ phone: e164, channel: selected });
+      if (selected === "PHONE") {
+        navigation.navigate("AccountForgotPasswordCode", {
+          phone: e164,
+          destination: `${COUNTRY_CODE} ${formatLocalNumber(localPhone)}`,
+        });
+      } else {
+        setEmailSent(true);
+      }
     } catch (err) {
-      const { formError } = parseApiError(err);
-      // In a full app, we'd display formError, but the spec doesn't show a banner here.
-      console.warn("Password reset request failed", formError);
+      setError(err.message);
     } finally {
-      setLoading(false);
+      setSending(false);
     }
   }
 
-  return (
-    <View style={styles.flex}>
-      <StatusBar style="dark" />
-      <ScreenHeader title="Forgot password" onBack={() => navigation.goBack()} />
+  const hasEmail = Boolean(maskedEmail);
+  const helpTarget = () => navigation.navigate("HelpAccountAccess");
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
-        {isNeitherReachable && (
+  return (
+    <View style={styles.root}>
+      <StatusBar style="dark" />
+      <ScreenHeader title="Forgot password" onBack={goBack} />
+
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        {neither ? (
           <FormBanner
             kind="error"
             message="We can't reach you by phone or email, so we can't reset your password automatically."
           />
-        )}
+        ) : null}
+        {error ? <FormBanner kind="error" message={error} /> : null}
+        {emailSent ? (
+          <FormBanner kind="info" message={`We sent a reset link to ${maskedEmail}. Open it to choose a new password.`} />
+        ) : null}
 
-        <Text style={styles.explainer}>
-          Choose where we should send your reset code.
-        </Text>
+        {phoneKnown ? (
+          <>
+            <Text style={styles.explainer}>Choose where we should send your reset code.</Text>
 
-        <RoleOption
-          title="Text me a code"
-          description={isPhoneUnreachable ? `${phone} — not reachable` : `SMS to ${phone}`}
-          selected={selectedChannel === "sms" && !isPhoneUnreachable}
-          onPress={() => !isPhoneUnreachable && setSelectedChannel("sms")}
-        />
-
-        <RoleOption
-          title="Email me a link"
-          description={isEmailMissing ? "No verified email on this account" : `To ${email}`}
-          selected={selectedChannel === "email" && !isEmailMissing}
-          onPress={() => !isEmailMissing && setSelectedChannel("email")}
-        />
-
-        {/* linkGroup — "Neither of these works for me" appears only when
-            there is no working email but phone IS still reachable (1.8rec1).
-            On 1.8bnr (neither reachable) it disappears and the button changes.
-        */}
-        <View style={styles.linkGroup}>
-          {isEmailMissing && !isNeitherReachable && (
-            <Link
-              title="Neither of these works for me"
-              onPress={() => navigation.setParams({ phoneUnreachable: true })}
+            <RoleOption
+              title="Text me a code"
+              description={
+                neither
+                  ? `${COUNTRY_CODE} ${formatLocalNumber(localPhone)} — not reachable`
+                  : `SMS to ${COUNTRY_CODE} ${formatLocalNumber(localPhone)}`
+              }
+              selected={selected === "PHONE"}
+              onPress={() => setSelected("PHONE")}
             />
-          )}
-          <Link
-            title="Trouble getting in? Get help"
-            onPress={() => console.log("HF.5 — not yet built")}
-          />
-        </View>
+            <RoleOption
+              title="Email me a link"
+              description={hasEmail ? `To ${maskedEmail}` : "No verified email on this account"}
+              selected={hasEmail && selected === "EMAIL"}
+              onPress={() => hasEmail && setSelected("EMAIL")}
+            />
+
+            <View style={styles.linkGroup}>
+              {channelsLoaded && !hasEmail && !neither ? (
+                <Link title="Neither of these works for me" onPress={() => setNeither(true)} />
+              ) : null}
+              <Link title="Trouble getting in? Get help" onPress={helpTarget} />
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.explainer}>Enter the phone number on your account.</Text>
+            <PhoneField value={localPhone} onChangeText={setLocalPhone} />
+            <View style={styles.linkGroup}>
+              <Link title="Trouble getting in? Get help" onPress={helpTarget} />
+            </View>
+          </>
+        )}
 
         <View style={styles.spacer} />
       </ScrollView>
 
       <CtaBar>
         <Button
-          title={isNeitherReachable ? "Recover my account" : "Send reset code"}
-          onPress={handleSendResetCode}
-          loading={loading}
-          disabled={!selectedChannel && !isNeitherReachable}
+          title={neither ? "Recover my account" : selected === "EMAIL" ? "Send reset link" : "Send reset code"}
+          onPress={handleSubmit}
+          loading={sending}
+          disabled={!phoneKnown || (!neither && !channelsLoaded)}
         />
       </CtaBar>
     </View>
@@ -135,30 +179,30 @@ export default function AccountForgotPasswordScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  flex: {
+  root: {
     flex: 1,
     backgroundColor: colors.bg.default,
   },
   scroll: {
     flex: 1,
   },
+  // Spec: content pad 24/16/4/16, gap 16.
   content: {
     flexGrow: 1,
+    paddingTop: spacing.xl,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,           // 24px — spec: vertical pad 24/16/4/16
     paddingBottom: spacing.xs,
-    gap: spacing.lg,                  // 16px between children
+    gap: spacing.lg,
   },
   explainer: {
     ...typography.secondary,
     color: colors.text.secondary,
   },
   linkGroup: {
-    gap: 0,
     alignItems: "flex-start",
   },
   spacer: {
     flex: 1,
-    minHeight: spacing.xxl,
+    minHeight: spacing.lg,
   },
 });

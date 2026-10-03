@@ -23,7 +23,7 @@ router.get("/verify-email", asyncHandler(controller.verifyEmailPage));
 
 router.post("/reset-password/channels", asyncHandler(controller.resetPasswordChannels));
 // The minimal web page the emailed reset link opens (FR-ACC-10).
-router.get("/reset-password/page", controller.resetPasswordPage);
+router.get("/reset-password/page", asyncHandler(controller.resetPasswordPage));
 router.post("/reset-password/request", asyncHandler(controller.resetPasswordRequest));
 router.post("/reset-password/verify", asyncHandler(controller.resetPasswordVerify));
 router.post("/reset-password/confirm", asyncHandler(controller.resetPasswordConfirm));
@@ -33,6 +33,15 @@ router.get("/recovery/status", asyncHandler(controller.recoveryStatus));
 router.post("/recovery/confirm", asyncHandler(controller.recoveryConfirm));
 
 router.post("/phone/change", requireAuth, asyncHandler(controller.changePhone));
+router.post("/password/change", requireAuth, asyncHandler(controller.changePassword));
+router.get("/me", requireAuth, asyncHandler(controller.getMe));
+router.post("/email/change", requireAuth, asyncHandler(controller.requestEmailChange));
+router.post("/email/cancel", requireAuth, asyncHandler(controller.cancelEmailChange));
+router.get("/deletion", requireAuth, asyncHandler(controller.getDeletionStatus));
+router.post("/delete", requireAuth, asyncHandler(controller.deleteAccount));
+router.patch("/posting-as", requireAuth, asyncHandler(controller.updatePostingAs));
+router.put("/nic", requireAuth, asyncHandler(controller.changeNic));
+router.patch("/display-name", requireAuth, asyncHandler(controller.updateDisplayName));
 
 export default router;
 

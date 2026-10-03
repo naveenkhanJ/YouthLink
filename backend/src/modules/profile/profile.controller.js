@@ -1,13 +1,15 @@
 /**
  * Profile & Trust Signals controllers — the HTTP layer.
  *
- * Epic: FR-PROF  ·  Owner: TBD (Sprint 2)
+ * Epic: FR-PROF  ·  Owner: Afham (minimal slice: the person's own profile)
  *
  * A controller reads the request, calls the service, and shapes the response.
- * It should contain no business rules and no Prisma calls — those belong in
- * profile.service.js, so the rules stay testable and reusable.
+ * It contains no business rules and no Prisma calls — those are in profile.service.js.
  */
-// import AppError from "../../utils/AppError.js";
-// import service from "./profile.service.js";
+import service from "./profile.service.js";
 
-export default {};
+export default {
+  async getOwnProfile(req, res) {
+    res.status(200).json(await service.getOwnProfile({ userId: req.user.id }));
+  },
+};

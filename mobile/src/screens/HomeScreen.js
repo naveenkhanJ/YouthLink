@@ -1,34 +1,28 @@
 /**
- * The app's neutral entry point (docs/module-ownership.md Sprint 3, shared
- * prerequisite item 1) — replaces the placeholder that used to live here.
+ * The app's neutral entry point (docs/module-ownership.md Sprint 3, shared prerequisite item 1).
  *
- * There is no designed "generic Home" screen in docs/prototype/ — MNAV-shells.md
- * defines three role-specific tab shells instead ("this frame is a definition,
- * not a step... no flow visits them"), each landing on that role's first hub
- * tab. So this screen's job is routing, not its own UI:
- *   - signed in   → that role's TabBar + the exact shell copy MNAV-shells.md
- *     already wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
- *   - signed out  → held off entirely, on Afham's explicit instruction
- *     (2026-09-27): docs/prototype/'s M0 onboarding + 1.1 role-selection are
- *     what actually belongs here, and neither is in scope yet. What's below
- *     is deliberately NOT designed UI — no tokens, no brand styling, same
- *     plain-scaffold spirit as this file's original placeholder — just
- *     enough to keep reaching the existing Login/Register screens for
- *     testing until M0 is actually built. Do not "improve" its look; that
- *     was the mistake the first time (a full YouthLink-branded screen that
- *     doesn't exist anywhere in the prototype).
+ * There is no designed "generic Home" screen in docs/prototype/ — MNAV-shells.md defines three
+ * role-specific tab shells instead ("this frame is a definition, not a step"), each landing on
+ * that role's first hub tab. So this screen's job is routing:
+ *   - signed in   → that role's TabBar over the shell's host region, with the exact shell copy
+ *     MNAV-shells.md wrote for it (SHELL_COPY_BY_ROLE in ../components/TabBar.js)
+ *   - signed out  → depends on what the device remembers (auth/launchState.js): Log in with the
+ *     last number filled in if someone signed in here before; otherwise role selection (1.1) once the
+ *     first-run cards (M0 0.2–0.4; the splash is BrandSplash) have been seen; otherwise the cards.
  *
- * The real hub screens (Browse, My Postings, My Endorsements) aren't on
- * develop yet — they're on other modules' unmerged Sprint 3 branches — so
- * each one is a clearly-marked placeholder here (docs/workflow/agent-protocol.md
- * §4.4's "clearly marked no-op") until those PRs land.
+ * The hub screens (Browse, My Postings, My Endorsements) belong to other modules and are not on
+ * `develop` yet, so the host region shows the prototype's own shell copy until they land
+ * (docs/workflow/agent-protocol.md §4.4's "clearly marked no-op"). Sign out lives in Settings.
  */
-import { useState } from "react";
-import { ActivityIndicator, Button as RNButton, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
 import { colors, spacing, typography } from "../theme/tokens";
+import FirstRun from "./firstrun/FirstRun";
+import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
+import { toLocalDigits } from "./account/phoneFormat";
 
 const ROLE_TO_TABBAR_ROLE = {
   YOUTH_JOB_SEEKER: "worker",
@@ -42,21 +36,57 @@ const FIRST_TAB_BY_ROLE = {
   verifier: "endorsements",
 };
 
-// Deliberately plain — not a designed screen, see the file header.
-function SignedOutScaffold({ navigation }) {
-  return (
-    <View style={scaffoldStyles.container}>
-      <Text style={scaffoldStyles.note}>
-        Not signed in. M0 onboarding / 1.1 role selection aren't built yet — this is
-        engineering scaffolding to reach Login/Register, not app UI.
-      </Text>
-      <RNButton title="Log in" onPress={() => navigation.navigate("AccountLogin")} />
-      <RNButton title="Create account" onPress={() => navigation.navigate("AccountRegister")} />
-    </View>
-  );
+/**
+ * Signed out. Where the launch begins depends on what this device remembers (auth/launchState.js):
+ *   - someone signed in here before (a remembered phone) → Log in with the number filled in;
+ *   - otherwise, onboarding already seen → role selection (1.1);
+ *   - otherwise → the three first-run cards, then role selection.
+ */
+function SignedOutEntry({ navigation }) {
+  // null while the saved state is being read; false = show the first-run cards.
+  const [showCards, setShowCards] = useState(null);
+
+  function goToRoleSelection() {
+    navigation.reset({ index: 0, routes: [{ name: "AccountRegister" }] });
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    readLaunchState().then(({ onboardingSeen, lastPhone }) => {
+      if (cancelled) return;
+      // Home sits at the bottom of the stack, so it is also re-rendered as "signed out" while a
+      // screen above it (the account-deleted screen, Settings signing out) is still doing its own
+      // leaving. Only move the person when Home is the screen they are looking at.
+      const atHome = navigation.isFocused();
+      if (lastPhone) {
+        if (atHome) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AccountLogin", params: { phone: toLocalDigits(lastPhone) } }],
+          });
+        }
+      } else if (onboardingSeen) {
+        if (atHome) goToRoleSelection();
+      } else {
+        setShowCards(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function finish() {
+    await markOnboardingSeen();
+    goToRoleSelection();
+  }
+
+  // Brand-blue while the saved state is read, so nothing white flashes between the splash and the screen.
+  if (!showCards) return <View style={styles.entryBlank} />;
+  return <FirstRun onDone={finish} />;
 }
 
-function SignedInShell({ user, signOut }) {
+function SignedInShell({ user, navigation }) {
   const tabBarRole = ROLE_TO_TABBAR_ROLE[user.role];
   const [activeTab, setActiveTab] = useState(FIRST_TAB_BY_ROLE[tabBarRole]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
@@ -66,18 +96,23 @@ function SignedInShell({ user, signOut }) {
       <View style={styles.hubContent}>
         <Text style={styles.title}>{shellCopy.title}</Text>
         <Text style={styles.subtitle}>{shellCopy.hosts}</Text>
-        <View style={styles.buttonStack}>
-          <RNButton title="Sign out" onPress={signOut} />
-        </View>
       </View>
-      <TabBar role={tabBarRole} activeTab={activeTab} onTabPress={setActiveTab} />
+      <TabBar
+        role={tabBarRole}
+        activeTab={activeTab}
+        onTabPress={(key) => {
+          // Profile (1.18) is built; the other hubs are other modules' and stay placeholders here.
+          if (key === "profile") navigation.navigate("ProfileOwn");
+          else setActiveTab(key);
+        }}
+      />
       <StatusBar style="dark" />
     </View>
   );
 }
 
 export default function HomeScreen({ navigation }) {
-  const { status, user, signOut } = useAuth();
+  const { status, user } = useAuth();
 
   if (status === "loading") {
     return (
@@ -88,16 +123,17 @@ export default function HomeScreen({ navigation }) {
   }
 
   if (status === "signedIn") {
-    return <SignedInShell user={user} signOut={signOut} />;
+    return <SignedInShell user={user} navigation={navigation} />;
   }
 
-  return <SignedOutScaffold navigation={navigation} />;
+  return <SignedOutEntry navigation={navigation} />;
 }
 
 const styles = StyleSheet.create({
+  // MNAV shells draw the host region on bg/subtle.
   flex: {
     flex: 1,
-    backgroundColor: colors.bg.default,
+    backgroundColor: colors.bg.subtle,
   },
   centered: {
     flex: 1,
@@ -110,12 +146,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: spacing.xl,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.sm,
   },
   title: {
     ...typography.title,
     color: colors.text.primary,
-    marginBottom: spacing.sm,
     textAlign: "center",
   },
   subtitle: {
@@ -123,28 +159,8 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: "center",
   },
-  buttonStack: {
-    marginTop: spacing.xl,
-    gap: spacing.md,
-    width: "100%",
-  },
-});
-
-// Intentionally not using theme tokens here — see the file header on why
-// this stays a plain scaffold rather than designed UI.
-const scaffoldStyles = StyleSheet.create({
-  container: {
+  entryBlank: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    gap: 12,
-    backgroundColor: "#fff",
-  },
-  note: {
-    fontSize: 14,
-    color: "#555",
-    textAlign: "center",
-    marginBottom: 12,
+    backgroundColor: colors.brand.primary,
   },
 });

@@ -26,7 +26,7 @@ export default function BackButton({ onPress }) {
     >
       <Svg width={44} height={44} viewBox="0 0 44 44">
         <Path
-          d="M26 14L18 22L26 30"
+          d="M14 14L6 22L14 30"
           stroke={colors.text.primary}
           strokeWidth={2}
           strokeLinecap="round"

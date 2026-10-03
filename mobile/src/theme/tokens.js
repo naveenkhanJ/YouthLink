@@ -64,26 +64,28 @@ export const radius = {
   pill: 999,
 };
 
+// Inter is loaded per weight in App.js; on Android a weight is a separate font family, so each
+// style names its family instead of using fontWeight (which would fall back to system Roboto).
 // Every style sets an explicit lineHeight — Inter's own default at these
 // sizes doesn't match the spec's values, so omitting it is a defect, not a
 // simplification (design-system.md §3 says this outright).
 export const typography = {
-  display: { fontSize: 24, fontWeight: "600", lineHeight: 32 },
-  title: { fontSize: 20, fontWeight: "600", lineHeight: 28 },
-  body: { fontSize: 16, fontWeight: "400", lineHeight: 24 },
-  bodyMedium: { fontSize: 16, fontWeight: "500", lineHeight: 24 },
-  secondary: { fontSize: 14, fontWeight: "400", lineHeight: 20 },
-  secondaryMedium: { fontSize: 14, fontWeight: "500", lineHeight: 20 },
-  caption: { fontSize: 12, fontWeight: "400", lineHeight: 16 },
-  tabLabel: { fontSize: 10, fontWeight: "400", lineHeight: 14 },
-  displayNumber: { fontSize: 20, fontWeight: "600", lineHeight: 26 },
+  display: { fontSize: 24, fontFamily: "Inter_600SemiBold", lineHeight: 32 },
+  title: { fontSize: 20, fontFamily: "Inter_600SemiBold", lineHeight: 28 },
+  body: { fontSize: 16, fontFamily: "Inter_400Regular", lineHeight: 24 },
+  bodyMedium: { fontSize: 16, fontFamily: "Inter_500Medium", lineHeight: 24 },
+  secondary: { fontSize: 14, fontFamily: "Inter_400Regular", lineHeight: 20 },
+  secondaryMedium: { fontSize: 14, fontFamily: "Inter_500Medium", lineHeight: 20 },
+  caption: { fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 16 },
+  tabLabel: { fontSize: 10, fontFamily: "Inter_400Regular", lineHeight: 14 },
+  displayNumber: { fontSize: 20, fontFamily: "Inter_600SemiBold", lineHeight: 26 },
   sectionLabel: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
     lineHeight: 16,
     letterSpacing: 0.8,
   },
-  code: { fontSize: 20, fontWeight: "600", lineHeight: 26, letterSpacing: 6 },
+  code: { fontSize: 20, fontFamily: "Inter_600SemiBold", lineHeight: 26, letterSpacing: 6 },
 };
 
 // React Native has no single cross-platform shadow API — iOS reads the

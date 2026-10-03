@@ -11,7 +11,11 @@
  * handler, which turns it into the right status code.
  */
 import service from "./account.service.js";
+import AppError from "../../utils/AppError.js";
+import { isBlocked, record } from "./attemptLimiter.js";
 import { messagePage, resetPasswordPage } from "./pages.js";
+
+const AVAILABILITY_LIMIT = { max: 30, windowMs: 60_000 };
 
 // Never return passwordHash or nicEncrypted — only the masked last 4 digits
 // (NFR-SEC-03) reach the client. Shared by register and both login paths so
@@ -25,9 +29,68 @@ function publicUser(user) {
     legalName: user.legalName,
     birthdate: user.birthdate,
     nicLast4: user.nicLast4,
+    emailVerified: Boolean(user.emailVerifiedAt),
+    // Settings (FR-ACC-18) shows the employer's posting type and business name.
+    postingAsType: user.postingAsType ?? null,
+    businessName: user.businessName ?? null,
+    businessBio: user.businessBio ?? null,
     accountStatus: user.accountStatus,
     createdAt: user.createdAt,
   };
+}
+
+async function changePassword(req, res) {
+  const result = await service.changePassword({
+    userId: req.user.id,
+    currentPassword: req.body?.currentPassword,
+    newPassword: req.body?.newPassword,
+  });
+  res.status(200).json(result);
+}
+
+async function updateDisplayName(req, res) {
+  const result = await service.updateDisplayName({
+    userId: req.user.id,
+    legalName: req.body?.legalName,
+  });
+  res.status(200).json(result);
+}
+
+async function changeNic(req, res) {
+  const result = await service.changeNic({
+    userId: req.user.id,
+    password: req.body?.password,
+    nic: req.body?.nic,
+  });
+  res.status(200).json(result);
+}
+
+async function getMe(req, res) {
+  const { user, pendingEmail } = await service.getMe({ userId: req.user.id });
+  res.status(200).json({ ...publicUser(user), pendingEmail });
+}
+
+async function requestEmailChange(req, res) {
+  const result = await service.requestEmailChange({ userId: req.user.id, email: req.body?.email });
+  res.status(200).json(result);
+}
+
+async function cancelEmailChange(req, res) {
+  res.status(200).json(await service.cancelEmailChange({ userId: req.user.id }));
+}
+
+async function getDeletionStatus(req, res) {
+  res.status(200).json(await service.getDeletionStatus({ userId: req.user.id }));
+}
+
+async function deleteAccount(req, res) {
+  res.status(200).json(await service.deleteAccount({ userId: req.user.id, password: req.body?.password }));
+}
+
+async function updatePostingAs(req, res) {
+  const { postingAsType, businessName, businessBio } = req.body ?? {};
+  const result = await service.updatePostingAs({ userId: req.user.id, postingAsType, businessName, businessBio });
+  res.status(200).json(result);
 }
 
 async function changePhone(req, res) {
@@ -41,8 +104,8 @@ async function changePhone(req, res) {
 
 export default {
   async register(req, res) {
-    const user = await service.register(req.body);
-    res.status(201).json(publicUser(user));
+    const { token, user } = await service.register(req.body);
+    res.status(201).json({ token, user: publicUser(user) });
   },
 
   async loginPassword(req, res) {
@@ -56,6 +119,14 @@ export default {
   },
 
   async checkAvailability(req, res) {
+    // The app needs this answer while the person fills the form (1.2err), but unthrottled it
+    // would let anyone list registered phones and emails in bulk. Per caller address, generous
+    // enough for a real person retrying a few times.
+    const key = `check-availability:${req.ip}`;
+    if (isBlocked(key, AVAILABILITY_LIMIT.max, AVAILABILITY_LIMIT.windowMs)) {
+      throw AppError.tooManyRequests("Too many checks. Wait a minute and try again.");
+    }
+    record(key, AVAILABILITY_LIMIT.windowMs);
     const result = await service.checkAvailability(req.body);
     res.status(200).json(result);
   },
@@ -104,8 +175,13 @@ export default {
     res.status(status === "confirmed" ? 200 : 400).type("html").send(messagePage(...pages[status]));
   },
 
-  resetPasswordPage(req, res) {
-    res.status(200).type("html").send(resetPasswordPage(req.query.token));
+  async resetPasswordPage(req, res) {
+    // A spent, expired or unknown link says so up front instead of after a password is typed.
+    const valid = await service.isResetTokenUsable(req.query.token);
+    const page = valid
+      ? resetPasswordPage(req.query.token)
+      : messagePage("Link no longer valid", "This reset link has expired or was already used. Request a new one from the app.");
+    res.status(200).type("html").send(page);
   },
 
   async recoveryConfirm(req, res) {
@@ -114,5 +190,14 @@ export default {
   },
 
   changePhone,
+  changeNic,
+  updatePostingAs,
+  getDeletionStatus,
+  deleteAccount,
+  getMe,
+  requestEmailChange,
+  cancelEmailChange,
+  changePassword,
+  updateDisplayName,
 };
 
