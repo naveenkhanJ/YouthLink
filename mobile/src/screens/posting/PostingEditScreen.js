@@ -98,7 +98,9 @@ export default function PostingEditScreen({ route, navigation }) {
     setError(null);
     try {
       await updateGigPosting(posting.id, changes);
-      navigation.navigate('PostingDetail', { postingId: posting.id }); // 2.11 reloads on focus
+      // Back to the detail this form was opened from, which reloads on focus (2.11). Navigating
+      // to a new detail instead left this form, dialog open, underneath it (round 4, L-3).
+      navigation.goBack();
     } catch (err) {
       setConfirmOpen(false);
       setFieldErrors(err.fields || {});

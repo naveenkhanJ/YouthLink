@@ -21,6 +21,9 @@ function requireEmployer(req, res, next) {
 router.post('/', requireEmployer, createGigPostingValidators, postingController.createGigPosting);
 // '/mine' must be declared before '/:id', or "mine" would be read as an id.
 router.get('/mine', requireEmployer, postingController.listMyGigPostings);
+// FR-POST-08: the list of areas the Location step picks from. Open to any signed-in user (it is
+// not private), and declared before '/:id' for the same reason as '/mine'.
+router.get('/areas', postingController.listPostingAreas);
 router.get('/:id', postingController.getGigPosting);
 router.patch('/:id', requireEmployer, updateGigPostingValidators, postingController.updateGigPosting);
 router.post('/:id/withdraw', requireEmployer, postingController.withdrawGigPosting);

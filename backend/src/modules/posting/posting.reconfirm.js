@@ -6,6 +6,8 @@
 // creates the rows itself, here and only here. When Engagement exports its function,
 // call it from requestReconfirmation and delete the body — nothing else changes.
 
+import { describeChanges, formatStartFull } from '../application/application.notifications.js';
+
 const HOUR_MS = 60 * 60 * 1000;
 const MAX_WINDOW_MS = 48 * HOUR_MS;
 
@@ -31,7 +33,7 @@ export function reconfirmDeadline(newStartAt, now = new Date()) {
 export async function requestReconfirmation({ posting, changes, newStartAt }, tx) {
   const engagements = await tx.engagement.findMany({
     where: { gigPostingId: posting.id, status: { not: 'CANCELLED' } },
-    select: { id: true },
+    select: { id: true, workerId: true },
   });
 
   // Old and new value of each changed field, e.g. { payAmount: { from: 6000, to: 7000 } }.
@@ -41,6 +43,8 @@ export async function requestReconfirmation({ posting, changes, newStartAt }, tx
   }
 
   const deadline = reconfirmDeadline(newStartAt);
+  // The posting as it reads after the edit, which is what the notification describes.
+  const after = { ...posting, ...changes, startAt: newStartAt };
   for (const engagement of engagements) {
     await tx.materialChangeRequest.create({
       data: {
@@ -49,6 +53,24 @@ export async function requestReconfirmation({ posting, changes, newStartAt }, tx
         changeSummary,
         deadline,
         status: 'PENDING',
+      },
+    });
+    // FR-ENG-09 criterion 1 / FR-NOTIF-05: "the affected worker is notified" — a re-confirmation
+    // request, not a silent update. Written in the same transaction, so there is never a request
+    // the worker was not told about. The title is left out on purpose: the notification module
+    // attaches the posting's current title when it lists the row (3.10 "{title} changed"). The body
+    // is A11's "what changed · respond by {deadline}", worded with the same sentences a pending
+    // applicant gets (FR-APPLY-10), so the two never describe one edit differently.
+    await tx.notification.create({
+      data: {
+        userId: engagement.workerId,
+        type: 'MATERIAL_CHANGE',
+        payload: {
+          gigPostingId: posting.id,
+          engagementId: engagement.id,
+          deadline: deadline.toISOString(),
+          body: `${describeChanges(after, Object.keys(changes))} · respond by ${formatStartFull(deadline)}`,
+        },
       },
     });
   }

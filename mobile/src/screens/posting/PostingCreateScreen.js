@@ -17,13 +17,15 @@
  *  - Precise map-pin selection (FR-POST-08) needs react-native-maps, a native
  *    dependency (a new shared build — an escalation, not a member's call). The
  *    prototype's Display/MapArea is itself a flat placeholder. Until that
- *    dependency is decided, the employer types the precise address, the coarse
- *    area is derived from it for the worker-facing note, and the coordinates come from a
- *    small table of Sri Lankan areas (sriLankaAreas.js) keyed by that area. A real map pin
+ *    dependency is decided, the employer types the precise address and picks the
+ *    public area from the server's list (components/AreaPicker.js; Afham's decision of
+ *    2026-10-04, round 4 L-1). The server takes the area label and the coordinates from
+ *    its own list, so nothing the app sends can place a posting elsewhere. A real map pin
  *    is a later release. See the Location step below.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { View, Text, Pressable, ScrollView, StyleSheet, BackHandler } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
 import Button from "../../components/Button";
@@ -47,8 +49,8 @@ import {
   validateLeadTime,
 } from "./posting.constants.js";
 import { digitsOnly, groupDigits } from "./posting.format.js";
-import { coordsForArea } from "./sriLankaAreas.js";
 import FormTopBar from "./components/FormTopBar.js";
+import AreaPicker from "./components/AreaPicker.js";
 import StartDateTimeField from "./components/StartDateTimeField.js";
 import {
   loadPostingDraft,
@@ -79,14 +81,8 @@ const STEP_TITLES = {
   start: "Start",
 };
 
-/** Derive the coarse, worker-facing area from a precise address (FR-POST-08):
- *  the last comma-separated segment, e.g. "23 Temple Road, Colombo 04" →
- *  "Colombo 04". Falls back to the whole string when there is no comma. */
-function deriveAreaLabel(address) {
-  if (!address) return "";
-  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
-  return parts.length ? parts[parts.length - 1] : address.trim();
-}
+// Round 4, L-1: Continue on the Location step with no area chosen from the list.
+const AREA_REQUIRED = "Choose your area from the list.";
 
 /** The payKind the backend expects, derived from the arrangement + internship
  *  choice (FR-POST-04). Gig → fixed total; part-time → rate; internship →
@@ -112,6 +108,10 @@ export default function PostingCreateScreen({ navigation }) {
   const [internshipChoice, setInternshipChoice] = useState("PAID");
   const [schedule, setSchedule] = useState("");
   const [locationAddress, setLocationAddress] = useState("");
+  // FR-POST-08: the area chosen from the server's list (its name), or null. `areaQuery` is what
+  // is typed in the Area field; only a row tapped from the list sets `locationArea`.
+  const [locationArea, setLocationArea] = useState(null);
+  const [areaQuery, setAreaQuery] = useState("");
   const [workersNeeded, setWorkersNeeded] = useState("1");
   // One ISO instant, chosen in the Start date & time picker ('' until chosen).
   const [startAt, setStartAt] = useState("");
@@ -131,7 +131,6 @@ export default function PostingCreateScreen({ navigation }) {
   const isLastStep = stepIndex === steps.length - 1;
 
   const payKind = derivePayKind(arrangementType, internshipChoice);
-  const areaLabel = useMemo(() => deriveAreaLabel(locationAddress), [locationAddress]);
 
   // Scrolls a focused field to a fixed place under the top (the keyboard-aware scroll view
   // misjudged this app's already-padded window — see hooks/useFocusScroll.js).
@@ -159,6 +158,7 @@ export default function PostingCreateScreen({ navigation }) {
         return null;
       case "location":
         if (!locationAddress.trim()) return "Enter the address.";
+        if (!locationArea) return AREA_REQUIRED;
         return null;
       case "workers": {
         const n = parseInt(workersNeeded, 10);
@@ -180,7 +180,7 @@ export default function PostingCreateScreen({ navigation }) {
 
   const form = {
     title, description, category, arrangementType, payAmount, payRateUnit,
-    internshipChoice, schedule, locationAddress, workersNeeded, startAt,
+    internshipChoice, schedule, locationAddress, locationArea, workersNeeded, startAt,
   };
 
   function applyDraft(d) {
@@ -193,6 +193,9 @@ export default function PostingCreateScreen({ navigation }) {
     setInternshipChoice(d.internshipChoice ?? "PAID");
     setSchedule(d.schedule ?? "");
     setLocationAddress(d.locationAddress ?? "");
+    // The kept form keeps the chosen area; the field shows it again (round 4, L-1).
+    setLocationArea(d.locationArea ?? null);
+    setAreaQuery(d.locationArea ?? "");
     setWorkersNeeded(d.workersNeeded ?? "1");
     setStartAt(draftStartAt(d));
   }
@@ -233,7 +236,42 @@ export default function PostingCreateScreen({ navigation }) {
     else clearPostingDraft(user?.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restored, keptOffline, title, description, category, arrangementType, payAmount, payRateUnit,
-    internshipChoice, schedule, locationAddress, workersNeeded, startAt]);
+    internshipChoice, schedule, locationAddress, locationArea, workersNeeded, startAt]);
+
+  // Round 4, L-2 (POST-E2E-03): a step's error goes as soon as anything on the step changes, so a
+  // corrected value never sits under a stale message. It comes back only from Continue / Review.
+  // (The start step's under-2-hours message is separate: it is checked live, see startError.)
+  useEffect(() => {
+    setError(null);
+  }, [title, description, category, arrangementType, payAmount, payRateUnit, internshipChoice,
+    schedule, locationAddress, areaQuery, locationArea, workersNeeded, startAt]);
+
+  // Round 4, L-4 (POST-E2E-05): the Android back key does what the on-screen back chevron does —
+  // one step back — from step 2 on. On step 1 it is left to the navigator, as before (it leaves
+  // the form, which stays kept). Only while this screen is focused, so it never takes the key
+  // from the Review screen above it.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+        if (stepIndex === 0) return false;
+        handleBack();
+        return true;
+      });
+      return () => subscription.remove();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stepIndex]),
+  );
+
+  // Typing in Area after choosing drops the choice: only a row from the list counts.
+  function handleAreaQuery(text) {
+    setAreaQuery(text);
+    if (locationArea) setLocationArea(null);
+  }
+
+  function handleAreaChosen(name) {
+    setLocationArea(name);
+    setAreaQuery(name);
+  }
 
   // 2.1n: the first step cannot continue until it has a title and a description.
   const detailsMissing = stepKey === "titleDesc" && (!title.trim() || !description.trim());
@@ -282,7 +320,6 @@ export default function PostingCreateScreen({ navigation }) {
     // FR-POST-16: posting-as is the employer's account identity, not a form
     // field. Auto-populated here from the signed-in user.
     const postedAsType = user?.postingAsType === "BUSINESS" ? "BUSINESS" : "INDIVIDUAL";
-    const coords = coordsForArea(areaLabel);
 
     const formData = {
       title: title.trim(),
@@ -297,10 +334,9 @@ export default function PostingCreateScreen({ navigation }) {
       postedBusinessBio: postedAsType === "BUSINESS" ? user?.businessBio ?? null : null,
       schedule: isRecurring ? schedule.trim() : null,
       locationAddress: locationAddress.trim(),
-      locationAreaLabel: areaLabel,
-      // FR-POST-08: the area's own point, not one shared point for every posting.
-      locationLat: coords.lat,
-      locationLng: coords.lng,
+      // FR-POST-08: only the chosen area's name. The server looks it up in its list and takes
+      // the public label and the coordinates from there.
+      locationArea,
       workersNeeded: parseInt(workersNeeded, 10),
       startAt,
       // FR-POST-07: urgency is always derived, never chosen. Shown (as "set
@@ -343,7 +379,8 @@ export default function PostingCreateScreen({ navigation }) {
 
         {renderStepBody()}
 
-        {stepKey !== "start" && stepError ? <FieldError message={stepError} /> : null}
+        {/* The start and location steps draw their error under the field it belongs to. */}
+        {stepKey !== "start" && stepKey !== "location" && stepError ? <FieldError message={stepError} /> : null}
 
         {detailsMissing ? <Text style={styles.note}>{FILL_HINT}</Text> : null}
 
@@ -458,7 +495,11 @@ export default function PostingCreateScreen({ navigation }) {
           </>
         );
 
-      case "location":
+      case "location": {
+        // 2.6 / 2.6t: Address as drawn, then the Area picker (round 4, L-1), then the note — shown
+        // only once an area is chosen, since it names that area.
+        const areaError = stepError === AREA_REQUIRED ? stepError : null;
+        const addressError = stepError && !areaError ? stepError : null;
         return (
           <>
             <MapArea kind="precisePin" />
@@ -468,15 +509,22 @@ export default function PostingCreateScreen({ navigation }) {
               onChangeText={setLocationAddress}
               placeholder="e.g. 23 Temple Road, Colombo 04"
               autoCapitalize="words"
+              error={Boolean(addressError)}
               {...field("address")}
             />
-            <Text style={styles.note}>
-              {areaLabel
-                ? `Shown to workers as: ${areaLabel} area`
-                : "Workers see only the general area, not the precise address."}
-            </Text>
+            {addressError ? <FieldError message={addressError} /> : null}
+            <AreaPicker
+              query={areaQuery}
+              onChangeQuery={handleAreaQuery}
+              value={locationArea}
+              onChoose={handleAreaChosen}
+              error={areaError}
+              {...field("area")}
+            />
+            {locationArea ? <Text style={styles.note}>{`Shown to workers as: ${locationArea} area`}</Text> : null}
           </>
         );
+      }
 
       case "workers":
         return (

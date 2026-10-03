@@ -81,6 +81,7 @@ export function hasDraftContent(draft) {
       draft.payAmount ||
       draft.schedule?.trim() ||
       draft.locationAddress?.trim() ||
+      draft.locationArea ||
       draft.startAt ||
       draft.startDate ||
       draft.startTime,

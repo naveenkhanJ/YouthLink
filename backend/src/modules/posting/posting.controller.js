@@ -10,6 +10,7 @@ import { validationResult } from 'express-validator';
 import AppError from '../../utils/AppError.js';
 import asyncHandler from '../../utils/asyncHandler.js';
 import * as postingService from './posting.service.js';
+import { listAreas } from './posting.areas.js';
 
 // One message per field, keyed by field name, so the client can highlight
 // exactly what's missing or invalid (FR-POST-01 acceptance criteria).
@@ -41,6 +42,11 @@ export const getGigPosting = asyncHandler(async (req, res) => {
 export const listMyGigPostings = asyncHandler(async (req, res) => {
   const postings = await postingService.listGigPostingsByEmployer(req.user.id);
   res.json({ postings });
+});
+
+// FR-POST-08: GET /api/postings/areas — the areas a posting can be placed in, sorted by name.
+export const listPostingAreas = asyncHandler(async (req, res) => {
+  res.json({ areas: listAreas() });
 });
 
 // FR-POST-11

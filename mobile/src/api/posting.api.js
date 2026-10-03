@@ -64,3 +64,15 @@ export function getMyGigPostings() {
     method: 'GET',
   });
 }
+
+/**
+ * The areas a posting can be placed in (FR-POST-08), for the Location step's area picker.
+ * Open to any signed-in user. The server keeps the list and takes a posting's coordinates
+ * from it, so the app sends only the chosen name (`locationArea`).
+ * @returns {Promise<Object>} { areas: [{ name, district, aliases }] }, sorted by name.
+ */
+export function getAreas() {
+  return request('/api/postings/areas', {
+    method: 'GET',
+  });
+}
