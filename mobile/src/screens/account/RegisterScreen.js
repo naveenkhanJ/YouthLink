@@ -28,9 +28,10 @@
  *
  * Phone verification state lives in usePhoneVerification.js, shared with AccountLoginOtpScreen.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import useFocusScroll from "./hooks/useFocusScroll";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { register, checkAvailability, updatePostingAs } from "../../api/account";
@@ -149,6 +150,9 @@ export default function RegisterScreen({ navigation }) {
   const [legalName, setLegalName] = useState("");
   const [tosAccepted, setTosAccepted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  // Step 4 scrolls the focused field to a fixed place under the top (see useFocusScroll).
+  const detailsScroll = useRef(null);
+  const field = useFocusScroll(detailsScroll);
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   // True once the account exists (step 4 creates it). From then on there is nothing to go back to
@@ -509,12 +513,11 @@ export default function RegisterScreen({ navigation }) {
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <StatusBar style="dark" />
-      <KeyboardAwareScrollView
+      <ScrollView
+        ref={detailsScroll}
         style={styles.scroll}
         contentContainerStyle={[styles.content, styles.contentDetails]}
         keyboardShouldPersistTaps="handled"
-        enableOnAndroid
-        extraScrollHeight={120}
       >
         {topBar({ tight: true })}
         {heading()}
@@ -523,6 +526,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextField
           label="Password"
+          {...field("password")}
           value={password}
           onChangeText={(value) => edit("password", setPassword, value)}
           placeholder="••••••••••"
@@ -533,6 +537,7 @@ export default function RegisterScreen({ navigation }) {
         <FieldError message={fieldErrors.password} />
         <TextField
           label="Confirm password"
+          {...field("confirmPassword")}
           value={confirmPassword}
           onChangeText={(value) => edit("confirmPassword", setConfirmPassword, value)}
           placeholder="••••••••••"
@@ -545,6 +550,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextField
           label="Email (optional)"
+          {...field("email")}
           value={email}
           onChangeText={(value) => edit("email", setEmail, value)}
           onBlur={handleEmailBlur}
@@ -556,6 +562,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextField
           label="NIC"
+          {...field("nic")}
           value={nic}
           onChangeText={(value) => edit("nic", setNic, value)}
           placeholder="Enter your NIC"
@@ -568,6 +575,7 @@ export default function RegisterScreen({ navigation }) {
 
         <DateTimeField
           label="Birthdate"
+          {...field("birthdate")}
           value={birthdate}
           onChangeText={(value) => edit("birthdate", setBirthdate, value)}
           error={Boolean(fieldErrors.birthdate)}
@@ -576,6 +584,7 @@ export default function RegisterScreen({ navigation }) {
 
         <TextField
           label="Legal name"
+          {...field("legalName")}
           value={legalName}
           onChangeText={(value) => edit("legalName", setLegalName, value)}
           autoCapitalize="words"
@@ -596,7 +605,7 @@ export default function RegisterScreen({ navigation }) {
         />
 
         <View style={styles.spacerTight} />
-      </KeyboardAwareScrollView>
+      </ScrollView>
       <CtaBar shadow>
         <Button title="Create account" onPress={handleSubmit} loading={submitting} />
       </CtaBar>
@@ -622,7 +631,10 @@ const styles = StyleSheet.create({
   },
   // 1.4 draws its content tighter: pad 6/16/0/16, gap 8.
   contentDetails: {
-    paddingBottom: 0,
+    // The prototype ends the content flush (0), which is right with the keyboard closed. The extra
+    // slack is invisible then, but lets the scroll lift the focused last field and its counter
+    // clear of the pinned bar when the keyboard is open (the field was ending flush with the bar).
+    paddingBottom: 96,
     gap: spacing.sm,
   },
   // topBar 328×44: back chevron at the left, ✕ at the right.

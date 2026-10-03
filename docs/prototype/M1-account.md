@@ -3611,6 +3611,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 SMS code is entered, without naming it — the screen is shared, and the number in force differs per person.
 *Cancel this change* abandons it and nothing changes.
 
+**Not drawn, built from the nearest frames (decided 2026-10-02):** the frame stops at the pending row, but the
+person still has to type the SMS code, so the built screen adds the six code boxes (`1.3`), the *Resend in 0:xx*
+line and a pinned *Verify* button under it, and a *Phone number updated* dialog (the `1.10s` card with one
+*Done* button over the same scrim) when the change succeeds.
+
 ### `1.12err` — Change phone number · password doesn't match
 
 **Reached from** in the demo `1.12`  ·  **Leads to** nothing  ·  **Exits** back → `1.10`
@@ -4130,6 +4135,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 **The second step**: the password, and a last restatement of what goes and what stays. The button reads
 *Delete my account*.
+
+**Built with the button pinned** (decided 2026-10-03, recorded in `decisions.md`): in a bottom action bar like the other
+forms, not at the foot of the content as drawn, so it sits 24 dp above the keyboard on every device.
 
 ### `1.17d` — Account deletion · deleted
 
