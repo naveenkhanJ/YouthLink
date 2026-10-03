@@ -15,6 +15,8 @@
  * Opening a screen that is already in the stack goes back to it (React Navigation's `navigate`),
  * so moving between tabs does not pile screens up.
  */
+import { useEffect, useState } from "react";
+import { Keyboard } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../auth/AuthContext";
 import TabBar from "./TabBar";
@@ -26,10 +28,25 @@ const TABBAR_ROLE = {
 };
 
 // Tab key (TabBar.js TABS_BY_ROLE) -> the route that module registered for that hub.
+// The hosts each shell names (MNAV-shells.md NAV.1–NAV.3): Browse 3.1, My Applications 4.3,
+// Engagements 5.1/5.1e, Notifications 3.10/3.10e/3.10v, My Postings 2.10, Post a Gig 2.1, Profile 1.18.
+// The verifier's Endorsements and Vouch (M8) have no registered screen, so they stay on the shell.
 const ROUTE_BY_TAB = {
-  worker: { profile: "ProfileOwn" },
-  employer: { postings: "PostingList", postGig: "PostingCreate", profile: "ProfileOwn" },
-  verifier: { profile: "ProfileOwn" },
+  worker: {
+    browse: "DiscoveryBrowse",
+    applications: "ApplicationMine",
+    engagements: "EngagementList",
+    notifications: "NotificationHistory",
+    profile: "ProfileOwn",
+  },
+  employer: {
+    postings: "PostingList",
+    postGig: "PostingCreate",
+    engagements: "EngagementList",
+    notifications: "NotificationHistory",
+    profile: "ProfileOwn",
+  },
+  verifier: { notifications: "NotificationHistory", profile: "ProfileOwn" },
 };
 
 /** The TabBar role ("worker" | "employer" | "verifier") for a signed-in user, or undefined. */
@@ -67,7 +84,24 @@ export default function ShellTabBar({ active, notificationBadge = false }) {
   const { user } = useAuth();
   const navigation = useNavigation();
   const role = tabBarRoleFor(user);
+
+  // RootNavigator wraps the whole app in a KeyboardAvoidingView so every screen's pinned action
+  // bar rides up above the keyboard. This bar is the last child of its screen, so it would ride
+  // up too and sit between the form and the keyboard. Nothing on a tab bar is needed while the
+  // person is typing, so it is not drawn until the keyboard closes. (Hooks stay above the
+  // early return below so their order never changes.)
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () => setKeyboardOpen(true));
+    const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardOpen(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
   if (!role) return null; // signed out: there is no shell to navigate
+  if (keyboardOpen) return null;
 
   return (
     <TabBar

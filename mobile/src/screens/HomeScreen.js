@@ -90,6 +90,20 @@ function SignedInShell({ user, navigation, route }) {
   }, [requestedTab]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
 
+  // Each role lands on its first tab's hub (worker: Browse, employer: My postings). When that hub's
+  // module has registered its screen, replace Home with it so Back leaves the app instead of landing
+  // on a placeholder. A tab bar elsewhere opens this shell with { tab } set for a tab that has no
+  // screen yet, which is not forwarded. Every hub screen draws ShellTabBar, so this is no dead end.
+  const firstTab = FIRST_TAB_BY_ROLE[tabBarRole];
+  const firstHub =
+    requestedTab === undefined || requestedTab === firstTab
+      ? routeForTab(navigation, tabBarRole, firstTab)
+      : undefined;
+  useEffect(() => {
+    if (firstHub && navigation.isFocused()) navigation.replace(firstHub);
+  }, [firstHub, navigation]);
+  if (firstHub) return <View style={styles.flex} />; // blank while the replace happens
+
   return (
     <View style={styles.flex}>
       <View style={styles.hubContent}>

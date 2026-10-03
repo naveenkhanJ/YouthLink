@@ -93,5 +93,7 @@
   "branchTypes": ["feature", "fix", "chore", "refactor", "docs", "test"],
   "commitTypes": ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "revert"],
   "commitSurfaces": ["backend", "mobile", "dashboard", "shared"],
-  "integrationBranches": ["develop", "main"]
+  "integrationBranches": ["develop", "main"],
+  "demoBranchesNote": "Branches where the shared-components owner assembles every member's work so all of it can be demonstrated end to end, and may edit any module and any shared file. Never merged into develop or main and never the base of a pull request: each member carries their own part to their own branch and opens their own pull request. Decided by the team on 2026-10-06; see docs/decisions.md and CONTRIBUTING.md (Demo integration branch).",
+  "demoBranches": ["integration/viva-demo"]
 }
