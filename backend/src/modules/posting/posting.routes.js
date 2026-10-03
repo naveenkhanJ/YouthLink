@@ -1,16 +1,28 @@
-
-// gigPosting.routes.js
-// Mount in app.js with: app.use('/api/postings', postingRoutes);
+// posting.routes.js
+// Mounted in app.js at /api/postings, behind the shared requireAuth.
 
 import express from 'express';
-import { createGigPostingValidators } from './posting.validators.js';
+import AppError from '../../utils/AppError.js';
+import { createGigPostingValidators, updateGigPostingValidators } from './posting.validators.js';
 import * as postingController from './posting.controller.js';
 
 const router = express.Router();
 
-router.post('/', createGigPostingValidators, postingController.createGigPosting);
-router.get('/mine', postingController.listMyGigPostings);
+// Role check (docs/module-ownership.md): only a Local Business/Employer creates
+// or manages postings (FR-POST-01). requireAuth proves who is calling; it says
+// nothing about what they may do, so a worker with a valid token stops here.
+function requireEmployer(req, res, next) {
+  if (req.user.role !== 'EMPLOYER') {
+    return next(AppError.forbidden('Only employers can manage postings.'));
+  }
+  next();
+}
+
+router.post('/', requireEmployer, createGigPostingValidators, postingController.createGigPosting);
+// '/mine' must be declared before '/:id', or "mine" would be read as an id.
+router.get('/mine', requireEmployer, postingController.listMyGigPostings);
 router.get('/:id', postingController.getGigPosting);
+router.patch('/:id', requireEmployer, updateGigPostingValidators, postingController.updateGigPosting);
+router.post('/:id/withdraw', requireEmployer, postingController.withdrawGigPosting);
 
 export default router;
-

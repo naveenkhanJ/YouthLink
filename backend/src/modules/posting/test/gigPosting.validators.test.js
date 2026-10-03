@@ -75,6 +75,55 @@ describe('Posting Validators (FR-POST-01, 02, 04, 05, 06)', () => {
     });
   });
 
+  describe('FR-POST-04: pay kind must match the arrangement (YL-169)', () => {
+    test('a Gig accepts a fixed total and needs no rate unit', async () => {
+      const result = await validate({ ...validPosting, payRateUnit: undefined });
+      expect(result.isEmpty()).toBe(true);
+    });
+
+    test('a Gig rejects a rate, stipend, paid or unpaid pay kind', async () => {
+      for (const payKind of ['RATE', 'STIPEND', 'PAID', 'UNPAID']) {
+        const result = await validate({ ...validPosting, payKind, payRateUnit: 'DAY' });
+        expect(result.mapped().payKind).toBeDefined();
+      }
+    });
+
+    test('a Part-time job rejects a fixed total', async () => {
+      const result = await validate({
+        ...validPosting,
+        arrangementType: 'PART_TIME',
+        payKind: 'FIXED_TOTAL',
+        schedule: 'Mon, Wed, Fri',
+      });
+      expect(result.mapped().payKind).toBeDefined();
+    });
+
+    test('an Internship accepts Unpaid, Stipend and Paid', async () => {
+      for (const payKind of ['UNPAID', 'STIPEND', 'PAID']) {
+        const result = await validate({
+          ...validPosting,
+          arrangementType: 'INTERNSHIP',
+          payKind,
+          payAmount: payKind === 'UNPAID' ? undefined : 15000,
+          schedule: 'Weekdays, 9 to 1',
+        });
+        expect(result.mapped().payKind).toBeUndefined();
+        expect(result.mapped().payAmount).toBeUndefined();
+      }
+    });
+
+    test('a Stipend or Paid internship still needs an amount', async () => {
+      const result = await validate({
+        ...validPosting,
+        arrangementType: 'INTERNSHIP',
+        payKind: 'STIPEND',
+        payAmount: undefined,
+        schedule: 'Weekdays, 9 to 1',
+      });
+      expect(result.mapped().payAmount).toBeDefined();
+    });
+  });
+
   describe('FR-POST-04: Pay format by arrangement type', () => {
     test('validates RATE requires payRateUnit (DAY/WEEK/MONTH)', async () => {
       const validPartTime = {
