@@ -7,6 +7,11 @@ import AppError from '../../utils/AppError.js';
 import { computeIsUrgent } from './posting.urgency.js';
 import { sanitizePostingLocation } from './posting.location.js';
 import { resolvePendingApplicants, notifyPendingApplicantsOfChange } from './posting.applicants.js';
+import { expireDuePostings } from './posting.expiry.js';
+import { requestReconfirmation } from './posting.reconfirm.js';
+import { notifyNewGigPosted } from './posting.notify.js';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 // FR-POST-12: what the employer is told when Withdraw is refused after a fill.
 // It names the two actions that do apply (lowering workers needed is a material
@@ -14,6 +19,10 @@ import { resolvePendingApplicants, notifyPendingApplicantsOfChange } from './pos
 // the prototype's `withdrawNote` on screen 2.11.
 export const WITHDRAW_AFTER_FILL_MESSAGE =
   "Withdraw isn't available once a place is filled. To stop hiring, lower Workers needed in Edit posting; to end an engagement, cancel it from Engagements.";
+
+// FR-DISPUTE-02 / prototype 2.11g: withdrawal is paused while YouthLink reviews a hidden posting.
+export const WITHDRAW_HIDDEN_MESSAGE =
+  'YouthLink is reviewing this posting. Withdrawal is paused until the review ends.';
 
 // The owner's list and detail show "2 applicants waiting" (Pending only), and a
 // withdrawn card says "no one had applied" (nobody, ever) — so both counts are
@@ -58,6 +67,8 @@ async function postedAsFromAccount(employerId) {
  */
 export async function createGigPosting(employerId, data) {
   const postedAs = await postedAsFromAccount(employerId);
+  const startAt = new Date(data.startAt);
+  const createdAt = new Date();
   const posting = await prisma.gigPosting.create({
     data: {
       employerId,
@@ -77,7 +88,10 @@ export async function createGigPosting(employerId, data) {
       locationLng: Number(data.locationLng),
       locationAreaLabel: data.locationAreaLabel.trim(),
       workersNeeded: data.workersNeeded != null ? Number(data.workersNeeded) : 1,
-      startAt: new Date(data.startAt),
+      startAt,
+      // FR-POST-13: a Gig expires when it starts; a Part-time job or Internship 30 days
+      // after it was posted. Applied by posting.expiry.js.
+      expiresAt: data.arrangementType === 'GIG' ? startAt : new Date(createdAt.getTime() + 30 * DAY_MS),
       schedule: data.schedule?.trim() || null,
       // FR-POST-07: always derived from startAt — never taken from client input,
       // even if data.isUrgent was sent. No manual override.
@@ -85,6 +99,13 @@ export async function createGigPosting(employerId, data) {
       // FR-POST-18: status defaults to OPEN and filledCount to 0 (schema).
     },
   });
+
+  // FR-POST-10: the alert to matching workers must never fail a posting that is already saved.
+  try {
+    await notifyNewGigPosted(posting.id);
+  } catch (error) {
+    console.error('Posting created, but the new-gig notification failed:', error);
+  }
   return posting;
 }
 
@@ -97,12 +118,15 @@ export async function createGigPosting(employerId, data) {
  * @returns {Promise<object|null>} null when there is no such posting
  */
 export async function getGigPostingById(id, viewerUserId = null) {
+  // FR-POST-13: close anything that is due first, so the status read below is current.
+  await expireDuePostings();
   const posting = await prisma.gigPosting.findUnique({
     where: { id },
     include: {
       ...WITH_APPLICATION_STATUSES,
-      // Only the two fields sanitizePostingLocation needs to spot a selected worker.
-      engagements: { select: { workerId: true, status: true } },
+      // The two fields sanitizePostingLocation needs to spot a selected worker, plus the name
+      // the owner's screen shows for an engaged worker (2.11c, 2.11e2, 2.11f).
+      engagements: { select: { workerId: true, status: true, worker: { select: { legalName: true } } } },
       // FR-ENG-09: an edit waiting on a worker's re-confirmation (prototype 2.11c). Read-only
       // here — the table belongs to Engagement, which writes and resolves the request.
       materialChangeRequests: {
@@ -123,6 +147,9 @@ export async function getGigPostingById(id, viewerUserId = null) {
   const { materialChangeRequests, ...withoutRequests } = posting;
   const sanitized = sanitizePostingLocation(withApplicantCounts(withoutRequests), viewerUserId);
   if (isOwner) {
+    sanitized.engagedWorkers = (posting.engagements ?? [])
+      .filter((e) => e.status !== 'CANCELLED')
+      .map((e) => ({ legalName: e.worker?.legalName }));
     sanitized.pendingChangeRequest = materialChangeRequests?.[0] ?? null;
   } else {
     // Applicant numbers are the owner's business, not a browsing worker's.
@@ -134,8 +161,21 @@ export async function getGigPostingById(id, viewerUserId = null) {
 
 /** The employer's own postings, newest first, each with its applicant counts. */
 export async function listGigPostingsByEmployer(employerId) {
+  await expireDuePostings();
+  // FR-POST-13 (amended 2026-09-24): an Open posting always shows; a closed one shows for
+  // 30 days after it closed. There is no "closedAt" column, so the close time is
+  // withdrawnAt (Withdrawn), expiresAt (Expired) or updatedAt (Filled).
+  const since = new Date(Date.now() - 30 * DAY_MS);
   const postings = await prisma.gigPosting.findMany({
-    where: { employerId },
+    where: {
+      employerId,
+      OR: [
+        { status: 'OPEN' },
+        { status: 'WITHDRAWN', withdrawnAt: { gte: since } },
+        { status: 'EXPIRED', expiresAt: { gte: since } },
+        { status: 'FILLED', updatedAt: { gte: since } },
+      ],
+    },
     orderBy: { createdAt: 'desc' },
     include: WITH_APPLICATION_STATUSES,
   });
@@ -156,6 +196,7 @@ export async function listGigPostingsByEmployer(employerId) {
  * @throws {AppError} 404 when it isn't the caller's posting, 409 when it can't be withdrawn
  */
 export async function withdrawGigPosting(employerId, id) {
+  await expireDuePostings();
   // A posting that isn't yours is reported as not found, so ids can't be probed.
   const existing = await prisma.gigPosting.findUnique({ where: { id }, select: { employerId: true } });
   if (!existing || existing.employerId !== employerId) {
@@ -163,7 +204,7 @@ export async function withdrawGigPosting(employerId, id) {
   }
 
   const { count } = await prisma.gigPosting.updateMany({
-    where: { id, employerId, status: 'OPEN', filledCount: 0 },
+    where: { id, employerId, status: 'OPEN', filledCount: 0, autoHiddenAt: null },
     data: { status: 'WITHDRAWN', withdrawnAt: new Date() },
   });
 
@@ -171,8 +212,10 @@ export async function withdrawGigPosting(employerId, id) {
     // Nothing matched — find out why so the employer is told the right thing.
     const current = await prisma.gigPosting.findUnique({
       where: { id },
-      select: { status: true, filledCount: true },
+      select: { status: true, filledCount: true, autoHiddenAt: true },
     });
+    // 2.11g: while a posting is hidden for review, withdrawal is paused like editing.
+    if (current.autoHiddenAt) throw AppError.conflict(WITHDRAW_HIDDEN_MESSAGE);
     if (current.filledCount > 0) throw AppError.conflict(WITHDRAW_AFTER_FILL_MESSAGE);
     throw AppError.conflict('This posting is no longer open, so it cannot be withdrawn.');
   }
@@ -196,11 +239,9 @@ const EDITABLE_FIELDS = ['title', ...MATERIAL_FIELDS];
 export const EDIT_REFUSED_MESSAGES = {
   closed: 'Only an open posting can be edited.',
   hidden: 'YouthLink is reviewing this posting. Editing is paused until the review ends.',
-  // FR-POST-11 criterion 2 needs FR-ENG-09's re-confirmation request, which Engagement
-  // (not on develop yet) creates. Until then a material change after a fill is refused
-  // rather than applied silently — the one thing the requirement forbids.
-  needsReconfirmation:
-    "Pay, timing and Workers needed can't be changed once a place is filled yet — the engaged worker has to re-confirm, and that isn't available. You can still change the title.",
+  // One re-confirmation at a time (prototype 2.11c disables Edit while one is waiting).
+  reconfirmPending:
+    'An earlier change is still waiting for the engaged worker to re-confirm. You can edit again once they respond.',
   changedMeanwhile: 'This posting changed while you were editing. Open it again to see how it is now.',
 };
 
@@ -230,9 +271,10 @@ function changedEditFields(existing, data) {
  * FR-POST-11 — edit a posting's title, pay, workers needed, start or schedule.
  * Assumes `data` has passed updateGigPostingValidators.
  *
- * Before any slot fills every change applies at once. After a fill only the title may
- * change here (a minor change); a material one is refused until Engagement's
- * re-confirmation exists — see EDIT_REFUSED_MESSAGES.needsReconfirmation.
+ * Before any slot fills every change applies at once. After a fill a material change
+ * (pay, timing, workers needed) is saved together with a re-confirmation request for each
+ * engaged worker (posting.reconfirm.js), in ONE transaction: both happen or neither does.
+ * Only one re-confirmation can be waiting at a time. A title change is always allowed.
  *
  * The write is ONE conditional UPDATE keyed on the fill count that was read: if a
  * selection fills a slot between the read and the write, nothing matches and the edit
@@ -242,6 +284,7 @@ function changedEditFields(existing, data) {
  * @throws {AppError} 404 not the caller's posting, 400 a rejected field, 409 it can't be edited now
  */
 export async function updateGigPosting(employerId, id, data) {
+  await expireDuePostings();
   const existing = await prisma.gigPosting.findUnique({ where: { id } });
   if (!existing || existing.employerId !== employerId) {
     throw AppError.notFound('Posting not found.');
@@ -251,10 +294,6 @@ export async function updateGigPosting(employerId, id, data) {
 
   const changes = changedEditFields(existing, data);
   const changedMaterial = Object.keys(changes).filter((f) => MATERIAL_FIELDS.includes(f));
-
-  if (existing.filledCount > 0 && changedMaterial.length > 0) {
-    throw AppError.conflict(EDIT_REFUSED_MESSAGES.needsReconfirmation);
-  }
   if (Object.keys(changes).length === 0) return getGigPostingById(id, employerId);
 
   const update = {};
@@ -273,16 +312,42 @@ export async function updateGigPosting(employerId, id, data) {
     update.startAt = new Date(changes.startAt);
     // FR-POST-07: urgency is re-derived from the new start, never chosen.
     update.isUrgent = computeIsUrgent(changes.startAt);
+    // FR-POST-13: a Gig expires at its start, so moving the start moves the expiry.
+    if (existing.arrangementType === 'GIG') update.expiresAt = update.startAt;
   }
 
-  const { count } = await prisma.gigPosting.updateMany({
-    where: { id, employerId, status: 'OPEN', autoHiddenAt: null, filledCount: existing.filledCount },
-    data: update,
-  });
-  if (count === 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.changedMeanwhile);
+  // The conditional write; `db` is the transaction client when a re-confirmation goes with it.
+  const applyEdit = async (db) => {
+    const { count } = await db.gigPosting.updateMany({
+      where: { id, employerId, status: 'OPEN', autoHiddenAt: null, filledCount: existing.filledCount },
+      data: update,
+    });
+    if (count === 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.changedMeanwhile);
+  };
 
-  // Lowering Workers needed to the fill count makes the posting Filled (FR-POST-18).
-  if (update.workersNeeded !== undefined) await syncPostingStatus(id);
+  if (existing.filledCount > 0 && changedMaterial.length > 0) {
+    const materialChanges = Object.fromEntries(changedMaterial.map((f) => [f, changes[f]]));
+    await prisma.$transaction(async (tx) => {
+      const waiting = await tx.materialChangeRequest.count({ where: { gigPostingId: id, status: 'PENDING' } });
+      if (waiting > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
+      await applyEdit(tx);
+      await requestReconfirmation(
+        { posting: existing, changes: materialChanges, newStartAt: update.startAt ?? existing.startAt },
+        tx,
+      );
+    });
+  } else {
+    await applyEdit(prisma);
+  }
+
+  // Lowering Workers needed to the fill count makes the posting Filled (FR-POST-18); a
+  // posting that stops accepting applications resolves its Pending applicants (FR-APPLY-09).
+  if (update.workersNeeded !== undefined) {
+    await syncPostingStatus(id);
+    if (computeFillStatus(existing.filledCount, update.workersNeeded) === 'FILLED') {
+      await resolvePendingApplicants(id, 'FILLED');
+    }
+  }
   // Anyone who has applied is told what changed (a no-op until YL-174 — posting.applicants.js).
   if (changedMaterial.length > 0) await notifyPendingApplicantsOfChange(id, changedMaterial);
 
