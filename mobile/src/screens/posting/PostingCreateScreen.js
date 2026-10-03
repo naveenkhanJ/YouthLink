@@ -1,1501 +1,671 @@
-import React, { useState, useMemo } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+/**
+ * Post a gig — the multi-step posting form (FR-POST-01..09) — Lahiru.
+ *
+ * Built to docs/prototype/M2-posting.md screens 2.1–2.8 (gig, "Step N of 7")
+ * and 2.1t–2.8t (part-time / internship, which add the Schedule step, "of 8").
+ * One field (or one short group) per step, exactly as the prototype draws it:
+ * a mobile/display screen title, a "Step N of M" caption, the field, its
+ * helper/range note, and a pinned ctaBar ("Continue", "Review posting" on the
+ * last step). All colour, spacing, type and components come from the shared
+ * kit (theme/tokens + components/*), never raw hex — this screen was rebuilt
+ * from a free-hand, off-spec version for UI conformance (design-system.md §5.4).
+ *
+ * Two deliberate interim choices, both documented so they can be revisited:
+ *  - Posting-as (FR-POST-16) is auto-populated from the signed-in employer's
+ *    account (useAuth), NOT asked as a step — the prototype has no "Post as"
+ *    step; it only shows the value on the Review screen (2.9).
+ *  - Precise map-pin selection (FR-POST-08) needs react-native-maps, a native
+ *    dependency (a new shared build — an escalation, not a member's call). The
+ *    prototype's Display/MapArea is itself a flat placeholder. Until that
+ *    dependency is decided, the employer types the precise address, the coarse
+ *    area is derived from it for the worker-facing note, and coordinates fall
+ *    back to a default. See the Location step below.
+ */
+import { useEffect, useMemo, useState } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { StatusBar } from "expo-status-bar";
+import Svg, { Path } from "react-native-svg";
+import { colors, spacing, radius, typography } from "../../theme/tokens";
+import ScreenHeader from "../../components/ScreenHeader";
+import Button from "../../components/Button";
+import TextField from "../../components/TextField";
+import TextArea from "../../components/TextArea";
+import Chip from "../../components/Chip";
+import MapArea from "../../components/MapArea";
+import DateTimeField from "../../components/DateTimeField";
+import FieldError from "../../components/FieldError";
+import CtaBar from "../../components/CtaBar";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import DialogModal from "../../components/DialogModal";
+import { useAuth } from "../../auth/AuthContext";
 import {
   LIMITS,
   GIG_CATEGORIES,
   ARRANGEMENT_TYPES,
-  PAY_KINDS,
   PAY_RATE_UNITS,
-  POSTED_AS_TYPES,
-  PRESET_LOCATIONS,
   computeIsUrgent,
   validateLeadTime,
-  formatLKR,
-  formatDateTime,
-} from './posting.constants.js';
+} from "./posting.constants.js";
+import { combineStart } from "./posting.format.js";
+import { loadPostingDraft, savePostingDraft, clearPostingDraft, hasDraftContent } from "./postingDraft.js";
+
+// Interim default coordinates until a real map pin (react-native-maps) is
+// wired — Colombo city centre. See the file header.
+const DEFAULT_COORDS = { lat: 6.9271, lng: 79.8612 };
+
+// The step sequence. Arrangement (step 3) decides whether the Schedule step
+// (FR-POST-03, part-time & internship only) is present, which is what turns
+// "of 7" into "of 8" — exactly the prototype's 2.3 → 2.3t difference.
+const GIG_STEPS = ["titleDesc", "category", "arrangement", "pay", "location", "workers", "start"];
+const RECURRING_STEPS = ["titleDesc", "category", "arrangement", "pay", "schedule", "location", "workers", "start"];
+
+// The mobile/display title drawn at the top of each step's content (2.1–2.8).
+const STEP_TITLES = {
+  titleDesc: "Post a gig",
+  category: "Category",
+  arrangement: "Arrangement",
+  pay: "Pay",
+  schedule: "Schedule",
+  location: "Location",
+  workers: "Workers needed",
+  start: "Start",
+};
+
+/** Derive the coarse, worker-facing area from a precise address (FR-POST-08):
+ *  the last comma-separated segment, e.g. "23 Temple Road, Colombo 04" →
+ *  "Colombo 04". Falls back to the whole string when there is no comma. */
+function deriveAreaLabel(address) {
+  if (!address) return "";
+  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
+  return parts.length ? parts[parts.length - 1] : address.trim();
+}
+
+/** The payKind the backend expects, derived from the arrangement + internship
+ *  choice (FR-POST-04). Gig → fixed total; part-time → rate; internship →
+ *  one of unpaid / stipend / paid. */
+function derivePayKind(arrangementType, internshipChoice) {
+  if (arrangementType === "GIG") return "FIXED_TOTAL";
+  if (arrangementType === "PART_TIME") return "RATE";
+  return internshipChoice; // UNPAID | STIPEND | PAID
+}
 
 export default function PostingCreateScreen({ navigation }) {
-  // Step navigation (1: Details, 2: Pay & Schedule, 3: Logistics & Poster, 4: Location)
-  const [currentStep, setCurrentStep] = useState(1);
+  const { user } = useAuth();
 
-  // Form State
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('RETAIL');
-  const [description, setDescription] = useState('');
+  const [stepIndex, setStepIndex] = useState(0);
 
-  const [arrangementType, setArrangementType] = useState('GIG');
-  const [payKind, setPayKind] = useState('FIXED_TOTAL');
-  const [payAmount, setPayAmount] = useState('');
-  const [payRateUnit, setPayRateUnit] = useState('DAY');
-  const [internshipPayChoice, setInternshipPayChoice] = useState('PAID');
-  const [schedule, setSchedule] = useState('');
+  // Form state (one source of truth, carried across steps).
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(null);
+  const [arrangementType, setArrangementType] = useState("GIG");
+  const [payAmount, setPayAmount] = useState("");
+  const [payRateUnit, setPayRateUnit] = useState("DAY");
+  const [internshipChoice, setInternshipChoice] = useState("PAID");
+  const [schedule, setSchedule] = useState("");
+  const [locationAddress, setLocationAddress] = useState("");
+  const [workersNeeded, setWorkersNeeded] = useState("1");
+  // Start date (YYYY-MM-DD) and time (HH:MM) kept separate for the two fields,
+  // then combined into one ISO value on submit.
+  const [startDate, setStartDate] = useState("");
+  const [startTime, setStartTime] = useState("");
 
-  const [workersNeeded, setWorkersNeeded] = useState(1);
-  // Default start time: +30 hours from now (an urgent gig by default for quick testing)
-  const defaultStartTime = useMemo(() => {
-    const d = new Date(Date.now() + 30 * 60 * 60 * 1000);
-    return d.toISOString();
-  }, []);
-  const [startAt, setStartAt] = useState(defaultStartTime);
+  const [error, setError] = useState(null); // one message for the current step
 
-  const [postedAsType, setPostedAsType] = useState('INDIVIDUAL');
-  const [postedBusinessName, setPostedBusinessName] = useState('');
-  const [postedBusinessBio, setPostedBusinessBio] = useState('');
+  // FR-POST-15 (E9): the unsent form is kept on this device only. `restored` flips once
+  // the stored copy has been read, so the first (blank) render can't overwrite it.
+  const [restored, setRestored] = useState(false);
+  const [keptOffline, setKeptOffline] = useState(false); // a publish failed with no signal
+  const [discardOpen, setDiscardOpen] = useState(false);
 
-  const [locationAddress, setLocationAddress] = useState(PRESET_LOCATIONS[0].address);
-  const [locationAreaLabel, setLocationAreaLabel] = useState(PRESET_LOCATIONS[0].areaLabel);
-  const [locationLat, setLocationLat] = useState(PRESET_LOCATIONS[0].lat);
-  const [locationLng, setLocationLng] = useState(PRESET_LOCATIONS[0].lng);
+  const isRecurring = arrangementType !== "GIG";
+  const steps = isRecurring ? RECURRING_STEPS : GIG_STEPS;
+  const totalSteps = steps.length; // 7 or 8
+  const stepKey = steps[stepIndex];
+  const isLastStep = stepIndex === steps.length - 1;
 
-  // Field validation errors
-  const [errors, setErrors] = useState({});
+  const payKind = derivePayKind(arrangementType, internshipChoice);
+  const areaLabel = useMemo(() => deriveAreaLabel(locationAddress), [locationAddress]);
 
-  // Computed urgency preview (FR-POST-07)
-  const isUrgentPreview = useMemo(() => computeIsUrgent(startAt), [startAt]);
-  // Lead time validation check (FR-POST-05)
-  const leadTimeCheck = useMemo(() => validateLeadTime(startAt), [startAt]);
+  // Combined ISO start — only valid once both halves are present.
+  const startAt = useMemo(() => {
+    return combineStart(startDate, startTime);
+  }, [startDate, startTime]);
 
-  // Handle preset location selection
-  const handleSelectPresetLocation = (preset) => {
-    setLocationAreaLabel(preset.areaLabel);
-    setLocationAddress(preset.address);
-    setLocationLat(preset.lat);
-    setLocationLng(preset.lng);
-  };
-
-  // Helper for setting start time with relative hours
-  const handleSetRelativeStartTime = (hoursFromNow) => {
-    const d = new Date(Date.now() + hoursFromNow * 60 * 60 * 1000);
-    setStartAt(d.toISOString());
-  };
-
-  // Arrangement Type change handler - resets appropriate pay kind
-  const handleArrangementChange = (type) => {
-    setArrangementType(type);
-    if (type === 'GIG') {
-      setPayKind('FIXED_TOTAL');
-    } else if (type === 'PART_TIME') {
-      setPayKind('RATE');
-    } else if (type === 'INTERNSHIP') {
-      if (internshipPayChoice === 'UNPAID') setPayKind('UNPAID');
-      else if (internshipPayChoice === 'STIPEND') setPayKind('STIPEND');
-      else setPayKind('PAID');
+  // ----- per-step validation (returns an error message, or null) -----
+  function validateCurrentStep() {
+    switch (stepKey) {
+      case "titleDesc":
+        if (!title.trim()) return "Enter a title for the posting.";
+        if (!description.trim()) return "Enter a description.";
+        return null;
+      case "category":
+        if (!category) return "Choose a category.";
+        return null;
+      case "arrangement":
+        return null; // always has a default selection
+      case "pay": {
+        if (payKind === "UNPAID") return null; // no amount collected
+        const num = parseFloat(payAmount);
+        if (!payAmount || isNaN(num) || num <= 0) return "Enter a pay amount greater than zero.";
+        return null;
+      }
+      case "schedule":
+        if (!schedule.trim()) return "Enter the schedule.";
+        return null;
+      case "location":
+        if (!locationAddress.trim()) return "Enter the address.";
+        return null;
+      case "workers": {
+        const n = parseInt(workersNeeded, 10);
+        if (!Number.isInteger(n) || n < LIMITS.WORKERS_MIN || n > LIMITS.WORKERS_MAX) {
+          return `Enter a whole number between ${LIMITS.WORKERS_MIN} and ${LIMITS.WORKERS_MAX}.`;
+        }
+        return null;
+      }
+      case "start": {
+        if (!startAt) return "Enter the start date and time.";
+        const lead = validateLeadTime(startAt);
+        if (!lead.valid) return lead.message;
+        return null;
+      }
+      default:
+        return null;
     }
+  }
+
+  const form = {
+    title, description, category, arrangementType, payAmount, payRateUnit,
+    internshipChoice, schedule, locationAddress, workersNeeded, startDate, startTime,
   };
 
-  // Internship choice change handler
-  const handleInternshipChoiceChange = (choice) => {
-    setInternshipPayChoice(choice);
-    if (choice === 'UNPAID') {
-      setPayKind('UNPAID');
-      setPayAmount('');
-    } else if (choice === 'STIPEND') {
-      setPayKind('STIPEND');
+  function applyDraft(d) {
+    setTitle(d.title ?? "");
+    setDescription(d.description ?? "");
+    setCategory(d.category ?? null);
+    setArrangementType(d.arrangementType ?? "GIG");
+    setPayAmount(d.payAmount ?? "");
+    setPayRateUnit(d.payRateUnit ?? "DAY");
+    setInternshipChoice(d.internshipChoice ?? "PAID");
+    setSchedule(d.schedule ?? "");
+    setLocationAddress(d.locationAddress ?? "");
+    setWorkersNeeded(d.workersNeeded ?? "1");
+    setStartDate(d.startDate ?? "");
+    setStartTime(d.startTime ?? "");
+  }
+
+  // Restore on open: the form comes back filled, at step 1 (prototype 2.1rst).
+  useEffect(() => {
+    let active = true;
+    loadPostingDraft(user?.id).then((d) => {
+      if (!active) return;
+      if (d) {
+        applyDraft(d);
+        setKeptOffline(Boolean(d.keptOffline));
+      }
+      setRestored(true);
+    });
+    return () => { active = false; };
+  }, [user?.id]);
+
+  // Coming back from the review after an offline failure: pick up the flag it set.
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      loadPostingDraft(user?.id).then((d) => {
+        setKeptOffline(Boolean(d?.keptOffline));
+        // The stored copy is gone (posted, or discarded): this screen must not show a stale form.
+        if (!d) {
+          applyDraft({});
+          setStepIndex(0);
+        }
+      });
+    });
+  }, [navigation, user?.id]);
+
+  // Keep the form as it stands — on the device, never the server. An untouched blank
+  // form is not saved (and clears any stale copy).
+  useEffect(() => {
+    if (!restored) return;
+    if (hasDraftContent(form)) savePostingDraft(user?.id, { ...form, keptOffline });
+    else clearPostingDraft(user?.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restored, keptOffline, title, description, category, arrangementType, payAmount, payRateUnit,
+    internshipChoice, schedule, locationAddress, workersNeeded, startDate, startTime]);
+
+  // 2.8err: a start under 2 hours away is blocked, not warned — shown live, Review disabled.
+  const startError = useMemo(() => {
+    if (stepKey !== "start" || !startAt) return null;
+    const lead = validateLeadTime(startAt);
+    return lead.valid ? null : lead.message;
+  }, [stepKey, startAt]);
+
+  // The explicit discard FR-POST-15 refers to: forget the kept form and start blank.
+  function handleDiscard() {
+    clearPostingDraft(user?.id);
+    applyDraft({});
+    setKeptOffline(false);
+    setStepIndex(0);
+    setError(null);
+    setDiscardOpen(false);
+  }
+
+  function handleContinue() {
+    const message = validateCurrentStep();
+    if (message) {
+      setError(message);
+      return;
+    }
+    setError(null);
+    if (isLastStep) {
+      goToReview();
     } else {
-      setPayKind('PAID');
+      setStepIndex((i) => i + 1);
     }
-  };
+  }
 
-  // Step 1 Validation
-  const validateStep1 = () => {
-    const errs = {};
-    if (!title.trim()) {
-      errs.title = 'Title is required (FR-POST-01).';
-    } else if (title.trim().length > LIMITS.TITLE_MAX) {
-      errs.title = `Title cannot exceed ${LIMITS.TITLE_MAX} characters.`;
-    }
-
-    if (!category) {
-      errs.category = 'Please select a task category (FR-POST-02).';
-    }
-
-    if (!description.trim()) {
-      errs.description = 'Description is required (FR-POST-01).';
-    } else if (description.trim().length > LIMITS.DESCRIPTION_MAX) {
-      errs.description = `Description cannot exceed ${LIMITS.DESCRIPTION_MAX} characters.`;
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Step 2 Validation
-  const validateStep2 = () => {
-    const errs = {};
-    if (payKind !== 'UNPAID') {
-      const num = parseFloat(payAmount);
-      if (!payAmount || isNaN(num) || num <= 0) {
-        errs.payAmount = 'Please enter a valid pay amount greater than 0.';
-      }
-    }
-
-    if (arrangementType === 'PART_TIME' && !payRateUnit) {
-      errs.payRateUnit = 'Select rate frequency (day, week, month).';
-    }
-
-    if ((arrangementType === 'PART_TIME' || arrangementType === 'INTERNSHIP') && !schedule.trim()) {
-      errs.schedule = 'Schedule is required for part-time and internship listings (FR-POST-03).';
-    } else if (schedule.trim().length > LIMITS.SCHEDULE_MAX) {
-      errs.schedule = `Schedule cannot exceed ${LIMITS.SCHEDULE_MAX} characters.`;
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Step 3 Validation
-  const validateStep3 = () => {
-    const errs = {};
-    if (!workersNeeded || workersNeeded < LIMITS.WORKERS_MIN || workersNeeded > LIMITS.WORKERS_MAX) {
-      errs.workersNeeded = `Workers needed must be between ${LIMITS.WORKERS_MIN} and ${LIMITS.WORKERS_MAX} (FR-POST-06).`;
-    }
-
-    if (!leadTimeCheck.valid) {
-      errs.startAt = leadTimeCheck.message;
-    }
-
-    if (postedAsType === 'BUSINESS') {
-      if (!postedBusinessName.trim()) {
-        errs.postedBusinessName = 'Business name is required when posting as a business (FR-ACC-02).';
-      } else if (postedBusinessName.trim().length > LIMITS.BUSINESS_NAME_MAX) {
-        errs.postedBusinessName = `Business name cannot exceed ${LIMITS.BUSINESS_NAME_MAX} chars.`;
-      }
-      if (postedBusinessBio.trim().length > LIMITS.BUSINESS_BIO_MAX) {
-        errs.postedBusinessBio = `Business bio cannot exceed ${LIMITS.BUSINESS_BIO_MAX} chars.`;
-      }
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Step 4 Validation
-  const validateStep4 = () => {
-    const errs = {};
-    if (!locationAddress.trim()) {
-      errs.locationAddress = 'Precise street address is required (FR-POST-01).';
-    }
-    if (!locationAreaLabel.trim()) {
-      errs.locationAreaLabel = 'Area/suburb label is required for coarse public preview (FR-POST-08).';
-    }
-    if (locationLat == null || locationLng == null || isNaN(locationLat) || isNaN(locationLng)) {
-      errs.locationCoordinates = 'Valid map coordinates are required.';
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Advance to next step
-  const handleNext = () => {
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
-    } else if (currentStep === 3 && validateStep3()) {
-      setCurrentStep(4);
-    } else if (currentStep === 4 && validateStep4()) {
-      handleProceedToReview();
-    }
-  };
-
-  // Go to previous step
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setErrors({});
-      setCurrentStep(currentStep - 1);
+  function handleBack() {
+    setError(null);
+    if (stepIndex === 0) {
+      navigation.goBack(); // step 1 is the form root; leave to the postings list
     } else {
-      navigation.goBack();
+      setStepIndex((i) => i - 1);
     }
-  };
+  }
 
-  // Transition to Review Screen (FR-POST-09)
-  const handleProceedToReview = () => {
+  function goToReview() {
+    // FR-POST-16: posting-as is the employer's account identity, not a form
+    // field. Auto-populated here from the signed-in user.
+    const postedAsType = user?.postingAsType === "BUSINESS" ? "BUSINESS" : "INDIVIDUAL";
+
     const formData = {
       title: title.trim(),
-      category,
       description: description.trim(),
+      category,
       arrangementType,
       payKind,
-      payAmount: payKind === 'UNPAID' ? null : parseFloat(payAmount),
-      payRateUnit: payKind === 'RATE' ? payRateUnit : null,
+      payAmount: payKind === "UNPAID" ? null : parseFloat(payAmount),
+      payRateUnit: payKind === "RATE" ? payRateUnit : null,
       postedAsType,
-      postedBusinessName: postedAsType === 'BUSINESS' ? postedBusinessName.trim() : null,
-      postedBusinessBio: postedAsType === 'BUSINESS' ? postedBusinessBio.trim() : null,
+      postedBusinessName: postedAsType === "BUSINESS" ? user?.businessName ?? null : null,
+      postedBusinessBio: postedAsType === "BUSINESS" ? user?.businessBio ?? null : null,
+      schedule: isRecurring ? schedule.trim() : null,
+      locationAddress: locationAddress.trim(),
+      locationAreaLabel: areaLabel,
+      locationLat: DEFAULT_COORDS.lat,
+      locationLng: DEFAULT_COORDS.lng,
       workersNeeded: parseInt(workersNeeded, 10),
       startAt,
-      schedule: ['PART_TIME', 'INTERNSHIP'].includes(arrangementType) ? schedule.trim() : null,
-      locationAddress: locationAddress.trim(),
-      locationAreaLabel: locationAreaLabel.trim(),
-      locationLat: parseFloat(locationLat),
-      locationLng: parseFloat(locationLng),
-      isUrgent: isUrgentPreview,
+      // FR-POST-07: urgency is always derived, never chosen. Shown (as "set
+      // automatically") only on the Review screen.
+      isUrgent: computeIsUrgent(startAt),
     };
-
-    navigation.navigate('PostingReview', { formData });
-  };
+    navigation.navigate("PostingReview", { formData });
+  }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
+    <View style={styles.root}>
+      <StatusBar style="dark" />
+      {/* 2.1's header is a ghost (tab root); 2.2+ add a back arrow and a ✕
+          that exits to the postings list. We render back on every step
+          (step 1 leaves the screen) and ✕ from step 2 on. */}
+      <ScreenHeader
+        title=""
+        onBack={handleBack}
+        action={
+          stepIndex > 0 ? (
+            <Pressable
+              onPress={() => navigation.goBack()}
+              hitSlop={spacing.sm}
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+              style={styles.closeHit}
+            >
+              <Svg width={24} height={24} viewBox="0 0 24 24">
+                <Path
+                  d="M6 6L18 18M18 6L6 18"
+                  stroke={colors.text.primary}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                />
+              </Svg>
+            </Pressable>
+          ) : null
+        }
+      />
+
+      <KeyboardAwareScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid
+        extraScrollHeight={120}
       >
-        {/* Step Progress Bar */}
-        <View style={styles.progressContainer}>
-          <View style={styles.stepsHeader}>
-            <Text style={styles.stepTitle}>
-              {currentStep === 1 && '1. Gig Details'}
-              {currentStep === 2 && '2. Pay & Schedule'}
-              {currentStep === 3 && '3. Schedule & Workers'}
-              {currentStep === 4 && '4. Location & Privacy'}
-            </Text>
-            <Text style={styles.stepCounter}>Step {currentStep} of 4</Text>
+        <Text style={styles.screenTitle}>{STEP_TITLES[stepKey]}</Text>
+        <Text style={styles.step}>
+          Step {stepIndex + 1} of {totalSteps}
+        </Text>
+
+        {stepIndex === 0 && keptOffline ? (
+          <Text style={styles.restoredNote}>Your details were kept while you were offline.</Text>
+        ) : null}
+
+        {renderStepBody()}
+
+        {startError || error ? <FieldError message={startError || error} /> : null}
+
+        {hasDraftContent(form) ? (
+          <Button title="Discard posting" style="text" onPress={() => setDiscardOpen(true)} />
+        ) : null}
+
+        <View style={styles.spacer} />
+      </KeyboardAwareScrollView>
+
+      <CtaBar>
+        <Button
+          title={isLastStep ? "Review posting" : "Continue"}
+          onPress={handleContinue}
+          disabled={Boolean(startError)}
+        />
+      </CtaBar>
+
+      <DialogModal visible={discardOpen} onRequestClose={() => setDiscardOpen(false)}>
+        <ConfirmDialog
+          title="Discard this posting?"
+          body="What you've entered is removed from this phone. This can't be undone."
+          cancelLabel="Keep editing"
+          cancelStyle="secondary"
+          onCancel={() => setDiscardOpen(false)}
+          confirmLabel="Discard"
+          onConfirm={handleDiscard}
+        />
+      </DialogModal>
+    </View>
+  );
+
+  // ----- step bodies -----
+  function renderStepBody() {
+    switch (stepKey) {
+      case "titleDesc":
+        return (
+          <>
+            <TextField
+              label="Title"
+              value={title}
+              onChangeText={setTitle}
+              placeholder="e.g. Event setup crew (3 needed)"
+              autoCapitalize="sentences"
+              maxLength={LIMITS.TITLE_MAX}
+            />
+            <View style={styles.field}>
+              <Text style={styles.label}>Description</Text>
+              <TextArea
+                value={description}
+                onChangeText={setDescription}
+                placeholder="What the work involves, what's provided, where."
+                maxLength={LIMITS.DESCRIPTION_MAX}
+              />
+            </View>
+          </>
+        );
+
+      case "category":
+        return (
+          <View style={styles.optionList}>
+            {GIG_CATEGORIES.map((cat) => (
+              <OptionRow
+                key={cat.id}
+                label={cat.label}
+                selected={category === cat.id}
+                onPress={() => setCategory(cat.id)}
+              />
+            ))}
           </View>
-          <View style={styles.progressBarTrack}>
-            <View style={[styles.progressBarFill, { width: `${(currentStep / 4) * 100}%` }]} />
+        );
+
+      case "arrangement":
+        return (
+          <View style={styles.optionList}>
+            {ARRANGEMENT_TYPES.map((arr) => (
+              <OptionRow
+                key={arr.id}
+                label={arr.label}
+                selected={arrangementType === arr.id}
+                onPress={() => setArrangementType(arr.id)}
+              />
+            ))}
           </View>
-        </View>
+        );
 
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* ========================================================================= */}
-          {/* STEP 1: TITLE, CATEGORY, DESCRIPTION (FR-POST-01, FR-POST-02) */}
-          {/* ========================================================================= */}
-          {currentStep === 1 && (
-            <View style={styles.stepContent}>
-              <Text style={styles.sectionHeading}>Basic Information</Text>
-              <Text style={styles.sectionSub}>
-                Provide clear, concise details about the task needed.
-              </Text>
+      case "pay":
+        return renderPayStep();
 
-              {/* Title Field (Cap: 80 chars) */}
-              <View style={styles.inputGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.label}>
-                    Gig Title <Text style={styles.required}>*</Text>
-                  </Text>
-                  <Text
-                    style={[
-                      styles.charCount,
-                      title.length > LIMITS.TITLE_MAX - 10 && styles.charCountWarning,
-                    ]}
-                  >
-                    {title.length} / {LIMITS.TITLE_MAX}
-                  </Text>
-                </View>
-                <TextInput
-                  style={[styles.input, errors.title && styles.inputError]}
-                  placeholder="e.g. Weekend Retail Sales Assistant"
-                  value={title}
-                  onChangeText={(val) => {
-                    if (val.length <= LIMITS.TITLE_MAX) setTitle(val);
-                  }}
-                  maxLength={LIMITS.TITLE_MAX}
-                />
-                {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
-              </View>
+      case "schedule":
+        return (
+          <>
+            <Text style={styles.note}>Part-time jobs and internships only.</Text>
+            <TextField
+              label="Schedule"
+              value={schedule}
+              onChangeText={setSchedule}
+              placeholder="e.g. Mon, Wed, Fri — 4 to 6 pm"
+              autoCapitalize="sentences"
+              maxLength={LIMITS.SCHEDULE_MAX}
+            />
+          </>
+        );
 
-              {/* Category Allow-list (FR-POST-02) */}
-              <View style={styles.inputGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.label}>
-                    Task Category <Text style={styles.required}>*</Text>
-                  </Text>
-                  <Text style={styles.helperTag}>Allow-list Only</Text>
-                </View>
-                <Text style={styles.fieldNote}>
-                  Select from approved youth-safe gig categories (no free text).
-                </Text>
-
-                <View style={styles.categoryGrid}>
-                  {GIG_CATEGORIES.map((cat) => {
-                    const isSelected = category === cat.id;
-                    return (
-                      <TouchableOpacity
-                        key={cat.id}
-                        style={[styles.categoryCard, isSelected && styles.categoryCardSelected]}
-                        onPress={() => setCategory(cat.id)}
-                        activeOpacity={0.8}
-                      >
-                        <Text style={styles.categoryIcon}>{cat.icon}</Text>
-                        <Text
-                          style={[
-                            styles.categoryLabel,
-                            isSelected && styles.categoryLabelSelected,
-                          ]}
-                        >
-                          {cat.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-                {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
-              </View>
-
-              {/* Description Field (Cap: 1000 chars) */}
-              <View style={styles.inputGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.label}>
-                    Task Description <Text style={styles.required}>*</Text>
-                  </Text>
-                  <Text
-                    style={[
-                      styles.charCount,
-                      description.length > LIMITS.DESCRIPTION_MAX - 50 && styles.charCountWarning,
-                    ]}
-                  >
-                    {description.length} / {LIMITS.DESCRIPTION_MAX}
-                  </Text>
-                </View>
-                <TextInput
-                  style={[styles.textArea, errors.description && styles.inputError]}
-                  placeholder="Describe the responsibilities, required skills, tools provided, and expectations..."
-                  value={description}
-                  onChangeText={(val) => {
-                    if (val.length <= LIMITS.DESCRIPTION_MAX) setDescription(val);
-                  }}
-                  maxLength={LIMITS.DESCRIPTION_MAX}
-                  multiline
-                  numberOfLines={5}
-                  textAlignVertical="top"
-                />
-                {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-              </View>
-            </View>
-          )}
-
-          {/* ========================================================================= */}
-          {/* STEP 2: ARRANGEMENT, PAY FORMAT & SCHEDULE (FR-POST-03, FR-POST-04) */}
-          {/* ========================================================================= */}
-          {currentStep === 2 && (
-            <View style={styles.stepContent}>
-              <Text style={styles.sectionHeading}>Arrangement & Pay</Text>
-              <Text style={styles.sectionSub}>
-                Pay format adapts based on whether this is a one-off gig or recurring role.
-              </Text>
-
-              {/* Arrangement Type Selection */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  Arrangement Type <Text style={styles.required}>*</Text>
-                </Text>
-                <View style={styles.arrangementContainer}>
-                  {ARRANGEMENT_TYPES.map((type) => {
-                    const isSelected = arrangementType === type.id;
-                    return (
-                      <TouchableOpacity
-                        key={type.id}
-                        style={[
-                          styles.arrangementCard,
-                          isSelected && styles.arrangementCardSelected,
-                        ]}
-                        onPress={() => handleArrangementChange(type.id)}
-                      >
-                        <View style={styles.radioRow}>
-                          <View
-                            style={[
-                              styles.radioButton,
-                              isSelected && styles.radioButtonSelected,
-                            ]}
-                          >
-                            {isSelected && <View style={styles.radioButtonDot} />}
-                          </View>
-                          <Text
-                            style={[
-                              styles.arrangementLabel,
-                              isSelected && styles.arrangementLabelSelected,
-                            ]}
-                          >
-                            {type.label}
-                          </Text>
-                        </View>
-                        <Text style={styles.arrangementDesc}>{type.description}</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              </View>
-
-              {/* Conditional Pay Inputs per FR-POST-04 */}
-              <View style={styles.paySectionBox}>
-                <Text style={styles.boxTitle}>💵 Stated Pay Format (in LKR)</Text>
-
-                {/* 1. GIG (Fixed Total) */}
-                {arrangementType === 'GIG' && (
-                  <View style={styles.inputGroup}>
-                    <Text style={styles.label}>
-                      Fixed Total Pay (per worker) <Text style={styles.required}>*</Text>
-                    </Text>
-                    <View style={styles.currencyInputRow}>
-                      <View style={styles.currencyPrefix}>
-                        <Text style={styles.currencyPrefixText}>Rs.</Text>
-                      </View>
-                      <TextInput
-                        style={[styles.currencyInput, errors.payAmount && styles.inputError]}
-                        placeholder="e.g. 3500"
-                        keyboardType="numeric"
-                        value={payAmount}
-                        onChangeText={setPayAmount}
-                      />
-                    </View>
-                    {errors.payAmount && <Text style={styles.errorText}>{errors.payAmount}</Text>}
-                  </View>
-                )}
-
-                {/* 2. PART-TIME JOB (Rate + Unit) */}
-                {arrangementType === 'PART_TIME' && (
-                  <View>
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.label}>
-                        Pay Rate Amount (per worker) <Text style={styles.required}>*</Text>
-                      </Text>
-                      <View style={styles.currencyInputRow}>
-                        <View style={styles.currencyPrefix}>
-                          <Text style={styles.currencyPrefixText}>Rs.</Text>
-                        </View>
-                        <TextInput
-                          style={[styles.currencyInput, errors.payAmount && styles.inputError]}
-                          placeholder="e.g. 2500"
-                          keyboardType="numeric"
-                          value={payAmount}
-                          onChangeText={setPayAmount}
-                        />
-                      </View>
-                      {errors.payAmount && <Text style={styles.errorText}>{errors.payAmount}</Text>}
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.label}>
-                        Rate Frequency <Text style={styles.required}>*</Text>
-                      </Text>
-                      <View style={styles.unitRow}>
-                        {PAY_RATE_UNITS.map((unit) => (
-                          <TouchableOpacity
-                            key={unit.id}
-                            style={[
-                              styles.unitChip,
-                              payRateUnit === unit.id && styles.unitChipSelected,
-                            ]}
-                            onPress={() => setPayRateUnit(unit.id)}
-                          >
-                            <Text
-                              style={[
-                                styles.unitChipText,
-                                payRateUnit === unit.id && styles.unitChipTextSelected,
-                              ]}
-                            >
-                              {unit.label}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                      {errors.payRateUnit && (
-                        <Text style={styles.errorText}>{errors.payRateUnit}</Text>
-                      )}
-                    </View>
-                  </View>
-                )}
-
-                {/* 3. INTERNSHIP (Unpaid, Stipend, Paid) */}
-                {arrangementType === 'INTERNSHIP' && (
-                  <View>
-                    <Text style={styles.label}>Internship Compensation</Text>
-                    <View style={styles.unitRow}>
-                      {['UNPAID', 'STIPEND', 'PAID'].map((c) => (
-                        <TouchableOpacity
-                          key={c}
-                          style={[
-                            styles.unitChip,
-                            internshipPayChoice === c && styles.unitChipSelected,
-                          ]}
-                          onPress={() => handleInternshipChoiceChange(c)}
-                        >
-                          <Text
-                            style={[
-                              styles.unitChipText,
-                              internshipPayChoice === c && styles.unitChipTextSelected,
-                            ]}
-                          >
-                            {c === 'UNPAID' ? 'Unpaid' : c === 'STIPEND' ? 'Stipend' : 'Paid'}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-
-                    {internshipPayChoice !== 'UNPAID' && (
-                      <View style={[styles.inputGroup, { marginTop: 12 }]}>
-                        <Text style={styles.label}>
-                          {internshipPayChoice === 'STIPEND' ? 'Monthly Stipend' : 'Monthly Pay'} (per worker){' '}
-                          <Text style={styles.required}>*</Text>
-                        </Text>
-                        <View style={styles.currencyInputRow}>
-                          <View style={styles.currencyPrefix}>
-                            <Text style={styles.currencyPrefixText}>Rs.</Text>
-                          </View>
-                          <TextInput
-                            style={[styles.currencyInput, errors.payAmount && styles.inputError]}
-                            placeholder="e.g. 20000"
-                            keyboardType="numeric"
-                            value={payAmount}
-                            onChangeText={setPayAmount}
-                          />
-                        </View>
-                        {errors.payAmount && (
-                          <Text style={styles.errorText}>{errors.payAmount}</Text>
-                        )}
-                      </View>
-                    )}
-                  </View>
-                )}
-
-                {/* Per-worker notice (FR-POST-04) */}
-                <View style={styles.noticeBox}>
-                  <Text style={styles.noticeText}>
-                    💡 <Text style={styles.boldText}>Per-Worker Stated Pay:</Text> Figures apply to
-                    each worker individually, never divided across multiple workers.
-                  </Text>
-                </View>
-              </View>
-
-              {/* Schedule Field (Required for Part-time & Internship, FR-POST-03) */}
-              {['PART_TIME', 'INTERNSHIP'].includes(arrangementType) && (
-                <View style={styles.inputGroup}>
-                  <View style={styles.labelRow}>
-                    <Text style={styles.label}>
-                      Recurring Schedule <Text style={styles.required}>*</Text>
-                    </Text>
-                    <Text
-                      style={[
-                        styles.charCount,
-                        schedule.length > LIMITS.SCHEDULE_MAX - 20 && styles.charCountWarning,
-                      ]}
-                    >
-                      {schedule.length} / {LIMITS.SCHEDULE_MAX}
-                    </Text>
-                  </View>
-                  <TextInput
-                    style={[styles.input, errors.schedule && styles.inputError]}
-                    placeholder="e.g. Mon–Fri, 4:00 PM – 8:00 PM"
-                    value={schedule}
-                    onChangeText={(val) => {
-                      if (val.length <= LIMITS.SCHEDULE_MAX) setSchedule(val);
-                    }}
-                    maxLength={LIMITS.SCHEDULE_MAX}
-                  />
-                  {errors.schedule && <Text style={styles.errorText}>{errors.schedule}</Text>}
-                </View>
-              )}
-            </View>
-          )}
-
-          {/* ========================================================================= */}
-          {/* STEP 3: WORKERS, SCHEDULE & POSTER TYPE (FR-POST-05, FR-POST-06, FR-POST-07, FR-POST-16) */}
-          {/* ========================================================================= */}
-          {currentStep === 3 && (
-            <View style={styles.stepContent}>
-              <Text style={styles.sectionHeading}>Schedule & Slots</Text>
-              <Text style={styles.sectionSub}>
-                Set the number of openings and the start date/time.
-              </Text>
-
-              {/* Workers Needed Stepper (FR-POST-06: 1 to 20, default 1) */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  Workers Needed (1–20) <Text style={styles.required}>*</Text>
-                </Text>
-                <View style={styles.stepperContainer}>
-                  <TouchableOpacity
-                    style={[styles.stepperBtn, workersNeeded <= 1 && styles.stepperBtnDisabled]}
-                    onPress={() => setWorkersNeeded((prev) => Math.max(1, prev - 1))}
-                    disabled={workersNeeded <= 1}
-                  >
-                    <Text style={styles.stepperBtnText}>−</Text>
-                  </TouchableOpacity>
-
-                  <View style={styles.stepperValueBox}>
-                    <Text style={styles.stepperValue}>{workersNeeded}</Text>
-                    <Text style={styles.stepperSub}>
-                      {workersNeeded === 1 ? 'Worker slot' : 'Worker slots'}
-                    </Text>
-                  </View>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.stepperBtn,
-                      workersNeeded >= LIMITS.WORKERS_MAX && styles.stepperBtnDisabled,
-                    ]}
-                    onPress={() => setWorkersNeeded((prev) => Math.min(LIMITS.WORKERS_MAX, prev + 1))}
-                    disabled={workersNeeded >= LIMITS.WORKERS_MAX}
-                  >
-                    <Text style={styles.stepperBtnText}>+</Text>
-                  </TouchableOpacity>
-                </View>
-                {errors.workersNeeded && (
-                  <Text style={styles.errorText}>{errors.workersNeeded}</Text>
-                )}
-              </View>
-
-              {/* Start Date & Time with Lead Time Validation (FR-POST-05) */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  Start Date & Time <Text style={styles.required}>*</Text>
-                </Text>
-                <Text style={styles.fieldNote}>
-                  Must be at least 2 hours from now (FR-POST-05).
-                </Text>
-
-                {/* Quick Shortcut Buttons for Testing/Selection */}
-                <View style={styles.quickTimeRow}>
-                  <TouchableOpacity
-                    style={styles.quickTimeChip}
-                    onPress={() => handleSetRelativeStartTime(4)}
-                  >
-                    <Text style={styles.quickTimeText}>+4 Hours</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.quickTimeChip, styles.quickTimeChipUrgent]}
-                    onPress={() => handleSetRelativeStartTime(30)}
-                  >
-                    <Text style={styles.quickTimeTextUrgent}>+30h (Urgent)</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.quickTimeChip}
-                    onPress={() => handleSetRelativeStartTime(72)}
-                  >
-                    <Text style={styles.quickTimeText}>+3 Days</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Display Selected Date/Time */}
-                <View style={styles.selectedDateCard}>
-                  <Text style={styles.selectedDateLabel}>Selected Start Time:</Text>
-                  <Text style={styles.selectedDateVal}>{formatDateTime(startAt)}</Text>
-                </View>
-
-                {/* Urgency Badge Preview (FR-POST-07) */}
-                <View style={styles.urgencyPreviewCard}>
-                  <Text style={styles.urgencyHeader}>Computed Urgency Preview (FR-POST-07):</Text>
-                  {isUrgentPreview ? (
-                    <View style={styles.urgentBadge}>
-                      <Text style={styles.urgentBadgeText}>⚡ URGENT GIG (Starts in 24h–48h)</Text>
-                      <Text style={styles.urgentBadgeSub}>
-                        Will receive proactive priority notification pushes to nearby youth.
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={styles.standardBadge}>
-                      <Text style={styles.standardBadgeText}>📅 Standard Schedule</Text>
-                      <Text style={styles.standardBadgeSub}>
-                        Starts outside the 24h–48h urgency window.
-                      </Text>
-                    </View>
-                  )}
-                </View>
-
-                {errors.startAt && <Text style={styles.errorText}>{errors.startAt}</Text>}
-              </View>
-
-              {/* Posting As Section (FR-ACC-02 / FR-POST-16) */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  Post As <Text style={styles.required}>*</Text>
-                </Text>
-                <View style={styles.postedAsRow}>
-                  {POSTED_AS_TYPES.map((p) => {
-                    const isSelected = postedAsType === p.id;
-                    return (
-                      <TouchableOpacity
-                        key={p.id}
-                        style={[styles.postedAsChip, isSelected && styles.postedAsChipSelected]}
-                        onPress={() => setPostedAsType(p.id)}
-                      >
-                        <Text style={styles.postedAsIcon}>{p.icon}</Text>
-                        <Text
-                          style={[
-                            styles.postedAsLabel,
-                            isSelected && styles.postedAsLabelSelected,
-                          ]}
-                        >
-                          {p.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-
-                {postedAsType === 'BUSINESS' && (
-                  <View style={styles.businessFieldsBox}>
-                    <Text style={styles.boxTitle}>🏢 Business Profile Display</Text>
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.label}>
-                        Business Name <Text style={styles.required}>*</Text>
-                      </Text>
-                      <TextInput
-                        style={[styles.input, errors.postedBusinessName && styles.inputError]}
-                        placeholder="e.g. Ceylon Urban Retailers Ltd"
-                        value={postedBusinessName}
-                        onChangeText={setPostedBusinessName}
-                        maxLength={LIMITS.BUSINESS_NAME_MAX}
-                      />
-                      {errors.postedBusinessName && (
-                        <Text style={styles.errorText}>{errors.postedBusinessName}</Text>
-                      )}
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                      <Text style={styles.label}>Business Bio (Optional)</Text>
-                      <TextInput
-                        style={[styles.textAreaSmall, errors.postedBusinessBio && styles.inputError]}
-                        placeholder="Brief summary of your business operations..."
-                        value={postedBusinessBio}
-                        onChangeText={setPostedBusinessBio}
-                        maxLength={LIMITS.BUSINESS_BIO_MAX}
-                        multiline
-                      />
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-          )}
-
-          {/* ========================================================================= */}
-          {/* STEP 4: LOCATION & PRIVACY PREVIEW (FR-POST-08) */}
-          {/* ========================================================================= */}
-          {currentStep === 4 && (
-            <View style={styles.stepContent}>
-              <Text style={styles.sectionHeading}>Location & Map Pin</Text>
-              <Text style={styles.sectionSub}>
-                Provide the exact venue address. Job-seekers will see only the coarse area until selected.
-              </Text>
-
-              {/* Quick Sri Lankan Preset Locations */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Select or Choose a Preset Location</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
-                  {PRESET_LOCATIONS.map((preset, index) => {
-                    const isSelected = locationAreaLabel === preset.areaLabel;
-                    return (
-                      <TouchableOpacity
-                        key={index}
-                        style={[styles.presetChip, isSelected && styles.presetChipSelected]}
-                        onPress={() => handleSelectPresetLocation(preset)}
-                      >
-                        <Text
-                          style={[
-                            styles.presetChipText,
-                            isSelected && styles.presetChipTextSelected,
-                          ]}
-                        >
-                          📍 {preset.areaLabel}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-
-              {/* Precise Street Address */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  Precise Street Address <Text style={styles.required}>*</Text>
-                </Text>
-                <TextInput
-                  style={[styles.input, errors.locationAddress && styles.inputError]}
-                  placeholder="e.g. No. 128, Galle Road, Bambalapitiya, Colombo 04"
-                  value={locationAddress}
-                  onChangeText={setLocationAddress}
-                />
-                {errors.locationAddress && (
-                  <Text style={styles.errorText}>{errors.locationAddress}</Text>
-                )}
-              </View>
-
-              {/* Suburb / Coarse Area Label */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>
-                  General Suburb / Area Label <Text style={styles.required}>*</Text>
-                </Text>
-                <TextInput
-                  style={[styles.input, errors.locationAreaLabel && styles.inputError]}
-                  placeholder="e.g. Bambalapitiya, Colombo 04"
-                  value={locationAreaLabel}
-                  onChangeText={setLocationAreaLabel}
-                />
-                {errors.locationAreaLabel && (
-                  <Text style={styles.errorText}>{errors.locationAreaLabel}</Text>
-                )}
-              </View>
-
-              {/* Coordinates */}
-              <View style={styles.coordRow}>
-                <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                  <Text style={styles.label}>Latitude</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={String(locationLat)}
-                    onChangeText={(v) => setLocationLat(parseFloat(v) || 0)}
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                  <Text style={styles.label}>Longitude</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={String(locationLng)}
-                    onChangeText={(v) => setLocationLng(parseFloat(v) || 0)}
-                    keyboardType="numeric"
-                  />
-                </View>
-              </View>
-
-              {/* Location Privacy Explainer (FR-POST-08) */}
-              <View style={styles.privacyBox}>
-                <Text style={styles.privacyBoxTitle}>🔒 Two-Tier Location Privacy (FR-POST-08)</Text>
-                <Text style={styles.privacyBoxBody}>
-                  • <Text style={styles.boldText}>Public Job-Seekers:</Text> Will only see the general area (
-                  {locationAreaLabel || 'suburb'}) and approximate map radius.
-                  {'\n'}• <Text style={styles.boldText}>Selected Worker Only:</Text> Releases the full street address (
-                  {locationAddress || 'exact address'}) upon selection to coordinate arrival safely.
-                </Text>
-              </View>
-            </View>
-          )}
-        </ScrollView>
-
-        {/* Footer Navigation Buttons */}
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
-            <Text style={styles.backBtnText}>{currentStep === 1 ? 'Cancel' : 'Back'}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
-            <Text style={styles.nextBtnText}>
-              {currentStep === 4 ? 'Review Gig Posting →' : 'Continue'}
+      case "location":
+        return (
+          <>
+            <MapArea kind="precisePin" />
+            <TextField
+              label="Address"
+              value={locationAddress}
+              onChangeText={setLocationAddress}
+              placeholder="e.g. 23 Temple Road, Colombo 04"
+              autoCapitalize="words"
+            />
+            <Text style={styles.note}>
+              {areaLabel
+                ? `Shown to workers as: ${areaLabel} area`
+                : "Workers see only the general area, not the precise address."}
             </Text>
-          </TouchableOpacity>
+          </>
+        );
+
+      case "workers":
+        return (
+          <>
+            <TextField
+              label="Workers needed"
+              value={workersNeeded}
+              onChangeText={(v) => setWorkersNeeded(v.replace(/[^0-9]/g, ""))}
+              keyboardType="number-pad"
+              maxLength={2}
+            />
+            <Text style={styles.note}>A whole number between 1 and 20.</Text>
+          </>
+        );
+
+      case "start":
+        return (
+          <>
+            <DateTimeField
+              label="Start date"
+              value={startDate}
+              onChangeText={setStartDate}
+              placeholder="YYYY-MM-DD"
+            />
+            <TextField
+              label="Start time (24-hour, e.g. 17:00)"
+              value={startTime}
+              onChangeText={setStartTime}
+              placeholder="HH:MM"
+              keyboardType="numbers-and-punctuation"
+              maxLength={5}
+            />
+            <Text style={styles.note}>At least 2 hours from now, so workers have time to apply.</Text>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  }
+
+  function renderPayStep() {
+    if (arrangementType === "GIG") {
+      return (
+        <>
+          <TextField
+            label="Fixed total per worker (Rs)"
+            value={payAmount}
+            onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+            keyboardType="number-pad"
+          />
+          <Text style={styles.note}>Each selected worker earns this amount.</Text>
+        </>
+      );
+    }
+    if (arrangementType === "PART_TIME") {
+      return (
+        <>
+          <TextField
+            label="Rate per worker (Rs)"
+            value={payAmount}
+            onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+            keyboardType="number-pad"
+          />
+          <View style={styles.chipRow}>
+            {PAY_RATE_UNITS.map((unit) => (
+              <Chip
+                key={unit.id}
+                label={unit.label}
+                selected={payRateUnit === unit.id}
+                onPress={() => setPayRateUnit(unit.id)}
+              />
+            ))}
+          </View>
+          <Text style={styles.note}>Each selected worker earns this rate.</Text>
+        </>
+      );
+    }
+    // Internship — not drawn in the prototype; built from FR-POST-04 and the
+    // pay strings in design-system.md §9 (Unpaid / Stipend / Paid).
+    return (
+      <>
+        <View style={styles.chipRow}>
+          <Chip label="Unpaid" selected={internshipChoice === "UNPAID"} onPress={() => setInternshipChoice("UNPAID")} />
+          <Chip label="Stipend" selected={internshipChoice === "STIPEND"} onPress={() => setInternshipChoice("STIPEND")} />
+          <Chip label="Paid" selected={internshipChoice === "PAID"} onPress={() => setInternshipChoice("PAID")} />
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        {internshipChoice !== "UNPAID" ? (
+          <>
+            <TextField
+              label={internshipChoice === "STIPEND" ? "Stipend per worker (Rs)" : "Pay per worker (Rs)"}
+              value={payAmount}
+              onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+              keyboardType="number-pad"
+            />
+            <Text style={styles.note}>Each selected worker earns this amount.</Text>
+          </>
+        ) : (
+          <Text style={styles.note}>No pay is collected for an unpaid internship.</Text>
+        )}
+      </>
+    );
+  }
+}
+
+/** A single selectable row for the Category and Arrangement lists (2.2, 2.3):
+ *  48 tall, radius 8, pad 12; selected fills color/bg/subtle with a
+ *  color/brand/primary label, default is a plain color/text/primary row. */
+function OptionRow({ label, selected, onPress }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      style={[styles.optionRow, selected && styles.optionRowSelected]}
+    >
+      <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  root: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.bg.default,
   },
-  container: {
-    flex: 1,
-  },
-  progressContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  stepsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  stepTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  stepCounter: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2563EB',
-  },
-  progressBarTrack: {
-    height: 6,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#2563EB',
-    borderRadius: 3,
-  },
-  scrollView: {
+  scroll: {
     flex: 1,
   },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
+  // Figma content: pad 6/16/4/16, gap 16.
+  content: {
+    flexGrow: 1,
+    paddingTop: spacing.sm - 2,
+    paddingHorizontal: spacing.gutter,
+    paddingBottom: spacing.xs,
+    gap: spacing.lg,
   },
-  stepContent: {},
-  sectionHeading: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 4,
+  screenTitle: {
+    ...typography.display,
+    color: colors.text.primary,
   },
-  sectionSub: {
-    fontSize: 13,
-    color: '#64748B',
-    marginBottom: 20,
-    lineHeight: 18,
+  step: {
+    ...typography.caption,
+    color: colors.text.secondary,
+    // The title/step pair sits closer together than the 16 content gap.
+    marginTop: -spacing.md,
   },
-  inputGroup: {
-    marginBottom: 18,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
+  field: {
+    gap: spacing.xs,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1E293B',
-    marginBottom: 6,
+    ...typography.secondary,
+    color: colors.text.secondary,
   },
-  required: {
-    color: '#EF4444',
+  restoredNote: {
+    ...typography.secondary,
+    color: colors.text.secondary,
   },
-  charCount: {
-    fontSize: 12,
-    color: '#94A3B8',
-    fontWeight: '500',
+  note: {
+    ...typography.caption,
+    color: colors.text.secondary,
   },
-  charCountWarning: {
-    color: '#EAB308',
-    fontWeight: '700',
+  optionList: {
+    gap: spacing.sm,
   },
-  helperTag: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#059669',
-    backgroundColor: '#ECFDF5',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+  optionRow: {
+    height: 48,
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.input,
   },
-  fieldNote: {
-    fontSize: 12,
-    color: '#64748B',
-    marginBottom: 8,
+  optionRowSelected: {
+    backgroundColor: colors.bg.subtle,
   },
-  input: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#0F172A',
+  optionLabel: {
+    ...typography.body,
+    color: colors.text.primary,
   },
-  inputError: {
-    borderColor: '#EF4444',
-    backgroundColor: '#FEF2F2',
+  optionLabelSelected: {
+    color: colors.brand.primary,
   },
-  textArea: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#0F172A',
-    minHeight: 110,
+  chipRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
   },
-  textAreaSmall: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#0F172A',
-    minHeight: 70,
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 12,
-    marginTop: 4,
-    fontWeight: '500',
-  },
-
-  // Category Grid
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -4,
-  },
-  categoryCard: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 12,
-    marginHorizontal: '1%',
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  categoryCardSelected: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
-  },
-  categoryIcon: {
-    fontSize: 24,
-    marginBottom: 6,
-  },
-  categoryLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-    textAlign: 'center',
-  },
-  categoryLabelSelected: {
-    color: '#1D4ED8',
-    fontWeight: '700',
-  },
-
-  // Arrangement
-  arrangementContainer: {
-    gap: 10,
-  },
-  arrangementCard: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: 10,
-    padding: 14,
-  },
-  arrangementCardSelected: {
-    borderColor: '#2563EB',
-    backgroundColor: '#F8FAFC',
-  },
-  radioRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  radioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#94A3B8',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  radioButtonSelected: {
-    borderColor: '#2563EB',
-  },
-  radioButtonDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#2563EB',
-  },
-  arrangementLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#1E293B',
-  },
-  arrangementLabelSelected: {
-    color: '#1D4ED8',
-  },
-  arrangementDesc: {
-    fontSize: 13,
-    color: '#64748B',
-    marginLeft: 30,
-  },
-
-  // Pay Section
-  paySectionBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 16,
-    marginBottom: 18,
-  },
-  boxTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 12,
-  },
-  currencyInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  currencyPrefix: {
-    backgroundColor: '#F1F5F9',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRightWidth: 0,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  currencyPrefixText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#475569',
-  },
-  currencyInput: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
-  },
-  unitRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  unitChip: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-  },
-  unitChipSelected: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
-  },
-  unitChipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  unitChipTextSelected: {
-    color: '#1D4ED8',
-    fontWeight: '700',
-  },
-  noticeBox: {
-    backgroundColor: '#FEF3C7',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#F59E0B',
-  },
-  noticeText: {
-    fontSize: 12,
-    color: '#92400E',
-    lineHeight: 18,
-  },
-  boldText: {
-    fontWeight: '700',
-  },
-
-  // Stepper
-  stepperContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
-    padding: 6,
-    justifyContent: 'space-between',
-  },
-  stepperBtn: {
+  closeHit: {
     width: 44,
     height: 44,
-    borderRadius: 8,
-    backgroundColor: '#EFF6FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  stepperBtnDisabled: {
-    backgroundColor: '#F1F5F9',
-    opacity: 0.5,
-  },
-  stepperBtnText: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#2563EB',
-    lineHeight: 28,
-  },
-  stepperValueBox: {
-    alignItems: 'center',
-  },
-  stepperValue: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  stepperSub: {
-    fontSize: 12,
-    color: '#64748B',
-  },
-
-  // Quick Time Row
-  quickTimeRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 10,
-  },
-  quickTimeChip: {
+  spacer: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-  },
-  quickTimeChipUrgent: {
-    borderColor: '#F59E0B',
-    backgroundColor: '#FFFBEB',
-  },
-  quickTimeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  quickTimeTextUrgent: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#D97706',
-  },
-  selectedDateCard: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-  },
-  selectedDateLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748B',
-    textTransform: 'uppercase',
-  },
-  selectedDateVal: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginTop: 2,
-  },
-  urgencyPreviewCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 12,
-    marginTop: 4,
-  },
-  urgencyHeader: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748B',
-    marginBottom: 6,
-  },
-  urgentBadge: {
-    backgroundColor: '#FEF2F2',
-    borderWidth: 1,
-    borderColor: '#FCA5A5',
-    borderRadius: 8,
-    padding: 10,
-  },
-  urgentBadgeText: {
-    color: '#DC2626',
-    fontWeight: '800',
-    fontSize: 13,
-  },
-  urgentBadgeSub: {
-    color: '#991B1B',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  standardBadge: {
-    backgroundColor: '#F1F5F9',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    padding: 10,
-  },
-  standardBadgeText: {
-    color: '#334155',
-    fontWeight: '700',
-    fontSize: 13,
-  },
-  standardBadgeSub: {
-    color: '#64748B',
-    fontSize: 11,
-    marginTop: 2,
-  },
-
-  // Posted As
-  postedAsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 12,
-  },
-  postedAsChip: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
-  },
-  postedAsChipSelected: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
-  },
-  postedAsIcon: {
-    fontSize: 18,
-    marginRight: 6,
-  },
-  postedAsLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  postedAsLabelSelected: {
-    color: '#1D4ED8',
-    fontWeight: '700',
-  },
-  businessFieldsBox: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 14,
-    marginTop: 8,
-  },
-
-  // Preset Locations
-  presetScroll: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  presetChip: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginRight: 8,
-  },
-  presetChipSelected: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
-  },
-  presetChipText: {
-    fontSize: 13,
-    color: '#475569',
-    fontWeight: '500',
-  },
-  presetChipTextSelected: {
-    color: '#1D4ED8',
-    fontWeight: '700',
-  },
-  coordRow: {
-    flexDirection: 'row',
-  },
-  privacyBox: {
-    backgroundColor: '#EFF6FF',
-    borderRadius: 10,
-    padding: 14,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3B82F6',
-    marginTop: 8,
-  },
-  privacyBoxTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1E40AF',
-    marginBottom: 4,
-  },
-  privacyBoxBody: {
-    fontSize: 12,
-    color: '#1E3A8A',
-    lineHeight: 18,
-  },
-
-  // Footer
-  footer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-    gap: 12,
-  },
-  backBtn: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  backBtnText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  nextBtn: {
-    flex: 2,
-    paddingVertical: 14,
-    borderRadius: 10,
-    backgroundColor: '#2563EB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  nextBtnText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    minHeight: spacing.lg,
   },
 });
