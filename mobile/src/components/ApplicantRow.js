@@ -27,9 +27,11 @@ import ListRowAction from "./ListRowAction";
  * @param {number} [ratingCount] - "history" tier only.
  * @param {number} [completionRate] - "history" tier only, 0-100.
  * @param {boolean} [endorsed] - Shows the endorsed badge on "history"/"endorsedNew" tiers.
+ * @param {number} [endorsementCount] - On the "history" tier, 2 or more shows "Endorsed ×N" (4.5).
  * @param {string} note
- * @param {() => void} onSelect
- * @param {() => void} onDecline
+ * @param {() => void} [onSelect] - With onDecline: the row's Select/Decline. A decided row (4.5s,
+ *   4.5d, 4.5x) passes neither and is drawn without them.
+ * @param {() => void} [onDecline]
  */
 export default function ApplicantRow({
   tier,
@@ -38,6 +40,7 @@ export default function ApplicantRow({
   ratingCount,
   completionRate,
   endorsed = false,
+  endorsementCount,
   note,
   onSelect,
   onDecline,
@@ -51,18 +54,28 @@ export default function ApplicantRow({
       </View>
       <View style={isHistory ? styles.trustRowHistory : styles.trustRowNew}>
         {isHistory ? (
-          <Text style={styles.trustText}>
-            {ratingAverage.toFixed(1)} from {ratingCount} ratings · {completionRate}% completion
-          </Text>
+          <Text style={styles.trustText}>{historyTrustLine(ratingAverage, ratingCount, completionRate)}</Text>
         ) : (
           <Text style={styles.trustText}>New to YouthLink</Text>
         )}
-        {(isHistory || tier === "endorsedNew") && endorsed ? <Badge family="endorsed" /> : null}
+        {(isHistory || tier === "endorsedNew") && endorsed ? (
+          <Badge family="endorsed" count={isHistory && endorsementCount >= 2 ? endorsementCount : undefined} />
+        ) : null}
       </View>
       <Text style={styles.note}>{note}</Text>
-      <ListRowAction onSelect={onSelect} onDecline={onDecline} />
+      {onSelect && onDecline ? <ListRowAction onSelect={onSelect} onDecline={onDecline} /> : null}
     </View>
   );
+}
+
+/**
+ * 4.5's trust line, "4.6 from 12 ratings · 92% completion". The completion part is left out when the
+ * person has no completion record yet (null), rather than printing "null% completion".
+ */
+function historyTrustLine(ratingAverage, ratingCount, completionRate) {
+  const average = Number(ratingAverage ?? 0).toFixed(1);
+  const ratings = `${average} from ${ratingCount} ${ratingCount === 1 ? "rating" : "ratings"}`;
+  return completionRate == null ? ratings : `${ratings} · ${completionRate}% completion`;
 }
 
 const styles = StyleSheet.create({
@@ -74,6 +87,7 @@ const styles = StyleSheet.create({
   },
   nameRow: {
     flexDirection: "row",
+    flexWrap: "wrap", // a long name pushes the badge onto the next line instead of off the card
     alignItems: "center",
     gap: spacing.sm,
   },
