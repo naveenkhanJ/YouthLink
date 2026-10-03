@@ -53,7 +53,7 @@ function Glyph({ shape, color }) {
 const SPECIAL = {
   verified: { border: colors.badge.verified, glyph: "check", label: "Phone verified" },
   endorsed: { border: colors.badge.endorsed, glyph: "diamond", label: "Endorsed" },
-  endorsedCount: { border: colors.badge.endorsed, glyph: "diamond", label: (n) => `Endorsed × ${n}` },
+  endorsedCount: { border: colors.badge.endorsed, glyph: "diamond", label: (n) => `Endorsed ×${n}` }, // 4.5 draws "Endorsed ×2", no space
   urgent: { border: colors.state.urgent, glyph: "triangle", label: "Urgent" },
 };
 
@@ -89,7 +89,7 @@ const STATUS = {
 /**
  * @param {"verified"|"endorsed"|"urgent"|"posting"|"application"|"engagement"|"case"} family
  * @param {string} [value] - Required for the status families, e.g. "open", "pending".
- * @param {number} [count] - For family="endorsed" with a count (e.g. 3 -> "Endorsed × 3").
+ * @param {number} [count] - For family="endorsed" with a count (e.g. 3 -> "Endorsed ×3").
  */
 export default function Badge({ family, value, count }) {
   if (family === "verified" || family === "urgent" || family === "endorsed") {

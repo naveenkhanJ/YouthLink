@@ -7,7 +7,8 @@
  *   - an unrecognised git author email (commits must be attributable)
  *   - secrets and local-only files (.env, Firebase keys, *.local.js, .worklog/)
  *   - private-key material in added lines
- *   - files in another member's module (a fix/<their-epic>-<you> branch only warns)
+ *   - files in another member's module (a fix/<their-epic>-<you> branch only warns, and so does
+ *     the shared-components owner's demo integration branch, team.json demoBranches)
  * Blocks (members) / reminds (shared-components owner):
  *   - schema.prisma and migrations            -> AGENTS.md rule 1
  *   - package.json / package-lock.json        -> dependency changes
@@ -135,6 +136,11 @@ if (me) {
         if (b.valid && b.shared) warnings.push(`${path} — module work on a shared branch; it belongs on your epic branch.`);
       } else if (b.valid && b.type === "fix" && b.module === mod) {
         warnings.push(`${path} — a fix in ${holder ? holder.id + "'s" : "an unassigned"} module on a fix/ branch: agree it with the owner before it merges.`);
+      } else if (b.demo && isOwner) {
+        // The demo integration branch is where the owner makes every module demonstrable; the change
+        // reaches develop only when the module's owner carries it to their own branch.
+        warnings.push(`${path} — ${holder ? holder.id + "'s" : "an unassigned"} module, edited on the demo integration branch: ` +
+          `${holder ? holder.id : "whoever takes the module"} carries it to their own branch; this branch is never merged.`);
       } else if (!holder) {
         blocks.push(`${path} — the '${mod}' module is not assigned to anyone in docs/workflow/team.json yet. Escalate to ${owner.name}.`);
       } else {

@@ -45,6 +45,7 @@ const branch = currentBranch();
 const b = parseBranch(team, branch);
 if (!me) fail(`git user.email '${currentEmail()}' is not in docs/workflow/team.json.`);
 if (!b.valid) fail(`branch '${branch || "(detached)"}': ${b.reason}.`);
+else if (b.demo) fail(`branch '${branch}' is the demo integration branch: it is never merged into develop. Each member carries their own part to their own branch and opens the pull request from there.`);
 else if (me && b.owner !== me.id) fail(`branch '${branch}' belongs to ${b.owner}.`);
 else ok(`branch '${branch}' is yours and follows the convention.`);
 
