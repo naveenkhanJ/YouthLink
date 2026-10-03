@@ -12,15 +12,12 @@
  * reopening Post a Gig later restores it.
  */
 import { useEffect, useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 import { colors, spacing, typography } from '../../theme/tokens';
 import Button from '../../components/Button';
 import CtaBar from '../../components/CtaBar';
 import FormBanner from '../../components/FormBanner';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAuth } from '../../auth/AuthContext';
 import { createGigPosting } from '../../api/posting.api.js';
 import { GIG_CATEGORIES, ARRANGEMENT_TYPES } from './posting.constants.js';
@@ -32,11 +29,11 @@ import {
   postingAsLine,
 } from './posting.format.js';
 import { clearPostingDraft, markDraftKeptOffline } from './postingDraft.js';
+import FormTopBar from './components/FormTopBar.js';
 
 export default function PostingReviewScreen({ route, navigation }) {
   const { formData } = route.params || {};
   const { user } = useAuth();
-  const insets = useSafeAreaInsets();
   const [submitting, setSubmitting] = useState(false);
   const [banner, setBanner] = useState(null);
 
@@ -101,43 +98,10 @@ export default function PostingReviewScreen({ route, navigation }) {
   return (
     <View style={styles.root}>
       <StatusBar style="dark" />
-      <KeyboardAwareScrollView
-        style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingTop: insets.top + 6 }]}
-      >
-        {/* The form's top bar: back to the last step, ✕ out to the postings list. */}
-        <View style={styles.topBar}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            hitSlop={spacing.sm}
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            style={styles.hit}
-          >
-            <Svg width={44} height={44} viewBox="0 0 44 44">
-              <Path
-                d="M26 14L18 22L26 30"
-                stroke={colors.text.primary}
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </Svg>
-          </Pressable>
-          <Pressable
-            onPress={() => navigation.navigate('PostingList')}
-            hitSlop={spacing.sm}
-            accessibilityRole="button"
-            accessibilityLabel="Close"
-            style={styles.hit}
-          >
-            <Svg width={24} height={24} viewBox="0 0 24 24">
-              <Path d="M6 6L18 18M18 6L6 18" stroke={colors.text.primary} strokeWidth={2} strokeLinecap="round" />
-            </Svg>
-          </Pressable>
-        </View>
-
+      {/* The form's top bar: back to the last step, close out to the postings list. */}
+      <FormTopBar review onBack={() => navigation.goBack()} onClose={() => navigation.navigate('PostingList')} />
+      {/* No inputs here, so a plain ScrollView; the bottom padding keeps the last row clear of the bar. */}
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <Text style={styles.screenTitle}>Review your posting</Text>
         <Text style={styles.reviewNote}>
           This is the only place the whole posting is visible before it goes live.
@@ -151,7 +115,7 @@ export default function PostingReviewScreen({ route, navigation }) {
             <Text style={styles.revValue}>{value}</Text>
           </View>
         ))}
-      </KeyboardAwareScrollView>
+      </ScrollView>
 
       <CtaBar>
         <Button title="Post gig" onPress={handlePublish} loading={submitting} />
@@ -168,25 +132,13 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  // Figma content: pad 6/16/0/16, gap 10.
+  // Figma content: gap 10 after the top bar (which draws its own 6 of top and bottom padding).
   content: {
     flexGrow: 1,
+    paddingTop: 10,
     paddingHorizontal: spacing.gutter,
-    paddingBottom: spacing.sm,
+    paddingBottom: spacing.lg,
     gap: 10,
-  },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    // The three review screens carry 6 of bottom padding on the bar.
-    paddingBottom: 6,
-  },
-  hit: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   screenTitle: {
     ...typography.display,
