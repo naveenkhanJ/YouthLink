@@ -31,7 +31,7 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import useFocusScroll from "./hooks/useFocusScroll";
+import useFocusScroll from "../../hooks/useFocusScroll";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { register, checkAvailability, updatePostingAs } from "../../api/account";
