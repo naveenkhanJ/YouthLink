@@ -22,6 +22,7 @@ import EmptyState from '../../components/EmptyState';
 import LoadingState from '../../components/LoadingState';
 import FormBanner from '../../components/FormBanner';
 import Button from '../../components/Button';
+import ShellTabBar from '../../components/ShellTabBar';
 import { getMyGigPostings } from '../../api/posting.api.js';
 import { HIDDEN_NOTE_LIST, badgeValue, cardMeta, isHiddenPending } from './posting.format.js';
 
@@ -106,6 +107,8 @@ export default function PostingListScreen({ navigation }) {
           </View>
         )}
       />
+      {/* 2.10*: the employer's tab bar, Postings active. */}
+      <ShellTabBar active="postings" />
     </View>
   );
 }
@@ -116,6 +119,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.subtle,
   },
   // Figma content: pad 66/16/16/16 (66 = the status bar plus 22), gap 12.
+  // The list scrolls above the tab bar, so nothing here needs to clear it.
   content: {
     flexGrow: 1,
     paddingHorizontal: spacing.gutter,

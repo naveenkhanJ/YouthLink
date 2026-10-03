@@ -43,6 +43,8 @@ import {
   badgeValue,
   changeNote,
   detailFill,
+  engagedFirstName,
+  engagedWorkerName,
   isHiddenPending,
   metaLine,
   payDetailLine,
@@ -112,6 +114,11 @@ export default function PostingDetailScreen({ route, navigation }) {
   const canEdit = isOpen && !hidden && !awaitingReconfirm;
   const canWithdraw = canEdit && !hasFilled;
   const waiting = posting.pendingApplicantCount ?? 0;
+  const isGig = posting.arrangementType === 'GIG';
+
+  // Which bar (if any) the prototype draws for this moment. With none (withdrawn, hidden), the
+  // content carries 24 of bottom padding instead (2.11x, 2.11dx, 2.11g).
+  const showsActionBar = (isOpen && !hidden) || posting.status === 'FILLED' || posting.status === 'EXPIRED';
 
   const categoryLabel = GIG_CATEGORIES.find((c) => c.id === posting.category)?.label;
   const arrangementLabel = ARRANGEMENT_TYPES.find((a) => a.id === posting.arrangementType)?.label;
@@ -127,7 +134,10 @@ export default function PostingDetailScreen({ route, navigation }) {
       <StatusBar style="dark" />
       {header}
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.content, !showsActionBar && styles.contentNoBar]}
+      >
         {error ? <FormBanner kind="error" message={error} /> : null}
 
         <View style={styles.titleRow}>
@@ -138,19 +148,27 @@ export default function PostingDetailScreen({ route, navigation }) {
           {metaLine({ categoryLabel, arrangementLabel, areaLabel: posting.locationAreaLabel })}
         </Text>
         <Text style={styles.pay}>{payDetailLine(posting)}</Text>
-        <Text style={styles.fill}>{detailFill(posting)}</Text>
+        <Text style={styles.fill}>{detailFill(posting, engagedWorkerName(posting))}</Text>
 
         {isOpen && !hidden ? (
           // TODO(YL-174 / M4): link to the applicant pool (4.5b / 4.5s) once Applying & Selection's
-          // screens are on develop; until then it is information, not a link.
-          <Text style={styles.applicants}>
-            {waiting > 0
-              ? `${waiting} ${waiting === 1 ? 'applicant' : 'applicants'} — view pool`
-              : 'No applicants yet — view pool'}
-          </Text>
+          // screens are on develop; until then it is drawn as the link but does not act.
+          // With applicants it is always the link (brand colour). With none, a part-time job's
+          // frame (2.11d, 2.11dw) draws a plain "No applicants yet"; a gig's still reads "— view pool".
+          waiting > 0 || isGig ? (
+            <Text style={styles.applicantsLink}>
+              {waiting > 0
+                ? `${waiting} ${waiting === 1 ? 'applicant' : 'applicants'} — view pool`
+                : 'No applicants yet — view pool'}
+            </Text>
+          ) : (
+            <Text style={styles.applicantsNote}>No applicants yet</Text>
+          )
         ) : null}
 
-        {awaitingReconfirm ? <Text style={styles.changeNote}>{changeNote(posting.pendingChangeRequest)}</Text> : null}
+        {awaitingReconfirm ? (
+          <Text style={styles.changeNote}>{changeNote(posting.pendingChangeRequest, engagedFirstName(posting))}</Text>
+        ) : null}
         {awaitingReconfirm ? <Text style={styles.note}>{PAUSED_NOTE}</Text> : null}
         {canEdit && hasFilled ? <Text style={styles.note}>{WITHDRAW_NOTE}</Text> : null}
         {hidden ? <Text style={styles.note}>{HIDDEN_NOTE_DETAIL}</Text> : null}
@@ -161,7 +179,7 @@ export default function PostingDetailScreen({ route, navigation }) {
       </ScrollView>
 
       {isOpen && !hidden ? (
-        <CtaBar>
+        <CtaBar surface="subtle">
           <View style={styles.actions}>
             <View style={styles.action}>
               <Button
@@ -184,14 +202,14 @@ export default function PostingDetailScreen({ route, navigation }) {
       ) : null}
 
       {posting.status === 'FILLED' ? (
-        <CtaBar>
+        <CtaBar surface="subtle">
           {/* TODO(M5 5.3t): open the engagement when Engagement's screens are on develop. */}
           <Button title="See engagement" style="secondary" disabled onPress={() => {}} />
         </CtaBar>
       ) : null}
 
       {posting.status === 'EXPIRED' ? (
-        <CtaBar>
+        <CtaBar surface="subtle">
           <Button title="Post a new gig" style="secondary" onPress={() => navigation.navigate('PostingCreate')} />
         </CtaBar>
       ) : null}
@@ -226,6 +244,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.gutter,
     gap: spacing.md,
   },
+  // 2.11x, 2.11dx, 2.11g draw no pinned bar: the content frame is padded 20/16/24/16.
+  contentNoBar: {
+    paddingBottom: spacing.xl,
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -248,7 +270,13 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.text.secondary,
   },
-  applicants: {
+  // 2.11p / 2.11 / 2.11c `applicantsLink`: body-medium in color/brand/primary.
+  applicantsLink: {
+    ...typography.bodyMedium,
+    color: colors.brand.primary,
+  },
+  // 2.11d / 2.11dw `applicantsNote`: the same size, plain, in color/text/secondary.
+  applicantsNote: {
     ...typography.bodyMedium,
     color: colors.text.secondary,
   },

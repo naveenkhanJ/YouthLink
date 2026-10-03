@@ -18,22 +18,21 @@
  *    dependency (a new shared build — an escalation, not a member's call). The
  *    prototype's Display/MapArea is itself a flat placeholder. Until that
  *    dependency is decided, the employer types the precise address, the coarse
- *    area is derived from it for the worker-facing note, and coordinates fall
- *    back to a default. See the Location step below.
+ *    area is derived from it for the worker-facing note, and the coordinates come from a
+ *    small table of Sri Lankan areas (sriLankaAreas.js) keyed by that area. A real map pin
+ *    is a later release. See the Location step below.
  */
-import { useEffect, useMemo, useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
-import ScreenHeader from "../../components/ScreenHeader";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import TextArea from "../../components/TextArea";
 import Chip from "../../components/Chip";
 import MapArea from "../../components/MapArea";
-import DateTimeField from "../../components/DateTimeField";
+import ShellTabBar from "../../components/ShellTabBar";
+import useFocusScroll from "../../hooks/useFocusScroll";
 import FieldError from "../../components/FieldError";
 import CtaBar from "../../components/CtaBar";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -47,12 +46,20 @@ import {
   computeIsUrgent,
   validateLeadTime,
 } from "./posting.constants.js";
-import { combineStart } from "./posting.format.js";
-import { loadPostingDraft, savePostingDraft, clearPostingDraft, hasDraftContent } from "./postingDraft.js";
+import { digitsOnly, groupDigits } from "./posting.format.js";
+import { coordsForArea } from "./sriLankaAreas.js";
+import FormTopBar from "./components/FormTopBar.js";
+import StartDateTimeField from "./components/StartDateTimeField.js";
+import {
+  loadPostingDraft,
+  savePostingDraft,
+  clearPostingDraft,
+  hasDraftContent,
+  draftStartAt,
+} from "./postingDraft.js";
 
-// Interim default coordinates until a real map pin (react-native-maps) is
-// wired — Colombo city centre. See the file header.
-const DEFAULT_COORDS = { lat: 6.9271, lng: 79.8612 };
+// Prototype 2.1n: step 1's blank-form hint, shown while either field is empty.
+const FILL_HINT = "Fill in a title and a description to continue.";
 
 // The step sequence. Arrangement (step 3) decides whether the Schedule step
 // (FR-POST-03, part-time & internship only) is present, which is what turns
@@ -106,10 +113,8 @@ export default function PostingCreateScreen({ navigation }) {
   const [schedule, setSchedule] = useState("");
   const [locationAddress, setLocationAddress] = useState("");
   const [workersNeeded, setWorkersNeeded] = useState("1");
-  // Start date (YYYY-MM-DD) and time (HH:MM) kept separate for the two fields,
-  // then combined into one ISO value on submit.
-  const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("");
+  // One ISO instant, chosen in the Start date & time picker ('' until chosen).
+  const [startAt, setStartAt] = useState("");
 
   const [error, setError] = useState(null); // one message for the current step
 
@@ -128,18 +133,16 @@ export default function PostingCreateScreen({ navigation }) {
   const payKind = derivePayKind(arrangementType, internshipChoice);
   const areaLabel = useMemo(() => deriveAreaLabel(locationAddress), [locationAddress]);
 
-  // Combined ISO start — only valid once both halves are present.
-  const startAt = useMemo(() => {
-    return combineStart(startDate, startTime);
-  }, [startDate, startTime]);
+  // Scrolls a focused field to a fixed place under the top (the keyboard-aware scroll view
+  // misjudged this app's already-padded window — see hooks/useFocusScroll.js).
+  const scrollRef = useRef(null);
+  const { field, scrollProps } = useFocusScroll(scrollRef);
 
   // ----- per-step validation (returns an error message, or null) -----
   function validateCurrentStep() {
     switch (stepKey) {
       case "titleDesc":
-        if (!title.trim()) return "Enter a title for the posting.";
-        if (!description.trim()) return "Enter a description.";
-        return null;
+        return null; // Continue stays disabled until both are filled (prototype 2.1n)
       case "category":
         if (!category) return "Choose a category.";
         return null;
@@ -177,7 +180,7 @@ export default function PostingCreateScreen({ navigation }) {
 
   const form = {
     title, description, category, arrangementType, payAmount, payRateUnit,
-    internshipChoice, schedule, locationAddress, workersNeeded, startDate, startTime,
+    internshipChoice, schedule, locationAddress, workersNeeded, startAt,
   };
 
   function applyDraft(d) {
@@ -191,8 +194,7 @@ export default function PostingCreateScreen({ navigation }) {
     setSchedule(d.schedule ?? "");
     setLocationAddress(d.locationAddress ?? "");
     setWorkersNeeded(d.workersNeeded ?? "1");
-    setStartDate(d.startDate ?? "");
-    setStartTime(d.startTime ?? "");
+    setStartAt(draftStartAt(d));
   }
 
   // Restore on open: the form comes back filled, at step 1 (prototype 2.1rst).
@@ -231,7 +233,10 @@ export default function PostingCreateScreen({ navigation }) {
     else clearPostingDraft(user?.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restored, keptOffline, title, description, category, arrangementType, payAmount, payRateUnit,
-    internshipChoice, schedule, locationAddress, workersNeeded, startDate, startTime]);
+    internshipChoice, schedule, locationAddress, workersNeeded, startAt]);
+
+  // 2.1n: the first step cannot continue until it has a title and a description.
+  const detailsMissing = stepKey === "titleDesc" && (!title.trim() || !description.trim());
 
   // 2.8err: a start under 2 hours away is blocked, not warned — shown live, Review disabled.
   const startError = useMemo(() => {
@@ -277,6 +282,7 @@ export default function PostingCreateScreen({ navigation }) {
     // FR-POST-16: posting-as is the employer's account identity, not a form
     // field. Auto-populated here from the signed-in user.
     const postedAsType = user?.postingAsType === "BUSINESS" ? "BUSINESS" : "INDIVIDUAL";
+    const coords = coordsForArea(areaLabel);
 
     const formData = {
       title: title.trim(),
@@ -292,8 +298,9 @@ export default function PostingCreateScreen({ navigation }) {
       schedule: isRecurring ? schedule.trim() : null,
       locationAddress: locationAddress.trim(),
       locationAreaLabel: areaLabel,
-      locationLat: DEFAULT_COORDS.lat,
-      locationLng: DEFAULT_COORDS.lng,
+      // FR-POST-08: the area's own point, not one shared point for every posting.
+      locationLat: coords.lat,
+      locationLng: coords.lng,
       workersNeeded: parseInt(workersNeeded, 10),
       startAt,
       // FR-POST-07: urgency is always derived, never chosen. Shown (as "set
@@ -303,71 +310,60 @@ export default function PostingCreateScreen({ navigation }) {
     navigation.navigate("PostingReview", { formData });
   }
 
+  const onFirstStep = stepIndex === 0;
+  // 2.8err puts the start's error between the field and the note, so that step draws it itself.
+  const stepError = startError || error;
+
   return (
     <View style={styles.root}>
       <StatusBar style="dark" />
-      {/* 2.1's header is a ghost (tab root); 2.2+ add a back arrow and a ✕
-          that exits to the postings list. We render back on every step
-          (step 1 leaves the screen) and ✕ from step 2 on. */}
-      <ScreenHeader
-        title=""
+      {/* The form's own top bar (not ScreenHeader): back + close, or an empty ghost on step 1,
+          which leaves through the tab bar instead. */}
+      <FormTopBar
+        ghost={onFirstStep}
         onBack={handleBack}
-        action={
-          stepIndex > 0 ? (
-            <Pressable
-              onPress={() => navigation.goBack()}
-              hitSlop={spacing.sm}
-              accessibilityRole="button"
-              accessibilityLabel="Close"
-              style={styles.closeHit}
-            >
-              <Svg width={24} height={24} viewBox="0 0 24 24">
-                <Path
-                  d="M6 6L18 18M18 6L6 18"
-                  stroke={colors.text.primary}
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                />
-              </Svg>
-            </Pressable>
-          ) : null
-        }
+        onClose={() => navigation.navigate("PostingList")}
       />
 
-      <KeyboardAwareScrollView
+      <ScrollView
+        ref={scrollRef}
+        {...scrollProps}
         style={styles.scroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
-        enableOnAndroid
-        extraScrollHeight={120}
       >
         <Text style={styles.screenTitle}>{STEP_TITLES[stepKey]}</Text>
         <Text style={styles.step}>
           Step {stepIndex + 1} of {totalSteps}
         </Text>
 
-        {stepIndex === 0 && keptOffline ? (
+        {onFirstStep && keptOffline ? (
           <Text style={styles.restoredNote}>Your details were kept while you were offline.</Text>
         ) : null}
 
         {renderStepBody()}
 
-        {startError || error ? <FieldError message={startError || error} /> : null}
+        {stepKey !== "start" && stepError ? <FieldError message={stepError} /> : null}
+
+        {detailsMissing ? <Text style={styles.note}>{FILL_HINT}</Text> : null}
 
         {hasDraftContent(form) ? (
           <Button title="Discard posting" style="text" onPress={() => setDiscardOpen(true)} />
         ) : null}
 
         <View style={styles.spacer} />
-      </KeyboardAwareScrollView>
+      </ScrollView>
 
-      <CtaBar>
+      {/* Step 1 sits on the Post a Gig tab: the 72-high bar over the shared tab bar (2.1, 2.1t, 2.1n, 2.1rst).
+          Every later step is the screen's bottom edge: 84 high, no tab bar. */}
+      <CtaBar onTabBar={onFirstStep}>
         <Button
           title={isLastStep ? "Review posting" : "Continue"}
           onPress={handleContinue}
-          disabled={Boolean(startError)}
+          disabled={detailsMissing || Boolean(startError)}
         />
       </CtaBar>
+      {onFirstStep ? <ShellTabBar active="postGig" /> : null}
 
       <DialogModal visible={discardOpen} onRequestClose={() => setDiscardOpen(false)}>
         <ConfirmDialog
@@ -396,13 +392,19 @@ export default function PostingCreateScreen({ navigation }) {
               placeholder="e.g. Event setup crew (3 needed)"
               autoCapitalize="sentences"
               maxLength={LIMITS.TITLE_MAX}
+              {...field("title")}
             />
-            <View style={styles.field}>
+            {/* TextArea (shared) has no onFocus, so the touch that focuses it also scrolls it into view. */}
+            <View
+              style={styles.field}
+              onLayout={field("description").onLayout}
+              onTouchStart={field("description").onFocus}
+            >
               <Text style={styles.label}>Description</Text>
               <TextArea
                 value={description}
                 onChangeText={setDescription}
-                placeholder="What the work involves, what's provided, where."
+                placeholder="What the work involves, and anything to bring"
                 maxLength={LIMITS.DESCRIPTION_MAX}
               />
             </View>
@@ -451,6 +453,7 @@ export default function PostingCreateScreen({ navigation }) {
               placeholder="e.g. Mon, Wed, Fri — 4 to 6 pm"
               autoCapitalize="sentences"
               maxLength={LIMITS.SCHEDULE_MAX}
+              {...field("schedule")}
             />
           </>
         );
@@ -465,6 +468,7 @@ export default function PostingCreateScreen({ navigation }) {
               onChangeText={setLocationAddress}
               placeholder="e.g. 23 Temple Road, Colombo 04"
               autoCapitalize="words"
+              {...field("address")}
             />
             <Text style={styles.note}>
               {areaLabel
@@ -480,9 +484,10 @@ export default function PostingCreateScreen({ navigation }) {
             <TextField
               label="Workers needed"
               value={workersNeeded}
-              onChangeText={(v) => setWorkersNeeded(v.replace(/[^0-9]/g, ""))}
+              onChangeText={(v) => setWorkersNeeded(digitsOnly(v))}
               keyboardType="number-pad"
               maxLength={2}
+              {...field("workers")}
             />
             <Text style={styles.note}>A whole number between 1 and 20.</Text>
           </>
@@ -491,20 +496,14 @@ export default function PostingCreateScreen({ navigation }) {
       case "start":
         return (
           <>
-            <DateTimeField
-              label="Start date"
-              value={startDate}
-              onChangeText={setStartDate}
-              placeholder="YYYY-MM-DD"
+            <StartDateTimeField
+              value={startAt}
+              onChange={setStartAt}
+              error={stepError}
+              {...field("start")}
             />
-            <TextField
-              label="Start time (24-hour, e.g. 17:00)"
-              value={startTime}
-              onChangeText={setStartTime}
-              placeholder="HH:MM"
-              keyboardType="numbers-and-punctuation"
-              maxLength={5}
-            />
+            {/* 2.8err: field, then its error, then the note, with Review posting disabled. */}
+            {stepError ? <FieldError message={stepError} /> : null}
             <Text style={styles.note}>At least 2 hours from now, so workers have time to apply.</Text>
           </>
         );
@@ -520,9 +519,10 @@ export default function PostingCreateScreen({ navigation }) {
         <>
           <TextField
             label="Fixed total per worker (Rs)"
-            value={payAmount}
-            onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+            value={groupDigits(payAmount)}
+            onChangeText={(v) => setPayAmount(digitsOnly(v).slice(0, 9))}
             keyboardType="number-pad"
+            {...field("pay")}
           />
           <Text style={styles.note}>Each selected worker earns this amount.</Text>
         </>
@@ -533,9 +533,10 @@ export default function PostingCreateScreen({ navigation }) {
         <>
           <TextField
             label="Rate per worker (Rs)"
-            value={payAmount}
-            onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+            value={groupDigits(payAmount)}
+            onChangeText={(v) => setPayAmount(digitsOnly(v).slice(0, 9))}
             keyboardType="number-pad"
+            {...field("pay")}
           />
           <View style={styles.chipRow}>
             {PAY_RATE_UNITS.map((unit) => (
@@ -564,9 +565,10 @@ export default function PostingCreateScreen({ navigation }) {
           <>
             <TextField
               label={internshipChoice === "STIPEND" ? "Stipend per worker (Rs)" : "Pay per worker (Rs)"}
-              value={payAmount}
-              onChangeText={(v) => setPayAmount(v.replace(/[^0-9]/g, ""))}
+              value={groupDigits(payAmount)}
+              onChangeText={(v) => setPayAmount(digitsOnly(v).slice(0, 9))}
               keyboardType="number-pad"
+              {...field("pay")}
             />
             <Text style={styles.note}>Each selected worker earns this amount.</Text>
           </>
@@ -602,12 +604,13 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  // Figma content: pad 6/16/4/16, gap 16.
+  // Figma content: gap 16 after the top bar (which draws its own 6 of top padding), 16 at the sides.
+  // The bottom padding leaves room for a focused field to scroll clear of the pinned bar.
   content: {
     flexGrow: 1,
-    paddingTop: spacing.sm - 2,
+    paddingTop: spacing.lg,
     paddingHorizontal: spacing.gutter,
-    paddingBottom: spacing.xs,
+    paddingBottom: 160,
     gap: spacing.lg,
   },
   screenTitle: {
@@ -617,8 +620,6 @@ const styles = StyleSheet.create({
   step: {
     ...typography.caption,
     color: colors.text.secondary,
-    // The title/step pair sits closer together than the 16 content gap.
-    marginTop: -spacing.md,
   },
   field: {
     gap: spacing.xs,
@@ -657,12 +658,6 @@ const styles = StyleSheet.create({
   chipRow: {
     flexDirection: "row",
     gap: spacing.sm,
-  },
-  closeHit: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
   },
   spacer: {
     flex: 1,
