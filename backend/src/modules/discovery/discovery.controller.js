@@ -19,13 +19,14 @@ export default {
     } = req.query;
 
     const results = await service.browseGigs({
+      browser: req.user,
       lat: lat ? parseFloat(lat) : undefined,
       lng: lng ? parseFloat(lng) : undefined,
       radius: radius ? parseFloat(radius) : undefined,
       category,
       arrangementType,
       keyword,
-      sortBy,
+      sortBy: sortBy || undefined,
       autoExpand: autoExpand !== "false",
     });
 

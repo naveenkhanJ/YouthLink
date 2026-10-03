@@ -10,29 +10,39 @@
  *   - FR-DISC-05: Sort order (urgent-first then nearest-first; alternate: pay, recency)
  */
 import prisma from "../../lib/prisma.js";
+import AppError from "../../utils/AppError.js";
+import { haversineDistance, roundToAboutOneKm } from "./geo.js";
+
+// Mirrors the GigCategory and ArrangementType enums in schema.prisma. Checked here so an
+// unknown value is a clear 400 instead of a Prisma validation error (a 500).
+const CATEGORIES = ["RETAIL", "DELIVERY", "EVENT_SETUP", "MOVING", "FOOD_SERVICE", "TUTORING", "CLEANING"];
+const ARRANGEMENT_TYPES = ["GIG", "PART_TIME", "INTERNSHIP"];
+const SORT_OPTIONS = ["default", "pay", "recency"];
 
 /**
- * Calculates the great-circle distance between two points on the Earth
- * using the Haversine formula (returns distance in kilometers).
+ * Remembers where this youth last browsed (FR-DISC-01 / FR-POST-10 amendments, 2026-09-25):
+ * the centre of the search, rounded to about 1 km and overwritten every time — never a
+ * history. The gig notification fan-out measures its 5 km radius from this point.
  */
-function haversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Earth radius in km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+async function recordBrowseCentre(userId, lat, lng) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      lastBrowseLat: roundToAboutOneKm(lat),
+      lastBrowseLng: roundToAboutOneKm(lng),
+      lastBrowseAt: new Date(),
+    },
+  });
 }
 
 /**
  * Browses open gigs within a radius, applying filters, auto-expansion, and sorting.
+ *
+ * `browser` is the signed-in user ({ id, role }); only a Youth Job-Seeker's browse centre
+ * is recorded, because only youth receive gig notifications.
  */
 async function browseGigs({
+  browser,
   lat,
   lng,
   radius = 5,
@@ -42,8 +52,22 @@ async function browseGigs({
   sortBy = "default",
   autoExpand = true,
 }) {
-  const userLat = lat != null ? Number(lat) : null;
-  const userLng = lng != null ? Number(lng) : null;
+  if (category && !CATEGORIES.includes(category)) {
+    throw AppError.badRequest("Unknown category.", { category: "Choose one of the listed categories." });
+  }
+  if (arrangementType && !ARRANGEMENT_TYPES.includes(arrangementType)) {
+    throw AppError.badRequest("Unknown arrangement type.", {
+      arrangementType: "Choose gig, part-time or internship.",
+    });
+  }
+  if (!SORT_OPTIONS.includes(sortBy)) {
+    throw AppError.badRequest("Unknown sort option.", { sortBy: "Choose default, pay or recency." });
+  }
+
+  // Both coordinates or neither: half a location is treated as no location.
+  const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
+  const userLat = hasLocation ? Number(lat) : null;
+  const userLng = hasLocation ? Number(lng) : null;
   const initialRadius = Math.max(1, Math.min(Number(radius) || 5, 50));
 
   // Build Prisma where clause
@@ -147,8 +171,8 @@ async function browseGigs({
     }
 
     if (sortBy === "recency") {
-      // Recency: soonest start time, then created date
-      return new Date(a.startAt) - new Date(b.startAt);
+      // Recency: most recently posted first
+      return new Date(b.createdAt) - new Date(a.createdAt);
     }
 
     // Default sort: urgent first, then nearest first (or recency if no location)
@@ -160,6 +184,10 @@ async function browseGigs({
     }
     return new Date(a.startAt) - new Date(b.startAt);
   });
+
+  if (browser?.role === "YOUTH_JOB_SEEKER" && userLat != null) {
+    await recordBrowseCentre(browser.id, userLat, userLng);
+  }
 
   return {
     postings: results,

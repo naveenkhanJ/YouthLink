@@ -7,6 +7,7 @@ export default [
   {
     name: "NotificationPreferences",
     component: NotificationPreferencesScreen,
-    options: { title: "Notification Preferences" },
+    // 3.11 draws its own ScreenHeader.
+    options: { headerShown: false },
   },
 ];
