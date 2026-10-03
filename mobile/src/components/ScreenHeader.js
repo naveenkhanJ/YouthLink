@@ -34,7 +34,7 @@ export default function ScreenHeader({ title, onBack, action, hideBack = false }
   // directly on top of the title text without this).
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.bar, { paddingTop: insets.top }]}>
+    <View style={[styles.bar, { paddingTop: insets.top, minHeight: 56 + insets.top }]}>
       {hideBack ? null : (
         <View style={styles.backHit}>
           {onBack ? (
@@ -68,6 +68,8 @@ export default function ScreenHeader({ title, onBack, action, hideBack = false }
 }
 
 const styles = StyleSheet.create({
+  // The 56 of Chrome/ScreenHeader is the bar itself; the status-bar inset is added on top of it
+  // (inline above), otherwise the inset eats 44 of the 56 and every screen sits 12 dp too high.
   bar: {
     minHeight: 56,
     flexDirection: "row",

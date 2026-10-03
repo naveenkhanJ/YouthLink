@@ -39,6 +39,8 @@ function formatDigits(digits) {
  * @param {string} [placeholder] - Defaults to "YYYY-MM-DD".
  * @param {() => void} [onPressCalendar] - Opens the caller's native date picker, if wired.
  * @param {string} [error]
+ * @param {() => void} [onFocus]
+ * @param {(event: object) => void} [onLayout]
  */
 export default function DateTimeField({
   label,
@@ -48,19 +50,22 @@ export default function DateTimeField({
   onPressCalendar,
   error,
   showErrorLine = false,
+  onFocus,
+  onLayout,
 }) {
   function handleChange(text) {
     onChangeText(formatDigits(text.replace(/[^0-9]/g, "")));
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <Text style={styles.label}>{label}</Text>
       <View style={[styles.field, error && styles.fieldError]}>
         <TextInput
           style={[styles.value, value && styles.valueFilled]}
           value={value}
           onChangeText={handleChange}
+          onFocus={onFocus}
           placeholder={placeholder}
           placeholderTextColor={colors.text.secondary}
           keyboardType="number-pad"
