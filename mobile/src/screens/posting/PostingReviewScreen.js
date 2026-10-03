@@ -12,7 +12,7 @@
  * reopening Post a Gig later restores it.
  */
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { colors, spacing, typography } from '../../theme/tokens';
 import Button from '../../components/Button';
@@ -31,9 +31,20 @@ import {
 import { clearPostingDraft, markDraftKeptOffline } from './postingDraft.js';
 import FormTopBar from './components/FormTopBar.js';
 
+// 2.9: the label column is 96 wide at the default text size.
+const LABEL_WIDTH = 96;
+
 export default function PostingReviewScreen({ route, navigation }) {
   const { formData } = route.params || {};
   const { user } = useAuth();
+  // Large text (round 4, L-5): a fixed 96 broke "Urgency" mid-word at font scale 2.0. The label
+  // column grows with the font, so a label never wraps inside a word; and when that would leave
+  // the value less than half the row, the label goes above its value instead. At font scale 1.0
+  // this is exactly 2.9: 96 wide, side by side.
+  const { width, fontScale } = useWindowDimensions();
+  const labelWidth = Math.round(LABEL_WIDTH * Math.max(1, fontScale));
+  const rowWidth = width - 2 * spacing.gutter;
+  const stacked = rowWidth - labelWidth - spacing.md < rowWidth / 2;
   const [submitting, setSubmitting] = useState(false);
   const [banner, setBanner] = useState(null);
 
@@ -55,7 +66,8 @@ export default function PostingReviewScreen({ route, navigation }) {
     ['Pay', reviewPay(formData)],
     ['Total', reviewTotal(formData)],
     ['Address', formData.locationAddress],
-    ['Area shown', `${formData.locationAreaLabel} area`],
+    // FR-POST-08: the area chosen from the server's list — exactly what workers will see.
+    ['Area shown', `${formData.locationArea} area`],
     ['Start', formatStartFull(formData.startAt)],
     ['Urgency', urgencyLine(formData.isUrgent)],
     ['Workers', String(formData.workersNeeded)],
@@ -110,9 +122,9 @@ export default function PostingReviewScreen({ route, navigation }) {
         {banner ? <FormBanner kind="error" message={banner} /> : null}
 
         {rows.map(([label, value]) => (
-          <View key={label} style={styles.row}>
-            <Text style={styles.revLabel}>{label}</Text>
-            <Text style={styles.revValue}>{value}</Text>
+          <View key={label} style={stacked ? styles.rowStacked : styles.row}>
+            <Text style={[styles.revLabel, !stacked && { width: labelWidth }]}>{label}</Text>
+            <Text style={[styles.revValue, stacked && styles.revValueStacked]}>{value}</Text>
           </View>
         ))}
       </ScrollView>
@@ -152,8 +164,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
   },
+  // Large text only: label above its value.
+  rowStacked: {
+    gap: spacing.xs,
+  },
   revLabel: {
-    width: 96,
     ...typography.caption,
     color: colors.text.secondary,
   },
@@ -161,5 +176,9 @@ const styles = StyleSheet.create({
     flex: 1,
     ...typography.secondary,
     color: colors.text.primary,
+  },
+  // Stacked, the value takes its own height under the label (flex: 1 is for the side-by-side row).
+  revValueStacked: {
+    flex: 0,
   },
 });

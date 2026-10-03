@@ -2,20 +2,11 @@
 // The seam between Gig Posting and Discovery & Notifications (FR-POST-10).
 //
 // After a posting is created, matching workers get an alert (urgent push or new-gig
-// notice). That fan-out belongs to Discovery & Notifications; Gig Posting only calls it.
-// The function is not on `develop` yet (docs/workflow/agent-protocol.md §4.4), so this is
-// a clearly marked NO-OP.
+// notice, FR-NOTIF-01/02). That fan-out belongs to Discovery & Notifications (Pawan);
+// Gig Posting only calls it, through this file.
 //
-// TODO(FR-POST-10): when backend/src/modules/notification/notification.service.js exports
-// notifyNewGigPosted({ gigPostingId }), import it here and delete the no-op body.
-
-/**
- * Tell the right workers about a newly created posting.
- *
- * @param {string} postingId
- * @returns {Promise<{ notified: number }>}
- */
-export async function notifyNewGigPosted(postingId) { // eslint-disable-line no-unused-vars
-  // NO-OP until Discovery & Notifications is on develop.
-  return { notified: 0 };
-}
+//   notifyNewGigPosted(postingId) → { notified }
+//
+// It never throws: a failed notification is logged by the notification module and the
+// posting stays created. Wired on integration/viva-demo (agent-protocol.md §8.4).
+export { notifyNewGigPosted } from '../notification/notification.service.js';

@@ -4,7 +4,7 @@
  * Not the shared ScreenHeader: the form draws no title, no border and no fill band. It is a
  * 328 x 44 row at 16 / 6 holding a back control and a close control:
  *   backHit  44 x 44, an 8 x 16 chevron (stroke color/text/primary 2)
- *   closeHit 44 x 44, a 12 x 12 cross, 6 in from the right edge
+ *   closeHit 44 x 44, a 12 x 12 cross (stroke color/text/secondary 2), 6 in from the right edge
  * Step 1 (2.1, 2.1t, 2.1n, 2.1rst) has nothing to go back to — it uses the tab bar to leave — so
  * it draws `topBarGhost`, an empty 44 x 44 that keeps the title at the same height as every other
  * step. The three review screens carry 6 of bottom padding (a 328 x 50 bar).
@@ -63,7 +63,7 @@ export default function FormTopBar({ onBack, onClose, ghost = false, review = fa
             style={[styles.hit, styles.closeHit]}
           >
             <Svg width={12} height={12} viewBox="0 0 12 12">
-              <Path d="M0 0L12 12M12 0L0 12" stroke={colors.text.primary} strokeWidth={2} strokeLinecap="round" />
+              <Path d="M0 0L12 12M12 0L0 12" stroke={colors.text.secondary} strokeWidth={2} strokeLinecap="round" />
             </Svg>
           </Pressable>
         </>

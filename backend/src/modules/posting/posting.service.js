@@ -10,6 +10,8 @@ import { resolvePendingApplicants, notifyPendingApplicantsOfChange } from './pos
 import { expireDuePostings } from './posting.expiry.js';
 import { requestReconfirmation } from './posting.reconfirm.js';
 import { notifyNewGigPosted } from './posting.notify.js';
+import { findArea } from './posting.areas.js';
+import { AREA_NOT_LISTED_MESSAGE } from './posting.validators.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -66,6 +68,15 @@ async function postedAsFromAccount(employerId) {
  * Assumes `data` has already passed posting.validators.js.
  */
 export async function createGigPosting(employerId, data) {
+  // FR-POST-08: the public area and the posting's point come from the server's area list, from
+  // the entry the employer chose. locationAreaLabel / locationLat / locationLng in the request are
+  // never read, so a typed street address can't become the public label and a crafted request
+  // can't place the posting somewhere else. The validator has already checked the area is listed;
+  // this guard only stops a caller that skipped it from writing a posting with no location.
+  const area = findArea(data.locationArea);
+  if (!area) {
+    throw AppError.badRequest('Some details need fixing.', { locationArea: AREA_NOT_LISTED_MESSAGE });
+  }
   const postedAs = await postedAsFromAccount(employerId);
   const startAt = new Date(data.startAt);
   const createdAt = new Date();
@@ -84,9 +95,9 @@ export async function createGigPosting(employerId, data) {
       payRateUnit: data.payKind === 'RATE' ? data.payRateUnit : null,
       ...postedAs,
       locationAddress: data.locationAddress.trim(),
-      locationLat: Number(data.locationLat),
-      locationLng: Number(data.locationLng),
-      locationAreaLabel: data.locationAreaLabel.trim(),
+      locationAreaLabel: area.name,
+      locationLat: area.lat,
+      locationLng: area.lng,
       workersNeeded: data.workersNeeded != null ? Number(data.workersNeeded) : 1,
       startAt,
       // FR-POST-13: a Gig expires when it starts; a Part-time job or Internship 30 days
@@ -126,7 +137,7 @@ export async function getGigPostingById(id, viewerUserId = null) {
       ...WITH_APPLICATION_STATUSES,
       // The two fields sanitizePostingLocation needs to spot a selected worker, plus the name
       // the owner's screen shows for an engaged worker (2.11c, 2.11e2, 2.11f).
-      engagements: { select: { workerId: true, status: true, worker: { select: { legalName: true } } } },
+      engagements: { select: { id: true, workerId: true, status: true, worker: { select: { legalName: true } } } },
       // FR-ENG-09: an edit waiting on a worker's re-confirmation (prototype 2.11c). Read-only
       // here — the table belongs to Engagement, which writes and resolves the request.
       materialChangeRequests: {
@@ -149,7 +160,8 @@ export async function getGigPostingById(id, viewerUserId = null) {
   if (isOwner) {
     sanitized.engagedWorkers = (posting.engagements ?? [])
       .filter((e) => e.status !== 'CANCELLED')
-      .map((e) => ({ legalName: e.worker?.legalName }));
+      // engagementId lets "See engagement" (2.11f → M5 5.3t) open that engagement.
+      .map((e) => ({ engagementId: e.id, legalName: e.worker?.legalName }));
     sanitized.pendingChangeRequest = materialChangeRequests?.[0] ?? null;
   } else {
     // Applicant numbers are the owner's business, not a browsing worker's.
@@ -274,7 +286,10 @@ function changedEditFields(existing, data) {
  * Before any slot fills every change applies at once. After a fill a material change
  * (pay, timing, workers needed) is saved together with a re-confirmation request for each
  * engaged worker (posting.reconfirm.js), in ONE transaction: both happen or neither does.
- * Only one re-confirmation can be waiting at a time. A title change is always allowed.
+ * Only one re-confirmation can be waiting at a time, and while one is waiting NO edit is
+ * accepted — not even a title — because frame 2.11c tells the employer "Editing is paused until
+ * the re-confirmation is answered." (round 4, L-7 / POST-E2E-09).
+ * Location fields are not editable: anything else in `data` is ignored.
  *
  * The write is ONE conditional UPDATE keyed on the fill count that was read: if a
  * selection fills a slot between the read and the write, nothing matches and the edit
@@ -291,6 +306,10 @@ export async function updateGigPosting(employerId, id, data) {
   }
   if (existing.status !== 'OPEN') throw AppError.conflict(EDIT_REFUSED_MESSAGES.closed);
   if (existing.autoHiddenAt) throw AppError.conflict(EDIT_REFUSED_MESSAGES.hidden);
+
+  // 2.11c: editing is paused while a re-confirmation is waiting — every edit, title included.
+  const pendingRequests = await prisma.materialChangeRequest.count({ where: { gigPostingId: id, status: 'PENDING' } });
+  if (pendingRequests > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
 
   const changes = changedEditFields(existing, data);
   const changedMaterial = Object.keys(changes).filter((f) => MATERIAL_FIELDS.includes(f));
@@ -328,6 +347,8 @@ export async function updateGigPosting(employerId, id, data) {
   if (existing.filledCount > 0 && changedMaterial.length > 0) {
     const materialChanges = Object.fromEntries(changedMaterial.map((f) => [f, changes[f]]));
     await prisma.$transaction(async (tx) => {
+      // Checked again inside the transaction: a request created between the check above and
+      // this point (a second save racing the first) must still be refused.
       const waiting = await tx.materialChangeRequest.count({ where: { gigPostingId: id, status: 'PENDING' } });
       if (waiting > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
       await applyEdit(tx);
