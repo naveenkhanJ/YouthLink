@@ -31,9 +31,12 @@ const LOCAL_DIGITS = 9;
  * @param {boolean} [editable]
  */
 export default function PhoneField({ value, onChangeText, error, showErrorLine = false, editable = true, label = "Phone number" }) {
+  // The value the screen keeps is the bare digits ("771234567"); what the person sees is grouped
+  // the way the placeholder and the prototype draw it ("77 123 4567": 2 + 3 + 4).
   function handleChange(text) {
     onChangeText(text.replace(/[^0-9]/g, "").slice(0, LOCAL_DIGITS));
   }
+  const shown = [value.slice(0, 2), value.slice(2, 5), value.slice(5)].filter(Boolean).join(" ");
 
   return (
     <View style={styles.container}>
@@ -50,13 +53,13 @@ export default function PhoneField({ value, onChangeText, error, showErrorLine =
         </View>
         <TextInput
           style={styles.input}
-          value={value}
+          value={shown}
           onChangeText={handleChange}
           editable={editable}
           placeholder="7X XXX XXXX"
           placeholderTextColor={colors.text.secondary}
           keyboardType="number-pad"
-          maxLength={LOCAL_DIGITS}
+          maxLength={LOCAL_DIGITS + 2} // the digits plus the two spaces
           accessibilityLabel="Phone number"
         />
       </View>

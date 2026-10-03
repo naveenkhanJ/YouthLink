@@ -70,9 +70,16 @@ function deliverInDevelopment(kind, destination, secret) {
 // Reset requests per phone (each sends an SMS) and wrong reset codes per phone.
 const RESET_REQUEST_LIMIT = { max: 3, windowMs: 15 * 60 * 1000 };
 const RESET_CODE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
-const PHONE_CHANGE_FAILURE_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
+// FR-ACC-04: shape only, never a registry (12 digits, or 9 digits and V/X).
+const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
+// Settings actions (phone, password, NIC) re-check the current password on an ALREADY signed-in
+// session, so a stolen session must not be able to guess it without limit: five wrong attempts
+// per user per fifteen minutes, counted separately for each action.
+const PASSWORD_RECHECK_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 const RESET_TOKEN_MINUTES = 15;
 const EMAIL_CONFIRM_HOURS = 24;
+// Each email-change request sends an email: five per person per fifteen minutes (typos allowed).
+const EMAIL_CHANGE_REQUEST_LIMIT = { max: 5, windowMs: 15 * 60 * 1000 };
 
 // FR-ACC-09 / NFR-SEC-02: 5 consecutive failed password attempts locks the
 // password path for 15 minutes. Only the password path — FR-ACC-07 deliberately
@@ -82,6 +89,12 @@ const LOCKOUT_DURATION_MS = 15 * 60 * 1000;
 const LOCKED_MESSAGE =
   "Too many attempts — password login is paused for 15 minutes. You can log in with a code instead.";
 const CLEARED_LOCKOUT = { failedLoginAttempts: 0, lockedUntil: null };
+
+// Prototype 1.6sus / 1.7sus: each path names the OTHER path, since neither will work.
+const SUSPENDED_ON_PASSWORD_PATH =
+  "This account has been suspended. Staff make that decision and it takes effect immediately. Logging in with a code will not work either, and YouthLink has no appeals process.";
+const SUSPENDED_ON_OTP_PATH =
+  "This account has been suspended. Staff make that decision and it takes effect immediately. Trying the password instead will not work either, and YouthLink has no appeals process.";
 
 // Not a real account's hash — a fixed bcrypt hash of an arbitrary string,
 // compared against on an unregistered-phone login attempt so the response
@@ -171,7 +184,6 @@ function validateFields({
   if (email && (typeof email !== "string" || !EMAIL_FORMAT.test(email.trim()))) {
     fields.email = "Must be a valid email address";
   }
-  const NIC_FORMAT = /^(\d{12}|\d{9}[vVxX])$/;
   if (!nic || typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
     fields.nic = "Must be 12 digits, or 9 digits followed by V or X";
   }
@@ -366,6 +378,9 @@ async function register(input) {
         birthdate: birthdateValue,
         tosAcceptedAt: new Date(),
         accountStatus: "ACTIVE",
+        // FR-ACC-02: an employer posts as Individual/Household until the posting-as step
+        // (registration step 5) says otherwise, so a posting always has a type.
+        postingAsType: role === "EMPLOYER" ? "INDIVIDUAL" : null,
       },
     });
   } catch (err) {
@@ -389,7 +404,9 @@ async function register(input) {
       console.error("Could not create the email confirmation link:", err);
     }
   }
-  return user;
+  // The person is signed in straight away (the prototype continues into the app, and an employer's
+  // step 5 needs a session), exactly as a login would sign them in.
+  return { token: signToken({ sub: user.id }), user };
 }
 
 /** Creates a single-use confirmation link for the account's current email address. */
@@ -423,13 +440,19 @@ async function verifyEmail({ token }) {
   const tokenHash = hashToken(token);
 
   const row = await prisma.emailVerificationToken.findFirst({
-    where: { token: tokenHash, purpose: "SIGNUP", consumedAt: null, expiresAt: { gt: new Date() } },
+    where: {
+      token: tokenHash,
+      purpose: { in: ["SIGNUP", "EMAIL_CHANGE"] },
+      consumedAt: null,
+      expiresAt: { gt: new Date() },
+    },
     include: { user: true },
   });
-  // The link only counts while the account still holds the address it was sent to.
-  if (!row || !row.user || row.user.deletedAt || row.user.email !== row.email) {
-    return { status: "invalid" };
-  }
+  if (!row || !row.user || row.user.deletedAt) return { status: "invalid" };
+  const isChange = row.purpose === "EMAIL_CHANGE";
+  // A signup link only counts while the account still holds the address it was sent to. An
+  // email-change link is the opposite: the address it carries is NOT yet on the account.
+  if (!isChange && row.user.email !== row.email) return { status: "invalid" };
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -438,7 +461,20 @@ async function verifyEmail({ token }) {
         data: { consumedAt: new Date() },
       });
       if (claimed.count === 0) throw new AppError(409, "used");
-      await tx.user.update({ where: { id: row.userId }, data: { emailVerifiedAt: new Date() } });
+      if (isChange) {
+        // FR-ACC-14 AC2: the new address replaces the old one and is verified, in one step; any
+        // other link still waiting for this person is spent with it.
+        await tx.emailVerificationToken.updateMany({
+          where: { userId: row.userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+          data: { consumedAt: new Date() },
+        });
+        await tx.user.update({
+          where: { id: row.userId },
+          data: { email: row.email, emailVerifiedAt: new Date() },
+        });
+      } else {
+        await tx.user.update({ where: { id: row.userId }, data: { emailVerifiedAt: new Date() } });
+      }
     });
   } catch (err) {
     // 409 "used": another request spent the link first. P2002: someone else confirmed the
@@ -477,12 +513,17 @@ async function loginWithPassword({ phone, password }) {
   // Same generic message whether the phone isn't registered or the password
   // is wrong — telling the two apart would let a caller enumerate registered
   // phone numbers.
+  // The two strings the prototype draws (1.6bnr1, 1.6bnr2). The remaining-attempts
+  // warning appears only once two or fewer are left (FR-ACC-09 E6), not on every miss.
   const invalidCredentials = (remaining) => {
-    let msg = "We couldn't log you in with those details. Check your number and password, or reset your password.";
-    if (remaining !== undefined && remaining > 0) {
-      msg += ` You have ${remaining} attempt${remaining === 1 ? '' : 's'} left.`;
+    if (remaining !== undefined && remaining > 0 && remaining <= 2) {
+      return AppError.unauthorized(
+        `We couldn't log you in with those details. ${remaining} attempt${remaining === 1 ? "" : "s"} left before password login is paused for 15 minutes.`,
+      );
     }
-    return AppError.unauthorized(msg);
+    return AppError.unauthorized(
+      "We couldn't log you in with those details. Check your number and password, or reset your password.",
+    );
   };
 
   if (!user) {
@@ -588,7 +629,7 @@ async function loginWithPassword({ phone, password }) {
   // it earlier would let a caller learn account status without knowing the
   // password.
   if (isSuspended(user)) {
-    throw AppError.forbidden("This account has been suspended.");
+    throw AppError.forbidden(SUSPENDED_ON_PASSWORD_PATH);
   }
 
   return { token: signToken({ sub: user.id }), user };
@@ -637,7 +678,7 @@ async function loginWithOtp({ idToken }) {
     throw AppError.unauthorized("No account found for this phone number.");
   }
   if (isSuspended(user)) {
-    throw AppError.forbidden("This account has been suspended.");
+    throw AppError.forbidden(SUSPENDED_ON_OTP_PATH);
   }
 
   await clearLockout(user.id);
@@ -792,6 +833,19 @@ async function resetPasswordVerify({ phone, code }) {
  * passwordChangedAt is what makes requireAuth reject every session issued before now.
  * @param {{ token: string, newPassword: string }} input
  */
+/**
+ * Whether an emailed reset link can still be used (read-only: nothing is consumed). Lets the web
+ * page refuse a spent or expired link before showing the form.
+ */
+async function isResetTokenUsable(token) {
+  if (!token || typeof token !== "string") return false;
+  const row = await prisma.emailVerificationToken.findFirst({
+    where: { token: hashToken(token), purpose: "PASSWORD_RESET", consumedAt: null, expiresAt: { gt: new Date() } },
+    select: { user: { select: { deletedAt: true } } },
+  });
+  return Boolean(row && row.user && !row.user.deletedAt);
+}
+
 async function resetPasswordConfirm({ token, newPassword }) {
   if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 64) {
     throw AppError.badRequest("Password must be between 8 and 64 characters.");
@@ -841,11 +895,14 @@ async function resetPasswordConfirm({ token, newPassword }) {
  * Admin-reviewed recovery. The response is always { success: true } and reveals nothing
  * about whether the details matched an account.
  */
-async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
-  if (!nic || !birthdate || !legalName || !deviceId) {
+async function recoveryRequest({ nic, birthdate, legalName }) {
+  if (!nic || !birthdate || !legalName) {
     throw AppError.badRequest("All fields are required.");
   }
-  assertDeviceId(deviceId);
+  // The server mints the device id (32 random bytes → 64 hex characters), so the app needs no
+  // secure random source of its own. It is the only thing that lets the status and confirm
+  // endpoints recognise the requesting device, which is why it comes from crypto.randomBytes.
+  const deviceId = crypto.randomBytes(32).toString("hex");
   const birthdateValue = new Date(birthdate);
   if (Number.isNaN(birthdateValue.getTime())) {
     throw AppError.badRequest("Birthdate must be a valid date.", { birthdate: "Required, must be a valid date" });
@@ -875,7 +932,9 @@ async function recoveryRequest({ nic, birthdate, legalName, deviceId }) {
     },
   });
 
-  return { success: true };
+  // The id goes back on every outcome, matched or not, so the response still reveals nothing
+  // about whether the details belonged to an account.
+  return { success: true, deviceId };
 }
 
 /**
@@ -938,39 +997,418 @@ async function recoveryConfirm({ deviceId, newPassword }) {
 }
 
 /**
- * FR-ACC-12: change the phone number. Gated behind the current password and a fresh
- * Firebase verification of the NEW number. The old number keeps satisfying the uniqueness
- * constraint until this single update swaps it, so the swap is atomic (AC2, AC3).
- * @param {{ userId: string, password: string, idToken: string }} input
+ * Re-checks the signed-in person's CURRENT password for a Settings action (password, phone or
+ * NIC change) and returns their user row.
+ *
+ * - Wrong attempts are limited per user and per action (PASSWORD_RECHECK_LIMIT), because a stolen
+ *   session could otherwise guess here without ever reaching the login lockout.
+ * - A wrong password is a 400 field error, NOT a 401: the session is fine, only this entry is
+ *   wrong, and a 401 would be read by the app as "your session has ended".
+ * @param {{ userId: string, password: unknown, field: string, action: string }} input
+ *   `field` names the form field in the error; `action` keeps the attempt counts separate.
+ * @returns {Promise<object>} The user row.
  */
-async function changePhone({ userId, password, idToken }) {
+async function requireCurrentPassword({ userId, password, field, action }) {
   if (!password || typeof password !== "string") {
-    throw AppError.badRequest("Password is required.", { password: "Required" });
+    throw AppError.badRequest("Password is required.", { [field]: "Required" });
   }
-  if (!idToken || typeof idToken !== "string") {
-    throw AppError.badRequest("Phone verification token is required.");
-  }
-
-  // The password is being re-checked on an already signed-in session, so a stolen session
-  // could otherwise guess it here without ever hitting the login lockout.
-  const failureKey = `phone-change:${userId}`;
-  if (isBlocked(failureKey, PHONE_CHANGE_FAILURE_LIMIT.max, PHONE_CHANGE_FAILURE_LIMIT.windowMs)) {
+  const failureKey = `${action}:${userId}`;
+  if (isBlocked(failureKey, PASSWORD_RECHECK_LIMIT.max, PASSWORD_RECHECK_LIMIT.windowMs)) {
     throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user || user.deletedAt) throw AppError.sessionEnded();
 
-  const validPassword = await verifyPassword(password, user.passwordHash);
-  if (!validPassword) {
-    record(failureKey, PHONE_CHANGE_FAILURE_LIMIT.windowMs);
-    // 400 with a field error, NOT 401: the session is fine, only this entry is wrong, and a
-    // 401 would be read by the app as "your session has ended".
+  if (!(await verifyPassword(password, user.passwordHash))) {
+    record(failureKey, PASSWORD_RECHECK_LIMIT.windowMs);
     throw AppError.badRequest("That password doesn't match your account. Please try again.", {
-      password: "Incorrect password",
+      [field]: "Incorrect password",
     });
   }
   clear(failureKey);
+  return user;
+}
+
+/**
+ * FR-ACC-11: a signed-in user changes their password with the current one — no OTP, no email.
+ * Stamping passwordChangedAt makes requireAuth reject every token issued before now, on every
+ * device (the same mechanism as a reset, FR-ACC-10), so a stolen session cannot outlive the
+ * change. That includes the token this request came with, so the response carries a fresh one
+ * and this device stays signed in; only the OTHER devices are signed out.
+ * @param {{ userId: string, currentPassword: string, newPassword: string }} input
+ * @returns {Promise<{ success: true, token: string }>}
+ */
+async function changePassword({ userId, currentPassword, newPassword }) {
+  if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 64) {
+    throw AppError.badRequest("Password must be between 8 and 64 characters.", {
+      newPassword: "Must be 8 to 64 characters",
+    });
+  }
+  const user = await requireCurrentPassword({
+    userId,
+    password: currentPassword,
+    field: "currentPassword",
+    action: "password-change",
+  });
+
+  const hash = await hashPassword(newPassword); // slow by design
+
+  // Only replace the hash we just checked: if another change landed in between, this request's
+  // token is no longer valid and nothing is overwritten.
+  const updated = await prisma.user.updateMany({
+    where: { id: userId, passwordHash: user.passwordHash },
+    data: { passwordHash: hash, passwordChangedAt: new Date() },
+  });
+  if (updated.count === 0) throw AppError.sessionEnded();
+
+  // Signed after the stamp, so its iat is not older than passwordChangedAt (seconds).
+  return { success: true, token: signToken({ sub: userId }) };
+}
+
+/**
+ * FR-ACC-15: edit the display (legal) name after signup. Deliberately low ceremony, like the NIC
+ * correction (FR-ACC-13): signed-in access is the only gate. The name lives only on the User
+ * row, so this one update is the change "everywhere it is shown".
+ * @param {{ userId: string, legalName: string }} input
+ * @returns {Promise<{ legalName: string }>}
+ */
+async function updateDisplayName({ userId, legalName }) {
+  if (typeof legalName !== "string" || legalName.trim().length === 0) {
+    throw AppError.badRequest("Display name is required.", { legalName: "Required" });
+  }
+  const trimmed = legalName.trim();
+  if (trimmed.length > 100) {
+    throw AppError.badRequest("Display name must be 100 characters or fewer.", {
+      legalName: "Must be 100 characters or fewer",
+    });
+  }
+
+  // updateMany so a deleted account (or a missing row) changes nothing and ends the session.
+  const updated = await prisma.user.updateMany({
+    where: { id: userId, deletedAt: null },
+    data: { legalName: trimmed },
+  });
+  if (updated.count === 0) throw AppError.sessionEnded();
+  return { legalName: trimmed };
+}
+
+/**
+ * FR-ACC-14: ask to add or change the account's email. Nothing on the account changes yet: the
+ * new address is held on an EMAIL_CHANGE token, so User.email stays on the old, still-active
+ * value (and recovery channel) until the confirmation link is opened (AC1). Asking again
+ * replaces the earlier pending change.
+ * @param {{ userId: string, email: string }} input
+ * @returns {Promise<{ pendingEmail: string }>}
+ */
+async function requestEmailChange({ userId, email }) {
+  if (typeof email !== "string" || !EMAIL_FORMAT.test(email.trim()) || email.trim().length > 254) {
+    throw AppError.badRequest("Enter a valid email address.", { email: "Must be a valid email address" });
+  }
+  const address = normalizeEmail(email);
+
+  const limitKey = `email-change:${userId}`;
+  if (isBlocked(limitKey, EMAIL_CHANGE_REQUEST_LIMIT.max, EMAIL_CHANGE_REQUEST_LIMIT.windowMs)) {
+    throw AppError.tooManyRequests("Too many attempts. Try again in a few minutes.");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  if (user.email === address && user.emailVerifiedAt) {
+    throw AppError.badRequest("That is already your confirmed email address.", {
+      email: "Already your email address",
+    });
+  }
+
+  // FR-ACC-05: uniqueness is scoped to VERIFIED addresses. The message to the app never says
+  // whose account holds it.
+  const holder = await prisma.user.findFirst({
+    where: {
+      email: { equals: address, mode: "insensitive" },
+      emailVerifiedAt: { not: null },
+      deletedAt: null,
+      id: { not: userId },
+    },
+    select: { id: true },
+  });
+  if (holder) {
+    throw AppError.conflict("That email address is already in use.", { email: "Already in use" });
+  }
+
+  record(limitKey, EMAIL_CHANGE_REQUEST_LIMIT.windowMs);
+  const token = crypto.randomBytes(32).toString("hex");
+  await prisma.$transaction(async (tx) => {
+    await tx.emailVerificationToken.updateMany({
+      where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+      data: { consumedAt: new Date() },
+    });
+    await tx.emailVerificationToken.create({
+      data: {
+        userId,
+        email: address,
+        token: hashToken(token),
+        purpose: "EMAIL_CHANGE",
+        expiresAt: new Date(Date.now() + EMAIL_CONFIRM_HOURS * 60 * 60 * 1000),
+      },
+    });
+  });
+  deliverInDevelopment("Email", address, `${config.publicBaseUrl}/api/account/verify-email?token=${token}`);
+  return { pendingEmail: address };
+}
+
+/** FR-ACC-14: "Cancel this change" — the waiting confirmation link stops working. */
+async function cancelEmailChange({ userId }) {
+  await prisma.emailVerificationToken.updateMany({
+    where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null },
+    data: { consumedAt: new Date() },
+  });
+  return { success: true };
+}
+
+/**
+ * The signed-in person's current account, plus the email change still waiting for its
+ * confirmation link (if any). The app refreshes from this after something changes outside it —
+ * the link being opened in a browser — so Settings shows the new address.
+ * @returns {Promise<{ user: object, pendingEmail: string|null }>}
+ */
+async function getMe({ userId }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  const pending = await prisma.emailVerificationToken.findFirst({
+    where: { userId, purpose: "EMAIL_CHANGE", consumedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+    select: { email: true },
+  });
+  return { user, pendingEmail: pending ? pending.email : null };
+}
+
+// FR-ACC-17 / NFR-REL-04: an engagement that is not completed, ended or cancelled blocks deletion.
+// DISPUTED counts: a dispute is an unresolved engagement, not a finished one.
+const BLOCKING_ENGAGEMENT_STATUSES = ["ACTIVE", "DISPUTED"];
+
+/**
+ * The first engagement (as worker or employer) that still blocks this person's deletion, with the
+ * posting and both parties it is shown with.
+ *
+ * The three related rows are read one after another rather than with one `include`: with the pg
+ * driver adapter an `include` runs its relation queries in parallel on a single connection, which
+ * inside a transaction triggers pg's "client is already executing a query" deprecation warning
+ * (and fails outright in a future pg). Sequential reads cost three trivial queries on a path used
+ * once per deletion.
+ */
+async function findBlockingEngagement(db, userId) {
+  const engagement = await db.engagement.findFirst({
+    where: {
+      status: { in: BLOCKING_ENGAGEMENT_STATUSES },
+      OR: [{ workerId: userId }, { employerId: userId }],
+    },
+    orderBy: { createdAt: "asc" },
+  });
+  if (!engagement) return null;
+  const gigPosting = await db.gigPosting.findUnique({
+    where: { id: engagement.gigPostingId },
+    select: { title: true, postedAsType: true },
+  });
+  const worker = await db.user.findUnique({
+    where: { id: engagement.workerId },
+    select: { legalName: true },
+  });
+  const employer = await db.user.findUnique({
+    where: { id: engagement.employerId },
+    select: { legalName: true, businessName: true },
+  });
+  return { ...engagement, gigPosting, worker, employer };
+}
+
+/**
+ * FR-ACC-17: can this person delete their account right now? The deletion screens name the
+ * engagement in the way ("Shop assistant — weekend with Saman Stores is still running"), so the
+ * answer carries its posting title and the OTHER party's name — the business name when the
+ * posting was made as a Business, otherwise the legal name.
+ * @returns {Promise<{ blocked: boolean, engagement: { title: string, withName: string }|null }>}
+ */
+async function getDeletionStatus({ userId }) {
+  const engagement = await findBlockingEngagement(prisma, userId);
+  if (!engagement) return { blocked: false, engagement: null };
+  const iAmWorker = engagement.workerId === userId;
+  const employerName =
+    engagement.gigPosting.postedAsType === "BUSINESS" && engagement.employer.businessName
+      ? engagement.employer.businessName
+      : engagement.employer.legalName;
+  return {
+    blocked: true,
+    engagement: {
+      title: engagement.gigPosting.title,
+      withName: iAmWorker ? employerName : engagement.worker.legalName,
+    },
+  };
+}
+
+/**
+ * FR-ACC-17 / NFR-PRIV-03: delete the account. Gated behind password re-entry and blocked while
+ * any engagement is active. Deletion is an anonymisation, not a row removal: the identifying
+ * columns are overwritten (NIC, phone, email, password, legal name, birthdate, last browse location) so
+ * every rating, completion record and engagement that points at this id keeps pointing at it,
+ * now attributed to an anonymised reference rather than a person.
+ *
+ * The user row is locked (SELECT ... FOR UPDATE) before the engagement check, and any other
+ * module inserting an engagement for this person has to take a lock on the same row (the foreign
+ * key), so an engagement cannot slip in between the check and the anonymisation.
+ * @param {{ userId: string, password: string }} input
+ * @returns {Promise<{ success: true }>}
+ */
+async function deleteAccount({ userId, password }) {
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "account-delete" });
+  const unusableHash = await hashPassword(crypto.randomBytes(32).toString("hex")); // nobody knows it
+
+  await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${user.id} FOR UPDATE`;
+
+    if (await findBlockingEngagement(tx, user.id)) {
+      throw AppError.conflict(
+        "You can't delete your account while an engagement is active. It has to be completed or cancelled first.",
+        undefined,
+      );
+    }
+
+    await tx.user.update({
+      where: { id: user.id },
+      data: {
+        // Placeholders keep the NOT NULL columns satisfied and unique (the id is unique).
+        phone: `deleted-${user.id}`,
+        phoneVerifiedAt: null,
+        email: null,
+        emailVerifiedAt: null,
+        nicEncrypted: `deleted:${user.id}`,
+        nicLast4: "0000",
+        legalName: "Deleted user",
+        // The birthdate is personal data too; the age gate only matters at signup.
+        birthdate: new Date("1900-01-01"),
+        passwordHash: unusableHash,
+        passwordChangedAt: new Date(), // every token issued before now is rejected
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        bio: null,
+        businessName: null,
+        businessBio: null,
+        endorsementCode: null,
+        lastBrowseLat: null,
+        lastBrowseLng: null,
+        lastBrowseAt: null,
+        accountStatus: "DELETED",
+        deletedAt: new Date(),
+      },
+    });
+    // Anything that holds the person's own identifying details or a way back in.
+    await tx.otpCode.deleteMany({ where: { userId: user.id } });
+    await tx.emailVerificationToken.deleteMany({ where: { userId: user.id } });
+    await tx.accountRecoveryRequest.deleteMany({ where: { userId: user.id } });
+  });
+  return { success: true };
+}
+
+/**
+ * FR-ACC-02 / FR-ACC-16: an employer sets how the account posts — Individual/Household, or
+ * Business with a business name (required, up to 100 characters) and an optional bio (up to 300).
+ * Switching back to Individual clears both, so nothing stale is left to display. Only the
+ * account changes: postings already published keep the poster-type and name they were posted
+ * with. The same call edits the business name and bio of an account that is already Business
+ * (screen 1.15eb).
+ * @param {{ userId: string, postingAsType: string, businessName?: string, businessBio?: string }} input
+ * @returns {Promise<{ postingAsType: string, businessName: string|null, businessBio: string|null }>}
+ */
+async function updatePostingAs({ userId, postingAsType, businessName, businessBio }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user || user.deletedAt) throw AppError.sessionEnded();
+  if (user.role !== "EMPLOYER") {
+    throw AppError.forbidden("Only employers choose how their account posts.");
+  }
+  if (postingAsType !== "INDIVIDUAL" && postingAsType !== "BUSINESS") {
+    throw AppError.badRequest("Choose Individual/Household or Business.", { postingAsType: "Required" });
+  }
+
+  let data;
+  if (postingAsType === "BUSINESS") {
+    const name = typeof businessName === "string" ? businessName.trim() : "";
+    if (!name) {
+      throw AppError.badRequest("Business name is required.", { businessName: "Required" });
+    }
+    if (name.length > 100) {
+      throw AppError.badRequest("Business name must be 100 characters or fewer.", {
+        businessName: "Must be 100 characters or fewer",
+      });
+    }
+    const bio = typeof businessBio === "string" ? businessBio.trim() : "";
+    if (bio.length > 300) {
+      throw AppError.badRequest("Business bio must be 300 characters or fewer.", {
+        businessBio: "Must be 300 characters or fewer",
+      });
+    }
+    data = { postingAsType, businessName: name, businessBio: bio || null };
+  } else {
+    data = { postingAsType, businessName: null, businessBio: null };
+  }
+
+  const updated = await prisma.user.update({ where: { id: userId }, data });
+  return {
+    postingAsType: updated.postingAsType,
+    businessName: updated.businessName,
+    businessBio: updated.businessBio,
+  };
+}
+
+/**
+ * FR-ACC-13: correct the NIC number. Gated behind password re-entry only — no OTP-equivalent
+ * step. The shape is checked (12 digits, or 9 digits and V/X), never a registry, and the NIC is
+ * stored with the same deterministic encryption as at signup so the one-account-per-NIC rule
+ * (FR-ACC-05) still holds. It plays no part in the age gate (FR-ACC-03), which reads only the
+ * birthdate.
+ * @param {{ userId: string, password: string, nic: string }} input
+ * @returns {Promise<{ nicLast4: string }>}
+ */
+async function changeNic({ userId, password, nic }) {
+  if (typeof nic !== "string" || !NIC_FORMAT.test(nic.trim())) {
+    throw AppError.badRequest("NIC must be 12 digits, or 9 digits followed by V or X.", {
+      nic: "Must be 12 digits, or 9 digits followed by V or X",
+    });
+  }
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "nic-change" });
+
+  const nicEncrypted = encryptNic(nic);
+  const nicLast4 = getNicLast4(nic);
+
+  // Friendly field-level error first; the partial unique index is the real enforcement.
+  const holder = await prisma.user.findFirst({
+    where: { nicEncrypted, deletedAt: null },
+    select: { id: true },
+  });
+  if (holder && holder.id !== user.id) {
+    throw AppError.conflict("That NIC is already registered.", { nic: "Already registered" });
+  }
+
+  try {
+    await prisma.user.update({ where: { id: user.id }, data: { nicEncrypted, nicLast4 } });
+  } catch (err) {
+    // A signup or another correction raced this one and took the NIC first.
+    if (err.code === "P2002") {
+      throw AppError.conflict("That NIC is already registered.", { nic: "Already registered" });
+    }
+    throw err;
+  }
+  return { nicLast4 };
+}
+
+/**
+ * FR-ACC-12: change the phone number. Gated behind the current password and a fresh
+ * Firebase verification of the NEW number. The old number keeps satisfying the uniqueness
+ * constraint until this single update swaps it, so the swap is atomic (AC2, AC3).
+ * @param {{ userId: string, password: string, idToken: string }} input
+ */
+async function changePhone({ userId, password, idToken }) {
+  if (!idToken || typeof idToken !== "string") {
+    throw AppError.badRequest("Phone verification token is required.");
+  }
+  const user = await requireCurrentPassword({ userId, password, field: "password", action: "phone-change" });
 
   let newPhone;
   try {
@@ -1019,8 +1457,18 @@ export default {
   resetPasswordRequest,
   resetPasswordVerify,
   resetPasswordConfirm,
+  isResetTokenUsable,
   recoveryRequest,
   recoveryStatus,
   recoveryConfirm,
   changePhone,
+  changeNic,
+  updatePostingAs,
+  getDeletionStatus,
+  deleteAccount,
+  requestEmailChange,
+  cancelEmailChange,
+  getMe,
+  changePassword,
+  updateDisplayName,
 };

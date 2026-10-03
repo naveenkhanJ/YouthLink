@@ -12,44 +12,69 @@
  * "sign me out" should use useAuth(), not read api/client.js's token or
  * SecureStore directly.
  */
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken, setAuthFailureCallback } from "../api/client";
+import { markOnboardingSeen, rememberLastPhone, forgetLastPhone } from "./launchState";
 
 const TOKEN_KEY = "youthlink.authToken";
 const USER_KEY = "youthlink.authUser";
+
+// Set when the app signs the person out because their session ended; the login screen shows
+// the "signed out for security" line (1.6s) whenever sessionEndReason is set.
+export const SESSION_ENDED_REASON = "session-ended";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   // "loading" only lasts through the initial SecureStore read at app boot.
   const [status, setStatus] = useState("loading");
-  const [user, setUser] = useState(null);
+  const [user, setUserState] = useState(null);
+  // The latest user, readable from callbacks that outlive a render (a focus listener, a timer):
+  // updateUser must merge onto THIS, never onto the user captured when the callback was made.
+  const userRef = useRef(null);
+  function setUser(next) {
+    userRef.current = next;
+    setUserState(next);
+  }
   const [sessionEndReason, setSessionEndReason] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
 
     async function restore() {
-      const [token, userJson] = await Promise.all([
-        SecureStore.getItemAsync(TOKEN_KEY),
-        SecureStore.getItemAsync(USER_KEY),
-      ]);
-      if (cancelled) return;
+      // A failed read or a corrupt stored value must end in "signed out", never leave the
+      // app on the loading spinner forever.
+      try {
+        const [token, userJson] = await Promise.all([
+          SecureStore.getItemAsync(TOKEN_KEY),
+          SecureStore.getItemAsync(USER_KEY),
+        ]);
+        if (cancelled) return;
 
-      if (token && userJson) {
-        setAuthToken(token);
-        setUser(JSON.parse(userJson));
-        setStatus("signedIn");
-      } else {
-        setStatus("signedOut");
+        if (token && userJson) {
+          const storedUser = JSON.parse(userJson);
+          setAuthToken(token);
+          setUser(storedUser);
+          setStatus("signedIn");
+          return;
+        }
+      } catch (err) {
+        console.warn("Could not restore the saved session:", err);
+        await Promise.allSettled([
+          SecureStore.deleteItemAsync(TOKEN_KEY),
+          SecureStore.deleteItemAsync(USER_KEY),
+        ]);
       }
+      if (!cancelled) setStatus("signedOut");
     }
 
     restore();
     
+    // The text itself is drawn by the login screen (prototype 1.6s); this only records that
+    // the person was signed out by the app rather than by choosing to log out.
     setAuthFailureCallback(() => {
-      signOut("Your session has ended. Please log in again.");
+      signOut(SESSION_ENDED_REASON);
     });
     
     return () => {
@@ -64,10 +89,35 @@ export function AuthProvider({ children }) {
     ]);
     setAuthToken(token);
     setUser(signedInUser);
+    setSessionEndReason(null); // a fresh login clears any "signed out for security" notice
     setStatus("signedIn");
+    markOnboardingSeen(); // someone with an account has no use for the first-run cards
+    rememberLastPhone(signedInUser.phone);
   }
 
-  async function signOut(reason = null) {
+  /** Replaces the stored user after an edit (phone, name) so every screen shows the new value. */
+  async function updateUser(changes) {
+    const next = { ...userRef.current, ...changes };
+    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(next));
+    setUser(next);
+  }
+
+  /** Swaps in a fresh token after a password change, so this device is not signed out with the rest. */
+  async function replaceToken(token) {
+    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    setAuthToken(token);
+  }
+
+  /**
+   * @param {string|null} [reason] - Set when the app ends the session (the login screen explains it).
+   * @param {{ forget?: boolean }} [options] - `forget: true` when the account no longer exists
+   *   (deletion): the next launch then starts at role selection instead of Log in.
+   */
+  async function signOut(reason = null, { forget = false } = {}) {
+    // The failure callback registered at start-up outlives renders, so read the user from the ref.
+    const phone = userRef.current?.phone;
+    if (forget) await forgetLastPhone();
+    else if (phone) await rememberLastPhone(phone);
     await Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEY),
       SecureStore.deleteItemAsync(USER_KEY),
@@ -79,7 +129,7 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ status, user, sessionEndReason, signIn, signOut }),
+    () => ({ status, user, sessionEndReason, signIn, signOut, updateUser, replaceToken }),
     [status, user, sessionEndReason],
   );
 
@@ -92,7 +142,9 @@ export function AuthProvider({ children }) {
  *   user: object | null,
  *   sessionEndReason: string | null,
  *   signIn: (token: string, user: object) => Promise<void>,
- *   signOut: (reason?: string) => Promise<void>,
+ *   signOut: (reason?: string|null, options?: { forget?: boolean }) => Promise<void>,
+ *   updateUser: (changes: object) => Promise<void>,
+ *   replaceToken: (token: string) => Promise<void>,
  * }}
  */
 export function useAuth() {

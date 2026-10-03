@@ -292,6 +292,10 @@ A fourth consumer actor (Parent/Guardian) was considered and rejected — YouthL
 
 > **Amended 2026-08-27 (batch A4).** The same session invalidation as FR-ACC-10 applies to a Settings password change — otherwise the reset guarantee has a hole: change the password from Settings and a stolen token survives. Same `passwordChangedAt` mechanism (batch A5). The screen states the consequence — this signs you out everywhere — before submission, not after.
 
+> **Amended 2026-10-02 (found when the screens were built against the prototype).** The Change password screen carries a **"Forgotten your current password?"** link, which `FR-ACC-12`'s E5 amendment needs but this requirement never said where it lives. A logged-in user who no longer knows their current password can reset it through the **verified email** on the account (`FR-ACC-10`'s secondary channel): the screen offers to email a reset link (`1.11r2`), confirms it was sent (`1.11r3`), and, where the account has no verified email, says so and offers to add one (`1.11r4`). The new password is chosen on the same minimal web page the login-side email reset opens; completing it invalidates every other session exactly as above. No new endpoint: it is `FR-ACC-10`'s email reset request for the signed-in account's own phone number, so its rate limit applies unchanged. The change-with-current-password path above is unchanged and still needs neither OTP nor email.
+>
+> **Acceptance criterion added:** Given a logged-in user has forgotten their current password and has a verified email, when they choose "Forgotten your current password?" on the change screen, then a reset link is sent to that address and they can keep using the app; and given the account has no verified email, then the screen says so and offers to add one instead of sending anything.
+
 #### FR-ACC-12 — Phone number change
 
 | Actor(s)        | Priority |

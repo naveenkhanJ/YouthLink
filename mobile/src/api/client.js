@@ -18,39 +18,63 @@ export function setAuthToken(token) {
   authToken = token;
 }
 
+// Shown when the request never reached the server (no signal, wrong address, server down).
+// There is no drawn offline frame for the account forms, so this follows the wording of the
+// ones the prototype does draw (2.9 and 4.1: "You're offline, so ... couldn't be ...").
+const OFFLINE_MESSAGE = "You're offline, so this couldn't be sent. Try again once you reconnect.";
+
 /**
  * @param {string} path - Path beginning with "/", e.g. "/api/account/register".
  * @param {object} [options] - fetch options; `body` may be a plain object.
  * @returns {Promise<any>} Parsed JSON response.
- * @throws {Error} With `.status` and `.fields` copied from the API's error shape.
+ * @throws {Error} With `.status`, `.fields` and `.code` copied from the API's error shape;
+ *   `.offline` is true when the server could not be reached at all.
  */
 export async function request(path, options = {}) {
   const { body, headers, ...rest } = options;
+  const sentToken = Boolean(authToken);
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...rest,
-    headers: {
-      "Content-Type": "application/json",
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-      ...headers,
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...rest,
+      headers: {
+        "Content-Type": "application/json",
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        ...headers,
+      },
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
+  } catch {
+    const error = new Error(OFFLINE_MESSAGE);
+    error.offline = true;
+    throw error;
+  }
 
+  // A proxy or crashed server can answer with HTML; that must not surface as a JSON
+  // SyntaxError on the screen.
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = null;
+  }
 
   if (!response.ok) {
-    const error = new Error(
-      data?.error || `Request failed (${response.status})`,
-    );
+    const error = new Error(data?.error || `Request failed (${response.status})`);
     error.status = response.status;
     error.fields = data?.fields; // per-field messages, e.g. { phone: "..." }
-    
-    if ((response.status === 401 || response.status === 403) && authFailureCallback) {
+    error.code = data?.code;
+
+    // A session has ended ONLY when the server says so with SESSION_ENDED (expired or
+    // invalid token, password changed, suspended, deleted — FR-ACC-07 amendment A32) and
+    // this request was actually signed in. Any other 401/403 — a wrong password on login
+    // or phone change, a role refusal — is an ordinary error and must not sign anyone out.
+    if (sentToken && error.code === "SESSION_ENDED" && authFailureCallback) {
       authFailureCallback();
     }
-    
+
     throw error;
   }
 

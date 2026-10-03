@@ -1,27 +1,17 @@
-// gigPosting.urgency.js
+// posting.urgency.js
 // FR-POST-07: urgency is always derived from startAt, never accepted as
-// client input. A posting is "urgent" when it starts within a 24-48 hour
-// window from now — soon enough to need attention, far enough out that the
-// 2-hour minimum lead time (FR-POST-05) postings aren't automatically urgent.
+// client input. A posting is "urgent" when its start is 48 hours or less
+// away, with NO lower bound (amended 2026-08-27).
 //
-// Boundary rule: inclusive at 24h, inclusive at 48h.
-// i.e. urgent when  24h <= (startAt - now) <= 48h
-// Adjust here if product wants a different edge treatment.
-
-// gigPosting.urgency.js
-// FR-POST-07: urgency is always derived from startAt, never accepted as
-// client input. A posting is "urgent" when it starts within a 24-48 hour
-// window from now — soon enough to need attention, far enough out that the
-// 2-hour minimum lead time (FR-POST-05) postings aren't automatically urgent.
+// The earlier reading was a 24-48h band, which made a gig starting in 3 hours
+// not urgent while one starting in 40 hours was — so the shortest-notice gigs
+// got the least reach from FR-NOTIF-01's urgent push. That was backwards.
 //
-// Boundary rule: inclusive at 24h, inclusive at 48h.
-// i.e. urgent when  24h <= (startAt - now) <= 48h
-// Adjust here if product wants a different edge treatment.
+// Boundary rule: inclusive at 48h, i.e. urgent when (startAt - now) <= 48h.
 
 const HOUR_MS = 60 * 60 * 1000;
 
-export const URGENCY_WINDOW_MIN_MS = 24 * HOUR_MS;
-export const URGENCY_WINDOW_MAX_MS = 48 * HOUR_MS;
+export const URGENCY_MAX_MS = 48 * HOUR_MS;
 
 /**
  * @param {Date|string} startAt - the posting's scheduled start time
@@ -29,9 +19,11 @@ export const URGENCY_WINDOW_MAX_MS = 48 * HOUR_MS;
  * @returns {boolean}
  */
 export function computeIsUrgent(startAt, now = Date.now()) {
+  // new Date(null) is the epoch, which with no lower bound would read as
+  // "urgent" — a missing start time must fail safe instead.
+  if (startAt == null || startAt === '') return false;
   const startMs = new Date(startAt).getTime();
   if (Number.isNaN(startMs)) return false;
 
-  const msUntilStart = startMs - now;
-  return msUntilStart >= URGENCY_WINDOW_MIN_MS && msUntilStart <= URGENCY_WINDOW_MAX_MS;
+  return startMs - now <= URGENCY_MAX_MS;
 }

@@ -171,7 +171,7 @@ This never enters Moderator triage.
 | `nicSubmittedEncrypted` | String | required | What the requester submitted, encrypted with the same deterministic scheme as `User.nicEncrypted`; that determinism is what makes the match possible |
 | `legalNameSubmitted` | String(100) | required | Retained rather than reduced to a verdict: the Admin adjudicates the claim, and the case that matters in practice is the **partial** match, which one flag cannot express |
 | `birthdateSubmitted` | DateTime | required | As above. Retention is bounded by the requirement, not by this table |
-| `deviceId` | String | required | **The device binding.** An install-scoped identifier the app generates on first run — not a hardware id, needing no permission. The outcome is shown, and the password reset granted, on that device and no other (`FR-ACC-10`). Without it an approved recovery is a bearer grant |
+| `deviceId` | String | required | **The device binding.** An install-scoped identifier the **server** generates when the request is submitted (32 random bytes, 64 hex characters) and returns to the app, which keeps it in secure storage — not a hardware id, needing no permission, and the app needs no secure random source of its own. The outcome is shown, and the password reset granted, on that device and no other (`FR-ACC-10`). Without it an approved recovery is a bearer grant |
 | `status` | Enum(`AccountRecoveryStatus`) | default `AWAITING_REVIEW` | A queued request awaits **Admin** review; there is no Moderator stage for it to pass through |
 | `createdAt` | DateTime | | |
 | `reviewedByAdminAccountId` | String | FK → `AdminAccount`, nullable | The ruling is attributable to the acting Admin and is written to the audit log (`NFR-SEC-06`) |
