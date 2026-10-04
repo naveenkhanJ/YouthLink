@@ -15,6 +15,8 @@
  * Opening a screen that is already in the stack goes back to it (React Navigation's `navigate`),
  * so moving between tabs does not pile screens up.
  */
+import { useEffect, useState } from "react";
+import { Keyboard } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../auth/AuthContext";
 import TabBar from "./TabBar";
@@ -67,7 +69,24 @@ export default function ShellTabBar({ active, notificationBadge = false }) {
   const { user } = useAuth();
   const navigation = useNavigation();
   const role = tabBarRoleFor(user);
+
+  // RootNavigator wraps the whole app in a KeyboardAvoidingView so every screen's pinned action
+  // bar rides up above the keyboard. This bar is the last child of its screen, so it would ride
+  // up too and sit between the form and the keyboard. Nothing on a tab bar is needed while the
+  // person is typing, so it is not drawn until the keyboard closes. (Hooks stay above the
+  // early return below so their order never changes.)
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () => setKeyboardOpen(true));
+    const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardOpen(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
   if (!role) return null; // signed out: there is no shell to navigate
+  if (keyboardOpen) return null;
 
   return (
     <TabBar
