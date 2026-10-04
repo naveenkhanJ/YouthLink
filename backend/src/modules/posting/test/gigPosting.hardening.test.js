@@ -9,6 +9,7 @@ import { jest } from '@jest/globals';
 import { validationResult } from 'express-validator';
 
 const prismaMock = {
+  $queryRaw: jest.fn().mockResolvedValue([]), // expireDuePostings() runs a raw statement on every read
   user: { findUnique: jest.fn() },
   gigPosting: { create: jest.fn(), findUnique: jest.fn() },
 };
@@ -94,6 +95,29 @@ describe('FR-POST-16: posted-as comes from the account', () => {
   test('the create validators no longer ask the request for posted-as at all', async () => {
     const errors = await validate(createGigPostingValidators, validBody()); // no postedAsType sent
     expect(errors).toEqual({});
+  });
+});
+
+describe('FR-POST-13: expiresAt is set when a posting is created', () => {
+  const MINUTE = 60e3;
+  const DAY = 24 * 3600e3;
+  const expiryOf = async (body) => {
+    await createGigPosting(OWNER, body);
+    return prismaMock.gigPosting.create.mock.calls[0][0].data;
+  };
+
+  test('a Gig expires when it starts', async () => {
+    const body = validBody();
+    const data = await expiryOf(body);
+    expect(data.expiresAt).toEqual(new Date(body.startAt));
+  });
+
+  test.each(['PART_TIME', 'INTERNSHIP'])('a %s expires 30 days after it was posted', async (arrangementType) => {
+    const body = { ...validBody(), arrangementType, payKind: arrangementType === 'PART_TIME' ? 'RATE' : 'UNPAID',
+      payRateUnit: 'DAY', schedule: 'Mon, Wed, Fri', startAt: new Date(Date.now() + 10 * DAY).toISOString() };
+    const before = Date.now();
+    const data = await expiryOf(body);
+    expect(Math.abs(data.expiresAt.getTime() - (before + 30 * DAY))).toBeLessThan(MINUTE);
   });
 });
 
