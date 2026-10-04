@@ -38,6 +38,11 @@ export function canAccessPreciseLocation(posting, viewerUserId) {
   return false;
 }
 
+/** Round a coordinate to 2 decimals (~1 km). Radius search reads the database, not this. */
+function roundCoarse(value) {
+  return value == null ? value : Math.round(Number(value) * 100) / 100;
+}
+
 /**
  * Sanitizes a gig posting's location fields based on who is viewing it.
  *
@@ -62,8 +67,10 @@ export function sanitizePostingLocation(posting, viewerUserId = null) {
     locationAddress: isPreciseReleased ? posting.locationAddress : null,
     // Coarse area label is always public
     locationAreaLabel: posting.locationAreaLabel,
-    locationLat: posting.locationLat,
-    locationLng: posting.locationLng,
+    // Coordinates are the exact pin for the owner and a selected worker; everyone else gets
+    // them rounded to 2 decimals (about 1 km) so the map shows an area, not the doorstep.
+    locationLat: isPreciseReleased ? posting.locationLat : roundCoarse(posting.locationLat),
+    locationLng: isPreciseReleased ? posting.locationLng : roundCoarse(posting.locationLng),
     // Metadata flag informing clients whether exact location has been released
     isPreciseLocationReleased: isPreciseReleased,
   };

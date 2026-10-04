@@ -15,6 +15,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "../screens/HomeScreen";
+import { useAuth } from "../auth/AuthContext";
+import { readLaunchState } from "../auth/launchState";
+import { toLocalDigits } from "../screens/account/phoneFormat";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -50,6 +53,31 @@ if (duplicates.length > 0) {
     `Duplicate screen name(s): ${[...new Set(duplicates)].join(", ")}. ` +
       `Prefix screen names with your module, e.g. "AccountRegister".`,
   );
+}
+
+const navigationRef = createNavigationContainerRef();
+
+/**
+ * When the app ends a session on its own (a suspension, a password change elsewhere, a deleted
+ * account: the server answers SESSION_ENDED), whatever screen the person was on is no longer
+ * usable. Send them to the login screen, which explains why (prototype 1.6s). A person who chose
+ * to sign out is moved by the Settings screen itself, so this only reacts to a recorded reason.
+ */
+function SessionEndRedirect() {
+  const { status, sessionEndReason } = useAuth();
+  useEffect(() => {
+    if (status !== "signedOut" || !sessionEndReason || !navigationRef.isReady()) return;
+    const current = navigationRef.getCurrentRoute()?.name;
+    if (current === "AccountLogin") return;
+    // Log in comes with the number of the account that was just signed out, as after a Sign out.
+    readLaunchState().then(({ lastPhone }) => {
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: "AccountLogin", params: lastPhone ? { phone: toLocalDigits(lastPhone) } : undefined }],
+      });
+    });
+  }, [status, sessionEndReason]);
+  return null;
 }
 
 export default function RootNavigator() {

@@ -152,3 +152,116 @@ sprint picks it up. Full detail — the specific infrastructure
 interruptions, the Lahiru Gig Posting Done-without-frontend call — is in
 the SPM project's own Scrum Events Log, outside this repo; this entry is
 the short version so the reasoning has at least one record inside it.
+
+## How we work from Sprint 3 (2026-09-25)
+
+**The code is the ground truth for what is built.** Jira, progress notes, documents
+and people's recollections all drift; the code on `develop` does not. So work
+starts by establishing what the code contains, and where a card's status and the
+code disagree, the code wins. This replaced the earlier line in
+[`module-ownership.md`](module-ownership.md) that made Jira authoritative on
+status. The evidence order is in [`workflow/agent-protocol.md`](workflow/agent-protocol.md) §2.
+
+**UI must match the prototype specification exactly** (DoD clause 5, changed from
+"functionally matches the wireframe"). The wireframes were approximate; the
+prototype specification in [`prototype/`](prototype/README.md) now gives every
+screen's components, tokens and copy, so there is nothing left to approximate.
+
+**The end-to-end clause stays, and is recorded rather than enforced by blocking.**
+Not everyone can build and run the app yet, so each pull request states its
+end-to-end level (self, integration, pending) and a card reaches Done once it has
+actually been run. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#definition-of-done).
+
+**No member's work waits on another member's.** Cross-module needs go through a
+function the called module exposes, a no-op on the caller's side until it lands,
+and a shared seed script. Only shared components come from one person. See
+[`workflow/agent-protocol.md`](workflow/agent-protocol.md) §4.4.
+
+**Enforcement is local, because server-side branch protection isn't available.**
+Git hooks installed by `npm install`, agent refusals, and review. The hooks can be
+bypassed on purpose; they exist to catch slips. See [`CONTRIBUTING.md`](../CONTRIBUTING.md#local-checks).
+
+**Every endpoint requires sign-in unless it exists to sign someone in**, and role
+checks follow each requirement's actor table. See the cross-cutting authentication
+section of [`module-ownership.md`](module-ownership.md#cross-cutting-authentication).
+
+**The workflow serves the person using it.** An agent following the protocol
+declines to break the team's rules, but it records progress only in the
+developer's own git-ignored `.worklog/` and never reports on them.
+
+## Sprint 3 and 4 planning (2026-09-26)
+
+**Checking the code before planning changed the plan.** Before scheduling Sprint 3, the actual content of every Sprint 1 branch was read directly — not assumed from Jira, from branch names, or from what anyone said. Result: Discovery+Notifications (Pawan) and Applying & Selection (Naveenkhan) are not unfinished, they are substantially complete and simply unmerged (`develop` had only the scaffold stub for both); Gig Posting's backend was already merged, and Lahiru's unmerged branch turned out to be almost entirely finished mobile screens. This reframed Sprint 3 from "build the core loop" to "merge and finish it" — a materially easier problem, and the plan changed because of what the check found, not despite it.
+
+**The team will not close every remaining card, and said so rather than padding the backlog.** Of thirteen epics, one (Account) is solid, one (Gig Posting) is partial, two (Discovery+Notifications, Applying & Selection) have real code stuck unmerged, and eight have no code at all — Engagement Lifecycle, Ratings & Reputation, Profile & Trust Signals (beyond Account), Community Endorsement, Disputes & Reporting, Moderator Functions, Admin Functions, Dashboard Infrastructure. With the deadline at 8am on 4 October, spreading effort across all thirteen was rejected in favour of finishing what's closest to working. This is a deliberate scope cut, not a discovered shortfall — see `module-ownership.md`'s Sprint 3 and Sprint 4 sections for exactly what's in and what's explicitly left for a later release.
+
+**Sprint 4 extends the loop rather than only polishing.** `Engagement` and `Rating` are already fully modelled in the schema, so completing the loop through to a rated engagement (a deliberately limited six-story subset of Engagement Lifecycle, plus all of Ratings & Reputation) was chosen over touching more epics thinly. The remaining eight Engagement stories (cancellation flows, re-confirmation, stalled handling) stay in the backlog on purpose.
+
+**Scrum roles for Sprint 3–4: Lahiru (Scrum Master), Pawan (Product Owner)** — the two who had not yet held either role in Sprint 1–2 (Afham SM, Naveenkhan PO). Recorded in `workflow/team.json`'s `sprintRoles`. Module ownership is unaffected by Scrum role — who codes what stays as in the Owners table; SM/PO is a ceremony/backlog-facilitation role layered on top, not a substitute developer assignment.
+
+## Sprint 4 role rotation — kept, not completed (2026-10-01)
+
+**Flagged 2026-09-27, decided 2026-10-01.** The assignment requires every student to experience both Scrum Master and Product Owner at least once. With Sprint 3 closed and Sprint 4 starting, this was the last sprint where roles could still rotate. Two pairings would have completed the requirement for two of the four members — swapping to Lahiru (Product Owner) / Pawan (Scrum Master), which would have completed both roles for each of them since they held the opposite role in Sprint 3, or to Naveenkhan (Scrum Master) / Afham (Product Owner), which would have done the same for that pair since they held the opposite role in Sprint 1–2. The team chose instead to **keep the Sprint 3 pairing unchanged — Lahiru (Scrum Master), Pawan (Product Owner)** for Sprint 4.
+
+**Recorded honestly: this means Afham (Scrum Master only, Sprint 1–2) and Naveenkhan (Product Owner only, Sprint 1–2) will not hold the other Scrum role at any point in this assignment.** This is a known gap against Component 2's "Role Rotation & Collaboration" rubric criterion (15% weight), not an oversight — it was raised explicitly before the decision was made. Worth having a ready, honest explanation for the presentation and at viva rather than letting it surface unexplained.
+
+## Sprint 4 allocation — 6 points each, visible in the app (2026-10-01)
+
+**Sprint 3 closed with every card complete and UI conformance done for all four members**, so no one could be left without Sprint 4 work, and Sprint 4 is only three days (1–3 October) before the 8am 4 October deadline. The allocation was planned twice the same day. The first pass gave each member 12 points; it was cut to **6 points each (24 in total)** as too high for three days, given Sprint 1 delivered 8 points for the whole team. Constraints: equal points for every member, every card something that shows up on screen rather than a backend-only change, and every card inside its owner's existing module so the git hooks need no `team.json` changes. The table is in `module-ownership.md`'s Sprint 4 section.
+
+**What went back to the backlog, and why.** Engagement: YL-62/63 (check-in checkpoints) and YL-64 (needs a Disputes pipeline that doesn't exist) and YL-65 (verification-only). Ratings: YL-70/71, refinements of the core flow. Notifications: YL-157/161. Posting: YL-98 and YL-100. Account: YL-91, YL-82 and YL-90. The demo loop becomes engagements list, then End Engagement, then rating and reveal; Ratings is built against seeded data rather than waiting for Engagement, the same approach used for YL-174/175. **A known consequence:** YL-100 (posting expiry) is out, so the "a posting that stops accepting applications resolves its applicants" invariant is only partly true at the demo. YL-66's "something went wrong" route opens a dispute, which has no pipeline behind it, so that route is a marked stub.
+
+## Agent protocol: explicit requests are the approval (2026-10-01)
+
+**Two rules were stricter in practice than intended.** The intent was that the agent doesn't run commands like `git commit` or `git merge` on its own initiative, not that it refuses when the developer explicitly asks. `AGENTS.md` item 4 (and its copies), `docs/workflow/agent-protocol.md` §6, and related wording now say: don't run state-changing commands unprompted, but run them when the developer explicitly asks. The refusals in protocol §8.1 (commits or pushes to `develop`/`main`, force-push, `--no-verify`, and the rest) still apply whatever is asked.
+
+**A Jira card may be moved to Done before its code is merged, on the developer's explicit request** (protocol §4.3). The request waives only Definition of Done clause 2 (the merge). Every other clause must still hold, and the card is recorded as "Done in Jira, not yet merged" so the merge still happens. `CONTRIBUTING.md`'s Definition of Done clauses themselves are unchanged.
+
+## Account deleted screen has no header bar; unbuilt Settings rows say so (2026-10-02)
+
+**Figma 1.17d draws the `Delete account` header bar above "Account deleted". The app does not.** The header is navigation chrome, and this screen is a dead end: the account no longer exists, the hardware back is swallowed, and the only way out is the "Back to the start" button. The bar's title also repeats what "Account deleted" says directly below it. Everything else in 1.17d (content padding, title, body, ctaBar) is built as drawn, with the status-bar inset added to the top padding. The Figma file was not changed. Decided with Afham after the first device run; the reasoning is also in the header comment of `AccountDeleteAccountScreen.js`.
+
+**A Settings or Profile row whose screen is not in the build shows a short message instead of doing nothing.** "This isn't available in this version of the app yet." appears for 2.5 seconds (`components/Toast.js`, built from tokens; not drawn in Figma). The rows themselves stay, so the screens show the full drawn layout. A silent tap reads as a bug during a demo; hiding the rows would make the screens differ from the prototype.
+
+## Found while running the Account module end to end (2026-10-02)
+
+**The recovery device id is issued by the server, not generated by the app.** `FR-ACC-10`'s account recovery binds the outcome to the device that asked, using an unguessable identifier. The app first generated it with the platform's secure random source, which the development build did not provide, so no request could be submitted at all. The server now generates it (32 random bytes) when the request is received and returns it; the app keeps it in secure storage. The response is the same whether or not the details matched an account, so it still reveals nothing. A client-side fallback to a weaker random source was refused: a predictable id would let anyone read an outcome and set a new password once an Admin approves.
+
+**`check-availability` is limited to 30 calls a minute per address.** The registration form needs the answer while it is filled in (`FR-ACC-05`), but unthrottled it lets anyone list registered phone numbers and emails in bulk. The limit is in process memory like the other account limiters (the API runs as one instance).
+
+**An employer's "engagements completed" counts ended engagements too.** An engagement that ends (a part-time arrangement running its course) opens rating exactly like a completed one (`FR-ENG-12`), so excluding it made the count disagree with the ratings shown beside it. The line is singular for one ("1 engagement completed").
+
+**First run is shown once.** The splash and three cards (`M0`) appear on the first launch only; the app remembers that they were seen in secure storage and every later signed-out launch opens at role selection (`1.1`), as `M0` says.
+
+**Built after Sprint 4 for the demo, in addition to the Sprint 4 cards:** account deletion (YL-91), email change (YL-88), NIC correction (YL-87), employer posting-as at signup (YL-82) and its later change (YL-90), the user side of account recovery (YL-176, with a developer script standing in for the Admin screen) and the own-profile screen (YL-72, YL-73, YL-74). Reset by email from Change password (`1.11r1`–`1.11r4`) is carried by YL-85 as an amendment rather than a new card. The Account list above under "left in the backlog" is superseded by this.
+
+## Launch splash on every launch; the Android system splash is styled, not removed (2026-10-02)
+
+**The branded splash (`M0` `0.1`) is shown every time the app opens, not only on first run.** `M0` said the four first-run screens appear once, but the first device runs showed that on later launches the person saw only a split second of blue before role selection or the home shell, which read as a glitch. The splash now appears on every launch for at least two seconds (while the fonts load and the saved session is read; a tap moves on once the app is ready). The three onboarding cards are still shown once.
+
+**The Android system splash cannot be switched off, so it is made to match instead.** From Android 12 the system always draws its own splash (the launcher icon on the window background, white by default) before any app code runs; an app cannot opt out. It is configured to the brand blue with the mark at the same size, dead centre, and held until the app's own splash has drawn its first frame, so the handoff looks like one screen: the mark stays still and the wordmark and tagline appear under it. This needs `expo-splash-screen` (a new dependency) and a new development build.
+
+**The app icon is the brand mark.** Launcher icon, adaptive icon (white mark on the brand blue), monochrome icon and favicon are drawn from the same `Brand/Mark` vector as the in-app mark.
+
+## Where a signed-out launch begins (2026-10-02)
+
+**The first device runs showed a person who signed out and reopened the app landing on role selection, as if they had no account.** A signed-out launch now depends on what the device remembers (kept in secure storage, `auth/launchState.js`):
+
+| Onboarding seen | Someone signed in here | A signed-out launch opens at |
+| --- | --- | --- |
+| no | no | the three onboarding cards, then role selection (`1.1`) |
+| yes | no | role selection (`1.1`): nobody has signed in on this device, or their account was deleted |
+| any | yes | **Log in (`1.6`) with the last number filled in**, whether they signed out themselves or the app ended their session |
+
+A signed-in launch never reads this: the saved session opens the home shell, and a session the server has since ended is caught on the first request and sent to Log in with the notice. Signing in marks the onboarding as seen, because someone with an account has no use for the cards. **Deleting an account forgets the remembered number**, so the next launch starts at role selection, not at a Log in for an account that no longer exists. The splash is shown on every launch before any of this (see the entry above).
+
+## Delete account: the password step's button is pinned (2026-10-03)
+
+**Figma 1.17p draws "Delete my account" at the foot of the content, under a flexible spacer. The app pins it in a bottom action bar, like the other password and form screens.** With the keyboard open, the content-bound button ended 51 dp to 180 dp above the keyboard depending on the device, while every pinned bar in the app sits 24 dp above it. The inconsistency was visible on the test devices, so consistency won over the drawn position. Only this step changes: the first step (1.17, 1.17b and variants) has no keyboard and stays as drawn, and the account-deleted screen (1.17d) keeps its own deviation recorded above. Figma is unchanged.
+
+
+## The tab bar is wired once, in `ShellTabBar`; an employer opens on My postings (2026-10-03)
+
+**Each role's bottom tab bar navigates through one shared component, `mobile/src/components/ShellTabBar.js`, instead of every screen writing its own `onTabPress`.** A screen that sits on a tab (My postings, the Post a Gig form's first step, Profile) draws `<ShellTabBar active="…" />` as its last child. A tab whose module has registered a screen opens it; any other tab opens the Home shell on that tab with the prototype's own shell copy, until its module lands. The map from tab to route is the one object `ROUTE_BY_TAB`, so a module makes its hub reachable with one line and never edits `HomeScreen.js` or the navigator. A route that no module registered in the build is never navigated to.
+
+**Home forwards an employer to My postings with `replace`.** My postings and the Post a Gig form draw `ShellTabBar`, so the employer lands on a screen with a working tab bar (Profile, Settings, Sign out), and Back leaves the app instead of returning to a placeholder. An earlier version forwarded before those screens drew the bar and left a dead end; it was withdrawn on 2026-10-03 and restored once they did. A tab bar elsewhere that opens the shell with a `tab` param other than `postings` is not forwarded. Forwarding applies only while `PostingList` is registered.

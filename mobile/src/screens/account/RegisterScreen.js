@@ -16,9 +16,10 @@
  * needed thanks to the native module) lives in
  * ./hooks/usePhoneVerification.js, shared with LoginScreen.js's OTP mode.
  */
-import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { View, Text, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import useFocusScroll from "../../hooks/useFocusScroll";
 import { StatusBar } from "expo-status-bar";
 import { register } from "../../api/account";
 import { parseApiError } from "../../api/client";
@@ -71,6 +72,9 @@ export default function RegisterScreen({ navigation }) {
   const [tosAccepted, setTosAccepted] = useState(false);
   const [tosError, setTosError] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  // Step 4 scrolls the focused field to a fixed place under the top (see useFocusScroll).
+  const detailsScroll = useRef(null);
+  const { field, scrollProps } = useFocusScroll(detailsScroll);
   const [formError, setFormError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [registeredUser, setRegisteredUser] = useState(null);
@@ -291,7 +295,104 @@ export default function RegisterScreen({ navigation }) {
       </Link>
 
       <StatusBar style="dark" />
-    </KeyboardAwareScrollView>
+      <ScrollView
+        ref={detailsScroll}
+        {...scrollProps}
+        style={styles.scroll}
+        contentContainerStyle={[styles.content, styles.contentDetails]}
+        keyboardShouldPersistTaps="handled"
+      >
+        {topBar({ tight: true })}
+        {heading()}
+
+        {formError ? <FormBanner kind="error" message={formError} /> : null}
+
+        <TextField
+          label="Password"
+          {...field("password")}
+          value={password}
+          onChangeText={(value) => edit("password", setPassword, value)}
+          placeholder="••••••••••"
+          secureTextEntry
+          maxLength={64}
+          error={Boolean(fieldErrors.password)}
+        />
+        <FieldError message={fieldErrors.password} />
+        <TextField
+          label="Confirm password"
+          {...field("confirmPassword")}
+          value={confirmPassword}
+          onChangeText={(value) => edit("confirmPassword", setConfirmPassword, value)}
+          placeholder="••••••••••"
+          secureTextEntry
+          maxLength={64}
+          error={Boolean(fieldErrors.confirmPassword)}
+        />
+        <FieldError message={fieldErrors.confirmPassword} />
+        <Text style={styles.fieldHelp}>8–64 characters, spaces allowed.</Text>
+
+        <TextField
+          label="Email (optional)"
+          {...field("email")}
+          value={email}
+          onChangeText={(value) => edit("email", setEmail, value)}
+          onBlur={handleEmailBlur}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          error={Boolean(fieldErrors.email)}
+        />
+        <FieldError message={fieldErrors.email} />
+
+        <TextField
+          label="NIC"
+          {...field("nic")}
+          value={nic}
+          onChangeText={(value) => edit("nic", setNic, value)}
+          placeholder="Enter your NIC"
+          autoCapitalize="characters"
+          maxLength={12}
+          error={Boolean(fieldErrors.nic)}
+        />
+        <FieldError message={fieldErrors.nic} />
+        <Text style={styles.nicHelp}>12 digits, or 9 digits + V or X — only the shape is checked.</Text>
+
+        <DateTimeField
+          label="Birthdate"
+          {...field("birthdate")}
+          value={birthdate}
+          onChangeText={(value) => edit("birthdate", setBirthdate, value)}
+          error={Boolean(fieldErrors.birthdate)}
+        />
+        <FieldError message={fieldErrors.birthdate} />
+
+        <TextField
+          label="Legal name"
+          {...field("legalName")}
+          value={legalName}
+          onChangeText={(value) => edit("legalName", setLegalName, value)}
+          autoCapitalize="words"
+          maxLength={LEGAL_NAME_CAP}
+          showCounter
+          error={Boolean(fieldErrors.legalName)}
+        />
+        <FieldError message={fieldErrors.legalName} />
+
+        <Checkbox
+          checked={tosAccepted}
+          onToggle={() => {
+            setTosAccepted((prev) => !prev);
+            setFieldErrors((prev) => ({ ...prev, tosAccepted: undefined }));
+          }}
+          label={termsLabel}
+          errorMessage={fieldErrors.tosAccepted}
+        />
+
+        <View style={styles.spacerTight} />
+      </ScrollView>
+      <CtaBar shadow>
+        <Button title="Create account" onPress={handleSubmit} loading={submitting} />
+      </CtaBar>
+    </View>
   );
 }
 
@@ -312,11 +413,13 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.xxl,
   },
-  title: {
-    fontSize: typography.title.fontSize,
-    fontWeight: typography.title.fontWeight,
-    color: colors.textPrimary,
-    marginBottom: spacing.lg,
+  // 1.4 draws its content tighter: pad 6/16/0/16, gap 8.
+  contentDetails: {
+    // The prototype ends the content flush (0), which is right with the keyboard closed. The extra
+    // slack is invisible then, but lets the scroll lift the focused last field and its counter
+    // clear of the pinned bar when the keyboard is open (the field was ending flush with the bar).
+    paddingBottom: 160,
+    gap: spacing.sm,
   },
   stepBody: {
     fontSize: typography.body.fontSize,

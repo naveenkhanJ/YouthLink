@@ -78,10 +78,10 @@ describe('FR-POST-08: Location precision and release logic', () => {
       expect(sanitized).toBeDefined();
       expect(sanitized.locationAddress).toBeNull();
       expect(sanitized.isPreciseLocationReleased).toBe(false);
-      // Coarse suburb-level label and coordinates remain intact for map rendering
+      // Coarse suburb-level label stays; coordinates are rounded to 2 decimals (~1 km)
       expect(sanitized.locationAreaLabel).toBe('Kollupitiya, Colombo 03');
-      expect(sanitized.locationLat).toBe(6.9012);
-      expect(sanitized.locationLng).toBe(79.8541);
+      expect(sanitized.locationLat).toBe(6.9);
+      expect(sanitized.locationLng).toBe(79.85);
       // Ensure other fields are preserved
       expect(sanitized.title).toBe('Weekend Retail Assistant');
     });
@@ -93,6 +93,9 @@ describe('FR-POST-08: Location precision and release logic', () => {
       expect(sanitized.locationAddress).toBe('No. 45, Duplication Road, Colombo 03');
       expect(sanitized.isPreciseLocationReleased).toBe(true);
       expect(sanitized.locationAreaLabel).toBe('Kollupitiya, Colombo 03');
+      // The selected worker gets the exact pin, not the rounded one
+      expect(sanitized.locationLat).toBe(6.9012);
+      expect(sanitized.locationLng).toBe(79.8541);
     });
 
     test('reveals precise address and sets isPreciseLocationReleased=true for the employer', () => {
@@ -101,6 +104,9 @@ describe('FR-POST-08: Location precision and release logic', () => {
       expect(sanitized).toBeDefined();
       expect(sanitized.locationAddress).toBe('No. 45, Duplication Road, Colombo 03');
       expect(sanitized.isPreciseLocationReleased).toBe(true);
+      // The owner keeps the exact pin
+      expect(sanitized.locationLat).toBe(6.9012);
+      expect(sanitized.locationLng).toBe(79.8541);
     });
 
     test('returns null if posting is null', () => {

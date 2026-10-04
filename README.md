@@ -175,7 +175,17 @@ npx expo install @react-navigation/native @react-navigation/native-stack react-n
 
 ### Running the mobile app
 
-**Android only for Sprints 1–2** (see `AGENTS.md`) — Options A and B below are the actual current choices. A development build is required either way; neither requires anyone else's pre-built APK, each produces your own.
+**Android only for now** (see `AGENTS.md`). A development build is required.
+
+> **Phone verification needs an emulator image with Google Play** (the "Google Play" or Play Store images in Android Studio's device manager). On a "Google APIs" image without Play, Firebase falls back to a reCAPTCHA page in the browser, which hangs on a software-rendered emulator and ends with "missing initial state", so registration, code login and phone change cannot complete there. A physical phone works too. The shared build below is the quickest route; Options A and B compile your own.
+
+**Shared development build — no native compile.** A development build contains only the native code; your JavaScript still loads from Metro on your own computer. So one build, made once and shared, runs everyone's code:
+
+1. Get the current APK from Afham (team chat) and install it — on an Android phone (allow installing from this source when asked), or by dragging it onto a running emulator.
+2. In `mobile/`: `npm install`, then copy `.env.example` to `.env` and set `EXPO_PUBLIC_API_URL` to where your backend runs — `http://10.0.2.2:3000` from an emulator, `http://<your computer's LAN IP>:3000` from a phone on the same Wi-Fi.
+3. Start the backend (above), then `npx expo start --dev-client` in `mobile/`, and open the installed app; it connects to Metro.
+
+You don't need Android Studio, the NDK, or the Firebase config files for this route — they are already inside the APK. **A new APK is needed only when a native dependency changes**, and Afham sends one then. If the app reports a missing native module, you have an older APK.
 
 **Option A — Android emulator (no Android device needed, free, no subscription).**
 

@@ -5,6 +5,7 @@ src/
   api/         One file per backend module, plus client.js
   components/  Shared UI used by more than one screen
   config/      API base URL — Firebase has no JS-side config here, see below
+  hooks/       Shared hooks used by more than one module (e.g. useFocusScroll)
   navigation/  RootNavigator — you should never need to edit it
   screens/     One folder per module. Your screens live here
   utils/       Small helpers
