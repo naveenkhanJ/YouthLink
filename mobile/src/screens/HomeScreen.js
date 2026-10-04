@@ -19,7 +19,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
-import { routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
+import { isRouteRegistered, routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
 import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
@@ -89,6 +89,18 @@ function SignedInShell({ user, navigation, route }) {
     if (requestedTab) setActiveTab(requestedTab);
   }, [requestedTab]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
+
+  // An employer's first tab is My postings. When that screen is registered, replace Home with it so Back
+  // leaves the app instead of landing on a placeholder. A tab bar elsewhere opens this shell with
+  // { tab } set, which is not forwarded. My postings and Post a Gig draw ShellTabBar, so this is no dead end.
+  const forwardToPostings =
+    tabBarRole === "employer" &&
+    (requestedTab === undefined || requestedTab === "postings") &&
+    isRouteRegistered(navigation, "PostingList");
+  useEffect(() => {
+    if (forwardToPostings && navigation.isFocused()) navigation.replace("PostingList");
+  }, [forwardToPostings, navigation]);
+  if (forwardToPostings) return <View style={styles.flex} />; // blank while the replace happens
 
   return (
     <View style={styles.flex}>
