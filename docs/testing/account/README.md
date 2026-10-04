@@ -184,6 +184,7 @@ Only after the backend's dependencies change does `npm ci` (and then `npx prisma
 | 4 October 2026 | Cloud development container, Linux, Node 22, PostgreSQL 18 (`embedded-postgres`), branch before PR #63 | 232 of 232, three runs; database tests about 50 s |
 | 4 October 2026 | The developer's Windows machine, Node 24.13.0, npm 11.6.2, PostgreSQL 18.6, `develop` at `f91cc27` (PR #63 merged); run by the tester agent with the manual `TEST_DATABASE_URL` steps that `npm run test:db` replaces | unit run 198 passed and 34 skipped; database runs 232 of 232 twice (40 s and 36 s); the development database's row counts identical before and after |
 | 4 October 2026 | Cloud development container, after adding `npm run test:db` | it created `youthlink_test` on the first run; 232 of 232 on both runs; a wrong password, a remote host and a name without "test" each stopped with a plain message |
+| 4 October 2026 | The developer's Windows machine (Node 24.13.0, PostgreSQL 18.6, as recorded in the run above), branch `feature/account-management-afham` at `803d83d`, run by the developer with `npm run test:db` and no other setup | 18 of 18 suites, 232 of 232 tests, 55.6 s |
 
 **Checking that it can fail.** As with the unit tests, two rules that only a real database can show were broken on purpose:
 
