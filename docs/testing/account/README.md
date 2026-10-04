@@ -115,3 +115,42 @@ These are stated in the reports and are worth saying plainly:
 - **One tester, one machine.** The level recorded in the pull requests is "self" in `CONTRIBUTING.md`'s terms, not "integration".
 - **Evidence kept outside the repository.** The screenshots, screen recordings, UI dumps and logs named in the reports are on the developer's machine, not in this repository; the reports quote the measured values.
 - **Manual, not automated.** Rerunning a round means following its prompt again on an emulator.
+
+## 6. Automated unit tests (added 4 October 2026)
+
+After the module was closed, the business rules the rounds exercised by hand were also written down as automated Jest tests, so they can be rerun in seconds and show exactly which rule each one checks. They were written after the end-to-end rounds, not during development.
+
+They are **unit tests**: each one runs one piece of the backend with the database, Firebase and the environment configuration replaced by stand-ins, so they need no database, no `.env` and no network. Run them from `backend/`:
+
+```bash
+npm ci
+npx prisma generate
+npm test
+```
+
+| File | What it checks |
+| --- | --- |
+| `backend/src/modules/account/test/account.nicCrypto.test.js` | NIC encryption is deterministic (the condition FR-ACC-05's unique index depends on), case and spaces do not create a second NIC, the stored value is ciphertext, tampered or malformed values are refused, last four |
+| `backend/src/modules/account/test/account.passwordHash.test.js` | bcrypt at cost 12, salted, spaces kept, right and wrong passwords |
+| `backend/src/modules/account/test/account.attemptLimiter.test.js` | The in-memory limits: block after the allowed attempts, release at the end of the window, clear, independent keys |
+| `backend/src/modules/account/test/account.session.test.js` | Tokens (30 days, forged and expired refused), what counts as suspended, and `requireAuth`: missing or bad token, deleted account, suspension on the next request, tokens older than a password change refused, a password lockout does not end open sessions |
+| `backend/src/modules/account/test/account.register.test.js` | Registration: every field check and its boundaries (password 8 to 64, NIC shapes, name 100, email), 18 and over from the birthdate, terms, the phone taken only from a verified Firebase token, duplicate phone, NIC and email, what is stored (NIC encrypted, email lower-cased, password hashed), the confirmation link stored as a hash, signed in afterwards |
+| `backend/src/modules/account/test/account.login.test.js` | Password login: same message for a wrong password and an unknown number, the remaining-attempts warning only at 2 and 1 left, the pause on the 5th (423, 15 minutes), the right password refused while paused, a fresh count after the pause, the row lock; suspension messages on both paths; code login works during a lockout and lifts it |
+| `backend/src/modules/account/test/account.reset.test.js` | Reset channels (masked email, unknown number answered like a number with no email), reset requests by SMS and email (codes and links, link stored as a hash, 15-minute expiry, 3 requests per 15 minutes, no enumeration), the server's own codes (6 digits, 5 minutes, supersede, Firebase-only purposes refused, single use), HTML escaping of the reset pages |
+| `backend/src/modules/profile/test/profile.ownProfile.test.js` | Completion rate with the prototype's own example (1.18n 92% to 1.18nc 80% after a late cancellation weighted 2.0), star average over revealed ratings only, Phone verified and nothing about the NIC, business name for a Business employer, endorsements, employer and verifier counts |
+
+**Checking that the tests can fail.** A test that passes whatever the code does proves nothing, so each of these rules was broken on purpose, one at a time, and the matching suite was run; every change was caught, and the code was then restored:
+
+| Deliberate break | Suite that caught it |
+| --- | --- |
+| NIC encrypted with a random IV (duplicates would pass the unique index) | `account.nicCrypto` (3 failures) |
+| NIC no longer upper-cased before encrypting | `account.nicCrypto`, `account.register` (5 failures) |
+| Tokens older than a password change accepted | `account.session` (1) |
+| `requireAuth` ends sessions while the password path is paused | `account.session` (1) |
+| Lockout after 6 wrong passwords instead of 5 | `account.login` (2) |
+| Remaining-attempts warning from 4 left instead of 2 | `account.login` (3) |
+| Minimum age 17 instead of 18 | `account.register` (1) |
+| Reset channels return the full email address | `account.reset` (2) |
+| A late cancellation counted as a completion | `profile.ownProfile` (1) |
+
+**What the unit tests do not show.** Anything that depends on the real database: the partial unique indexes refusing a duplicate, the row lock under concurrent requests, single use of codes and links, the anonymising delete. Nor do they show anything about the app's screens, which only the end-to-end rounds above cover.
