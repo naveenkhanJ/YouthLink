@@ -10,6 +10,7 @@ The repository's position is that automated test coverage is out of scope at thi
 | --- | --- |
 | [`tester-prompts.md`](tester-prompts.md) | The six instructions given to the tester, verbatim, one per round |
 | [`e2e-reports/`](e2e-reports/) | The six reports the tester returned, unchanged except for line endings |
+| [`traceability.md`](traceability.md) | Every acceptance criterion of FR-ACC-01 to FR-ACC-19 and the three FR-PROF requirements, and the end-to-end item and automated test that covers it, with the gaps |
 
 ## 1. What kind of testing this was
 
