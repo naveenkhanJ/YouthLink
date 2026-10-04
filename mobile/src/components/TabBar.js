@@ -30,7 +30,7 @@
  * active rendered with square corners on Android — overflow:"hidden" forces
  * the clip; borderRadius alone was not enough).
  */
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import { View, Pressable, Text, StyleSheet, useWindowDimensions } from "react-native";
 import Svg, { Path, Circle, Line, G } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, radius, typography, elevation } from "../theme/tokens";
@@ -333,6 +333,11 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
   // view is the only way the 64dp band's own internal spacing stays
   // exactly what the design specifies regardless of the device's inset.
   const insets = useSafeAreaInsets();
+  // True when the person has raised the system text size. Only then do the labels get the
+  // shrink-to-fit treatment below; at normal size they are drawn exactly as the design has them
+  // (Android's shrink-to-fit also trims text that already fits, by a few per cent).
+  const { fontScale } = useWindowDimensions();
+  const largeText = fontScale > 1;
 
   return (
     <View style={styles.wrapper}>
@@ -355,7 +360,16 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
                   <View style={styles.badge} />
                 )}
               </View>
-              <Text style={[styles.label, { color }]} numberOfLines={1} maxFontSizeMultiplier={1.1}>
+              <Text
+                style={[styles.label, largeText && styles.labelLargeText, { color }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={1.1}
+                // At large text sizes the longest labels ("Engagements", "Notifications") fill their
+                // whole tab and nearly touch their neighbours. They keep a few dp of padding and
+                // shrink, down to 80%, to stay inside it, so a gap is always left between two labels.
+                adjustsFontSizeToFit={largeText}
+                minimumFontScale={0.8}
+              >
                 {tab.label}
               </Text>
             </Pressable>
@@ -405,6 +419,10 @@ const styles = StyleSheet.create({
     ...typography.tabLabel,
     width: "100%",
     textAlign: "center",
+  },
+  // Room kept free on each side so neighbouring labels never meet (see adjustsFontSizeToFit above).
+  labelLargeText: {
+    paddingHorizontal: 3,
   },
   badge: {
     // Figma `urgentDot`: 6x6 at (38, 4) inside the 56x30 pill.
