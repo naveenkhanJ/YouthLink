@@ -154,3 +154,49 @@ npm test
 | A late cancellation counted as a completion | `profile.ownProfile` (1) |
 
 **What the unit tests do not show.** Anything that depends on the real database: the partial unique indexes refusing a duplicate, the row lock under concurrent requests, single use of codes and links, the anonymising delete. Nor do they show anything about the app's screens, which only the end-to-end rounds above cover.
+
+## 7. Automated API tests against a real database (added 4 October 2026)
+
+`backend/src/modules/account/test/account.api.integration.test.js` runs the real Express app over HTTP against a real PostgreSQL database: 34 tests across registration, login and the lockout, password change, password reset by SMS and by email, account recovery, the Settings screens, the own profile, deletion and a set of security checks.
+
+**One thing is replaced: Firebase's token check.** A genuine Firebase ID token can only be produced by a phone completing an SMS check, which no test can do on its own. The suite replaces `firebaseAuth.js` with a stand-in that accepts tokens like `test-verified:+94770000091` and returns that number, the same thing the real check returns after Firebase has verified the phone. Everything the server does with the verified number runs for real. The real token check was exercised in the end-to-end rounds, with Firebase's test phone numbers.
+
+**Running it.** It needs a separate, disposable database: before the tests it applies the migrations and runs the seed, and the seed empties every table. From `backend/`, after `npm ci` and `npx prisma generate`:
+
+```bash
+# once: create the test database (psql, or pgAdmin)
+psql -U postgres -c "CREATE DATABASE youthlink_test;"
+
+# then, on macOS / Linux / Git Bash
+TEST_DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/youthlink_test" npm test
+
+# or in Windows PowerShell
+$env:TEST_DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/youthlink_test"; npm test
+```
+
+Without `TEST_DATABASE_URL`, `npm test` skips this suite and runs only the unit tests, so nobody needs a database to run `npm test`. The suite refuses to start unless the database is on this machine and its name contains "test", so it cannot wipe the development database by mistake. It sets its own keys and secrets for the run; it does not read or need `backend/.env`.
+
+**Last run.** 34 of 34 passed, twice in a row, on 4 October 2026, in the cloud development container against PostgreSQL 18 (the `embedded-postgres` package); about 50 seconds per run. It has not yet been run on the developer's own machine.
+
+**Checking that it can fail.** As with the unit tests, two rules that only a real database can show were broken on purpose:
+
+| Deliberate break | Result |
+| --- | --- |
+| `SELECT ... FOR UPDATE` removed from the password login's transaction | "a login decides under a row lock" failed: the login no longer waited for the locked row |
+| Deletion no longer overwrites the birthdate | the deletion test failed |
+
+One test did **not** catch the missing row lock: ten wrong passwords sent at the same moment still ended in a lockout without it, because bcrypt spreads the requests out enough that they rarely overlap. That test is kept as a behaviour check and says so in its comment; the row-lock test above is the one that proves the lock.
+
+**Coverage by area** (each test names its requirement in its title):
+
+| Area | What is checked against the database |
+| --- | --- |
+| Registration | ACTIVE account, signed in, NIC stored only as ciphertext, bcrypt hash, email lower-cased; signup email link confirms once and is then dead; duplicate phone, NIC (including a lower-case `v`) and verified email refused; the partial unique index refuses a duplicate NIC even when the service is bypassed; under 18 and an unverified phone leave no row |
+| Login | no secret in the answer; same message for a wrong password and an unknown number; 5 wrong passwords pause the path for 15 minutes, a session opened before keeps working, code login lifts the pause; a login waits on the row lock; suspension ends an open session on its next request and both login paths name the other |
+| Password change | wrong current password is a field error, not a sign-out; success keeps this device and ends every other session; 6 wrong attempts are limited |
+| Password reset | SMS code single use, wrong code refused, 5 wrong codes then 429 even for the right one, reset token single use, old sessions ended; email channel masked, link stored only as a hash, form shown once then "Link no longer valid" |
+| Recovery | pending, approved (as `review-recovery.js approve` does), only the requesting device can see or use it, once; rejected; unmatched details look the same; a guessable device id refused |
+| Settings | display name 100 characters and shown on the profile; NIC change needs the password and refuses another person's NIC; email change waits for its link, old address kept until then, cancel kills the link, an address on another account refused; posting as Business needs a name, Individual clears it, workers refused; phone change needs the password and a verified new number, old number stops working |
+| Own profile | rating average, count and completion rate compared with values computed by SQL straight from the tables; employer and verifier counts compared with the tables; no NIC field |
+| Deletion | blocked by an active engagement; wrong password refused; the person anonymised (phone, email, NIC, name, birthdate, password) while their ratings and engagements stay; the old token rejected; the same phone and NIC can register again |
+| Security | every signed-in route answers 401 without a token; availability check limited to 30 a minute; no response in the whole run contained a password hash or an encrypted NIC |
