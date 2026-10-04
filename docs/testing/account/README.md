@@ -11,6 +11,7 @@ The repository's position is that automated test coverage is out of scope at thi
 | [`tester-prompts.md`](tester-prompts.md) | The six instructions given to the tester, verbatim, one per round |
 | [`e2e-reports/`](e2e-reports/) | The six reports the tester returned, unchanged except for line endings |
 | [`traceability.md`](traceability.md) | Every acceptance criterion of FR-ACC-01 to FR-ACC-19 and the three FR-PROF requirements, and the end-to-end item and automated test that covers it, with the gaps |
+| [`manual-test-checklist.md`](manual-test-checklist.md) | A repeatable checklist for running the module on an emulator or phone, combining the six rounds, with the expected results the last rounds confirmed |
 
 ## 1. What kind of testing this was
 
@@ -115,7 +116,7 @@ These are stated in the reports and are worth saying plainly:
 - **Android only.** The app is Android-only at this stage; iOS was not tested.
 - **One tester, one machine.** The level recorded in the pull requests is "self" in `CONTRIBUTING.md`'s terms, not "integration".
 - **Evidence kept outside the repository.** The screenshots, screen recordings, UI dumps and logs named in the reports are on the developer's machine, not in this repository; the reports quote the measured values.
-- **Manual, not automated.** Rerunning a round means following its prompt again on an emulator.
+- **Manual, not automated.** Rerunning the end-to-end checks means following [`manual-test-checklist.md`](manual-test-checklist.md) (or a round's prompt) on an emulator.
 
 ## 6. Automated unit tests (added 4 October 2026)
 
