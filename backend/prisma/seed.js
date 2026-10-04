@@ -157,6 +157,20 @@ async function main() {
     },
   });
 
+  // A third employer, whose posting is hidden pending review (section 4): the owner's view of
+  // FR-DISPUTE-02's auto-hide (prototype 2.10g, 2.11g).
+  const employer3 = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "EMPLOYER",
+      phone: "+94770000007",
+      ...nic("198512345678"),
+      legalName: "R. Gunasekara",
+      birthdate: new Date("1985-07-10"),
+      postingAsType: "INDIVIDUAL",
+    },
+  });
+
   await prisma.adminAccount.create({
     data: { phone: "+94770000004", passwordHash, role: "ADMIN" },
   });
@@ -189,6 +203,7 @@ async function main() {
       workersNeeded: 2,
       filledCount: 1,
       startAt: at(30 * HOUR),
+      expiresAt: at(30 * HOUR), // FR-POST-13: a Gig expires when it starts
       isUrgent: true,
       status: "OPEN",
     },
@@ -212,6 +227,7 @@ async function main() {
       locationAreaLabel: "Colombo 03",
       workersNeeded: 1,
       startAt: at(5 * DAY),
+      expiresAt: at(30 * DAY), // FR-POST-13: a part-time job expires 30 days after posting
       status: "OPEN",
     },
   });
@@ -483,7 +499,199 @@ async function main() {
   });
 
   // -------------------------------------------------------------------------
-  // 4. Endorsement — the verifier vouching for the first worker.
+  // 4. Posting states for the owner's screens (prototype M2: 2.10w/2.11x, 2.10/2.11ex, 2.11c,
+  //    2.10g/2.11g). Each row is what the real flow leaves behind: withdrawal sets
+  //    status+withdrawnAt (FR-POST-12); expiry flips an Open posting at its start and closes only
+  //    the unfilled slots (FR-POST-13); a material edit after a fill keeps the posting Open and
+  //    creates one PENDING MaterialChangeRequest per engaged worker (FR-POST-11, FR-ENG-09); the
+  //    third independent report sets autoHiddenAt (FR-DISPUTE-02).
+  // -------------------------------------------------------------------------
+  console.log("Creating posting states (withdrawn, expired, hidden, awaiting re-confirmation)...");
+  const gigBase = {
+    arrangementType: "GIG",
+    payKind: "FIXED_TOTAL",
+    ...businessFields,
+    locationAddress: "23 Temple Road, Colombo 04",
+    locationLat: 6.9147,
+    locationLng: 79.8553,
+    locationAreaLabel: "Colombo 04",
+  };
+
+  // WITHDRAWN before anyone applied: 0 of 3, "no one had applied".
+  await prisma.gigPosting.create({
+    data: {
+      ...gigBase,
+      employerId: employer.id,
+      title: "Weekend market stall helpers",
+      description: "Set up and run a market stall on Saturday morning.",
+      category: "RETAIL",
+      payAmount: 4000,
+      workersNeeded: 3,
+      startAt: at(4 * DAY),
+      expiresAt: at(4 * DAY),
+      status: "WITHDRAWN",
+      withdrawnAt: at(-2 * DAY),
+      createdAt: at(-3 * DAY),
+    },
+  });
+
+  // EXPIRED, nobody selected: its start passed three days ago ("0 of 2 filled · Expired").
+  await prisma.gigPosting.create({
+    data: {
+      ...gigBase,
+      employerId: employer.id,
+      title: "Event teardown — Sunday",
+      description: "Take down staging and chairs after a weekend event.",
+      category: "EVENT_SETUP",
+      payAmount: 3500,
+      workersNeeded: 2,
+      startAt: at(-3 * DAY),
+      expiresAt: at(-3 * DAY),
+      status: "EXPIRED",
+      createdAt: at(-6 * DAY),
+    },
+  });
+
+  // EXPIRED with one slot filled: only the unfilled slot closed; the engagement carries on.
+  const stageCrew = await prisma.gigPosting.create({
+    data: {
+      ...gigBase,
+      employerId: employer.id,
+      title: "Stage crew — weekend",
+      description: "Load in and rig the stage for a weekend show.",
+      category: "EVENT_SETUP",
+      payAmount: 4000,
+      workersNeeded: 2,
+      filledCount: 1,
+      startAt: at(-5 * HOUR),
+      expiresAt: at(-5 * HOUR),
+      status: "EXPIRED",
+      createdAt: at(-2 * DAY),
+    },
+  });
+  const appStage = await prisma.application.create({
+    data: {
+      gigPostingId: stageCrew.id,
+      workerId: worker2.id,
+      status: "SELECTED",
+      appliedAt: at(-30 * HOUR),
+      decidedAt: at(-28 * HOUR),
+    },
+  });
+  await prisma.engagement.create({
+    data: {
+      applicationId: appStage.id,
+      gigPostingId: stageCrew.id,
+      workerId: worker2.id,
+      employerId: employer.id,
+      status: "ACTIVE",
+      contactRevealedAt: at(-28 * HOUR),
+      arrivalCode: "ARR321",
+      arrivalStatus: "CONFIRMED",
+      arrivalConfirmedAt: at(-5 * HOUR),
+      completionCode: "CMP654",
+      startedAt: at(-5 * HOUR),
+    },
+  });
+
+  // OPEN, 1 of 3 filled, an edit awaiting the engaged worker's re-confirmation (2.11c): the
+  // start moved from 38 h to 40 h away, so the deadline is the shorter of 48 h and half the time
+  // left. One applicant is still Pending and is told about the change (FR-APPLY-10).
+  const eventCrew = await prisma.gigPosting.create({
+    data: {
+      ...gigBase,
+      employerId: employer.id,
+      title: "Event setup crew (3 needed)",
+      description: "Help set up staging and seating for a weekend event. Gloves provided.",
+      category: "EVENT_SETUP",
+      payAmount: 6000,
+      workersNeeded: 3,
+      filledCount: 1,
+      startAt: at(40 * HOUR),
+      expiresAt: at(40 * HOUR),
+      isUrgent: true,
+      status: "OPEN",
+      createdAt: at(-6 * HOUR),
+    },
+  });
+  const appCrewAmal = await prisma.application.create({
+    data: {
+      gigPostingId: eventCrew.id,
+      workerId: worker.id,
+      status: "SELECTED",
+      appliedAt: at(-5 * HOUR),
+      decidedAt: at(-4 * HOUR),
+    },
+  });
+  await prisma.application.create({
+    data: {
+      gigPostingId: eventCrew.id,
+      workerId: worker2.id,
+      status: "PENDING",
+      note: "Free all weekend.",
+      appliedAt: at(-3 * HOUR),
+    },
+  });
+  const engCrew = await prisma.engagement.create({
+    data: {
+      applicationId: appCrewAmal.id,
+      gigPostingId: eventCrew.id,
+      workerId: worker.id,
+      employerId: employer.id,
+      status: "ACTIVE",
+      contactRevealedAt: at(-4 * HOUR),
+      arrivalCode: "ARR246",
+      completionCode: "CMP135",
+    },
+  });
+  await prisma.materialChangeRequest.create({
+    data: {
+      gigPostingId: eventCrew.id,
+      engagementId: engCrew.id,
+      changeSummary: { startAt: { from: at(38 * HOUR).toISOString(), to: at(40 * HOUR).toISOString() } },
+      proposedAt: at(-1 * HOUR),
+      // shorter of 48 h and half the time left to the new start (41 h): 20.5 h after the proposal
+      deadline: at(19 * HOUR + 30 * MINUTE),
+      status: "PENDING",
+    },
+  });
+
+  // HIDDEN pending review: the third independent report landed a day ago (FR-DISPUTE-02). The owner
+  // sees the status, never a count; everyone else gets "not found".
+  const hiddenPosting = await prisma.gigPosting.create({
+    data: {
+      ...gigBase,
+      employerId: employer3.id,
+      postedAsType: "INDIVIDUAL",
+      postedBusinessName: null,
+      title: "Data entry — work from home",
+      description: "Easy online work, pay is sent after you buy a starter kit.",
+      category: "RETAIL",
+      payAmount: 4500,
+      locationAddress: "5 School Lane, Maharagama",
+      locationLat: 6.8473,
+      locationLng: 79.9266,
+      locationAreaLabel: "Maharagama",
+      workersNeeded: 1,
+      startAt: at(3 * DAY),
+      expiresAt: at(3 * DAY),
+      status: "OPEN",
+      autoHiddenAt: at(-1 * DAY),
+      createdAt: at(-4 * DAY),
+    },
+  });
+  await prisma.report.createMany({
+    data: [worker, worker2, endorser].map((reporter, i) => ({
+      reporterId: reporter.id,
+      targetGigPostingId: hiddenPosting.id,
+      reason: "FRAUD_SCAM",
+      detail: "Asks for money before any work.",
+      createdAt: at(-30 * HOUR + i * HOUR),
+    })),
+  });
+
+  // -------------------------------------------------------------------------
+  // 5. Endorsement — the verifier vouching for the first worker.
   // -------------------------------------------------------------------------
   console.log("Creating endorsements...");
   await prisma.endorsement.create({
@@ -502,6 +710,7 @@ async function main() {
   console.log("Youth Job-Seeker: +94770000005  (Nimali Fernando)");
   console.log("Employer:         +94770000002  (Kamal Silva, Business)");
   console.log("Employer:         +94770000006  (Dilrukshi Herath, Individual)");
+  console.log("Employer:         +94770000007  (R. Gunasekara, Individual; one posting hidden pending review)");
   console.log("Verifier:         +94770000003  (Sunil Teacher, code SNLTCH)");
   console.log("Admin:            +94770000004");
   console.log("\n--- Engagement states seeded ---");
@@ -509,6 +718,12 @@ async function main() {
   console.log("COMPLETED  Amal  / Shop assistant — weekend    (both ratings revealed)");
   console.log("ENDED      Nimali / Grade 8 maths tutoring     (employer rated, hidden; Nimali can still rate)");
   console.log("ENDED      Amal  / Evening cashier             (14 days passed; one rating revealed, submission closed)");
+  console.log("\n--- Posting states seeded (Kamal Silva unless noted) ---");
+  console.log("WITHDRAWN  Weekend market stall helpers   (0 of 3, no applicants)");
+  console.log("EXPIRED    Event teardown — Sunday        (0 of 2, start passed 3 days ago)");
+  console.log("EXPIRED    Stage crew — weekend           (1 of 2; Nimali's engagement carries on)");
+  console.log("OPEN       Event setup crew (3 needed)    (1 of 3; re-confirmation PENDING for Amal; Nimali applied)");
+  console.log("HIDDEN     Data entry — work from home    (R. Gunasekara; 3 reports, autoHiddenAt set)");
 }
 
 main()
