@@ -11,14 +11,15 @@
 // requests, single use of codes and links, sessions ended by a password change, the anonymising
 // delete, and the profile figures checked against the database itself.
 //
-// HOW TO RUN (from backend/). It needs its own, disposable database: the suite applies the
-// migrations and runs the seed, which EMPTIES every table.
+// HOW TO RUN (from backend/, with PostgreSQL running and backend/.env filled in):
 //
-//   createdb youthlink_test            (or CREATE DATABASE youthlink_test; in psql)
-//   TEST_DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/youthlink_test" npm test
+//   npm run test:db
 //
-// (Windows PowerShell: $env:TEST_DATABASE_URL="postgresql://..."; npm test)
-// Without TEST_DATABASE_URL the suite is skipped, so `npm test` alone never needs a database.
+// That command (prisma/test-with-db.js) derives a separate database from DATABASE_URL in
+// backend/.env by adding "_test" to its name (youthlink -> youthlink_test), creates it if needed,
+// and runs every test with TEST_DATABASE_URL pointing at it. This suite applies the migrations
+// and runs the seed there, which EMPTIES that database, never the development one.
+// Plain `npm test` skips this suite (no TEST_DATABASE_URL), so it never needs a database.
 // The database name must contain "test" and the host must be this machine, or the suite refuses
 // to run: it must never be pointed at the development or any shared database.
 import { jest } from "@jest/globals";
