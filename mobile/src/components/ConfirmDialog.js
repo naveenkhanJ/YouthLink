@@ -71,6 +71,11 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
+    // At large text sizes the two buttons together are wider than the card. Without wrapping the
+    // row overflowed to the left (justifyContent flex-end) and the cancel button was cut off at
+    // the screen edge. Wrapped, the second button drops onto its own line, still right-aligned;
+    // at normal size both fit and the row is drawn exactly as before.
+    flexWrap: "wrap",
     gap: spacing.sm,
     justifyContent: "flex-end",
   },
