@@ -26,6 +26,16 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const SPLASH_MIN_MS = 2000;
 
+// BrandSplash's first layout is not its first painted frame, and its position settles a moment
+// later (system insets arrive). Hiding the native splash on the layout event let a black frame and a
+// small jump of the mark show through, so wait until it has painted and settled.
+let nativeSplashHidden = false;
+function hideNativeSplash() {
+  if (nativeSplashHidden) return;
+  nativeSplashHidden = true;
+  setTimeout(() => SplashScreen.hideAsync().catch(() => {}), 200);
+}
+
 function Launcher({ fontsLoaded }) {
   const { status } = useAuth();
   const [minElapsed, setMinElapsed] = useState(false);
@@ -43,7 +53,7 @@ function Launcher({ fontsLoaded }) {
     <BrandSplash
       showText={fontsLoaded}
       onPress={ready ? () => setTapped(true) : undefined}
-      onLayout={() => SplashScreen.hideAsync().catch(() => {})}
+      onLayout={hideNativeSplash}
     />
   );
 }

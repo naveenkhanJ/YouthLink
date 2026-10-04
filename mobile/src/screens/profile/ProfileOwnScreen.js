@@ -28,7 +28,6 @@ import { useToast } from "../../components/Toast";
 import useForegroundRefresh from "../../auth/useForegroundRefresh";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../../auth/AuthContext";
 import { getOwnProfile } from "../../api/profile";
 import { colors, spacing, elevation, typography } from "../../theme/tokens";
 import Badge from "../../components/Badge";
@@ -36,9 +35,8 @@ import ProfileTrustBlock from "../../components/ProfileTrustBlock";
 import EndorsementRow from "../../components/EndorsementRow";
 import FormBanner from "../../components/FormBanner";
 import Link from "../../components/Link";
-import TabBar from "../../components/TabBar";
+import ShellTabBar from "../../components/ShellTabBar";
 
-const TAB_ROLE = { YOUTH_JOB_SEEKER: "worker", EMPLOYER: "employer", COMMUNITY_ENDORSER: "verifier" };
 const BIO_PROMPT = "Add a short bio to help employers know you.";
 const EMPTY_ENDORSEMENTS = "No endorsements yet. Share your code and someone who knows you can vouch for you.";
 
@@ -81,7 +79,6 @@ function ProfileRow({ label, onPress }) {
 }
 
 export default function ProfileOwnScreen({ navigation }) {
-  const { user } = useAuth();
   const insets = useSafeAreaInsets();
   const { show, toast } = useToast(spacing.xxl * 3); // clears the 64px tab bar
   const [profile, setProfile] = useState(null);
@@ -109,16 +106,7 @@ export default function ProfileOwnScreen({ navigation }) {
     else show("This isn't available in this version of the app yet.");
   }
 
-  const tabRole = TAB_ROLE[user?.role];
-  const tabBar = tabRole ? (
-    <TabBar
-      role={tabRole}
-      activeTab="profile"
-      onTabPress={(key) => {
-        if (key !== "profile") navigation.navigate("Home"); // the other hubs are other modules'
-      }}
-    />
-  ) : null;
+  const tabBar = <ShellTabBar active="profile" />;
 
   if (!profile) {
     return (

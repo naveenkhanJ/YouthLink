@@ -4,14 +4,9 @@
  * before as a SHARED component. Per its own description: "honest flat
  * vector, no imagery" — deliberately not a real map tile.
  *
- * NOTE for Afham: `mobile/src/components/LocationDisplay.js` and
- * `MapPinDisplay.js` already exist (Lahiru's, commit `e6d802f`, already
- * on `develop`) and serve a similar purpose for FR-POST-08, but they
- * don't match this real component at all — raw hex colours throughout,
- * a rings/pulse/badge treatment with coordinate text, not the flat
- * grid+oval / grid+pin shape the real `Display/MapArea` draws. Worth
- * raising with Lahiru; not touched here — that's his module's already-
- * merged file, not this pass's to rebuild or replace.
+ * Replaces `LocationDisplay.js` and `MapPinDisplay.js` (the Gig Posting owner's earlier
+ * FR-POST-08 components: raw hex colours and a rings/pulse/coordinate-text treatment that
+ * does not match this flat grid component). Nothing imported them, so both were deleted.
  *
  * Kind=Area: a tinted shape + a computed label, NEVER a pin — FR-POST-08
  * only ever releases the precise address as a pin to a selected worker;

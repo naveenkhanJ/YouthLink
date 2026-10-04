@@ -1,61 +1,57 @@
-// gigPosting.controller.js
-// Thin HTTP layer: pull the validated input off req, call the service,
-// shape the response. No Prisma calls or business rules live here.
+// posting.controller.js
+// Thin HTTP layer: pull the validated input off req, call the service, shape the
+// response. No Prisma calls or business rules live here.
+//
+// Failures are thrown as AppError and answered by the shared errorHandler as
+// { error, fields? } — the shape mobile/src/api/client.js reads, so a rejected
+// field reaches the form as a per-field message.
 
 import { validationResult } from 'express-validator';
-import * as gigPostingService from './posting.service.js';
+import AppError from '../../utils/AppError.js';
+import asyncHandler from '../../utils/asyncHandler.js';
+import * as postingService from './posting.service.js';
 
-export async function createGigPosting(req, res) {
+// One message per field, keyed by field name, so the client can highlight
+// exactly what's missing or invalid (FR-POST-01 acceptance criteria).
+function throwIfInvalid(req) {
   const result = validationResult(req);
   if (!result.isEmpty()) {
-    // One error per field, keyed by field name, so the client can
-    // highlight exactly what's missing/invalid — per the acceptance criteria.
-    const fieldErrors = {};
+    const fields = {};
     for (const err of result.array({ onlyFirstError: true })) {
-      fieldErrors[err.path] = err.msg;
+      fields[err.path] = err.msg;
     }
-    return res.status(400).json({ status: 'error', errors: fieldErrors });
-  }
-
-  // Assumes auth middleware upstream sets req.user; employerId is never
-  // trusted from the request body.
-  const employerId = req.user?.id;
-  if (!employerId) {
-    return res.status(401).json({ status: 'error', message: 'Authentication required.' });
-  }
-
-  try {
-    const posting = await gigPostingService.createGigPosting(employerId, req.body);
-    return res.status(201).json({ status: 'ok', posting });
-  } catch (err) {
-    req.log?.error?.(err);
-    return res.status(500).json({ status: 'error', message: 'Could not create posting.' });
+    throw AppError.badRequest('Some details need fixing.', fields);
   }
 }
 
-export async function getGigPosting(req, res) {
-  try {
-    const posting = await gigPostingService.getGigPostingById(req.params.id);
-    if (!posting) {
-      return res.status(404).json({ status: 'error', message: 'Posting not found.' });
-    }
-    return res.status(200).json({ status: 'ok', posting });
-  } catch (err) {
-    req.log?.error?.(err);
-    return res.status(500).json({ status: 'error', message: 'Could not fetch posting.' });
-  }
-}
+export const createGigPosting = asyncHandler(async (req, res) => {
+  throwIfInvalid(req);
 
-export async function listMyGigPostings(req, res) {
-  const employerId = req.user?.id;
-  if (!employerId) {
-    return res.status(401).json({ status: 'error', message: 'Authentication required.' });
-  }
-  try {
-    const postings = await gigPostingService.listGigPostingsByEmployer(employerId);
-    return res.status(200).json({ status: 'ok', postings });
-  } catch (err) {
-    req.log?.error?.(err);
-    return res.status(500).json({ status: 'error', message: 'Could not fetch postings.' });
-  }
-}
+  // employerId always comes from the verified token, never the request body.
+  const posting = await postingService.createGigPosting(req.user.id, req.body);
+  res.status(201).json({ posting });
+});
+
+export const getGigPosting = asyncHandler(async (req, res) => {
+  const posting = await postingService.getGigPostingById(req.params.id, req.user.id);
+  if (!posting) throw AppError.notFound('Posting not found.');
+  res.json({ posting });
+});
+
+export const listMyGigPostings = asyncHandler(async (req, res) => {
+  const postings = await postingService.listGigPostingsByEmployer(req.user.id);
+  res.json({ postings });
+});
+
+// FR-POST-11
+export const updateGigPosting = asyncHandler(async (req, res) => {
+  throwIfInvalid(req);
+  const posting = await postingService.updateGigPosting(req.user.id, req.params.id, req.body);
+  res.json({ posting });
+});
+
+// FR-POST-12
+export const withdrawGigPosting = asyncHandler(async (req, res) => {
+  const posting = await postingService.withdrawGigPosting(req.user.id, req.params.id);
+  res.json({ posting });
+});

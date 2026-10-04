@@ -74,7 +74,9 @@ export default function LoginScreen({ navigation, route }) {
       setFieldErrors(parsed.fieldErrors);
       // 403 on this endpoint is only ever "suspended" (after the password was proven right).
       setSuspended(err.status === 403);
-      setPaused(/paused/i.test(parsed.formError ?? ""));
+      // 423 is the lockout itself. The "2 attempts left before password login is paused" warning
+      // also contains the word "paused", so the message cannot be used to tell them apart.
+      setPaused(err.status === 423);
     } finally {
       setLoading(false);
     }

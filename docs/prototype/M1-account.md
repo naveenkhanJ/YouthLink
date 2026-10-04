@@ -3492,6 +3492,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 Sent — an `Info` banner naming the address and where to look. The person can keep using the app.
 
+**Built with a line break before the address** (decided 2026-10-03): Android's line breaker moved the full stop to the
+start of the second line when the address did not fit on the first, so the message always starts the address on its own line.
+
 ### `1.11r4` — Reset by email · no verified email on file
 
 **Reached from** in the demo `1.11r1`  ·  **Leads to** `1.14` ("Add an email")  ·  **Exits** back → `1.10`
@@ -3610,6 +3613,11 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 **Pending**: *confirm +94 76 555 0199*. The body says the **current** number stays active until the
 SMS code is entered, without naming it — the screen is shared, and the number in force differs per person.
 *Cancel this change* abandons it and nothing changes.
+
+**Not drawn, built from the nearest frames (decided 2026-10-02):** the frame stops at the pending row, but the
+person still has to type the SMS code, so the built screen adds the six code boxes (`1.3`), the *Resend in 0:xx*
+line and a pinned *Verify* button under it, and a *Phone number updated* dialog (the `1.10s` card with one
+*Done* button over the same scrim) when the change succeeds.
 
 ### `1.12err` — Change phone number · password doesn't match
 
@@ -4130,6 +4138,9 @@ FRAME 360x800 · vertical pad 0 gap 0 · fill color/bg/default
 
 **The second step**: the password, and a last restatement of what goes and what stays. The button reads
 *Delete my account*.
+
+**Built with the button pinned** (decided 2026-10-03, recorded in `decisions.md`): in a bottom action bar like the other
+forms, not at the foot of the content as drawn, so it sits 24 dp above the keyboard on every device.
 
 ### `1.17d` — Account deletion · deleted
 

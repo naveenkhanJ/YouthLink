@@ -1,11 +1,7 @@
 // gigPosting.review.test.js
 // Unit tests for FR-POST-09 (Review screen computed preview logic) & FR-POST-07 (Urgency preview).
 
-import {
-  computeIsUrgent,
-  URGENCY_WINDOW_MIN_MS,
-  URGENCY_WINDOW_MAX_MS,
-} from '../posting.urgency.js';
+import { computeIsUrgent, URGENCY_MAX_MS } from '../posting.urgency.js';
 
 import {
   sanitizePostingLocation,
@@ -16,24 +12,19 @@ describe('FR-POST-09: Review Screen Computed Previews & Helpers', () => {
   const ONE_HOUR = 60 * 60 * 1000;
 
   describe('Urgency Computation for Review Screen (FR-POST-07 / FR-POST-09)', () => {
-    test('marks as urgent when start time is in the middle of 24h–48h window (e.g. +30 hours)', () => {
+    test('marks as urgent at +30 hours', () => {
       const startAt = new Date(MOCK_NOW + 30 * ONE_HOUR).toISOString();
       expect(computeIsUrgent(startAt, MOCK_NOW)).toBe(true);
     });
 
-    test('marks as urgent exactly at the 24h lower boundary', () => {
-      const startAt = new Date(MOCK_NOW + URGENCY_WINDOW_MIN_MS).toISOString();
+    test('marks as urgent exactly at the 48h boundary', () => {
+      const startAt = new Date(MOCK_NOW + URGENCY_MAX_MS).toISOString();
       expect(computeIsUrgent(startAt, MOCK_NOW)).toBe(true);
     });
 
-    test('marks as urgent exactly at the 48h upper boundary', () => {
-      const startAt = new Date(MOCK_NOW + URGENCY_WINDOW_MAX_MS).toISOString();
-      expect(computeIsUrgent(startAt, MOCK_NOW)).toBe(true);
-    });
-
-    test('marks as NOT urgent when starting in less than 24 hours (e.g. +5 hours)', () => {
+    test('marks as urgent when starting soon (+5 hours) — no lower bound', () => {
       const startAt = new Date(MOCK_NOW + 5 * ONE_HOUR).toISOString();
-      expect(computeIsUrgent(startAt, MOCK_NOW)).toBe(false);
+      expect(computeIsUrgent(startAt, MOCK_NOW)).toBe(true);
     });
 
     test('marks as NOT urgent when starting in 3 days (e.g. +72 hours)', () => {
@@ -64,8 +55,9 @@ describe('FR-POST-09: Review Screen Computed Previews & Helpers', () => {
       expect(publicPreview.locationAddress).toBeNull();
       expect(publicPreview.isPreciseLocationReleased).toBe(false);
       expect(publicPreview.locationAreaLabel).toBe('Bambalapitiya, Colombo 04');
-      expect(publicPreview.locationLat).toBe(6.8912);
-      expect(publicPreview.locationLng).toBe(79.8567);
+      // Browsing workers get coordinates rounded to 2 decimals, about 1 km (FR-POST-08).
+      expect(publicPreview.locationLat).toBe(6.89);
+      expect(publicPreview.locationLng).toBe(79.86);
     });
   });
 });
