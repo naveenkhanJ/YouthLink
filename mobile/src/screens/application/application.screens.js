@@ -4,17 +4,31 @@
  * This is the ONLY file you edit to add a screen. RootNavigator collects every
  * module's manifest automatically, so four people can add screens in parallel
  * without ever touching the same file.
- *
- * Each entry:
- *   name      Unique across the whole app. Prefix with the module to guarantee
- *             that — e.g. "ApplicationRegister", not "Register".
- *   component The screen component itself.
- *   options   Optional react-navigation screen options, e.g. { title: "..." }.
- *
- * Example:
- *   import ExampleScreen from "./ExampleScreen";
- *   export default [
- *     { name: "ApplicationExample", component: ExampleScreen, options: { title: "Example" } },
- *   ];
  */
-export default [];
+import ListingDetailScreen from "./ListingDetailScreen";
+import ApplyScreen from "./ApplyScreen";
+import MyApplicationsScreen from "./MyApplicationsScreen";
+import ApplicantPoolScreen from "./ApplicantPoolScreen";
+
+export default [
+  {
+    name: "ApplicationListingDetail",
+    component: ListingDetailScreen,
+    options: { title: "Listing" },
+  },
+  {
+    name: "ApplicationApply",
+    component: ApplyScreen,
+    options: { title: "Apply" },
+  },
+  {
+    name: "ApplicationMine",
+    component: MyApplicationsScreen,
+    options: { title: "My applications" },
+  },
+  {
+    name: "ApplicationApplicantPool",
+    component: ApplicantPoolScreen,
+    options: { title: "Applicants" },
+  },
+];
