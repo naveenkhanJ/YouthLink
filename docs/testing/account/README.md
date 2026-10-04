@@ -1,0 +1,117 @@
+# Testing — Account Management and own profile
+
+Owner: M. I. M. Afham · Module: `account` (FR-ACC-01 to FR-ACC-19) and the own-profile slice of `profile` (FR-PROF-01, FR-PROF-02, FR-PROF-06).
+
+This folder records how the Account module was tested and what each test found. The first part covers the six manual end-to-end rounds that were run while the module was being finished (1 to 3 October 2026). Those rounds are what the Definition of Done's clause 3 asks for: "it runs end to end in the actual app" ([`CONTRIBUTING.md`](../../../CONTRIBUTING.md#definition-of-done)).
+
+The repository's position is that automated test coverage is out of scope at this stage and that running the app end to end does that job (`CONTRIBUTING.md`, Definition of Done). The rounds below are that end-to-end evidence. Until 4 October 2026 the reports existed only in the developer's git-ignored `.worklog/`; they were added here unchanged so the evidence sits next to the code it tested.
+
+| File | What it is |
+| --- | --- |
+| [`tester-prompts.md`](tester-prompts.md) | The six instructions given to the tester, verbatim, one per round |
+| [`e2e-reports/`](e2e-reports/) | The six reports the tester returned, unchanged except for line endings |
+
+## 1. What kind of testing this was
+
+**Manual, black-box, system-level acceptance testing on an Android emulator, against the real backend and a real PostgreSQL database.** The whole stack ran as it does for a user: the React Native development build on the emulator, the Express API, the seeded database, and Firebase Phone Authentication using Firebase's configured test numbers (no real SMS is sent to a test number).
+
+- **Tester.** A Claude agent running on the developer's Windows machine, given the role of tester only. Every prompt forbids it from changing source code, committing or pushing; it reports, it does not fix. The developer ran the setup on their machine and decided what to fix; the reports are the tester's own text.
+- **Driving the app.** The tester operated the app on the emulator through `adb`: taps and text input, screenshots (`adb exec-out screencap`), screen recordings for timing checks (splash, transitions), UI-hierarchy dumps (`uiautomator dump`) to measure exact pixel positions of fields, bars and the keyboard, and `wm density` to switch between 411 dp and 360 dp widths.
+- **Checking behind the screen.** Each flow was also checked at the API with `curl` (status codes, error bodies, rate limits, that no response contains `passwordHash` or `nicEncrypted`) and in the database with SQL (for example: the NIC stored as ciphertext, an anonymised row after deletion, the lockout timestamp cleared after a code login).
+- **Against what.** The acceptance criteria in [`docs/requirements.md`](../../requirements.md) and the screen specification in [`docs/prototype/M1-account.md`](../../prototype/M1-account.md), including exact copy, field order and error placement; in rounds 3 and 4 also the Figma frames, measured in dp.
+- **Result per item.** PASS / FAIL / PARTIAL / BLOCKED / NOT TESTED, with evidence (screenshot name, log line, query and result). Defects were numbered **E2E-01 to E2E-50** across all rounds, each with a severity (BLOCKER, MAJOR, MINOR, LOW, COSMETIC, TOOLING, OBSERVATION), steps to reproduce, expected (quoting the requirement or prototype) and actual.
+
+The rounds form a **fix and retest cycle**: round 1 was a full scripted pass over every feature area; each later round retested the previous round's findings after the fixes were merged, ran whatever had been blocked, and added a regression pass. Round 5 ended with a full smoke pass of the module, and round 6 confirmed the last three fixes before they were merged.
+
+## 2. Environment
+
+From the reports' environment sections:
+
+| Item | Value |
+| --- | --- |
+| Emulator | AVD `Pixel_8`, Android 17 preview (API 37, Google Play image), 1080 × 2400 px. Widths tested: 411 dp (default) and 360 dp (`adb shell wm density 480`; Figma frames are 360 dp wide) |
+| Second emulator | Round 3 only: Android 15 (API 35, `google_apis` image), for the keyboard checks on a stable Android version |
+| App | Expo SDK 57 development build (`lk.youthlink.app`), React Native 0.86, rebuilt natively in rounds 3, 4 and 5 when native configuration changed |
+| Backend | Node.js 24, npm 11, Express 5, Prisma 7, local PostgreSQL, reseeded with `npx prisma db seed` at the start of every round |
+| Phone verification | Firebase test numbers +94 77 000 0091 (code 111222) and +94 77 000 0092 (code 333444), not held by any seeded account; seeded accounts for password login (password `Password123!`, see `backend/prisma/seed.js`) |
+| SMS and email in development | Printed to the API console as `[Mock SMS]` / `[Mock Email]` lines; the tester read codes and links from there |
+
+## 3. The six rounds
+
+| Round | Date (Asia/Colombo) | Code under test | Scope | Report | New findings |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 2026-10-01 23:39 to 10-02 01:10 | `develop` `4179d0c` (PR #43) | Full pass: registration, login and lockout, forgot password and recovery, Settings and its screens, own profile, shared foundation, cross-cutting (font scale, interrupted flows, API security smoke) | [`e2e-report-2026-10-02.md`](e2e-reports/e2e-report-2026-10-02.md) | E2E-01 to E2E-18 |
+| 2 | 2026-10-02 03:55 to 06:20 | `develop` `3a1ace8` (PR #44, round 1 fixes) | The flows blocked in round 1 (registration, phone change, deletion with the Firebase test numbers), retest of E2E-01 to E2E-18, the developer's by-eye claims, reset by email from Settings | [`e2e-report-2026-10-02-round2.md`](e2e-reports/e2e-report-2026-10-02-round2.md) | E2E-19 to E2E-30 |
+| 3 | 2026-10-02 to 10-03 | `develop` `013503b` (PR #45, round 2 fixes) | Retest of E2E-19 to E2E-30, launch splash, icon, dialogs, code input, keyboard on Android 17 and Android 15, Figma comparison of ten frames, data for the open items | [`e2e-report-2026-10-02-round3.md`](e2e-reports/e2e-report-2026-10-02-round3.md) | E2E-31 to E2E-41 |
+| 4 | 2026-10-03 | `develop` `0e1a29a` (PRs #46 and #47, round 3 fixes) | Retest of E2E-31 to E2E-41, the 11 launch states, header and onboarding positions against Figma, splash timing, keyboard on registration, regression pass | [`e2e-report-2026-10-03-round4.md`](e2e-reports/e2e-report-2026-10-03-round4.md) | E2E-42 to E2E-47 |
+| 5 | 2026-10-03 | `develop` `83867fd` (PR #48, round 4 fixes) | Final run: Part A the six fixes since round 4, Part B a full smoke pass of the module (B1 to B10) | [`e2e-report-2026-10-03-final.md`](e2e-reports/e2e-report-2026-10-03-final.md) | E2E-48 to E2E-50 |
+| 6 | 2026-10-03 | branch `feature/account-management-afham` `b46a1cf`, before its merge as PR #52 | Last check of E2E-48, E2E-49, E2E-50 and a regression run on the touched screens | [`e2e-report-2026-10-03-lastcheck.md`](e2e-reports/e2e-report-2026-10-03-lastcheck.md) | none; verdict "Ready to merge" |
+
+Round 1 found one BLOCKER (E2E-01, an account recovery request could not be submitted from the app) and three MAJOR defects; the backend checks (authentication, lockout, rate limits, single-use links, anonymising delete, no secret in any response) behaved to specification. In round 5 all ten areas of the Part B smoke pass passed (registration with the one keyboard failure counted under Part A, launch states as a spot check); round 6 closed the remaining three findings.
+
+## 4. What happened to each finding
+
+Final state of all 50 findings, taken from the retest tables of the following rounds (round 2 §2, round 3 §2, round 4 §11, round 5 Part A, round 6).
+
+| Finding | Severity | Final state |
+| --- | --- | --- |
+| E2E-01 recovery request cannot be submitted | BLOCKER | Fixed, verified in round 2 |
+| E2E-02 session end strands the user | MAJOR | Fixed, verified in round 2 |
+| E2E-03 double headers on five screens | MAJOR | Fixed, verified in round 2 |
+| E2E-04 keyboard covers the pinned button | MAJOR | Fixed, verified in round 2 (Android 17) and round 3 (Android 15); the related field-visibility issue continued as E2E-24, E2E-34, E2E-42 and E2E-48 |
+| E2E-05 Settings stale after an email confirmation | MINOR | Fixed, round 2 |
+| E2E-06 long email row, truncated tab labels | MINOR | Fixed, round 2 (residual clipping at 200 % became E2E-27, fixed) |
+| E2E-07 login states differ from three frames | MINOR | Fixed, round 2 |
+| E2E-08 employer engagement count wording and ENDED engagements | MINOR | Fixed, round 2 |
+| E2E-09 editing a typed code | MINOR | Partly fixed in round 2, fixed in round 3 (Backspace, paste) |
+| E2E-10 suspended login: stale banner, no way back | MINOR | Partly fixed in round 2; the remainder became E2E-26, fixed in round 3 |
+| E2E-11 NIC correction copy and counter | MINOR | Fixed, round 2 |
+| E2E-12 forgot-password button wording | MINOR | Fixed, round 2 |
+| E2E-13 spent reset link still shows the form | MINOR | Fixed, round 2 |
+| E2E-14 display name over 100 characters | MINOR | Withdrawn by the tester in round 2: the round 1 request sent the wrong field |
+| E2E-15 straight quotes in a help article | COSMETIC | Fixed, round 2 |
+| E2E-16 availability check unthrottled | LOW | Fixed, round 2 (30 per minute, then 429) |
+| E2E-17 `pg` deprecation warning | LOW | Not reproduced in round 3 after the round 2 change |
+| E2E-18 `npm install` rewrites the backend lockfile | TOOLING | Accepted: npm 11 behaviour; `npm ci` leaves the lockfile unchanged |
+| E2E-19 code boxes cannot be tapped | BLOCKER | Fixed, round 3 |
+| E2E-20 sign-out dialog without a scrim | MINOR | Fixed, round 3 |
+| E2E-21 loading spinner clipped | MINOR | Fixed, round 3 |
+| E2E-22 "Account deleted" never shown | MAJOR | Fixed, round 3 |
+| E2E-23 onboarding art off-centre | MINOR | Fixed in round 3; vertical positions continued as E2E-33, fixed |
+| E2E-24 focused last field half hidden | MINOR | Partly fixed in round 3; continued as E2E-34, E2E-42, E2E-48 |
+| E2E-25 stale errors after editing | MINOR | Fixed, round 3 |
+| E2E-26 no way back after a session end | MINOR | Fixed, round 3 |
+| E2E-27 clipped first character at 200 % text | LOW | Fixed, round 3 |
+| E2E-28 buttons named "busy" | LOW | Label fixed in round 3; "busy" sticking became E2E-31, fixed |
+| E2E-29 display-size or font change restarts the app | LOW | Accepted, observation: the Android activity restarts on that configuration change (cause recorded in round 3 §7B) |
+| E2E-30 registration and Settings use different email copy | LOW | Fixed, round 3 |
+| E2E-31 "busy" stays after loading | MINOR | Fixed, round 4 |
+| E2E-32 header 44 dp instead of 56 dp | MINOR | Fixed, round 4 |
+| E2E-33 onboarding positions | MINOR | Fixed, round 4 |
+| E2E-34 last field flush with the bar; code-login error clipped | MINOR | Continued as E2E-42 and E2E-43 |
+| E2E-35 launcher label "mobile" | LOW | Fixed, round 4 |
+| E2E-36 splash handoff in the development build | LOW | Continued as E2E-44 |
+| E2E-37 ghost digits in the first code box | LOW | Fixed, round 4 |
+| E2E-38 delete-password button floats above the keyboard | LOW | Fixed by a recorded design decision (button pinned like the other password screens, [`docs/decisions.md`](../../decisions.md)); verified in round 5 (A6: 24 dp above the keyboard at both widths) |
+| E2E-39 mobile lockfile out of sync | TOOLING | Fixed, round 4 (`npm ci` succeeds) |
+| E2E-40 parts of the app are not drawn in the prototype | OBSERVATION | No action: recorded as an observation (the undrawn parts are listed in the round 3 report) |
+| E2E-41 Firebase fails on an image without Google Play | OBSERVATION | Environment only: a Play Store image is required |
+| E2E-42 Legal name flush with the bar, counter hidden | MINOR | Continued as E2E-48 |
+| E2E-43 code-login error line cut by the bar | LOW | Fixed, round 5 (A2) |
+| E2E-44 splash black frame in the development build | LOW | Accepted: development build only, not reproduced in a release build (0 of 6 launches, round 4 §13) |
+| E2E-45 resend countdown not in the accessibility tree | LOW | **Open.** Not fixed and not re-checked; the tester could not confirm it without TalkBack on a real phone |
+| E2E-46 full stop alone on a line | COSMETIC | Continued as E2E-49 |
+| E2E-47 brand-blue sliver during a transition | COSMETIC | Fixed, round 5 (A3) |
+| E2E-48 Birthdate and Legal name under the bar at 360 dp | MINOR | Fixed, round 6 (C1) |
+| E2E-49 full stop starts a line at 360 dp | LOW | Fixed, round 6 (C2) |
+| E2E-50 Log in disabled after the third wrong password | LOW | Fixed, round 6 (C3) |
+
+## 5. Limits of this testing
+
+These are stated in the reports and are worth saying plainly:
+
+- **Emulators only.** No physical phone was used. SMS autofill, TalkBack and real-phone keyboards were never tested; E2E-45 stays open for that reason.
+- **Android only.** The app is Android-only at this stage; iOS was not tested.
+- **One tester, one machine.** The level recorded in the pull requests is "self" in `CONTRIBUTING.md`'s terms, not "integration".
+- **Evidence kept outside the repository.** The screenshots, screen recordings, UI dumps and logs named in the reports are on the developer's machine, not in this repository; the reports quote the measured values.
+- **Manual, not automated.** Rerunning a round means following its prompt again on an emulator.
