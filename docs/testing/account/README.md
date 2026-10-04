@@ -163,22 +163,28 @@ npm test
 
 **One thing is replaced: Firebase's token check.** A genuine Firebase ID token can only be produced by a phone completing an SMS check, which no test can do on its own. The suite replaces `firebaseAuth.js` with a stand-in that accepts tokens like `test-verified:+94770000091` and returns that number, the same thing the real check returns after Firebase has verified the phone. Everything the server does with the verified number runs for real. The real token check was exercised in the end-to-end rounds, with Firebase's test phone numbers.
 
-**Running it.** It needs a separate, disposable database: before the tests it applies the migrations and runs the seed, and the seed empties every table. From `backend/`, after `npm ci` and `npx prisma generate`:
+**Running it.** From `backend/`, with PostgreSQL running and `backend/.env` filled in as for the app:
 
 ```bash
-# once: create the test database (psql, or pgAdmin)
-psql -U postgres -c "CREATE DATABASE youthlink_test;"
-
-# then, on macOS / Linux / Git Bash
-TEST_DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/youthlink_test" npm test
-
-# or in Windows PowerShell
-$env:TEST_DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/youthlink_test"; npm test
+npm run test:db
 ```
 
-Without `TEST_DATABASE_URL`, `npm test` skips this suite and runs only the unit tests, so nobody needs a database to run `npm test`. The suite refuses to start unless the database is on this machine and its name contains "test", so it cannot wipe the development database by mistake. It sets its own keys and secrets for the run; it does not read or need `backend/.env`.
+That is the whole procedure, on Windows, macOS or Linux. `npm run test:db` ([`backend/prisma/test-with-db.js`](../../../backend/prisma/test-with-db.js)) takes the `DATABASE_URL` from `backend/.env` and uses the same server, user and password for a separate database with `_test` added to the name (`youthlink` → `youthlink_test`). It creates that database the first time, then runs every test, the unit tests and this suite. Each run applies the migrations to the test database and runs the seed there, which empties it; the development database is never touched. Arguments after `--` go to Jest, so `npm run test:db -- account.login` runs one file.
 
-**Last run.** 34 of 34 passed, twice in a row, on 4 October 2026, in the cloud development container against PostgreSQL 18 (the `embedded-postgres` package); about 50 seconds per run. It has not yet been run on the developer's own machine.
+Plain `npm test` still runs only the unit tests and skips this suite (34 skipped), so nobody needs a database for `npm test`. To use a different database, set `TEST_DATABASE_URL` yourself; `npm run test:db` uses it as it is.
+
+Both the command and the suite refuse a database that is not on this machine or whose name does not contain "test", so neither can wipe the development database by mistake. The suite sets its own keys and secrets for the run; nothing in `backend/.env` other than `DATABASE_URL` is used.
+
+Only after the backend's dependencies change does `npm ci` (and then `npx prisma generate`) need to run first. On Windows, stop the running API and Metro before `npm ci`, because a running process keeps files in `node_modules` locked.
+
+**Last runs.**
+
+| Date | Where | Result |
+| --- | --- | --- |
+| 4 October 2026 | Cloud development container, Linux, Node 22, PostgreSQL 18 (`embedded-postgres`), branch before PR #63 | 232 of 232, three runs; database tests about 50 s |
+| 4 October 2026 | The developer's Windows machine, Node 24.13.0, npm 11.6.2, PostgreSQL 18.6, `develop` at `f91cc27` (PR #63 merged); run by the tester agent with the manual `TEST_DATABASE_URL` steps that `npm run test:db` replaces | unit run 198 passed and 34 skipped; database runs 232 of 232 twice (40 s and 36 s); the development database's row counts identical before and after |
+| 4 October 2026 | Cloud development container, after adding `npm run test:db` | it created `youthlink_test` on the first run; 232 of 232 on both runs; a wrong password, a remote host and a name without "test" each stopped with a plain message |
+| 4 October 2026 | The developer's Windows machine (Node 24.13.0, PostgreSQL 18.6, as recorded in the run above), branch `feature/account-management-afham` at `803d83d`, run by the developer with `npm run test:db` and no other setup | 18 of 18 suites, 232 of 232 tests, 55.6 s |
 
 **Checking that it can fail.** As with the unit tests, two rules that only a real database can show were broken on purpose:
 
