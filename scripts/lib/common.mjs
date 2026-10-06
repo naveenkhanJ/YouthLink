@@ -88,10 +88,10 @@ export function currentBranch() {
 
 /**
  * Classify a branch name against the convention in CONTRIBUTING.md.
- * Returns { valid, type, epic, module, shared, area, owner, reason }.
+ * Returns { valid, type, epic, module, shared, area, owner, demo, reason }.
  */
 export function parseBranch(team, branch) {
-  const result = { valid: false, type: null, epic: null, module: null, shared: false, area: null, owner: null, reason: "" };
+  const result = { valid: false, type: null, epic: null, module: null, shared: false, area: null, owner: null, demo: false, reason: "" };
   if (!branch) {
     result.reason = "HEAD is detached (no branch)";
     return result;
@@ -99,6 +99,22 @@ export function parseBranch(team, branch) {
   if (team.integrationBranches.includes(branch)) {
     result.reason = `'${branch}' is an integration branch — work never happens on it directly`;
     return result;
+  }
+  // A demo integration branch (team.json demoBranches): the shared-components owner's branch for
+  // assembling every member's work into one demonstrable app. It is valid, belongs to the owner, and
+  // is never merged into develop — see CONTRIBUTING.md, "Demo integration branch".
+  if ((team.demoBranches || []).includes(branch)) {
+    const owner = team.members.find((m) => m.role === "shared-owner");
+    return {
+      ...result,
+      valid: true,
+      type: branch.split("/")[0],
+      shared: true,
+      area: branch.split("/").slice(1).join("/"),
+      owner: owner ? owner.id : null,
+      demo: true,
+      reason: "demo integration branch (never merged into develop)",
+    };
   }
   // Explicitly accepted legacy names belong to a named member.
   for (const m of team.members) {
