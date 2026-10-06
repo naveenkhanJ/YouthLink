@@ -5,6 +5,7 @@
 //   - A pay amount above the column's range, or a text field sent as an array/object, used to
 //     pass validation and crash with a 500 instead of a 400.
 //   - FR-DISPUTE-02: a posting hidden for review is visible to its owner only.
+//   - FR-POST-08 (round 4): the public area and coordinates come from the server's area list.
 import { jest } from '@jest/globals';
 import { validationResult } from 'express-validator';
 
@@ -21,8 +22,9 @@ const {
   updateGigPostingValidators,
   PAY_AMOUNT_MAX,
   ADDRESS_MAX,
-  AREA_LABEL_MAX,
+  AREA_NOT_LISTED_MESSAGE,
 } = await import('../posting.validators.js');
+const { findArea } = await import('../posting.areas.js');
 
 const OWNER = 'employer-1';
 
@@ -34,9 +36,7 @@ const validBody = () => ({
   payKind: 'FIXED_TOTAL',
   payAmount: 6000,
   locationAddress: '23 Temple Road, Colombo 04',
-  locationLat: 6.9,
-  locationLng: 79.8,
-  locationAreaLabel: 'Colombo 04',
+  locationArea: 'Colombo 04',
   workersNeeded: 3,
   startAt: new Date(Date.now() + 30 * 3600e3).toISOString(),
 });
@@ -143,9 +143,9 @@ describe('inputs that used to crash instead of being rejected', () => {
         title: bad,
         description: bad,
         locationAddress: bad,
-        locationAreaLabel: bad,
+        locationArea: bad,
       });
-      expect(Object.keys(errors).sort()).toEqual(['description', 'locationAddress', 'locationAreaLabel', 'title']);
+      expect(Object.keys(errors).sort()).toEqual(['description', 'locationAddress', 'locationArea', 'title']);
     }
     const edit = await validate(updateGigPostingValidators, { title: ['a'], schedule: { x: 1 } });
     expect(Object.keys(edit).sort()).toEqual(['schedule', 'title']);
@@ -162,18 +162,16 @@ describe('inputs that used to crash instead of being rejected', () => {
     expect(errors.schedule).toBeDefined();
   });
 
-  test('address and area label have a cap instead of being unbounded', async () => {
+  test('the address has a cap instead of being unbounded', async () => {
     const tooLong = await validate(createGigPostingValidators, {
       ...validBody(),
       locationAddress: 'x'.repeat(ADDRESS_MAX + 1),
-      locationAreaLabel: 'x'.repeat(AREA_LABEL_MAX + 1),
     });
-    expect(Object.keys(tooLong).sort()).toEqual(['locationAddress', 'locationAreaLabel']);
+    expect(Object.keys(tooLong)).toEqual(['locationAddress']);
 
     const atCap = await validate(createGigPostingValidators, {
       ...validBody(),
       locationAddress: 'x'.repeat(ADDRESS_MAX),
-      locationAreaLabel: 'x'.repeat(AREA_LABEL_MAX),
     });
     expect(atCap).toEqual({});
   });
@@ -181,6 +179,53 @@ describe('inputs that used to crash instead of being rejected', () => {
   test('a one-off gig still needs no schedule, even though schedule is now type-checked', async () => {
     const errors = await validate(createGigPostingValidators, validBody()); // no schedule sent
     expect(errors.schedule).toBeUndefined();
+  });
+});
+
+// Round 4, L-1 (POST-E2E-01 / 02): the public area and the point come from the server's list.
+describe('FR-POST-08: the area label and coordinates come from the area list, never the request', () => {
+  const created = () => prismaMock.gigPosting.create.mock.calls[0][0].data;
+  beforeEach(() => {
+    prismaMock.user.findUnique.mockResolvedValue({ postingAsType: 'INDIVIDUAL', businessName: null, businessBio: null });
+  });
+
+  test('a label and coordinates sent by the client are ignored: the stored values are the chosen entry', async () => {
+    await createGigPosting(OWNER, {
+      ...validBody(),
+      locationArea: 'Hambantota',
+      locationAreaLabel: '99 Secret Lane',
+      locationLat: 6.9271,
+      locationLng: 79.8612,
+    });
+    const hambantota = findArea('Hambantota');
+    expect(created()).toMatchObject({
+      locationAreaLabel: 'Hambantota',
+      locationLat: hambantota.lat,
+      locationLng: hambantota.lng,
+    });
+    // Not Colombo's centre, which an unknown area used to fall back to (POST-E2E-02).
+    expect(created().locationLat).not.toBe(6.9271);
+  });
+
+  test("the stored label is the list's spelling, however the area was typed", async () => {
+    await createGigPosting(OWNER, { ...validBody(), locationArea: 'colombo 5 area' });
+    expect(created().locationAreaLabel).toBe('Colombo 05');
+  });
+
+  test('a street address never becomes the public area label', async () => {
+    const address = '77 Palm Grove Road Colombo 05'; // no comma: the case that leaked before
+    await createGigPosting(OWNER, { ...validBody(), locationAddress: address, locationArea: 'Colombo 05' });
+    expect(created().locationAddress).toBe(address); // kept for the owner and the selected worker
+    expect(created().locationAreaLabel).toBe('Colombo 05');
+    expect(created().locationAreaLabel).not.toContain('Palm Grove');
+  });
+
+  test('an area not on the list is refused with the field message, and nothing is written', async () => {
+    await expect(createGigPosting(OWNER, { ...validBody(), locationArea: 'Nowhere' })).rejects.toMatchObject({
+      status: 400,
+      fields: { locationArea: AREA_NOT_LISTED_MESSAGE },
+    });
+    expect(prismaMock.gigPosting.create).not.toHaveBeenCalled();
   });
 });
 

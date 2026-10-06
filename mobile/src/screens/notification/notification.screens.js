@@ -1,20 +1,29 @@
 /**
  * Screen manifest for the FR-NOTIF module — Pawan.
  *
- * This is the ONLY file you edit to add a screen. RootNavigator collects every
- * module's manifest automatically, so four people can add screens in parallel
- * without ever touching the same file.
- *
- * Each entry:
- *   name      Unique across the whole app. Prefix with the module to guarantee
- *             that — e.g. "NotificationRegister", not "Register".
- *   component The screen component itself.
- *   options   Optional react-navigation screen options, e.g. { title: "..." }.
- *
- * Example:
- *   import ExampleScreen from "./ExampleScreen";
- *   export default [
- *     { name: "NotificationExample", component: ExampleScreen, options: { title: "Example" } },
- *   ];
+ * Every screen draws its own chrome, so the navigator's header is off for all of them.
  */
-export default [];
+import NotificationHistoryScreen from "./NotificationHistoryScreen";
+import NotificationPreferencesScreen from "./NotificationPreferencesScreen";
+import NotificationAppearanceScreen from "./NotificationAppearanceScreen";
+
+export default [
+  {
+    // 3.10x family — every role's Notifications tab (tab key "notifications").
+    name: "NotificationHistory",
+    component: NotificationHistoryScreen,
+    options: { headerShown: false },
+  },
+  {
+    // 3.11 / 3.11e / 3.11v — also opened from Settings (M1 1.10) by this name.
+    name: "NotificationPreferences",
+    component: NotificationPreferencesScreen,
+    options: { headerShown: false },
+  },
+  {
+    // 3.13 — how the two gig notifications look.
+    name: "NotificationAppearance",
+    component: NotificationAppearanceScreen,
+    options: { headerShown: false },
+  },
+];

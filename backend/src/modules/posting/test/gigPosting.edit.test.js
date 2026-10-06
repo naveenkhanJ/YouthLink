@@ -9,10 +9,18 @@ const prismaMock = {
     findUnique: jest.fn(),
     updateMany: jest.fn(),
   },
+  // The "is a re-confirmation waiting?" check that runs before any edit (2.11c, round 4 L-7).
+  materialChangeRequest: { count: jest.fn() },
   $executeRaw: jest.fn(),
   $transaction: jest.fn(),
 };
 jest.unstable_mockModule('../../../lib/prisma.js', () => ({ default: prismaMock }));
+// The cross-module seams are mocked: these tests cover the posting rules, not what Applying &
+// Selection or Notifications do when called (their own tests cover that).
+const resolvePendingApplicants = jest.fn().mockResolvedValue({ resolved: 0 });
+const notifyPendingApplicantsOfChange = jest.fn().mockResolvedValue({ notified: 0 });
+jest.unstable_mockModule('../posting.applicants.js', () => ({ resolvePendingApplicants, notifyPendingApplicantsOfChange }));
+jest.unstable_mockModule('../posting.notify.js', () => ({ notifyNewGigPosted: jest.fn().mockResolvedValue({ notified: 0 }) }));
 
 const { updateGigPosting, EDIT_REFUSED_MESSAGES } = await import('../posting.service.js');
 
@@ -39,18 +47,21 @@ function stored(overrides = {}) {
 }
 
 // First findUnique is the edit's own read; the last one is the returned posting.
-function givenPosting(row) {
+function givenPosting(row, { waiting = 0 } = {}) {
   prismaMock.gigPosting.findUnique.mockResolvedValue(row);
   prismaMock.gigPosting.updateMany.mockResolvedValue({ count: 1 });
+  prismaMock.materialChangeRequest.count.mockResolvedValue(waiting);
 }
 
 // A posting with a place filled, edited inside a transaction. `tx` is the client the service's
 // $transaction callback receives, so a test can see exactly what was written through it.
 function givenTransaction(row, { engagements = [{ id: 'eng-1' }], waiting = 0 } = {}) {
   prismaMock.gigPosting.findUnique.mockResolvedValue(stored(row));
+  prismaMock.materialChangeRequest.count.mockResolvedValue(waiting);
   const tx = {
     gigPosting: { updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
     materialChangeRequest: { count: jest.fn().mockResolvedValue(waiting), create: jest.fn() },
+    notification: { create: jest.fn() },
     engagement: { findMany: jest.fn().mockResolvedValue(engagements) },
   };
   prismaMock.$transaction.mockImplementation((callback) => callback(tx));
@@ -122,6 +133,45 @@ describe('FR-POST-11: updateGigPosting', () => {
     });
     expect(tx.gigPosting.updateMany).not.toHaveBeenCalled();
     expect(tx.materialChangeRequest.create).not.toHaveBeenCalled();
+  });
+
+  // Round 4, L-7 (POST-E2E-09): 2.11c says "Editing is paused until the re-confirmation is
+  // answered", so the server refuses every edit while one is waiting — a title too.
+  test('while a re-confirmation is waiting even a title-only edit is refused, with the same message', async () => {
+    givenPosting(stored({ filledCount: 1 }), { waiting: 1 });
+    await expect(updateGigPosting(OWNER, ID, { title: 'New title' })).rejects.toMatchObject({
+      status: 409,
+      message: 'An earlier change is still waiting for the engaged worker to re-confirm. You can edit again once they respond.',
+    });
+    expect(prismaMock.materialChangeRequest.count.mock.calls[0][0].where).toEqual({ gigPostingId: ID, status: 'PENDING' });
+    expect(prismaMock.gigPosting.updateMany).not.toHaveBeenCalled();
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  test('a waiting re-confirmation pauses every edit, even on a posting whose slot has since reopened', async () => {
+    givenPosting(stored({ filledCount: 0 }), { waiting: 1 });
+    await expect(updateGigPosting(OWNER, ID, { payAmount: 7000 })).rejects.toThrow(EDIT_REFUSED_MESSAGES.reconfirmPending);
+    expect(prismaMock.gigPosting.updateMany).not.toHaveBeenCalled();
+  });
+
+  // FR-POST-08: the location is set once, from the area list, when the posting is created.
+  test('PATCH cannot change any location field: they are ignored', async () => {
+    givenPosting(stored());
+    await updateGigPosting(OWNER, ID, {
+      title: 'Crew',
+      locationAddress: '1 Other Street',
+      locationArea: 'Jaffna',
+      locationAreaLabel: '99 Secret Lane',
+      locationLat: 9.66,
+      locationLng: 80.0,
+    });
+    expect(prismaMock.gigPosting.updateMany.mock.calls[0][0].data).toEqual({ title: 'Crew' });
+  });
+
+  test('a PATCH carrying only location fields writes nothing', async () => {
+    givenPosting(stored());
+    await updateGigPosting(OWNER, ID, { locationAreaLabel: 'Galle', locationLat: 6.03, locationLng: 80.21 });
+    expect(prismaMock.gigPosting.updateMany).not.toHaveBeenCalled();
   });
 
   test('after a fill a title change (minor) still applies and asks no one to re-confirm', async () => {

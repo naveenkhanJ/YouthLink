@@ -44,7 +44,7 @@ describe('FR-POST-09: Review Screen Computed Previews & Helpers', () => {
       const formData = {
         title: 'Event Helper',
         locationAddress: 'No. 128, Galle Road, Bambalapitiya, Colombo 04',
-        locationAreaLabel: 'Bambalapitiya, Colombo 04',
+        locationAreaLabel: 'Colombo 04',
         locationLat: 6.8912,
         locationLng: 79.8567,
       };
@@ -54,7 +54,7 @@ describe('FR-POST-09: Review Screen Computed Previews & Helpers', () => {
 
       expect(publicPreview.locationAddress).toBeNull();
       expect(publicPreview.isPreciseLocationReleased).toBe(false);
-      expect(publicPreview.locationAreaLabel).toBe('Bambalapitiya, Colombo 04');
+      expect(publicPreview.locationAreaLabel).toBe('Colombo 04');
       // Browsing workers get coordinates rounded to 2 decimals, about 1 km (FR-POST-08).
       expect(publicPreview.locationLat).toBe(6.89);
       expect(publicPreview.locationLng).toBe(79.86);

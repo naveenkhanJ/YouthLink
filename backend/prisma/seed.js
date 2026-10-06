@@ -22,6 +22,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { hashPassword } from "../src/modules/account/passwordHash.js";
 import { encryptNic, getNicLast4 } from "../src/modules/account/nicCrypto.js";
 import config from "../src/config/index.js";
+import { findArea } from "../src/modules/posting/posting.areas.js";
 
 // ---------------------------------------------------------------------------
 // Safety guard — runs before any connection is opened.
@@ -336,8 +337,12 @@ async function main() {
       employerId: employer.id,
       status: "ACTIVE",
       contactRevealedAt: at(-3 * HOUR),
-      arrivalCode: "ARR123",
-      completionCode: "CMP456",
+      // FR-ENG-01: three distinct 6-digit codes, generated at selection (APPLY-E2E-21: the earlier
+      // letter codes could not be typed into the numeric code boxes).
+      arrivalCode: "482913",
+      completionCode: "605274",
+      paymentCode: "739158",
+      paymentStatus: "PENDING",
     },
   });
 
@@ -361,12 +366,16 @@ async function main() {
       employerId: employer.id,
       status: "COMPLETED",
       contactRevealedAt: at(-11 * DAY),
-      arrivalCode: "ARR789",
+      arrivalCode: "318640",
       arrivalStatus: "CONFIRMED",
       arrivalConfirmedAt: at(-10 * DAY),
-      completionCode: "CMP012",
+      completionCode: "927351",
       completionStatus: "CONFIRMED",
       completionConfirmedAt: completedAt,
+      // A paid gig completes at the payment checkpoint (FR-ENG-01), which also opens rating.
+      paymentCode: "164802",
+      paymentStatus: "CONFIRMED",
+      paymentConfirmedAt: completedAt,
       startedAt: at(-10 * DAY),
       ratingOpenedAt: completedAt,
     },
@@ -586,10 +595,12 @@ async function main() {
       employerId: employer.id,
       status: "ACTIVE",
       contactRevealedAt: at(-28 * HOUR),
-      arrivalCode: "ARR321",
+      arrivalCode: "550417",
       arrivalStatus: "CONFIRMED",
       arrivalConfirmedAt: at(-5 * HOUR),
-      completionCode: "CMP654",
+      completionCode: "283906",
+      paymentCode: "641739",
+      paymentStatus: "PENDING",
       startedAt: at(-5 * HOUR),
     },
   });
@@ -640,8 +651,10 @@ async function main() {
       employerId: employer.id,
       status: "ACTIVE",
       contactRevealedAt: at(-4 * HOUR),
-      arrivalCode: "ARR246",
-      completionCode: "CMP135",
+      arrivalCode: "706128",
+      completionCode: "839452",
+      paymentCode: "215960",
+      paymentStatus: "PENDING",
     },
   });
   await prisma.materialChangeRequest.create({
@@ -704,6 +717,451 @@ async function main() {
     },
   });
 
+  // -------------------------------------------------------------------------
+  // 6. Viva demonstration data (integration/viva-demo). Added on top of everything above, which
+  //    Account's and Gig Posting's tests and checklists rely on: nothing above changed except the
+  //    check-in codes, now 6-digit numbers as FR-ENG-01 requires. Each block below is a state the
+  //    real flows produce, for one member's demonstration.
+  // -------------------------------------------------------------------------
+  console.log("Creating viva demonstration data...");
+
+  /** A posting's area fields, taken from the server's area list as a real posting is (FR-POST-08). */
+  const place = (areaName, address) => {
+    const area = findArea(areaName);
+    if (!area) throw new Error(`Seed: "${areaName}" is not in posting.areas.js`);
+    return { locationAddress: address, locationAreaLabel: area.name, locationLat: area.lat, locationLng: area.lng };
+  };
+
+  // People. Lanka Events, Nethmi, Tharindu and Kavindu are the prototype's own cast (M4's pool for
+  // an event crew, M6's "4.6 from 12 ratings · 92% completion").
+  const lankaEvents = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "EMPLOYER",
+      phone: "+94770000011",
+      ...nic("198812345678"),
+      legalName: "Ruwan Jayasekara",
+      birthdate: new Date("1988-05-02"),
+      postingAsType: "BUSINESS",
+      businessName: "Lanka Events (Pvt) Ltd",
+    },
+  });
+  const lankaFields = { postedAsType: "BUSINESS", postedBusinessName: "Lanka Events (Pvt) Ltd" };
+  const nethmi = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000008",
+      ...nic("200212345678"),
+      legalName: "Nethmi Jayasinghe",
+      birthdate: new Date("2002-05-03"),
+      bio: "Event crew lead with two agencies. Reliable and on time.",
+    },
+  });
+  const tharindu = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000009",
+      ...nic("200312345678"),
+      legalName: "Tharindu Silva",
+      birthdate: new Date("2003-05-03"),
+    },
+  });
+  const kavindu = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000010",
+      ...nic("200412345678"),
+      legalName: "Kavindu Perera",
+      birthdate: new Date("2004-05-02"),
+    },
+  });
+
+  // 6a. Nethmi's history for the three-tier pool (FR-APPLY-04) and the completion rate (FR-RATE-03):
+  //     12 completed gigs, each rated both ways and revealed, plus one early cancellation of her
+  //     own — 12 / 13 = 92% completion, 12 jobs, average 4.6 (55 / 12 = 4.58).
+  const nethmiScores = [5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4];
+  for (let i = 0; i < nethmiScores.length; i++) {
+    const startAt = at(-(40 - i * 3) * DAY);
+    const doneAt = new Date(startAt.getTime() + 6 * HOUR);
+    const posting = await prisma.gigPosting.create({
+      data: {
+        employerId: lankaEvents.id,
+        title: `Event crew — job ${i + 1}`,
+        description: "Set up staging and seating, then clear down after the event.",
+        category: "EVENT_SETUP",
+        arrangementType: "GIG",
+        payKind: "FIXED_TOTAL",
+        payAmount: 4000,
+        ...lankaFields,
+        ...place("Colombo 07", "Lanka Events store, Colombo 07"),
+        workersNeeded: 1,
+        filledCount: 1,
+        startAt,
+        expiresAt: startAt,
+        status: "FILLED",
+        createdAt: new Date(startAt.getTime() - 3 * DAY),
+      },
+    });
+    const application = await prisma.application.create({
+      data: {
+        gigPostingId: posting.id,
+        workerId: nethmi.id,
+        status: "SELECTED",
+        appliedAt: new Date(startAt.getTime() - 2 * DAY),
+        decidedAt: new Date(startAt.getTime() - 2 * DAY + HOUR),
+      },
+    });
+    const engagement = await prisma.engagement.create({
+      data: {
+        applicationId: application.id,
+        gigPostingId: posting.id,
+        workerId: nethmi.id,
+        employerId: lankaEvents.id,
+        status: "COMPLETED",
+        contactRevealedAt: application.decidedAt,
+        arrivalCode: String(310000 + i * 7919).slice(0, 6),
+        arrivalStatus: "CONFIRMED",
+        arrivalConfirmedAt: startAt,
+        completionCode: String(520000 + i * 6007).slice(0, 6),
+        completionStatus: "CONFIRMED",
+        completionConfirmedAt: doneAt,
+        paymentCode: String(840000 + i * 5003).slice(0, 6),
+        paymentStatus: "CONFIRMED",
+        paymentConfirmedAt: doneAt,
+        startedAt: startAt,
+        ratingOpenedAt: doneAt,
+      },
+    });
+    const revealedAt = new Date(doneAt.getTime() + DAY); // the second rating landed a day later
+    await prisma.rating.createMany({
+      data: [
+        { engagementId: engagement.id, raterId: lankaEvents.id, rateeId: nethmi.id, score: nethmiScores[i], submittedAt: doneAt, revealedAt },
+        { engagementId: engagement.id, raterId: nethmi.id, rateeId: lankaEvents.id, score: 5, submittedAt: revealedAt, revealedAt },
+      ],
+    });
+    await prisma.completionRecord.create({
+      data: { userId: nethmi.id, engagementId: engagement.id, outcome: "COMPLETED", recordedAt: doneAt },
+    });
+  }
+  // Her one early cancellation (FR-ENG-06/07: more than 24 h ahead, weight 1.0). Cancelled
+  // engagements can still be rated, but nobody is held to it (FR-RATE-05).
+  const cancelledStart = at(-45 * DAY);
+  const cancelledPosting = await prisma.gigPosting.create({
+    data: {
+      employerId: lankaEvents.id,
+      title: "Event crew — Kandy weekend",
+      description: "Two days of setup and clear-down at a Kandy venue.",
+      category: "EVENT_SETUP",
+      arrangementType: "GIG",
+      payKind: "FIXED_TOTAL",
+      payAmount: 7000,
+      ...lankaFields,
+      ...place("Kandy", "Lanka Events stall, Kandy"),
+      workersNeeded: 1,
+      filledCount: 0,
+      startAt: cancelledStart,
+      expiresAt: cancelledStart,
+      status: "EXPIRED",
+      createdAt: new Date(cancelledStart.getTime() - 8 * DAY),
+    },
+  });
+  const cancelledApp = await prisma.application.create({
+    data: {
+      gigPostingId: cancelledPosting.id,
+      workerId: nethmi.id,
+      status: "SELECTED",
+      appliedAt: new Date(cancelledStart.getTime() - 7 * DAY),
+      decidedAt: new Date(cancelledStart.getTime() - 6 * DAY),
+    },
+  });
+  const cancelledAt = new Date(cancelledStart.getTime() - 4 * DAY);
+  const cancelledEng = await prisma.engagement.create({
+    data: {
+      applicationId: cancelledApp.id,
+      gigPostingId: cancelledPosting.id,
+      workerId: nethmi.id,
+      employerId: lankaEvents.id,
+      status: "CANCELLED",
+      contactRevealedAt: cancelledApp.decidedAt,
+      arrivalCode: "275813",
+      completionCode: "649027",
+      paymentCode: "830164",
+      paymentStatus: "PENDING",
+      cancelledAt,
+      cancelledByUserId: nethmi.id,
+      cancellationReason: "SCHEDULE_CONFLICT",
+      isLateCancellation: false,
+      ratingOpenedAt: cancelledAt,
+      ratingEnforced: false,
+    },
+  });
+  await prisma.completionRecord.create({
+    data: { userId: nethmi.id, engagementId: cancelledEng.id, outcome: "EARLY_CANCELLATION", weight: 1.0, recordedAt: cancelledAt },
+  });
+
+  // Tharindu has no history but Sunil vouched for him: the pool's second tier (FR-APPLY-04).
+  await prisma.endorsement.create({
+    data: {
+      endorserId: endorser.id,
+      workerId: tharindu.id,
+      attributes: ["PUNCTUALITY", "SPECIFIC_SKILL"],
+      reason: "Tharindu helped set up our school's sports meet. Strong and always on time.",
+      entryPoint: "PHONE_SEARCH",
+    },
+  });
+
+  // Nethmi is vouched for by two community endorsers as well as having a history, so the pool shows
+  // "Endorsed ×2" beside her ratings (M4 4.5/4.6 draw her that way). One active endorsement per
+  // endorser per worker, so two different endorsers.
+  for (const [i, who] of [
+    { phone: "+94770000012", nicNumber: "196512345678", legalName: "K. Rathnayake", code: "KRTNYK", attributes: ["RELIABILITY"] },
+    { phone: "+94770000013", nicNumber: "196812345678", legalName: "M. Perera", code: "MPRERA", attributes: ["PUNCTUALITY", "HONESTY"] },
+  ].entries()) {
+    const extraEndorser = await prisma.user.create({
+      data: {
+        ...baseUser,
+        role: "COMMUNITY_ENDORSER",
+        phone: who.phone,
+        ...nic(who.nicNumber),
+        legalName: who.legalName,
+        birthdate: new Date("1965-01-01"),
+        endorsementCode: who.code,
+      },
+    });
+    await prisma.endorsement.create({
+      data: {
+        endorserId: extraEndorser.id,
+        workerId: nethmi.id,
+        attributes: who.attributes,
+        reason: i === 0 ? "Nethmi ran our stage crew twice and never missed a call time." : null,
+        entryPoint: "PHONE_SEARCH",
+      },
+    });
+  }
+
+  // 6b. Naveenkhan — the applicant pool, all three tiers on one Open posting of Kamal's (M4 4.5):
+  //     Nethmi (history) first, then Tharindu (endorsed), then Kavindu (new); tiers 2 and 3 are
+  //     earliest application first (YL-173).
+  const poolPosting = await prisma.gigPosting.create({
+    data: {
+      employerId: employer.id,
+      title: "Weekend event crew (3 needed)",
+      description: "Set up staging and seating for a weekend event, then clear down. Gloves provided.",
+      category: "EVENT_SETUP",
+      arrangementType: "GIG",
+      payKind: "FIXED_TOTAL",
+      payAmount: 6000,
+      ...businessFields,
+      ...place("Colombo 05", "14 Havelock Road, Colombo 05"),
+      workersNeeded: 3,
+      startAt: at(4 * DAY),
+      expiresAt: at(4 * DAY),
+      status: "OPEN",
+      createdAt: at(-10 * HOUR),
+    },
+  });
+  await prisma.application.createMany({
+    data: [
+      { gigPostingId: poolPosting.id, workerId: kavindu.id, status: "PENDING", note: "Available all weekend — I've done two event setups.", appliedAt: at(-6 * HOUR) },
+      { gigPostingId: poolPosting.id, workerId: tharindu.id, status: "PENDING", note: "Free from Saturday 4 AM. Strong, punctual — this would be my first gig on YouthLink.", appliedAt: at(-5 * HOUR) },
+      { gigPostingId: poolPosting.id, workerId: nethmi.id, status: "PENDING", note: "Free all weekend — I've run event setups for two agencies and can lead a crew.", appliedAt: at(-3 * HOUR) },
+    ],
+  });
+
+  // 6c. Pawan — Browse (FR-DISC-01/03/05). Open postings around Nugegoda, all within 5 km of it,
+  //     mixing urgency, category, arrangement and pay; and one at Malabe, about 8.5 km from
+  //     Homagama. From Homagama nothing is within 5 km, so the search widens 5 km at a time until
+  //     5 gigs are in range — 15 km with this data (FR-DISC-01, M3 3.2).
+  const openNear = [
+    { employerId: employer.id, fields: businessFields, title: "Parcel delivery helper", category: "DELIVERY", arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 2800, area: ["Colombo 05", "22 Park Road, Colombo 05"], workersNeeded: 1, startIn: 20 * HOUR, createdAgo: 2 * HOUR },
+    { employerId: lankaEvents.id, fields: lankaFields, title: "Wedding hall setup crew", category: "EVENT_SETUP", arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 5500, area: ["Sri Jayewardenepura Kotte", "Lanka Events hall, Kotte Road"], workersNeeded: 3, startIn: 36 * HOUR, createdAgo: 5 * HOUR },
+    { employerId: employer2.id, fields: { postedAsType: "INDIVIDUAL" }, title: "Home cleaning — Saturday", category: "CLEANING", arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 3000, area: ["Dehiwala", "8 Hill Street, Dehiwala"], workersNeeded: 1, startIn: 3 * DAY, createdAgo: 26 * HOUR },
+    { employerId: lankaEvents.id, fields: lankaFields, title: "Weekend café barista", category: "FOOD_SERVICE", arrangementType: "PART_TIME", payKind: "RATE", payAmount: 1800, payRateUnit: "DAY", schedule: "Sat and Sun, 8 am to 2 pm", area: ["Nugegoda", "Lanka Events café, High Level Road, Nugegoda"], workersNeeded: 1, startIn: 6 * DAY, createdAgo: 30 * HOUR },
+    { employerId: employer2.id, fields: { postedAsType: "INDIVIDUAL" }, title: "Primary English tutor", category: "TUTORING", arrangementType: "PART_TIME", payKind: "RATE", payAmount: 2500, payRateUnit: "WEEK", schedule: "Tue and Thu, 4 to 6 pm", area: ["Maharagama", "41 Old Road, Maharagama"], workersNeeded: 1, startIn: 5 * DAY, createdAgo: 2 * DAY },
+    { employerId: lankaEvents.id, fields: lankaFields, title: "Events office internship", category: "EVENT_SETUP", arrangementType: "INTERNSHIP", payKind: "STIPEND", payAmount: 15000, payRateUnit: "MONTH", schedule: "Weekdays, 9 am to 3 pm", area: ["Colombo 06", "Lanka Events office, Colombo 06"], workersNeeded: 1, startIn: 10 * DAY, createdAgo: 3 * DAY },
+    { employerId: employer.id, fields: businessFields, title: "Moving help — Malabe", category: "MOVING", arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 4500, area: ["Malabe", "3 Kaduwela Road, Malabe"], workersNeeded: 2, startIn: 4 * DAY, createdAgo: 8 * HOUR },
+  ];
+  for (const gig of openNear) {
+    const startAt = at(gig.startIn);
+    const createdAt = at(-gig.createdAgo);
+    await prisma.gigPosting.create({
+      data: {
+        employerId: gig.employerId,
+        title: gig.title,
+        description: `${gig.title}. Details are shared with the selected worker.`,
+        category: gig.category,
+        arrangementType: gig.arrangementType,
+        payKind: gig.payKind,
+        payAmount: gig.payAmount,
+        payRateUnit: gig.payRateUnit ?? null,
+        schedule: gig.schedule ?? null,
+        ...gig.fields,
+        ...place(...gig.area),
+        workersNeeded: gig.workersNeeded,
+        startAt,
+        // FR-POST-13: a Gig expires at its start; the others 30 days after posting.
+        expiresAt: gig.arrangementType === "GIG" ? startAt : new Date(createdAt.getTime() + 30 * DAY),
+        isUrgent: gig.startIn <= 48 * HOUR, // FR-POST-07
+        status: "OPEN",
+        createdAt,
+      },
+    });
+  }
+
+  // Notifications (FR-NOTIF-01/02): both workers last browsed near Nugegoda; Amal has opted in to
+  // urgent alerts, Nimali keeps the default (new-gig notices on, urgent off). A gig posted near
+  // Nugegoda therefore reaches Amal as URGENT_GIG (if urgent) and Nimali as NEW_GIG (if not).
+  await prisma.user.update({
+    where: { id: worker.id },
+    data: { notifyUrgentOptIn: true, lastBrowseLat: 6.87, lastBrowseLng: 79.89, lastBrowseAt: at(-1 * DAY) },
+  });
+  await prisma.user.update({
+    where: { id: worker2.id },
+    data: { lastBrowseLat: 6.87, lastBrowseLng: 79.89, lastBrowseAt: at(-2 * DAY) },
+  });
+
+  // 6d. Naveenkhan — engagements at every checkpoint (FR-ENG-01/02/12/14), started already so their
+  //     codes can be used. Each comes from a selection, so each has its SELECTED application.
+  let codeSeed = 0;
+  async function engaged({ employerId, fields, workerId, posting, engagement, appliedAgo = 2 * DAY }) {
+    const created = await prisma.gigPosting.create({
+      data: {
+        employerId,
+        ...fields,
+        workersNeeded: 1,
+        filledCount: 1,
+        status: "FILLED",
+        ...posting,
+      },
+    });
+    const application = await prisma.application.create({
+      data: {
+        gigPostingId: created.id,
+        workerId,
+        status: "SELECTED",
+        appliedAt: at(-appliedAgo),
+        decidedAt: at(-appliedAgo + HOUR),
+      },
+    });
+    // Selection always generates the codes (FR-ENG-01: three distinct 6-digit numbers; an unpaid
+    // internship has no payment checkpoint — FR-ENG-02), so every demo engagement has them unless the
+    // caller says otherwise. Without them the detail would show "No check-in codes were issued".
+    codeSeed += 7919;
+    const unpaid = created.arrangementType === "INTERNSHIP" && created.payKind === "UNPAID";
+    const defaultCodes = {
+      arrivalCode: String(100000 + (codeSeed % 899999)).slice(0, 6),
+      completionCode: String(100000 + ((codeSeed * 3) % 899999)).slice(0, 6),
+      paymentCode: unpaid ? null : String(100000 + ((codeSeed * 7) % 899999)).slice(0, 6),
+      paymentStatus: unpaid ? null : "PENDING",
+    };
+    return prisma.engagement.create({
+      data: {
+        applicationId: application.id,
+        gigPostingId: created.id,
+        workerId,
+        employerId,
+        contactRevealedAt: application.decidedAt,
+        ...defaultCodes,
+        ...engagement,
+      },
+    });
+  }
+  const gigPay = { arrangementType: "GIG", payKind: "FIXED_TOTAL" };
+
+  // Arrival not yet confirmed: Kamal shows the arrival code, Amal enters it (5.4 / 5.5a).
+  await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id,
+    posting: { ...gigPay, title: "Shelf restock — this morning", description: "Restock the shelves before opening.", category: "RETAIL", payAmount: 2500, ...place("Colombo 04", "78 Duplication Rd, Colombo 04"), startAt: at(-1 * HOUR), expiresAt: at(-1 * HOUR), createdAt: at(-3 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "358176", completionCode: "274065", paymentCode: "731942", paymentStatus: "PENDING" },
+  });
+  // Arrived, completion next (5.5).
+  await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id,
+    posting: { ...gigPay, title: "Warehouse sorting", description: "Sort incoming stock in the back store.", category: "RETAIL", payAmount: 3000, ...place("Colombo 01", "123 Main St, Colombo"), startAt: at(-3 * HOUR), expiresAt: at(-3 * HOUR), createdAt: at(-4 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "912047", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-3 * HOUR), startedAt: at(-3 * HOUR), completionCode: "386215", paymentCode: "570839", paymentStatus: "PENDING" },
+  });
+  // Completed, payment next: custody flips — Nimali holds the payment code, Lanka Events enters it.
+  await engaged({
+    employerId: lankaEvents.id, fields: lankaFields, workerId: worker2.id,
+    posting: { ...gigPay, title: "Stage teardown — Nugegoda", description: "Take down the stage after a school concert.", category: "EVENT_SETUP", payAmount: 4000, ...place("Nugegoda", "Nugegoda town hall"), startAt: at(-6 * HOUR), expiresAt: at(-6 * HOUR), createdAt: at(-3 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "264951", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-6 * HOUR), startedAt: at(-6 * HOUR), completionCode: "731806", completionStatus: "CONFIRMED", completionConfirmedAt: at(-30 * MINUTE), paymentCode: "408273", paymentStatus: "PENDING" },
+  });
+  // A part-time job under way: closes only through End Engagement (FR-ENG-12). Not Dilrukshi's:
+  // Account's deletion test deletes her account and needs her to have no active engagement.
+  await engaged({
+    employerId: lankaEvents.id, fields: lankaFields, workerId: worker2.id, appliedAgo: 10 * DAY,
+    posting: { arrangementType: "PART_TIME", payKind: "RATE", payAmount: 1500, payRateUnit: "DAY", schedule: "Mon, Wed, Fri - 3 to 7 pm", title: "Box office assistant", description: "Sell tickets at the box office and help with seating.", category: "EVENT_SETUP", ...place("Dehiwala", "Lanka Events box office, Galle Road, Dehiwala"), startAt: at(-7 * DAY), expiresAt: at(3 * DAY), createdAt: at(-27 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "615204", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-7 * DAY), startedAt: at(-7 * DAY) },
+  });
+  // An unpaid internship: no payment checkpoint — completion completes it (FR-ENG-02).
+  await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id,
+    posting: { arrangementType: "INTERNSHIP", payKind: "UNPAID", payAmount: null, title: "Stockroom internship", description: "Learn how a retail stockroom runs.", category: "RETAIL", ...place("Colombo 03", "456 Galle Rd, Colombo"), startAt: at(-2 * HOUR), expiresAt: at(28 * DAY), createdAt: at(-2 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "147302", completionCode: "859614", paymentCode: null, paymentStatus: null },
+  });
+
+  // 6e. Pawan — rating (FR-RATE-01/02). A gig completed yesterday that neither side has rated yet:
+  //     the live double-blind between Amal and Kamal.
+  const yesterday = at(-1 * DAY);
+  const engToRate = await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id, appliedAgo: 4 * DAY,
+    posting: { ...gigPay, title: "Stock count — Saturday", description: "Count stock for the quarterly check.", category: "RETAIL", payAmount: 3000, ...place("Colombo 01", "123 Main St, Colombo"), startAt: at(-2 * DAY), expiresAt: at(-2 * DAY), createdAt: at(-5 * DAY) },
+    engagement: { status: "COMPLETED", arrivalCode: "503718", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-2 * DAY), startedAt: at(-2 * DAY), completionCode: "690452", completionStatus: "CONFIRMED", completionConfirmedAt: yesterday, paymentCode: "128649", paymentStatus: "CONFIRMED", paymentConfirmedAt: yesterday, ratingOpenedAt: yesterday },
+  });
+  await prisma.completionRecord.create({
+    data: { userId: worker.id, engagementId: engToRate.id, outcome: "COMPLETED", recordedAt: yesterday },
+  });
+  // A window that closed a day ago on Lanka Events' rating alone: on the first read it is revealed
+  // at the deadline, and Nimali can no longer rate (6.1f, 6.3s — FR-RATE-02 as amended).
+  const fifteenDaysAgo = at(-15 * DAY);
+  const engClosed = await engaged({
+    employerId: lankaEvents.id, fields: lankaFields, workerId: worker2.id, appliedAgo: 18 * DAY,
+    posting: { ...gigPay, title: "Exhibition stall helper", description: "Staff a trade-fair stall for a day.", category: "EVENT_SETUP", payAmount: 3500, ...place("Colombo 07", "BMICH, Colombo 07"), startAt: at(-16 * DAY), expiresAt: at(-16 * DAY), createdAt: at(-20 * DAY) },
+    engagement: { status: "COMPLETED", arrivalCode: "836025", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-16 * DAY), startedAt: at(-16 * DAY), completionCode: "472913", completionStatus: "CONFIRMED", completionConfirmedAt: fifteenDaysAgo, paymentCode: "905386", paymentStatus: "CONFIRMED", paymentConfirmedAt: fifteenDaysAgo, ratingOpenedAt: fifteenDaysAgo },
+  });
+  await prisma.rating.create({
+    data: { engagementId: engClosed.id, raterId: lankaEvents.id, rateeId: worker2.id, score: 4, submittedAt: at(-14 * DAY) },
+  });
+  await prisma.completionRecord.create({
+    data: { userId: worker2.id, engagementId: engClosed.id, outcome: "COMPLETED", recordedAt: fifteenDaysAgo },
+  });
+
+  // 6f. Naveenkhan — cancellation (FR-ENG-05/06). Not-yet-started engagements in each regime.
+  // A regular request waiting for Nimali's answer: Lanka Events asked an hour ago, a week before
+  // the start, so Nimali has 48 hours to accept or reject (5.9). Not Dilrukshi's (see 6d).
+  const engAsked = await engaged({
+    employerId: lankaEvents.id, fields: lankaFields, workerId: worker2.id, appliedAgo: 3 * DAY,
+    posting: { arrangementType: "PART_TIME", payKind: "RATE", payAmount: 1800, payRateUnit: "DAY", schedule: "Sat and Sun, 9 am to 5 pm", title: "Ticket desk — weekend shows", description: "Run the ticket desk for weekend shows.", category: "EVENT_SETUP", ...place("Colombo 07", "Lanka Events theatre, Colombo 07"), startAt: at(7 * DAY), expiresAt: at(28 * DAY), createdAt: at(-2 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "193467", createdAt: at(-3 * DAY + HOUR) },
+  });
+  await prisma.cancellationRequest.create({
+    data: {
+      engagementId: engAsked.id,
+      requestedByUserId: lankaEvents.id,
+      reason: "SCHEDULE_CONFLICT",
+      isUrgentEngagement: false,
+      requestedAt: at(-1 * HOUR),
+      deadline: at(47 * HOUR), // 48 hours from the request
+      status: "PENDING",
+    },
+  });
+  // Starts in 5 days: either side can send a regular request from scratch (5.7t).
+  await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id, appliedAgo: 2 * DAY,
+    posting: { ...gigPay, title: "Inventory audit — next week", description: "Help count and label stock for an audit.", category: "RETAIL", payAmount: 3500, ...place("Colombo 01", "123 Main St, Colombo"), startAt: at(5 * DAY), expiresAt: at(5 * DAY), createdAt: at(-3 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "724591", completionCode: "368014", paymentCode: "952730", paymentStatus: "PENDING" },
+  });
+  // Starts in 12 hours but was booked 3 days ago: cancelling now is immediate and Late (within 24 h
+  // of a start booked more than 48 h ahead — FR-ENG-06), 5.10 / 5.7e.
+  await engaged({
+    employerId: employer.id, fields: businessFields, workerId: worker.id, appliedAgo: 4 * DAY,
+    posting: { ...gigPay, title: "Delivery van loader", description: "Load the delivery van for the evening run.", category: "DELIVERY", payAmount: 2000, ...place("Colombo 03", "456 Galle Rd, Colombo"), startAt: at(12 * HOUR), expiresAt: at(12 * HOUR), isUrgent: true, createdAt: at(-5 * DAY) },
+    engagement: { status: "ACTIVE", arrivalCode: "846102", completionCode: "517386", paymentCode: "203958", paymentStatus: "PENDING", createdAt: at(-3 * DAY) },
+  });
+
   console.log("Seed completed successfully!");
   console.log("\n--- Test accounts (password for all: Password123!) ---");
   console.log("Youth Job-Seeker: +94770000001  (Amal Perera, verified email amal@example.com)");
@@ -724,6 +1182,24 @@ async function main() {
   console.log("EXPIRED    Stage crew — weekend           (1 of 2; Nimali's engagement carries on)");
   console.log("OPEN       Event setup crew (3 needed)    (1 of 3; re-confirmation PENDING for Amal; Nimali applied)");
   console.log("HIDDEN     Data entry — work from home    (R. Gunasekara; 3 reports, autoHiddenAt set)");
+  console.log("\n--- Viva demonstration data (section 6) ---");
+  console.log("Employer:         +94770000011  (Ruwan Jayasekara, Business \"Lanka Events (Pvt) Ltd\")");
+  console.log("Youth Job-Seeker: +94770000008  (Nethmi Jayasinghe — 4.6 from 12 ratings · 92% completion · 12 jobs)");
+  console.log("Youth Job-Seeker: +94770000009  (Tharindu Silva — new, endorsed by Sunil)");
+  console.log("Youth Job-Seeker: +94770000010  (Kavindu Perera — new)");
+  console.log("POOL       Weekend event crew (3 needed)  (Kamal; Nethmi / Tharindu / Kavindu pending — three tiers)");
+  console.log("BROWSE     6 open postings within 5 km of Nugegoda (2 urgent) + Moving help — Malabe (from Homagama the radius widens to 15 km)");
+  console.log("NOTIFY     Amal opted in to urgent alerts, Amal and Nimali last browsed near Nugegoda");
+  console.log("ENGAGE     Amal / Shelf restock — this morning     arrival next (Kamal shows 358176)");
+  console.log("ENGAGE     Amal / Warehouse sorting                completion next (Kamal shows 386215)");
+  console.log("ENGAGE     Nimali / Stage teardown — Nugegoda      payment next (Nimali shows 408273 to Lanka Events)");
+  console.log("ENGAGE     Nimali / Box office assistant           part-time under way (Lanka Events) — End Engagement");
+  console.log("ENGAGE     Amal / Stockroom internship             unpaid: arrival then completion only (Kamal shows 147302)");
+  console.log("RATE       Amal + Kamal / Stock count — Saturday   completed yesterday, nobody has rated");
+  console.log("RATE       Nimali / Exhibition stall helper        window closed on Lanka Events' rating alone");
+  console.log("CANCEL     Nimali / Ticket desk — weekend shows    Lanka Events asked to cancel; Nimali to answer within 48 h");
+  console.log("CANCEL     Amal / Inventory audit — next week      starts in 5 days: a regular request (48 h window)");
+  console.log("CANCEL     Amal / Delivery van loader              starts in 12 h, booked 3 days ago: immediate and Late");
 }
 
 main()

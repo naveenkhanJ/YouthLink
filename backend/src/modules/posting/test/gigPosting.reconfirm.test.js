@@ -33,6 +33,7 @@ describe('requestReconfirmation', () => {
     return {
       engagement: { findMany: jest.fn().mockResolvedValue(engagements) },
       materialChangeRequest: { create: jest.fn() },
+      notification: { create: jest.fn() },
     };
   }
 
@@ -60,6 +61,18 @@ describe('requestReconfirmation', () => {
     expect(tx.materialChangeRequest.create.mock.calls[0][0].data.changeSummary).toEqual({
       payAmount: { from: 6000, to: 7000 },
       workersNeeded: { from: 3, to: 1 },
+    });
+  });
+
+  test('tells each engaged worker with a MATERIAL_CHANGE notification (FR-ENG-09 / FR-NOTIF-05)', async () => {
+    const tx = txWith([{ id: 'e1', workerId: 'w1' }, { id: 'e2', workerId: 'w2' }]);
+    await requestReconfirmation({ posting, changes: { payAmount: 7000 }, newStartAt }, tx);
+
+    expect(tx.notification.create).toHaveBeenCalledTimes(2);
+    expect(tx.notification.create.mock.calls[1][0].data).toMatchObject({
+      userId: 'w2',
+      type: 'MATERIAL_CHANGE',
+      payload: { gigPostingId: 'p1', engagementId: 'e2' },
     });
   });
 

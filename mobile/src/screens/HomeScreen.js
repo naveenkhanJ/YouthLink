@@ -19,7 +19,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../auth/AuthContext";
 import TabBar, { SHELL_COPY_BY_ROLE } from "../components/TabBar";
-import { isRouteRegistered, routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
+import { routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
 import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
@@ -90,17 +90,19 @@ function SignedInShell({ user, navigation, route }) {
   }, [requestedTab]);
   const shellCopy = SHELL_COPY_BY_ROLE[tabBarRole];
 
-  // An employer's first tab is My postings. When that screen is registered, replace Home with it so Back
-  // leaves the app instead of landing on a placeholder. A tab bar elsewhere opens this shell with
-  // { tab } set, which is not forwarded. My postings and Post a Gig draw ShellTabBar, so this is no dead end.
-  const forwardToPostings =
-    tabBarRole === "employer" &&
-    (requestedTab === undefined || requestedTab === "postings") &&
-    isRouteRegistered(navigation, "PostingList");
+  // Each role lands on its first tab's hub (worker: Browse, employer: My postings). When that hub's
+  // module has registered its screen, replace Home with it so Back leaves the app instead of landing
+  // on a placeholder. A tab bar elsewhere opens this shell with { tab } set for a tab that has no
+  // screen yet, which is not forwarded. Every hub screen draws ShellTabBar, so this is no dead end.
+  const firstTab = FIRST_TAB_BY_ROLE[tabBarRole];
+  const firstHub =
+    requestedTab === undefined || requestedTab === firstTab
+      ? routeForTab(navigation, tabBarRole, firstTab)
+      : undefined;
   useEffect(() => {
-    if (forwardToPostings && navigation.isFocused()) navigation.replace("PostingList");
-  }, [forwardToPostings, navigation]);
-  if (forwardToPostings) return <View style={styles.flex} />; // blank while the replace happens
+    if (firstHub && navigation.isFocused()) navigation.replace(firstHub);
+  }, [firstHub, navigation]);
+  if (firstHub) return <View style={styles.flex} />; // blank while the replace happens
 
   return (
     <View style={styles.flex}>

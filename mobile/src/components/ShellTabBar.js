@@ -28,10 +28,25 @@ const TABBAR_ROLE = {
 };
 
 // Tab key (TabBar.js TABS_BY_ROLE) -> the route that module registered for that hub.
+// The hosts each shell names (MNAV-shells.md NAV.1–NAV.3): Browse 3.1, My Applications 4.3,
+// Engagements 5.1/5.1e, Notifications 3.10/3.10e/3.10v, My Postings 2.10, Post a Gig 2.1, Profile 1.18.
+// The verifier's Endorsements and Vouch (M8) have no registered screen, so they stay on the shell.
 const ROUTE_BY_TAB = {
-  worker: { profile: "ProfileOwn" },
-  employer: { postings: "PostingList", postGig: "PostingCreate", profile: "ProfileOwn" },
-  verifier: { profile: "ProfileOwn" },
+  worker: {
+    browse: "DiscoveryBrowse",
+    applications: "ApplicationMine",
+    engagements: "EngagementList",
+    notifications: "NotificationHistory",
+    profile: "ProfileOwn",
+  },
+  employer: {
+    postings: "PostingList",
+    postGig: "PostingCreate",
+    engagements: "EngagementList",
+    notifications: "NotificationHistory",
+    profile: "ProfileOwn",
+  },
+  verifier: { notifications: "NotificationHistory", profile: "ProfileOwn" },
 };
 
 /** The TabBar role ("worker" | "employer" | "verifier") for a signed-in user, or undefined. */

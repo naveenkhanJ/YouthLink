@@ -14,6 +14,12 @@ const prismaMock = {
   $executeRaw: jest.fn(),
 };
 jest.unstable_mockModule('../../../lib/prisma.js', () => ({ default: prismaMock }));
+// The cross-module seams are mocked: these tests cover the posting rules, not what Applying &
+// Selection or Notifications do when called (their own tests cover that).
+const resolvePendingApplicants = jest.fn().mockResolvedValue({ resolved: 0 });
+const notifyPendingApplicantsOfChange = jest.fn().mockResolvedValue({ notified: 0 });
+jest.unstable_mockModule('../posting.applicants.js', () => ({ resolvePendingApplicants, notifyPendingApplicantsOfChange }));
+jest.unstable_mockModule('../posting.notify.js', () => ({ notifyNewGigPosted: jest.fn().mockResolvedValue({ notified: 0 }) }));
 
 const {
   withdrawGigPosting,
