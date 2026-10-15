@@ -13,7 +13,8 @@
  * reads "Hidden pending review" on its card, with the explanation beneath it.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import PressableScale from '../../components/PressableScale';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, spacing, radius, typography } from '../../theme/tokens';
@@ -91,7 +92,7 @@ export default function PostingListScreen({ navigation }) {
         }
         renderItem={({ item }) => (
           <View style={styles.item}>
-            <Pressable
+            <PressableScale
               onPress={() => navigation.navigate('PostingDetail', { postingId: item.id })}
               accessibilityRole="button"
               accessibilityLabel={item.title}
@@ -102,7 +103,7 @@ export default function PostingListScreen({ navigation }) {
                 <Badge family="posting" value={badgeValue(item.status)} />
               </View>
               <Text style={styles.meta}>{cardMeta(item)}</Text>
-            </Pressable>
+            </PressableScale>
             {isHiddenPending(item) ? <Text style={styles.hiddenNote}>{HIDDEN_NOTE_LIST}</Text> : null}
           </View>
         )}

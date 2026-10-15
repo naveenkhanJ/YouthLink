@@ -17,7 +17,7 @@
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { colors, spacing, radius, elevation, typography } from '../../../theme/tokens';
+import { colors, spacing, radius, elevation, typography, pressed } from '../../../theme/tokens';
 import { fill } from '../../../theme/layout';
 import Chip from '../../../components/Chip';
 import Button from '../../../components/Button';
@@ -106,7 +106,7 @@ export default function StartDateTimeField({
         onPress={openSheet}
         accessibilityRole="button"
         accessibilityLabel={`${label}${text ? `, ${text}` : ''}. Open the picker.`}
-        style={[styles.field, error && styles.fieldError]}
+        style={({ pressed: isPressed }) => [styles.field, error && styles.fieldError, isPressed && styles.pressedSurface]}
       >
         <Text style={[styles.value, text && styles.valueFilled]} numberOfLines={1}>
           {text || placeholder}
@@ -184,6 +184,8 @@ export default function StartDateTimeField({
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   // 6 — a literal in the real DateTimeField, not a named spacing token.
   container: {
     gap: 6,

@@ -5,7 +5,7 @@
  * `Action/Button` and the smaller `Action/ListRowAction`.
  */
 import { Pressable, Text, StyleSheet } from "react-native";
-import { colors, typography } from "../theme/tokens";
+import { colors, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {string} title
@@ -13,13 +13,14 @@ import { colors, typography } from "../theme/tokens";
  */
 export default function Link({ title, onPress }) {
   return (
-    <Pressable onPress={onPress} style={styles.wrap} accessibilityRole="button">
+    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.wrap, isPressed && styles.pressedText]} accessibilityRole="button">
       <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  pressedText: { opacity: pressed.textOpacity },
   wrap: {
     paddingVertical: 10,
   },

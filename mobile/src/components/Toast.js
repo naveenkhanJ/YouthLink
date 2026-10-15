@@ -8,27 +8,54 @@
  * screen's root View.
  */
 import { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Animated, Text, StyleSheet } from "react-native";
 import { colors, spacing, typography } from "../theme/tokens";
+import useReducedMotion from "../hooks/useReducedMotion";
 
 const VISIBLE_MS = 2500;
+// It fades in while rising this far into place, and sinks back as it fades out. Short, so the
+// message is readable at once; without it the toast blinked on and off.
+const ENTER_MS = 180;
+const EXIT_MS = 160;
+const RISE_DP = 8;
 
 /** @param {number} [bottom] - Distance from the bottom edge; raise it to clear a TabBar. */
 export function useToast(bottom = spacing.xl) {
   const [message, setMessage] = useState(null);
   const timer = useRef(null);
+  const shown = useRef(new Animated.Value(0)).current; // 0 hidden, 1 in place
+  const reduceMotion = useReducedMotion();
   useEffect(() => () => clearTimeout(timer.current), []);
 
   function show(text) {
     setMessage(text);
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setMessage(null), VISIBLE_MS);
+    shown.stopAnimation();
+    if (reduceMotion) shown.setValue(1);
+    else Animated.timing(shown, { toValue: 1, duration: ENTER_MS, useNativeDriver: true }).start();
+    timer.current = setTimeout(hide, VISIBLE_MS);
   }
 
+  function hide() {
+    if (reduceMotion) {
+      setMessage(null);
+      return;
+    }
+    // Removed only once it has faded, so it never vanishes mid-fade.
+    Animated.timing(shown, { toValue: 0, duration: EXIT_MS, useNativeDriver: true }).start(({ finished }) => {
+      if (finished) setMessage(null);
+    });
+  }
+
+  const translateY = shown.interpolate({ inputRange: [0, 1], outputRange: [RISE_DP, 0] });
   const toast = message ? (
-    <View style={[styles.toast, { bottom }]} pointerEvents="none" accessibilityLiveRegion="polite">
+    <Animated.View
+      style={[styles.toast, { bottom, opacity: shown, transform: [{ translateY }] }]}
+      pointerEvents="none"
+      accessibilityLiveRegion="polite"
+    >
       <Text style={styles.text}>{message}</Text>
-    </View>
+    </Animated.View>
   ) : null;
 
   return { show, toast };

@@ -5,7 +5,7 @@
  */
 import { Pressable, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { colors, spacing } from "../../../theme/tokens";
+import { colors, spacing, iconRipple } from "../../../theme/tokens";
 
 /**
  * @param {() => void} onPress
@@ -14,6 +14,7 @@ export default function CloseButton({ onPress }) {
   return (
     <Pressable
       onPress={onPress}
+      android_ripple={iconRipple}
       style={styles.hit}
       hitSlop={spacing.sm}
       accessibilityRole="button"

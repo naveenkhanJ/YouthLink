@@ -49,6 +49,14 @@ const ROUTE_BY_TAB = {
   verifier: { notifications: "NotificationHistory", profile: "ProfileOwn" },
 };
 
+/**
+ * Every route a tab can open, plus the Home shell: the screens that sit on the tab bar.
+ * RootNavigator gives these no transition animation (see there), so switching tabs swaps the
+ * content in place instead of zooming a whole new page in, tab bar included. Derived from
+ * ROUTE_BY_TAB so a hub added there is covered without touching the navigator.
+ */
+export const TAB_HUB_ROUTES = new Set(["Home", ...Object.values(ROUTE_BY_TAB).flatMap((tabs) => Object.values(tabs))]);
+
 /** The TabBar role ("worker" | "employer" | "verifier") for a signed-in user, or undefined. */
 export function tabBarRoleFor(user) {
   return TABBAR_ROLE[user?.role];

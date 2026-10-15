@@ -14,7 +14,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, radius, spacing, typography } from "../../theme/tokens";
+import { colors, radius, spacing, typography, iconRipple } from "../../theme/tokens";
 
 /** One OS/PushNotification card. `urgent` adds the channel accent strip and the warning glyph. */
 function PushPreview({ title, body, urgent = false }) {
@@ -68,6 +68,7 @@ export default function NotificationAppearanceScreen({ navigation }) {
       {/* backHit 44×44 at 16,6 below the status bar, with the 8×16 back chevron. */}
       <Pressable
         onPress={() => navigation.goBack()}
+        android_ripple={iconRipple}
         style={[styles.backHit, { top: insets.top + 6 }]}
         accessibilityRole="button"
         accessibilityLabel="Back"

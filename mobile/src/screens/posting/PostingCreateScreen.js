@@ -27,7 +27,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Pressable, ScrollView, StyleSheet, BackHandler } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { colors, spacing, radius, typography } from "../../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../../theme/tokens";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
 import TextArea from "../../components/TextArea";
@@ -637,7 +637,7 @@ function OptionRow({ label, selected, onPress }) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      style={[styles.optionRow, selected && styles.optionRowSelected]}
+      style={({ pressed: isPressed }) => [styles.optionRow, selected && styles.optionRowSelected, isPressed && styles.pressedSurface]}
     >
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>
     </Pressable>
@@ -645,6 +645,8 @@ function OptionRow({ label, selected, onPress }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   root: {
     flex: 1,
     backgroundColor: colors.bg.default,

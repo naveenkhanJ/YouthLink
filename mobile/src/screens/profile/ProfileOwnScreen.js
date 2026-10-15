@@ -29,7 +29,7 @@ import useForegroundRefresh from "../../auth/useForegroundRefresh";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getOwnProfile } from "../../api/profile";
-import { colors, spacing, elevation, typography } from "../../theme/tokens";
+import { colors, spacing, elevation, typography, pressed } from "../../theme/tokens";
 import Badge from "../../components/Badge";
 import ProfileTrustBlock from "../../components/ProfileTrustBlock";
 import EndorsementRow from "../../components/EndorsementRow";
@@ -63,7 +63,7 @@ function verifierLine(verifier) {
 /** A white row with a chevron: 328×52, pad 14, radius 10, the card shadow (Figma row-*). */
 function ProfileRow({ label, onPress }) {
   return (
-    <Pressable onPress={onPress} style={[styles.row, elevation.card]} accessibilityRole="button">
+    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.row, elevation.card, isPressed && styles.pressedSurface]} accessibilityRole="button">
       <Text style={styles.rowLabel}>{label}</Text>
       <Svg width={6} height={12} viewBox="0 0 6 12" fill="none" overflow="visible">
         <Path
@@ -197,6 +197,8 @@ export default function ProfileOwnScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   root: {
     flex: 1,
     backgroundColor: colors.bg.subtle,

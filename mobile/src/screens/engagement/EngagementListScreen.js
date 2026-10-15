@@ -18,7 +18,8 @@
  * a failed load → Feedback/FormBanner with a retry. Reloads whenever the tab is returned to.
  */
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, Pressable, FlatList, RefreshControl, StyleSheet } from "react-native";
+import { View, Text, FlatList, RefreshControl, StyleSheet } from "react-native";
+import PressableScale from "../../components/PressableScale";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/AuthContext";
@@ -120,7 +121,7 @@ export default function EngagementListScreen({ navigation }) {
         }
         renderItem={({ item }) => (
           // The whole row opens it; the action line inside is the same destination.
-          <Pressable
+          <PressableScale
             onPress={() => openRow(item)}
             accessibilityRole="button"
             accessibilityLabel={`${item.counterpartyName}, ${item.postingTitle}`}
@@ -132,7 +133,7 @@ export default function EngagementListScreen({ navigation }) {
               actionLabel={nextActionLabel(item.nextAction, item.counterpartyName)}
               onPressAction={() => openRow(item)}
             />
-          </Pressable>
+          </PressableScale>
         )}
       />
       {/* 5.1*: the role's tab bar, Engagements active. */}

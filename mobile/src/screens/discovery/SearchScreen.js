@@ -10,7 +10,8 @@
  * Feedback/EmptyState; a failed search → Feedback/FormBanner.
  */
 import { useEffect, useRef, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import PressableScale from "../../components/PressableScale";
 import { StatusBar } from "expo-status-bar";
 import ScreenHeader from "../../components/ScreenHeader";
 import ListingCard from "../../components/ListingCard";
@@ -115,7 +116,7 @@ export default function SearchScreen({ navigation }) {
           ) : null
         }
         renderItem={({ item }) => (
-          <Pressable onPress={() => openListing(item)} accessibilityRole="button" accessibilityLabel={item.title}>
+          <PressableScale onPress={() => openListing(item)} accessibilityRole="button" accessibilityLabel={item.title}>
             <ListingCard
               title={item.title}
               subtitle={cardMeta(item)}
@@ -123,7 +124,7 @@ export default function SearchScreen({ navigation }) {
               statusLine={cardFill(item)}
               urgent={item.isUrgent}
             />
-          </Pressable>
+          </PressableScale>
         )}
       />
     </View>

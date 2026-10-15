@@ -14,7 +14,7 @@
 import { View, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
-import { colors, spacing } from '../../../theme/tokens';
+import { colors, spacing, iconRipple } from '../../../theme/tokens';
 
 /**
  * @param {() => void} [onBack] - Back to the previous step. Omit on step 1 (draws the ghost instead).
@@ -39,6 +39,7 @@ export default function FormTopBar({ onBack, onClose, ghost = false, review = fa
         <>
           <Pressable
             onPress={onBack}
+            android_ripple={iconRipple}
             hitSlop={spacing.sm}
             accessibilityRole="button"
             accessibilityLabel="Back"
@@ -57,6 +58,7 @@ export default function FormTopBar({ onBack, onClose, ghost = false, review = fa
           </Pressable>
           <Pressable
             onPress={onClose}
+            android_ripple={iconRipple}
             hitSlop={spacing.sm}
             accessibilityRole="button"
             accessibilityLabel="Close"

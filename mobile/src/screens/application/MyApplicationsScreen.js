@@ -18,7 +18,8 @@
  * Feedback/EmptyState {NoneExist} with "Browse gigs" (4.3z); a failed load → FormBanner + retry.
  */
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, Pressable, FlatList, RefreshControl, StyleSheet } from "react-native";
+import { View, Text, FlatList, RefreshControl, StyleSheet } from "react-native";
+import PressableScale from "../../components/PressableScale";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
@@ -50,13 +51,13 @@ function ApplicationRow({ row, onWithdraw, onOpenEngagement }) {
   );
   if (!opensEngagement) return card;
   return (
-    <Pressable
+    <PressableScale
       onPress={() => onOpenEngagement(row.engagement.id)}
       accessibilityRole="button"
       accessibilityLabel={`${row.posting.title}, see engagement`}
     >
       {card}
-    </Pressable>
+    </PressableScale>
   );
 }
 

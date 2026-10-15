@@ -13,7 +13,7 @@
  * genuinely needs nothing from the viewer right now.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
-import { colors, spacing, radius, elevation, typography } from "../theme/tokens";
+import { colors, spacing, radius, elevation, typography, pressed } from "../theme/tokens";
 import Badge from "./Badge";
 
 /**
@@ -32,7 +32,7 @@ export default function EngagementRow({ counterpartyName, status, postingTitle, 
       </View>
       <Text style={styles.posting}>{postingTitle}</Text>
       {actionLabel ? (
-        <Pressable onPress={onPressAction} accessibilityRole="button">
+        <Pressable onPress={onPressAction} style={({ pressed: isPressed }) => isPressed && styles.pressedText} accessibilityRole="button">
           <Text style={styles.action}>{actionLabel}</Text>
         </Pressable>
       ) : null}
@@ -41,6 +41,7 @@ export default function EngagementRow({ counterpartyName, status, postingTitle, 
 }
 
 const styles = StyleSheet.create({
+  pressedText: { opacity: pressed.textOpacity },
   card: {
     gap: spacing.sm,
     padding: spacing.lg,

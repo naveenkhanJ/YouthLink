@@ -27,7 +27,7 @@ import Button from "../../components/Button";
 import CtaBar from "../../components/CtaBar";
 import FormBanner from "../../components/FormBanner";
 import LoadingState from "../../components/LoadingState";
-import { colors, spacing, radius, typography } from "../../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../../theme/tokens";
 import {
   CANCELLATION_REASONS,
   employerUrgentNote,
@@ -103,7 +103,7 @@ export default function EngagementCancelScreen({ route, navigation }) {
             onPress={() => setReason(r.id)}
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
-            style={[styles.reason, selected && styles.reasonSelected]}
+            style={({ pressed: isPressed }) => [styles.reason, selected && styles.reasonSelected, isPressed && styles.pressedSurface]}
           >
             <Text style={[styles.reasonLabel, selected && styles.reasonLabelSelected]}>{r.label}</Text>
           </Pressable>
@@ -177,6 +177,8 @@ export default function EngagementCancelScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   root: {
     flex: 1,
     backgroundColor: colors.bg.default,

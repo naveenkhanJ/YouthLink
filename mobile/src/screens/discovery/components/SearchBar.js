@@ -10,7 +10,7 @@
  */
 import { Pressable, Text, StyleSheet } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
-import { colors, radius, typography } from "../../../theme/tokens";
+import { colors, radius, typography, pressed } from "../../../theme/tokens";
 
 /** @param {{ onPress?: () => void }} props */
 export default function SearchBar({ onPress }) {
@@ -18,7 +18,7 @@ export default function SearchBar({ onPress }) {
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      style={styles.bar}
+      style={({ pressed: isPressed }) => [styles.bar, isPressed && styles.pressedSurface]}
       accessibilityRole="search"
       accessibilityLabel="Search gigs"
       accessibilityState={{ disabled: !onPress }}
@@ -35,6 +35,8 @@ export default function SearchBar({ onPress }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   bar: {
     height: 44,
     flexDirection: "row",

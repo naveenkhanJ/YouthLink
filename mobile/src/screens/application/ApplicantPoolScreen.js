@@ -18,7 +18,8 @@
  * Reloads on focus, so a selection or decline made on the detail screens shows on return.
  */
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import PressableScale from "../../components/PressableScale";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
@@ -111,7 +112,7 @@ export default function ApplicantPoolScreen({ route, navigation }) {
     );
     if (!pending && !selected) return tierRow; // declined / not selected: kept for the record, inert
     return (
-      <Pressable
+      <PressableScale
         onPress={() =>
           navigation.navigate(selected ? "ApplicationContactDetails" : "ApplicationApplicantDetail", params(row))
         }
@@ -119,7 +120,7 @@ export default function ApplicantPoolScreen({ route, navigation }) {
         accessibilityLabel={row.worker.displayName}
       >
         {tierRow}
-      </Pressable>
+      </PressableScale>
     );
   }
 

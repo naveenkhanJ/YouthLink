@@ -11,7 +11,7 @@
  * label text.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
-import { colors, spacing, radius, typography } from "../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {"individual"|"business"} selected
@@ -36,7 +36,11 @@ export default function SegmentedControl({
           <Pressable
             key={segment.value}
             onPress={() => onChange(segment.value)}
-            style={[styles.segment, isSelected && styles.segmentSelected]}
+            style={({ pressed: isPressed }) => [
+              styles.segment,
+              isSelected && styles.segmentSelected,
+              isPressed && (isSelected ? styles.pressedFill : styles.pressedText),
+            ]}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
           >
@@ -51,6 +55,8 @@ export default function SegmentedControl({
 }
 
 const styles = StyleSheet.create({
+  pressedFill: { opacity: pressed.fillOpacity },
+  pressedText: { opacity: pressed.textOpacity },
   track: {
     flexDirection: "row",
     gap: 2,

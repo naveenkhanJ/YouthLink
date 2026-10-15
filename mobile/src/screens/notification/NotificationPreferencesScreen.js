@@ -24,7 +24,7 @@ import LoadingState from "../../components/LoadingState";
 import Button from "../../components/Button";
 import { useAuth } from "../../auth/AuthContext";
 import { tabBarRoleFor } from "../../components/ShellTabBar";
-import { colors, radius, spacing, typography } from "../../theme/tokens";
+import { colors, radius, spacing, typography, pressed } from "../../theme/tokens";
 import { getNotificationPreferences, updateNotificationPreferences } from "../../api/notification.api";
 import { parseApiError } from "../../api/client";
 
@@ -116,7 +116,7 @@ function JobSeekerPreferences({ navigation }) {
       {/* row-NotifAppearance: 328×52, pad 14, gap 8, r10, 1px border; opens 3.13. */}
       <Pressable
         onPress={() => navigation.navigate("NotificationAppearance")}
-        style={styles.row}
+        style={({ pressed: isPressed }) => [styles.row, isPressed && styles.pressedSurface]}
         accessibilityRole="button"
       >
         <Text style={styles.rowLabel}>How notifications look</Text>
@@ -135,6 +135,8 @@ function JobSeekerPreferences({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   root: {
     flex: 1,
     backgroundColor: colors.bg.default,

@@ -36,6 +36,13 @@ export default [
 
 Navigate with `navigation.navigate("AccountRegister")`.
 
+## Transitions
+
+- **Moving deeper** (a list to its detail, a form step, back) slides in from the right: `animation: "slide_from_right"`, set once on the navigator in `RootNavigator.js`. Do not leave it at the library default: on Android 13+ that is a slow (450 ms) fade with a small sideways shift, which looks unfinished.
+- **Switching tabs** has no animation. The tab bar is drawn inside every tab screen (`ShellTabBar`), so any push animation would move the bar with the page. Tab screens are `animation: "none"`, so the bar stays put and only the content changes. The list of tab screens is `TAB_HUB_ROUTES` in `components/ShellTabBar.js`, derived from `ROUTE_BY_TAB`, so a hub added there is covered without touching the navigator. A cross-fade is not an alternative: the window behind the app is brand blue and shows through mid-fade.
+- **Press feedback** follows a few rules, all in `pressed` in `theme/tokens.js`: a white row, field, option or chip darkens (the tint follows its rounded corners); a brand-filled control dims, as `Button` does; a text link dims; a card that opens something shrinks slightly (`components/PressableScale.js`); a tab tints inside its pill, Material 3 style. Android's ripple is used only for icon buttons (`iconRipple`, a circle): on this React Native it ignores rounded corners, so on anything rounded it showed a hard rectangle.
+- **Reduce motion**: every decorative animation (loading pulse, toast, card press) checks `hooks/useReducedMotion.js` and stays still when the phone asks for less motion.
+
 ## Why React Navigation and not expo-router
 
 `expo-router` was the serious alternative and was rejected for one decisive reason plus three supporting ones.

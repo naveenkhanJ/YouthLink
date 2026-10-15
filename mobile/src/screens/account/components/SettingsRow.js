@@ -8,7 +8,7 @@
  */
 import { Pressable, Text, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { colors, spacing, typography } from "../../../theme/tokens";
+import { colors, spacing, typography, pressed } from "../../../theme/tokens";
 
 /**
  * @param {string} label
@@ -18,7 +18,7 @@ import { colors, spacing, typography } from "../../../theme/tokens";
  */
 export default function SettingsRow({ label, value, danger = false, onPress }) {
   return (
-    <Pressable onPress={onPress} style={styles.row} accessibilityRole="button">
+    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.row, isPressed && styles.pressedSurface]} accessibilityRole="button">
       <Text style={[styles.label, danger && styles.danger]}>{label}</Text>
       {value ? (
         <Text style={styles.value} numberOfLines={1} ellipsizeMode="tail">
@@ -41,6 +41,8 @@ export default function SettingsRow({ label, value, danger = false, onPress }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   row: {
     flexDirection: "row",
     alignItems: "center",

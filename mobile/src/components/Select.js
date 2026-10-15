@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { colors, spacing, radius, typography } from "../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {string} label
@@ -29,7 +29,7 @@ export default function Select({ label, options, value, onChange, placeholder = 
       <Text style={styles.label}>{label}</Text>
       <Pressable
         onPress={() => setOpen((prev) => !prev)}
-        style={styles.field}
+        style={({ pressed: isPressed }) => [styles.field, isPressed && styles.pressedSurface]}
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityState={{ expanded: open }}
@@ -58,7 +58,11 @@ export default function Select({ label, options, value, onChange, placeholder = 
                 onChange(option.value);
                 setOpen(false);
               }}
-              style={[styles.option, option.value === value && styles.optionSelected]}
+              style={({ pressed: isPressed }) => [
+                styles.option,
+                option.value === value && styles.optionSelected,
+                isPressed && styles.pressedSurface,
+              ]}
               accessibilityRole="button"
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
@@ -71,6 +75,8 @@ export default function Select({ label, options, value, onChange, placeholder = 
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   container: {
     // 6px — a literal in the real component, not a named spacing token.
     gap: 6,

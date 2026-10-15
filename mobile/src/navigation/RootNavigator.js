@@ -20,6 +20,7 @@ import HomeScreen from "../screens/HomeScreen";
 import { useAuth } from "../auth/AuthContext";
 import { readLaunchState } from "../auth/launchState";
 import { toLocalDigits } from "../screens/account/phoneFormat";
+import { TAB_HUB_ROUTES } from "../components/ShellTabBar";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -92,18 +93,25 @@ export default function RootNavigator() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
     <NavigationContainer ref={navigationRef}>
       <SessionEndRedirect />
-      <Stack.Navigator initialRouteName="Home">
+      {/* Moving deeper (a list to its detail, a form step) slides in from the right and back out,
+          Android's standard forward motion. The library's default on Android 13+ is a slow (450 ms)
+          fade with a small sideways shift, which looked unfinished. */}
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ animation: "slide_from_right" }}>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ headerShown: false }}
+          options={{ headerShown: false, animation: "none" }}
         />
         {moduleScreens.map(({ name, component, options }) => (
           <Stack.Screen
             key={name}
             name={name}
             component={component}
-            options={options}
+            // The tab bar is drawn inside each tab screen, so any push animation would move the bar
+            // too. Tab screens therefore swap with no animation: the bar stays put and only the
+            // content changes. (A cross-fade is not an option: the window behind is brand blue and
+            // would show through mid-fade.) Which routes are tabs: TAB_HUB_ROUTES.
+            options={TAB_HUB_ROUTES.has(name) ? { ...options, animation: "none" } : options}
           />
         ))}
       </Stack.Navigator>

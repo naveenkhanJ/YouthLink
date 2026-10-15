@@ -25,6 +25,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
+import PressableScale from "../../components/PressableScale";
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -342,7 +343,7 @@ export default function DiscoveryScreen({ navigation }) {
           ) : undefined
         }
         renderItem={({ item }) => (
-          <Pressable onPress={() => openListing(item)} accessibilityRole="button" accessibilityLabel={item.title}>
+          <PressableScale onPress={() => openListing(item)} accessibilityRole="button" accessibilityLabel={item.title}>
             <ListingCard
               title={item.title}
               subtitle={cardMeta(item)}
@@ -350,7 +351,7 @@ export default function DiscoveryScreen({ navigation }) {
               statusLine={cardFill(item)}
               urgent={item.isUrgent}
             />
-          </Pressable>
+          </PressableScale>
         )}
       />
 

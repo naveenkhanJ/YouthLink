@@ -16,7 +16,7 @@ import { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, spacing, typography } from "../../theme/tokens";
+import { colors, spacing, typography, pressed } from "../../theme/tokens";
 import Button from "../../components/Button";
 import PagerDots from "../../components/PagerDots";
 import OnboardingArt from "./OnboardingArt";
@@ -60,7 +60,7 @@ export default function FirstRun({ onDone }) {
           onPress={onDone}
           hitSlop={12}
           accessibilityRole="button"
-          style={[styles.skipWrap, { top: insets.top + 24 }]}
+          style={({ pressed: isPressed }) => [styles.skipWrap, { top: insets.top + 24 }, isPressed && styles.pressedText]}
         >
           <Text style={styles.skip}>Skip</Text>
         </Pressable>
@@ -86,6 +86,8 @@ export default function FirstRun({ onDone }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`).
+  pressedText: { opacity: pressed.textOpacity },
   card: {
     flex: 1,
     backgroundColor: colors.bg.default,

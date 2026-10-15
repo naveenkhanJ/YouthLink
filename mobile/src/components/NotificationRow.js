@@ -13,7 +13,7 @@
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { colors, spacing, radius, elevation, typography } from "../theme/tokens";
+import { colors, spacing, radius, elevation, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {"standard"|"digest"} type
@@ -25,7 +25,7 @@ import { colors, spacing, radius, elevation, typography } from "../theme/tokens"
 export default function NotificationRow({ type = "standard", title, body, timeAgo, onPress }) {
   const isDigest = type === "digest";
   return (
-    <Pressable onPress={onPress} style={[styles.card, elevation.card]} accessibilityRole="button">
+    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.card, elevation.card, isPressed && styles.pressedSurface]} accessibilityRole="button">
       <View style={styles.dot} />
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={isDigest ? 1 : undefined}>{title}</Text>
@@ -44,6 +44,8 @@ export default function NotificationRow({ type = "standard", title, body, timeAg
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   card: {
     flexDirection: "row",
     gap: 10,

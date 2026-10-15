@@ -14,7 +14,7 @@
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { colors, spacing, radius, typography } from "../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {boolean} checked
@@ -26,7 +26,7 @@ export default function Checkbox({ checked, onToggle, label, errorMessage }) {
   return (
     <View style={styles.container}>
       <Pressable
-        style={styles.row}
+        style={({ pressed: isPressed }) => [styles.row, isPressed && styles.pressedText]}
         onPress={onToggle}
         accessibilityRole="checkbox"
         accessibilityState={{ checked }}
@@ -60,6 +60,7 @@ export default function Checkbox({ checked, onToggle, label, errorMessage }) {
 }
 
 const styles = StyleSheet.create({
+  pressedText: { opacity: pressed.textOpacity },
   container: {
     gap: 6,
   },

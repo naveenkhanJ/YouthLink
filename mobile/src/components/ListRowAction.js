@@ -8,7 +8,7 @@
  * only on Pending applications.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
-import { colors, spacing, radius } from "../theme/tokens";
+import { colors, spacing, radius, pressed } from "../theme/tokens";
 
 /**
  * @param {() => void} onSelect
@@ -19,10 +19,10 @@ import { colors, spacing, radius } from "../theme/tokens";
 export default function ListRowAction({ onSelect, onDecline, selectLabel = "Select", declineLabel = "Decline" }) {
   return (
     <View style={styles.row}>
-      <Pressable onPress={onSelect} style={[styles.button, styles.select]} accessibilityRole="button">
+      <Pressable onPress={onSelect} style={({ pressed: isPressed }) => [styles.button, styles.select, isPressed && styles.pressedFill]} accessibilityRole="button">
         <Text style={styles.selectLabel}>{selectLabel}</Text>
       </Pressable>
-      <Pressable onPress={onDecline} style={[styles.button, styles.decline]} accessibilityRole="button">
+      <Pressable onPress={onDecline} style={({ pressed: isPressed }) => [styles.button, styles.decline, isPressed && styles.pressedSurface]} accessibilityRole="button">
         <Text style={styles.declineLabel}>{declineLabel}</Text>
       </Pressable>
     </View>
@@ -30,6 +30,9 @@ export default function ListRowAction({ onSelect, onDecline, selectLabel = "Sele
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
+  pressedFill: { opacity: pressed.fillOpacity },
   row: {
     flexDirection: "row",
     gap: spacing.md,

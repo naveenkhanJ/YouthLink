@@ -18,7 +18,7 @@
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, spacing, typography } from "../theme/tokens";
+import { colors, spacing, typography, iconRipple } from "../theme/tokens";
 
 /**
  * @param {string} title
@@ -40,6 +40,7 @@ export default function ScreenHeader({ title, onBack, action, hideBack = false }
           {onBack ? (
             <Pressable
               onPress={onBack}
+              android_ripple={iconRipple}
               hitSlop={spacing.sm}
               accessibilityRole="button"
               accessibilityLabel="Back"

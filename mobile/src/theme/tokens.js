@@ -125,3 +125,23 @@ export const elevation = {
     elevation: 8,
   },
 };
+
+// Touch feedback: what a control looks like while a finger is on it. The prototype draws no
+// pressed state, so these are the platform's conventions, kept to a few rules so that every
+// control answers a tap the same way. Android's own ripple is used only for icon buttons: on this
+// React Native it ignores rounded corners, so on a pill, card or field it showed a hard rectangle.
+export const pressed = {
+  // A white row, field, option or unselected chip darkens to this (text/primary at 8% over white).
+  // A background colour follows the control's rounded corners, which a ripple does not.
+  surface: "#ecedee",
+  // A brand-filled control dims, as Button already does.
+  fillOpacity: 0.85,
+  // A text-only link dims.
+  textOpacity: 0.6,
+  // A card that opens something shrinks slightly (PressableScale), keeping its shadow and corners.
+  cardScale: 0.98,
+};
+
+// The circular ripple behind an icon button (back, close). Borderless, so it is a circle centred
+// on the icon rather than a rectangle; text/primary at 10% so it reads on white and gray alike.
+export const iconRipple = { color: "rgba(17, 24, 39, 0.10)", borderless: true, radius: 22 };

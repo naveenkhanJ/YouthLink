@@ -11,7 +11,7 @@
  * drawn explicitly.
  */
 import { Pressable, Text, StyleSheet } from "react-native";
-import { colors, spacing, radius, typography } from "../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {string} label
@@ -32,10 +32,11 @@ export default function Chip({ label, kind = "select", selected = false, onPress
   return (
     <Pressable
       onPress={onPress}
-      style={[
+      style={({ pressed: isPressed }) => [
         styles.base,
         selected ? styles.selectSelected : styles.selectDefault,
         touch ? (selected ? styles.touchSelected : styles.touchDefault) : null,
+        isPressed && (selected ? styles.pressedFill : styles.pressedSurface),
       ]}
       accessibilityRole="button"
       accessibilityState={{ selected }}
@@ -46,6 +47,9 @@ export default function Chip({ label, kind = "select", selected = false, onPress
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
+  pressedFill: { opacity: pressed.fillOpacity },
   base: {
     borderRadius: radius.pill,
     // 14/6 — literals in the real component, not named spacing tokens.

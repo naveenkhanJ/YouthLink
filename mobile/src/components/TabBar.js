@@ -30,10 +30,13 @@
  * active rendered with square corners on Android — overflow:"hidden" forces
  * the clip; borderRadius alone was not enough).
  */
-import { View, Pressable, Text, StyleSheet, useWindowDimensions } from "react-native";
+import { useRef } from "react";
+import { Animated, View, Pressable, Text, StyleSheet, useWindowDimensions } from "react-native";
 import Svg, { Path, Circle, Line, G } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, radius, typography, elevation } from "../theme/tokens";
+import { fill } from "../theme/layout";
+import useReducedMotion from "../hooks/useReducedMotion";
 
 const TABS_BY_ROLE = {
   worker: [
@@ -342,42 +345,69 @@ export default function TabBar({ role, activeTab, notificationBadge = false, onT
   return (
     <View style={styles.wrapper}>
       <View style={[styles.bar, elevation.bar]}>
-        {tabs.map((tab) => {
-          const active = tab.key === activeTab;
-          const color = active ? colors.brand.primary : colors.text.secondary;
-          return (
-            <Pressable
-              key={tab.key}
-              onPress={() => onTabPress(tab.key)}
-              style={styles.tab}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              accessibilityLabel={tab.label}
-            >
-              <View style={[styles.iconFrame, active && styles.iconFrameActive]}>
-                <TabIcon shape={tab.icon} active={active} />
-                {tab.key === "notifications" && notificationBadge && (
-                  <View style={styles.badge} />
-                )}
-              </View>
-              <Text
-                style={[styles.label, largeText && styles.labelLargeText, { color }]}
-                numberOfLines={1}
-                maxFontSizeMultiplier={1.1}
-                // At large text sizes the longest labels ("Engagements", "Notifications") fill their
-                // whole tab and nearly touch their neighbours. They keep a few dp of padding and
-                // shrink, down to 80%, to stay inside it, so a gap is always left between two labels.
-                adjustsFontSizeToFit={largeText}
-                minimumFontScale={0.8}
-              >
-                {tab.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.key}
+            tab={tab}
+            active={tab.key === activeTab}
+            showBadge={tab.key === "notifications" && notificationBadge}
+            largeText={largeText}
+            onPress={() => onTabPress(tab.key)}
+          />
+        ))}
       </View>
       <View style={[styles.insetSpacer, { height: insets.bottom }]} />
     </View>
+  );
+}
+
+/**
+ * One tab. Press feedback follows Material 3's navigation bar: a tint fades in inside the 56x30
+ * pill, under the icon, and fades out on release. It never reaches the tab's edges, and it is the
+ * same shape as the active indicator, so the bar keeps one visual language. (An Android ripple
+ * spread over the whole 64-tall column as a hard rectangle, starting from the finger.)
+ */
+function Tab({ tab, active, showBadge, largeText, onPress }) {
+  const color = active ? colors.brand.primary : colors.text.secondary;
+  const layer = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReducedMotion();
+
+  function fadeLayer(toValue, duration) {
+    if (reduceMotion) {
+      layer.setValue(toValue); // still shown, just without the fade
+      return;
+    }
+    Animated.timing(layer, { toValue, duration, useNativeDriver: true }).start();
+  }
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={() => fadeLayer(1, 100)}
+      onPressOut={() => fadeLayer(0, 200)}
+      style={styles.tab}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: active }}
+      accessibilityLabel={tab.label}
+    >
+      <View style={[styles.iconFrame, active && styles.iconFrameActive]}>
+        <Animated.View style={[styles.pressLayer, { opacity: layer }]} pointerEvents="none" />
+        <TabIcon shape={tab.icon} active={active} />
+        {showBadge && <View style={styles.badge} />}
+      </View>
+      <Text
+        style={[styles.label, largeText && styles.labelLargeText, { color }]}
+        numberOfLines={1}
+        maxFontSizeMultiplier={1.1}
+        // At large text sizes the longest labels ("Engagements", "Notifications") fill their
+        // whole tab and nearly touch their neighbours. They keep a few dp of padding and
+        // shrink, down to 80%, to stay inside it, so a gap is always left between two labels.
+        adjustsFontSizeToFit={largeText}
+        minimumFontScale={0.8}
+      >
+        {tab.label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -414,6 +444,11 @@ const styles = StyleSheet.create({
   },
   iconFrameActive: {
     backgroundColor: colors.bg.brandTint,
+  },
+  // The pressed tint, clipped to the pill by iconFrame's radius and overflow (text/primary at 8%).
+  pressLayer: {
+    ...fill,
+    backgroundColor: "rgba(17, 24, 39, 0.08)",
   },
   label: {
     ...typography.tabLabel,

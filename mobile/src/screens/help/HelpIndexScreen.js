@@ -11,7 +11,7 @@
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { colors, spacing, radius, typography } from "../../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
 
 const ROWS = [
@@ -30,7 +30,7 @@ export default function HelpIndexScreen({ navigation }) {
         {ROWS.map((row) => (
           <Pressable
             key={row.target}
-            style={styles.row}
+            style={({ pressed: isPressed }) => [styles.row, isPressed && styles.pressedSurface]}
             onPress={() => navigation.navigate(row.target)}
             accessibilityRole="button"
           >
@@ -45,6 +45,8 @@ export default function HelpIndexScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   screen: {
     flex: 1,
     backgroundColor: colors.bg.subtle,

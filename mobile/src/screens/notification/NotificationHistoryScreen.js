@@ -21,7 +21,7 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "rea
 import { StatusBar } from "expo-status-bar";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, spacing, typography } from "../../theme/tokens";
+import { colors, spacing, typography, pressed } from "../../theme/tokens";
 import NotificationRow from "../../components/NotificationRow";
 import LoadingState from "../../components/LoadingState";
 import EmptyState from "../../components/EmptyState";
@@ -159,7 +159,7 @@ export default function NotificationHistoryScreen({ navigation }) {
               <Text style={styles.screenTitle}>Notifications</Text>
               <Pressable
                 onPress={() => navigation.navigate("NotificationPreferences")}
-                style={styles.prefsLink}
+                style={({ pressed: isPressed }) => [styles.prefsLink, isPressed && styles.pressedText]}
                 accessibilityRole="link"
               >
                 <Text style={styles.prefsLabel}>Preferences</Text>
@@ -197,6 +197,8 @@ export default function NotificationHistoryScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`).
+  pressedText: { opacity: pressed.textOpacity },
   root: {
     flex: 1,
     backgroundColor: colors.bg.subtle,

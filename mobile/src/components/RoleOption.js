@@ -12,7 +12,7 @@
  * smaller size.
  */
 import { Pressable, Text, View, StyleSheet } from "react-native";
-import { colors, spacing, radius, typography } from "../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../theme/tokens";
 
 /**
  * @param {string} title
@@ -24,7 +24,11 @@ export default function RoleOption({ title, description, selected, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.card, selected ? styles.cardSelected : styles.cardDefault]}
+      style={({ pressed: isPressed }) => [
+        styles.card,
+        selected ? styles.cardSelected : styles.cardDefault,
+        isPressed && styles.pressedSurface,
+      ]}
       accessibilityRole="radio"
       accessibilityState={{ selected }}
     >
@@ -40,6 +44,8 @@ export default function RoleOption({ title, description, selected, onPress }) {
 }
 
 const styles = StyleSheet.create({
+  // While a finger is on it (theme/tokens.js `pressed`): follows the rounded corners.
+  pressedSurface: { backgroundColor: pressed.surface },
   card: {
     flexDirection: "row",
     alignItems: "center",
