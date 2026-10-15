@@ -182,6 +182,20 @@ You don't need Android Studio, the NDK, or the Firebase config files for this ro
 
 **Option B — a real Android device.** Same `npx expo run:android` command, with the device connected via USB and USB debugging enabled in Developer Options, instead of an emulator running. No Android Studio strictly required if you already have the Android SDK platform-tools (`adb`) — Android Studio remains the easiest way to get them. No emulator-specific setup (virtualization, system images) applies; the JDK-version note above still does.
 
+**Option C — a release APK that installs directly on any Android phone (viva demo, handing the app to someone).** The development build above only runs on an emulator and needs Metro. A release build contains the JavaScript, includes the phone's CPU architecture (`arm64-v8a`), and has the backend address baked in. From `mobile/`, after `npm install`:
+
+```bash
+npm run build:release-apk -- --api-url https://<your-backend-host>
+```
+
+To avoid typing the address every time, put it in `mobile/.env` (git-ignored) as `RELEASE_API_URL=https://<your-backend-host>` and run `npm run build:release-apk` with no argument; `--api-url` still overrides it. It is a separate variable from `EXPO_PUBLIC_API_URL` on purpose, so the emulator keeps using its own address. The APK is written to `mobile/dist/YouthLink-release.apk` (git-ignored) and the script prints its SHA-256. Copy it to the phone and open it, allowing installs from that source when asked. Things to know:
+
+- **The address is fixed at build time.** A different backend address needs a new build. It must be reachable from the phone: a LAN IP (`http://192.168.x.x:3000`, same Wi-Fi, and Windows Firewall must allow port 3000) or a public address. The script refuses `localhost` and `10.0.2.2`, which only work in the emulator.
+- **For a stable public address, use an ngrok free static domain.** Create an account, claim the domain in the dashboard, then `winget install ngrok.ngrok`, `ngrok config add-authtoken <token>` and keep `ngrok` at 3.20.0 or newer (`ngrok update`; older agents are rejected). To run the demo, start the backend, then `ngrok http --url=<your-domain>.ngrok-free.dev 3000`. The tunnel exposes your API to the internet while it runs; stop it afterwards. The domain is not a secret, the auth token is.
+- **The script exists because three things fail silently by hand:** Gradle re-uses an old JavaScript bundle (so the APK keeps the previous address), release builds block `http://` unless the manifest allows it, and `android/` is generated and git-ignored. It handles all three and checks the address is inside the finished bundle.
+- **Signing:** release builds use Expo's debug keystore, which installs fine and keeps the Firebase fingerprint unchanged, but is not a Play Store signature.
+- Needs JDK 17–21 and the Android SDK, as for Option A.
+
 **iOS — not needed for Sprints 1–2, kept here so this doesn't read as "Android because that's the only path we documented."** It's a real choice the team made (Android-only), not a limitation of the tooling. For when it becomes relevant: iOS needs either a Mac, or [EAS Build](https://docs.expo.dev/build/introduction/) (Expo's cloud build service, which itself needs no Mac — every build runs in a macOS VM on Expo's infrastructure). What you'd need beyond that depends on where you're running the result:
 
 - **iOS Simulator:** free, no Apple Developer account needed — but the simulator itself only runs on macOS, so Mac access is needed regardless of who builds it.
