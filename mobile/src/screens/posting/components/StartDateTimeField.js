@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     // outside the padding, so it is subtracted (same as the shared DateTimeField).
     padding: spacing.md - 1,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },

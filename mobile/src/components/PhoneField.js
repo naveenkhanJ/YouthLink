@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     height: 48,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
     overflow: "hidden",
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   },
   rowDisabled: {
     backgroundColor: colors.bg.subtle,
+    borderColor: colors.border.default, // disabled keeps the light outline, as in Figma
   },
   prefix: {
     backgroundColor: colors.bg.subtle,

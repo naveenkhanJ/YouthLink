@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: 48,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     paddingHorizontal: spacing.md,
     backgroundColor: colors.bg.default,
@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
   },
   inputDisabled: {
     backgroundColor: colors.bg.subtle,
+    borderColor: colors.border.default, // disabled keeps the light outline, as in Figma
   },
   inputTextDisabled: {
     color: colors.text.secondary,

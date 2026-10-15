@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   selectDefault: {
     backgroundColor: colors.bg.default,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     paddingHorizontal: 13,
     paddingVertical: 5,
   },

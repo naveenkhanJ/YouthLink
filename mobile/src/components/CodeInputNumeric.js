@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 52,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
     alignItems: "center",

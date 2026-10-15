@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 1.5,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     backgroundColor: colors.bg.default,
     alignItems: "center",
     justifyContent: "center",

@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     // puts the border outside the padding, so it is subtracted (50px otherwise).
     padding: spacing.md - 1,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },

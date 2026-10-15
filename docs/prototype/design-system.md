@@ -27,12 +27,13 @@ to today, and the indirection is what lets a colour change in one place.
 | `color/bg/subtle` | `gray/100` | `#f3f4f6` | inset areas, disabled fills, skeletons |
 | `bg/brand-tint` | `blue-tint` | `#e7ebf4` | table header rows, selected states, brand-tinted panels |
 | `color/text/primary` | `gray/900` | `#111827` | body and headings |
-| `color/text/secondary` | `gray/500` | `#6b7280` | captions, meta lines, placeholder text |
+| `color/text/secondary` | `gray/600` | `#4b5563` | captions, meta lines, placeholder text. **Was `gray/500` `#6b7280` until 2026-10-15**: that fell to 4.39:1 on `bg/subtle` and 4.05:1 on `bg/brand-tint`, under WCAG 1.4.3's 4.5:1 |
 | `color/text/inverse` | `white` | `#ffffff` | text on a brand or dark fill |
 | `color/brand/primary` | `blue/700` | `#0f3d91` | primary buttons, links, active states, the brand mark |
-| `color/border/default` | `gray/200` | `#e5e7eb` | input borders, dividers, card outlines |
+| `color/border/default` | `gray/200` | `#e5e7eb` | dividers, card outlines, disabled inputs |
+| `color/border/input` | `gray/500` | `#6b7280` | the outline of inputs and unselected chips (4.83:1 on white, WCAG 1.4.11 asks 3:1). **Added 2026-10-15**; inputs used `border/default` (1.24:1) before |
 | `color/border/error` | `red/600` | `#dc2626` | input border in an error state |
-| `color/state/danger` | `red/600` | `#dc2626` | destructive actions, error text |
+| `color/state/danger` | `red/700` | `#b91c1c` | destructive actions, error text. **Was `red/600` until 2026-10-15** (4.39:1 on `bg/subtle`) |
 | `color/state/urgent` | `orange/700` | `#c2410c` | the urgency badge and urgent-gig accents |
 | `color/state/success` | `green/700` | `#15803d` | confirmed checkpoints, success states |
 | `color/badge/verified` | `teal/700` | `#0f766e` | the *Phone verified* badge |
@@ -43,8 +44,8 @@ to today, and the indirection is what lets a colour change in one place.
 ### Primitives — the palette behind them
 
 `blue/700` `#0f3d91` · `teal/700` `#0f766e` · `purple/700` `#7e22ce` · `amber/700` `#b45309` ·
-`orange/700` `#c2410c` · `red/600` `#dc2626` · `green/700` `#15803d` · `gray/900` `#111827` ·
-`gray/500` `#6b7280` · `gray/200` `#e5e7eb` · `gray/100` `#f3f4f6` · `white` `#ffffff` ·
+`orange/700` `#c2410c` · `red/700` `#b91c1c` · `red/600` `#dc2626` · `green/700` `#15803d` · `gray/900` `#111827` ·
+`gray/600` `#4b5563` · `gray/500` `#6b7280` · `gray/200` `#e5e7eb` · `gray/100` `#f3f4f6` · `white` `#ffffff` ·
 `blue-tint` `#e7ebf4`
 
 **One brand colour, deliberately.** Everything else is a neutral or a state. If a design needs a colour

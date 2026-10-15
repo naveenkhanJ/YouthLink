@@ -19,7 +19,10 @@ export const colors = {
   },
   text: {
     primary: "#111827",
-    secondary: "#6b7280",
+    // gray/600. Was gray/500 #6b7280, which fell to 4.39:1 on bg.subtle and 4.05:1 on bg.brandTint
+    // (WCAG 1.4.3 asks 4.5:1). #4b5563 is 7.56 / 6.87 / 6.33 on default / subtle / brandTint.
+    // Changed with the Figma variable color/text/secondary, 2026-10-15.
+    secondary: "#4b5563",
     inverse: "#ffffff",
   },
   brand: {
@@ -27,10 +30,16 @@ export const colors = {
   },
   border: {
     default: "#e5e7eb",
+    // Outline of inputs and unselected chips only (gray/500, 4.83:1 on white): WCAG 1.4.11 asks 3:1
+    // for the boundary that shows where a control is. Dividers and card outlines keep `default`.
+    // Mirrors the Figma variable color/border/input, added 2026-10-15.
+    input: "#6b7280",
     error: "#dc2626",
   },
   state: {
-    danger: "#dc2626",
+    // red/700. Was red/600 #dc2626, 4.39:1 on bg.subtle; #b91c1c is 6.47 on white, 5.88 on subtle.
+    // Changed with the Figma variable color/state/danger, 2026-10-15.
+    danger: "#b91c1c",
     urgent: "#c2410c",
     success: "#15803d",
   },

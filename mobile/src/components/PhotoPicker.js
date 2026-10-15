@@ -53,7 +53,7 @@ export default function PhotoPicker({ photos = [], onAdd }) {
                 width={70.5}
                 height={70.5}
                 rx={7.25}
-                stroke={colors.border.default}
+                stroke={colors.border.input}
                 strokeWidth={1.5}
                 strokeDasharray="4 4"
               />

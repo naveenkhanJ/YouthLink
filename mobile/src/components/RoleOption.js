@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   // same place whichever state is showing.
   cardDefault: {
     borderWidth: 1.5,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     padding: spacing.lg - 1.5,
   },
   cardSelected: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: radius.pill,
     borderWidth: 1.5,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     alignItems: "center",
     justifyContent: "center",
   },

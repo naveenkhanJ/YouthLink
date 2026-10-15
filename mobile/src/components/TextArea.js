@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     minHeight: 96,
     padding: spacing.md - 1, // Figma pads 12 with the 1px stroke inside
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: colors.border.input,
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
     ...typography.body,
