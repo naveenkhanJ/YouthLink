@@ -12,7 +12,7 @@
  * ============================================================================
  */
 import { useEffect } from "react";
-import { KeyboardAvoidingView } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -89,7 +89,9 @@ export default function RootNavigator() {
   return (
     // Android draws edge to edge here, so the window does not shrink for the keyboard
     // (adjustResize has no effect). Padding the whole navigator lifts every screen's pinned
-    // action bar above the keyboard.
+    // action bar above the keyboard. This is react-native-keyboard-controller's version, which
+    // grows the padding frame by frame with the keyboard; React Native's own padded in one step,
+    // so a pinned bar jumped up while the keyboard was still sliding in.
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
     <NavigationContainer ref={navigationRef}>
       <SessionEndRedirect />

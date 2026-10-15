@@ -17,6 +17,7 @@ import { useFonts, Archivo_700Bold } from "@expo-google-fonts/archivo";
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { AuthProvider, useAuth } from "./src/auth/AuthContext";
 import BrandSplash from "./src/components/BrandSplash";
 import RootNavigator from "./src/navigation/RootNavigator";
@@ -66,11 +67,15 @@ export default function App() {
     Inter_600SemiBold,
   });
 
+  // KeyboardProvider follows the keyboard frame by frame as it slides, so the screen can move with
+  // it (RootNavigator's KeyboardAvoidingView). See src/navigation/README.md, "Transitions".
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <Launcher fontsLoaded={fontsLoaded} />
-      </AuthProvider>
-    </SafeAreaProvider>
+    <KeyboardProvider>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <Launcher fontsLoaded={fontsLoaded} />
+        </AuthProvider>
+      </SafeAreaProvider>
+    </KeyboardProvider>
   );
 }
