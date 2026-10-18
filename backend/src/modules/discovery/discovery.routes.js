@@ -24,4 +24,10 @@ function requireJobSeeker(req, res, next) {
 // Browse gigs around a centre, with filters, keyword and sort (FR-DISC-01..05).
 router.get("/", requireJobSeeker, asyncHandler(controller.browse));
 
+// Saved gigs (FR-DISC-06, screen 3.8): the list, and the bookmark on a listing.
+router.get("/saved", requireJobSeeker, asyncHandler(controller.listSaved));
+router.get("/saved/:gigPostingId", requireJobSeeker, asyncHandler(controller.isSaved));
+router.put("/saved/:gigPostingId", requireJobSeeker, asyncHandler(controller.saveGig));
+router.delete("/saved/:gigPostingId", requireJobSeeker, asyncHandler(controller.unsaveGig));
+
 export default router;

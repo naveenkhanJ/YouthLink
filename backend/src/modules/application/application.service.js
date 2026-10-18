@@ -23,6 +23,7 @@ import prisma from "../../lib/prisma.js";
 import AppError from "../../utils/AppError.js";
 import { syncPostingStatus, computeFillStatus, getGigPostingById } from "../posting/posting.service.js";
 import { expireDuePostings } from "../posting/posting.expiry.js";
+import { computeIsUrgent } from "../posting/posting.urgency.js";
 import { completionRateFromRecords, revealedRatingsWhere } from "../rating/rating.service.js";
 import {
   ratingStats,
@@ -657,7 +658,9 @@ async function getListingDetail({ gigPostingId, workerId }) {
       filledCount: posting.filledCount,
       startAt: posting.startAt,
       schedule: posting.schedule,
-      isUrgent: posting.isUrgent,
+      // FR-POST-07: urgency is a fact about time, worked out now (as Browse does) — the stored flag
+      // was set when the posting was saved and goes stale as the start gets closer.
+      isUrgent: computeIsUrgent(posting.startAt),
       status: posting.status,
       expiresAt: posting.expiresAt,
       locationAreaLabel: posting.locationAreaLabel,

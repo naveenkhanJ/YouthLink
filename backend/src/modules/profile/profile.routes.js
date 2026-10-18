@@ -17,4 +17,7 @@ const router = express.Router();
 // src/app.js mounts this router.
 router.get("/me", asyncHandler(controller.getOwnProfile));
 
+// FR-PROF-03: the job-seeker edits their bio (M7 7.1), up to 300 characters.
+router.patch("/me/bio", asyncHandler(controller.updateBio));
+
 export default router;
