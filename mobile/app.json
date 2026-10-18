@@ -68,6 +68,20 @@
           "cameraPermission": false,
           "microphonePermission": false
         }
+      ],
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "datePicker": {
+              "colorAccent": { "light": "#0f3d91" }
+            },
+            "timePicker": {
+              "headerBackground": { "light": "#0f3d91" },
+              "numbersSelectorColor": { "light": "#0f3d91" }
+            }
+          }
+        }
       ]
     ],
     "backgroundColor": "#ffffff"

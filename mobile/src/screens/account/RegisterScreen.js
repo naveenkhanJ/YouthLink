@@ -45,7 +45,7 @@ import SegmentedControl from "../../components/SegmentedControl";
 import Link from "../../components/Link";
 import CodeInputNumeric from "../../components/CodeInputNumeric";
 import CountdownText from "../../components/CountdownText";
-import DateTimeField from "../../components/DateTimeField";
+import DateTimeField, { yearsAgo } from "../../components/DateTimeField";
 import FieldError from "../../components/FieldError";
 import FormBanner from "../../components/FormBanner";
 import CtaBar from "../../components/CtaBar";
@@ -593,6 +593,8 @@ export default function RegisterScreen({ navigation }) {
           {...field("birthdate")}
           value={birthdate}
           onChangeText={(value) => edit("birthdate", setBirthdate, value)}
+          maximumDate={new Date()}
+          pickerStart={yearsAgo(18)}
           error={Boolean(fieldErrors.birthdate)}
         />
         <FieldError message={fieldErrors.birthdate} />

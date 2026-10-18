@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "../../theme/tokens";
 import Button from "../../components/Button";
 import TextField from "../../components/TextField";
-import DateTimeField from "../../components/DateTimeField";
+import DateTimeField, { yearsAgo } from "../../components/DateTimeField";
 import FieldError from "../../components/FieldError";
 import FormBanner from "../../components/FormBanner";
 import CtaBar from "../../components/CtaBar";
@@ -128,6 +128,8 @@ export default function AccountRecoveryConfirmScreen({ navigation }) {
           label="Birthdate"
           value={birthdate}
           onChangeText={setBirthdate}
+          maximumDate={new Date()}
+          pickerStart={yearsAgo(18)}
           error={Boolean(fieldErrors.birthdate)}
         />
         <FieldError message={fieldErrors.birthdate} />

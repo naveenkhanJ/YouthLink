@@ -13,14 +13,17 @@
  * (typing digits auto-inserts the `-` separators, same digit-stripping
  * approach as `PhoneField`) so the field is actually usable today, without
  * forcing the native-dependency decision a real picker needs. The calendar
- * glyph is its own separate `Pressable` — `onPressCalendar` is where a
- * caller hooks up an actual native picker (e.g.
- * `@react-native-community/datetimepicker`) later; adding that dependency
- * is a real decision (a rebuild, told to the team first) that isn't made
- * here. Both paths write to the same `value`/`onChangeText`, so whichever
- * one a screen wires up, the field behaves the same either way.
+ * glyph is its own separate `Pressable`. Both paths write to the same
+ * `value`/`onChangeText`, so the field behaves the same either way.
+ *
+ * The glyph opens Android's own date dialog (@react-native-community/datetimepicker),
+ * added 2026-10-18 on integration/viva-demo with the posting start picker
+ * (Afham's decision; decisions.md). It opens on the year list, because a
+ * birthdate is usually decades back, and starts on `pickerStart` when the
+ * field is empty.
  */
 import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import Svg, { Path } from "react-native-svg";
 import { colors, spacing, radius, typography } from "../theme/tokens";
 
@@ -32,12 +35,40 @@ function formatDigits(digits) {
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6)}`;
 }
 
+// A date-only value is held at NOON, never midnight. Sri Lanka's clock offset has changed over the
+// years (+6:00 until 2006, +5:30 now), and at midnight the picker and JavaScript disagreeing by half
+// an hour about a past year moved the picked day back by one (found on the emulator: 18 Oct 2000
+// came back as 2000-10-17). Noon leaves hours of margin either way.
+const NOON = 12;
+
+/** Today's date `years` years back — a birthdate picker opens there (18: YouthLink's minimum age). */
+export function yearsAgo(years) {
+  const today = new Date();
+  return new Date(today.getFullYear() - years, today.getMonth(), today.getDate(), NOON);
+}
+
+/** A local Date as "YYYY-MM-DD" (not toISOString, which would shift it to UTC). */
+function toYmd(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** "2004-03-14" as a local Date, or null while the typed value is not a real date yet. */
+function fromYmd(text) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), NOON);
+  return date.getDate() === Number(match[3]) ? date : null;
+}
+
 /**
  * @param {string} label
  * @param {string} [value] - "YYYY-MM-DD", e.g. "2004-03-14".
  * @param {(value: string) => void} onChangeText
  * @param {string} [placeholder] - Defaults to "YYYY-MM-DD".
- * @param {() => void} [onPressCalendar] - Opens the caller's native date picker, if wired.
+ * @param {Date} [minimumDate] - Earliest day the date dialog offers.
+ * @param {Date} [maximumDate] - Latest day the date dialog offers.
+ * @param {Date} [pickerStart] - Where the date dialog opens while the field is empty (default today).
  * @param {string} [error]
  * @param {() => void} [onFocus]
  * @param {(event: object) => void} [onLayout]
@@ -47,7 +78,9 @@ export default function DateTimeField({
   value = "",
   onChangeText,
   placeholder = "YYYY-MM-DD",
-  onPressCalendar,
+  minimumDate,
+  maximumDate,
+  pickerStart,
   error,
   showErrorLine = false,
   onFocus,
@@ -55,6 +88,21 @@ export default function DateTimeField({
 }) {
   function handleChange(text) {
     onChangeText(formatDigits(text.replace(/[^0-9]/g, "")));
+  }
+
+  function openPicker() {
+    if (onFocus) onFocus();
+    DateTimePickerAndroid.open({
+      // OK / CANCEL in the brand colour, as on the posting start picker.
+      positiveButton: { textColor: colors.brand.primary },
+      negativeButton: { textColor: colors.brand.primary },
+      mode: "date",
+      value: fromYmd(value) || pickerStart || new Date(),
+      minimumDate,
+      maximumDate,
+      startOnYearSelection: true,
+      onValueChange: (_event, date) => onChangeText(toYmd(date)),
+    });
   }
 
   return (
@@ -72,9 +120,10 @@ export default function DateTimeField({
           maxLength={10}
           accessibilityLabel={label}
         />
+        {/* hitSlop 18 makes the 12 px glyph a 48 x 48 touch target. */}
         <Pressable
-          onPress={onPressCalendar}
-          hitSlop={spacing.sm}
+          onPress={openPicker}
+          hitSlop={18}
           accessibilityRole="button"
           accessibilityLabel={`Open date picker for ${label}`}
         >
