@@ -74,6 +74,9 @@ const LOCATION_CONTEXT_LINE = "YouthLink asks for your location so it can show g
 // pause the dialogue opens before the line is even drawn, and the reason is never seen.
 const CONTEXT_LINE_LEAD_MS = 1200;
 
+// NFR-PERF-03: a search still running after this long shows progress and a way to stop widening.
+const SLOW_SEARCH_MS = 10000;
+
 // The listing detail (3.12) belongs to the Applying module.
 const LISTING_DETAIL_SCREEN = "ApplicationListingDetail";
 
@@ -96,6 +99,9 @@ export default function DiscoveryScreen({ navigation }) {
   const [hasUnread, setHasUnread] = useState(false);
   const askedThisMount = useRef(false);
   const latestRequest = useRef(0); // only the newest load may update the screen
+  // NFR-PERF-03: the running request, so "Stop" can cancel it, and whether it has passed 10 seconds.
+  const inFlight = useRef(null);
+  const [slow, setSlow] = useState(false);
 
   const filterCount = activeFilterCount(filters);
 
@@ -104,7 +110,7 @@ export default function DiscoveryScreen({ navigation }) {
   // -------------------------------------------------------------------------
 
   const load = useCallback(
-    async ({ pull = false } = {}) => {
+    async ({ pull = false, expand = true } = {}) => {
       const centre = getSession().centre;
       if (!centre) return;
       const current = getSession();
@@ -112,13 +118,22 @@ export default function DiscoveryScreen({ navigation }) {
       if (pull) setRefreshing(true);
       else setLoading(true);
       setError(null);
+      setSlow(false);
+      const controller = new AbortController();
+      inFlight.current = controller;
+      // NFR-PERF-03: still searching at 10 seconds → say so, and offer to stop widening.
+      const slowTimer = expand ? setTimeout(() => requestId === latestRequest.current && setSlow(true), SLOW_SEARCH_MS) : null;
       try {
-        const response = await browseGigs({
-          ...centreParams(centre),
-          category: current.filters.category,
-          arrangementType: current.filters.arrangementType,
-          sortBy: current.sortBy,
-        });
+        const response = await browseGigs(
+          {
+            ...centreParams(centre),
+            category: current.filters.category,
+            arrangementType: current.filters.arrangementType,
+            sortBy: current.sortBy,
+            expand: expand ? undefined : "false",
+          },
+          { signal: controller.signal },
+        );
         if (requestId !== latestRequest.current) return; // a newer sort or filter has taken over
         setResult(response);
         setOffline(false);
@@ -132,9 +147,11 @@ export default function DiscoveryScreen({ navigation }) {
           setError(parseApiError(err).formError || "Gigs couldn't be loaded. Try again.");
         }
       } finally {
+        clearTimeout(slowTimer);
         if (requestId === latestRequest.current) {
           setLoading(false);
           setRefreshing(false);
+          setSlow(false);
         }
       }
     },
@@ -227,6 +244,12 @@ export default function DiscoveryScreen({ navigation }) {
     load();
   }
 
+  /** NFR-PERF-03: stop widening — cancel the running search and show what the default radius holds. */
+  function stopExpanding() {
+    inFlight.current?.abort();
+    load({ expand: false });
+  }
+
   function clearFilters() {
     setFilters({});
     setFiltersState(getSession().filters);
@@ -317,6 +340,16 @@ export default function DiscoveryScreen({ navigation }) {
     if (phase === "locating" || loading || (!shown && !error)) {
       return (
         <View style={styles.loading}>
+          {slow ? (
+            // NFR-PERF-03 after 10 seconds. Not drawn: one caption line in Browse's own style and a
+            // Secondary button (decisions.md, 2026-10-18); the pulsing cards below stay as the indicator.
+            <>
+              <Text style={styles.caption} accessibilityLiveRegion="polite">
+                Still widening the search — this is taking longer than usual.
+              </Text>
+              <Button title="Stop and show results so far" style="secondary" onPress={stopExpanding} />
+            </>
+          ) : null}
           <LoadingState />
           <LoadingState />
           <LoadingState />

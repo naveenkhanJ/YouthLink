@@ -86,6 +86,14 @@ describe('FR-DISC-01: radius and auto-expansion', () => {
     expect(result.postings.map((p) => p.distanceKm)).toEqual([8.9, 13.3, 14.5, 18.9, 18.9]);
   });
 
+  test('NFR-PERF-03: expand=false (the app stopping after 10 s) keeps the 5 km radius and its results', async () => {
+    given(posting(7.08), posting(7.12), posting(7.13), posting(7.17), posting(7.17), posting(7.3));
+    const result = await browse({ expand: false });
+    expect(result.radiusKm).toBe(5);
+    expect(result.widened).toBe(false);
+    expect(result.postings).toEqual([]);
+  });
+
   test('never returns a gig beyond 50 km', async () => {
     given(posting(7.3), posting(7.5));
     const result = await browse();

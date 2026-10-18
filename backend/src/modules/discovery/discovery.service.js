@@ -197,7 +197,7 @@ async function recordBrowseCentre(userId, centre, now) {
  * @param {{ id: string, role: string }} params.browser - the signed-in youth
  * @returns {Promise<object>} { centreLabel, radiusKm, widened, postings }
  */
-async function browseGigs({ browser, lat, lng, area, category, arrangementType, keyword, sortBy = "urgent" }) {
+async function browseGigs({ browser, lat, lng, area, category, arrangementType, keyword, sortBy = "urgent", expand = true }) {
   if (category && !CATEGORIES.includes(category)) {
     throw AppError.badRequest("Unknown category.", { category: "Choose one of the listed categories." });
   }
@@ -248,7 +248,9 @@ async function browseGigs({ browser, lat, lng, area, category, arrangementType, 
     .map((posting) => ({ posting, distanceKm: coarseDistanceKm(centre, posting) }))
     .filter(({ distanceKm }) => distanceKm <= MAX_RADIUS_KM);
 
-  const radiusKm = effectiveRadiusFor(nearby.map(({ distanceKm }) => distanceKm));
+  // NFR-PERF-03: `expand: false` is the app's "stop expanding" after 10 seconds — the results found
+  // so far, inside the default radius, without widening.
+  const radiusKm = expand ? effectiveRadiusFor(nearby.map(({ distanceKm }) => distanceKm)) : DEFAULT_RADIUS_KM;
   const term = keyword ? String(keyword).trim() : "";
 
   const matching = nearby.filter(

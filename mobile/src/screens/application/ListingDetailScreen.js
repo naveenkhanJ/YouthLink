@@ -21,6 +21,11 @@
  * listings generally. Its touch target is grown to 44 with hitSlop so the 16px line keeps 3.12g's
  * spacing.
  *
+ * Offline (NFR-USE-01, 3.12ofl — added 2026-10-18): a listing loaded earlier in the session is shown
+ * from the phone when the server can't be reached, under Feedback/OfflineBar with 3.12ofl's message,
+ * and Apply is {State=Disabled} reading "Apply — needs a connection" (applying writes to the server).
+ * Save and Report need the server too, so they are not offered while offline.
+ *
  * Save / Saved (FR-DISC-06) — NOT DRAWN on 3.12 (its header is {Action=None}): a text action in the
  * ScreenHeader's action slot, Action/Link's look (mobile/body, brand, underlined) in a 44px target.
  * Shown once the saved state is known; a job-seeker only (the saved list is theirs). A failed toggle
@@ -37,6 +42,8 @@ import Button from "../../components/Button";
 import CtaBar from "../../components/CtaBar";
 import LoadingState from "../../components/LoadingState";
 import FormBanner from "../../components/FormBanner";
+import OfflineBar from "../../components/OfflineBar";
+import { cachedListing, rememberListing } from "./listingCache";
 import { useToast } from "../../components/Toast";
 import { getListingDetail } from "../../api/application.api";
 import { getSavedState, saveGig, unsaveGig } from "../../api/discovery.api";
@@ -52,6 +59,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   const gigPostingId = route.params?.gigPostingId;
   const [detail, setDetail] = useState(null);
   const [error, setError] = useState(null);
+  const [offline, setOffline] = useState(false); // showing the copy kept on the phone (3.12ofl)
   const [saved, setSaved] = useState(null); // null = not known (or not a job-seeker): no action shown
   const [saving, setSaving] = useState(false);
   const { show: showToast, toast } = useToast();
@@ -60,8 +68,17 @@ export default function ListingDetailScreen({ route, navigation }) {
     if (!gigPostingId) return;
     setError(null);
     try {
-      setDetail(await getListingDetail(gigPostingId));
+      const fresh = await getListingDetail(gigPostingId);
+      rememberListing(gigPostingId, fresh);
+      setDetail(fresh);
+      setOffline(false);
     } catch (err) {
+      const kept = err.offline ? cachedListing(gigPostingId) : null;
+      if (kept) {
+        setDetail(kept);
+        setOffline(true);
+        return;
+      }
       setError(parseApiError(err).formError || "This posting couldn't be loaded.");
     }
   }, [gigPostingId]);
@@ -102,7 +119,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   }
 
   const saveAction =
-    saved === null ? null : (
+    saved === null || offline ? null : (
       <Pressable
         onPress={toggleSaved}
         disabled={saving}
@@ -127,6 +144,7 @@ export default function ListingDetailScreen({ route, navigation }) {
       <ScreenHeader title="Gig" onBack={() => navigation.goBack()} action={saveAction} />
 
       <ScrollView contentContainerStyle={styles.content}>
+        {offline ? <OfflineBar message="Offline — showing gigs saved on your phone" /> : null}
         {error ? <FormBanner kind="error" message={error} /> : null}
         {error && !detail ? <Button title="Try again" style="secondary" onPress={load} /> : null}
         {!detail && !error ? <LoadingState /> : null}
@@ -160,7 +178,8 @@ export default function ListingDetailScreen({ route, navigation }) {
               <Text style={styles.businessBio}>{employerLine(employer, posting)}</Text>
             </View>
 
-            {/* 3.12g `reportLink` → 9.1 */}
+            {/* 3.12g `reportLink` → 9.1 (needs the server, so not while offline) */}
+            {offline ? null : (
             <Pressable
               onPress={() =>
                 navigation.navigate("DisputeReport", { targetType: "POSTING", targetId: posting.id, context: posting.title })
@@ -172,6 +191,7 @@ export default function ListingDetailScreen({ route, navigation }) {
             >
               <Text style={styles.reportLink}>Report this listing</Text>
             </Pressable>
+            )}
           </>
         ) : null}
       </ScrollView>
@@ -179,8 +199,8 @@ export default function ListingDetailScreen({ route, navigation }) {
       {posting ? (
         <CtaBar surface="subtle">
           <Button
-            title="Apply"
-            disabled={applied || !accepting}
+            title={offline ? "Apply — needs a connection" : "Apply"}
+            disabled={offline || applied || !accepting}
             onPress={() =>
               navigation.navigate("ApplicationApply", {
                 gigPostingId: posting.id,
@@ -189,7 +209,7 @@ export default function ListingDetailScreen({ route, navigation }) {
               })
             }
           />
-          {applied || !accepting ? (
+          {!offline && (applied || !accepting) ? (
             <Text style={styles.applyCaption}>{applied ? ALREADY_APPLIED : NOT_ACCEPTING}</Text>
           ) : null}
         </CtaBar>

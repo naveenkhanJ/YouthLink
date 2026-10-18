@@ -16,13 +16,13 @@ import { request } from "./client.js";
  * @param {string} [params.sortBy] - "urgent" (default) | "closest" | "newest" | "pay"
  * @returns {Promise<{ centreLabel: string, radiusKm: number, widened: boolean, postings: object[] }>}
  */
-export function browseGigs(params = {}) {
+export function browseGigs(params = {}, { signal } = {}) {
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     if (value != null && value !== "") query.append(key, String(value));
   });
   const queryString = query.toString();
-  return request(`/api/discovery${queryString ? `?${queryString}` : ""}`, { method: "GET" });
+  return request(`/api/discovery${queryString ? `?${queryString}` : ""}`, { method: "GET", signal });
 }
 
 /**

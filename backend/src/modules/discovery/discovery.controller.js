@@ -14,7 +14,7 @@ function numberParam(value) {
 }
 
 export default {
-  // GET /api/discovery?lat=&lng= | ?area=  [&category=&arrangementType=&keyword=&sortBy=]
+  // GET /api/discovery?lat=&lng= | ?area=  [&category=&arrangementType=&keyword=&sortBy=&expand=false]
   async browse(req, res) {
     const { area, category, arrangementType, keyword, sortBy } = req.query;
 
@@ -27,6 +27,8 @@ export default {
       arrangementType: arrangementType || undefined,
       keyword,
       sortBy: sortBy || undefined,
+      // NFR-PERF-03: ?expand=false stops the radius auto-expansion (the app's 10-second "stop").
+      expand: req.query.expand !== "false",
     });
 
     res.json(results);
