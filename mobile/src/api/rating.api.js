@@ -33,3 +33,12 @@ export function submitRating({ engagementId, score }) {
     body: { engagementId, score },
   });
 }
+
+/**
+ * FR-RATE-06: the rated party's public response to a revealed rating (M6 6.4), up to 300
+ * characters. Posting again replaces it ("Edit your response", 6.3p).
+ * @returns {Promise<{ rating: { id: string, publicResponse: string } }>}
+ */
+export function postPublicResponse(ratingId, response) {
+  return request(`/api/ratings/${ratingId}/response`, { method: "POST", body: { response } });
+}

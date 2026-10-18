@@ -19,3 +19,12 @@ import { request } from "./client";
 export function getOwnProfile() {
   return request("/api/profiles/me");
 }
+
+/**
+ * FR-PROF-03: sets the job-seeker's bio (M7 7.1), up to 300 characters; an empty string clears it.
+ * @param {string} bio
+ * @returns {Promise<{ bio: string|null }>}
+ */
+export function updateBio(bio) {
+  return request("/api/profiles/me/bio", { method: "PATCH", body: { bio } });
+}

@@ -34,3 +34,45 @@ export function browseGigs(params = {}) {
 export function listAreas() {
   return request("/api/postings/areas", { method: "GET" });
 }
+
+/**
+ * FR-DISC-06 — the saved list (3.8), most recently saved first: { postings: [...] }, each with the
+ * card's facts plus `status` (OPEN | FILLED | WITHDRAWN | EXPIRED), `live` and `distanceKm`
+ * (null when the youth has never browsed).
+ */
+export function listSavedGigs() {
+  return request("/api/discovery/saved", { method: "GET" });
+}
+
+/**
+ * FR-DISC-06 — whether this gig is on the youth's saved list (the listing detail's Save / Saved).
+ * GET /api/discovery/saved/:gigPostingId
+ *
+ * @param {string} gigPostingId
+ * @returns {Promise<{ saved: boolean }>}
+ */
+export function getSavedState(gigPostingId) {
+  return request(`/api/discovery/saved/${encodeURIComponent(gigPostingId)}`, { method: "GET" });
+}
+
+/**
+ * FR-DISC-06 — bookmark a gig. Saving one already saved changes nothing.
+ * PUT /api/discovery/saved/:gigPostingId
+ *
+ * @param {string} gigPostingId
+ * @returns {Promise<{ saved: true }>}
+ */
+export function saveGig(gigPostingId) {
+  return request(`/api/discovery/saved/${encodeURIComponent(gigPostingId)}`, { method: "PUT" });
+}
+
+/**
+ * FR-DISC-06 — remove a gig from the saved list.
+ * DELETE /api/discovery/saved/:gigPostingId
+ *
+ * @param {string} gigPostingId
+ * @returns {Promise<{ saved: false }>}
+ */
+export function unsaveGig(gigPostingId) {
+  return request(`/api/discovery/saved/${encodeURIComponent(gigPostingId)}`, { method: "DELETE" });
+}

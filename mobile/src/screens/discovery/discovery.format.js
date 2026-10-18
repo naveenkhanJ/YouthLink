@@ -8,7 +8,7 @@
  * for "one format everywhere", and a listing must read the same on its card here as on the
  * employer's screens.
  */
-import { payBasis, payLine, formatStartShort } from "../posting/posting.format.js";
+import { payBasis, payLine, formatStartShort, formatStartFull } from "../posting/posting.format.js";
 import { GIG_CATEGORIES, ARRANGEMENT_TYPES } from "../posting/posting.constants.js";
 
 const CATEGORY_LABEL = Object.fromEntries(GIG_CATEGORIES.map((c) => [c.id, c.label]));
@@ -61,6 +61,30 @@ export function cardPay(p) {
  */
 export function cardFill(p, now = Date.now()) {
   return `${p.filledCount ?? 0} of ${p.workersNeeded ?? 1} filled · Starts ${formatStartShort(p.startAt, now)}`;
+}
+
+// ---------------------------------------------------------------------------
+// Saved gigs (3.8, FR-DISC-06)
+// ---------------------------------------------------------------------------
+
+/**
+ * A saved card's meta. As Browse's, except that the distance is left out when the youth has never
+ * browsed (there is no centre to measure from).
+ */
+export function savedMeta(p) {
+  if (p.distanceKm == null) return [CATEGORY_LABEL[p.category], p.areaLabel].filter(Boolean).join(" · ");
+  return cardMeta(p);
+}
+
+/**
+ * A saved card's fill line, as 3.8 draws it: places still open, then the start written out in full
+ * ("2 of 2 open · Starts Fri 4 Sep 2026, 6:00 PM") — a saved list is read days later, so a weekday
+ * alone would soon be ambiguous.
+ */
+export function savedFill(p) {
+  const needed = p.workersNeeded ?? 1;
+  const open = Math.max(0, needed - (p.filledCount ?? 0));
+  return `${open} of ${needed} open · Starts ${formatStartFull(p.startAt)}`;
 }
 
 // ---------------------------------------------------------------------------

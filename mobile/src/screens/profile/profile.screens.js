@@ -18,8 +18,11 @@
  *   ];
  */
 import ProfileOwnScreen from "./ProfileOwnScreen";
+import ProfileBioScreen from "./ProfileBioScreen";
 
 export default [
   // M1 1.18 and its variants: the person's own profile, with the way into Settings.
   { name: "ProfileOwn", component: ProfileOwnScreen, options: { headerShown: false } },
+  // M7 7.1 / 7.1d: the job-seeker edits their bio (FR-PROF-03).
+  { name: "ProfileBio", component: ProfileBioScreen, options: { headerShown: false } },
 ];

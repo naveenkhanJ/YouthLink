@@ -16,8 +16,9 @@ import { colors, spacing, radius, typography } from "../theme/tokens";
  * @param {string} [placeholder]
  * @param {boolean} [error]
  * @param {number} [maxLength]
+ * @param {string} [accessibilityLabel] - What TalkBack reads for the field (its visible label).
  */
-export default function TextArea({ value, onChangeText, placeholder, error = false, maxLength }) {
+export default function TextArea({ value, onChangeText, placeholder, error = false, maxLength, accessibilityLabel }) {
   return (
     <TextInput
       style={[styles.field, error && styles.fieldError]}
@@ -28,6 +29,7 @@ export default function TextArea({ value, onChangeText, placeholder, error = fal
       multiline
       textAlignVertical="top"
       maxLength={maxLength}
+      accessibilityLabel={accessibilityLabel}
     />
   );
 }

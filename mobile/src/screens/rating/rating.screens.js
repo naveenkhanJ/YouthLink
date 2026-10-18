@@ -14,9 +14,12 @@
 import RateEngagementScreen from "./RateEngagementScreen.js";
 import AwaitingRevealScreen from "./AwaitingRevealScreen.js";
 import RevealedRatingsScreen from "./RevealedRatingsScreen.js";
+import PublicResponseScreen from "./PublicResponseScreen";
 
 export default [
   { name: "RatingRate", component: RateEngagementScreen, options: { headerShown: false } },
   { name: "RatingAwaiting", component: AwaitingRevealScreen, options: { headerShown: false } },
   { name: "RatingRevealed", component: RevealedRatingsScreen, options: { headerShown: false } },
+  // 6.4 — the rated party's public response (FR-RATE-06).
+  { name: "RatingResponse", component: PublicResponseScreen, options: { headerShown: false } },
 ];

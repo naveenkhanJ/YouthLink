@@ -12,17 +12,24 @@
  * 6.3s: "didn't rate" shows *no stars at all* — never zero stars — because "didn't rate" and
  * "rated badly" must not look alike.
  *
- * Not built here, pending a ruling (FR-RATE-06 is outside this sprint's cards): 6.3's pinned
- * "Write a public response" / "Edit your response" button (-> 6.4) and 6.3s's
- * "Request removal — policy violation" link (-> 6.5). See the report to Afham.
+ * FR-RATE-06 (added 2026-10-18): when this person received a rating, the pinned ctaBar offers
+ * "Write a public response" (6.3), or "Edit your response" once one exists (6.3p), opening 6.4
+ * (RatingResponse). The screen re-reads when it comes back into view, so a posted response shows.
+ * The person who GAVE a rating sees the other party's response under their own card — "visible
+ * alongside" it; not drawn, worded like 6.3p's line (decisions.md, 2026-10-18).
+ * Not built: 6.3s's "Request removal — policy violation" (-> 6.5) — the removal path is the Admin
+ * half of FR-RATE-06, outside this run's scope.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import ScreenHeader from "../../components/ScreenHeader";
 import StarShape from "../../components/StarShape";
 import FormBanner from "../../components/FormBanner";
 import LoadingState from "../../components/LoadingState";
+import Button from "../../components/Button";
+import CtaBar from "../../components/CtaBar";
 import { colors, radius, spacing, typography, elevation } from "../../theme/tokens";
 import { getEngagementRatings } from "../../api/rating.api.js";
 import { parseApiError } from "../../api/client.js";
@@ -81,9 +88,11 @@ export default function RevealedRatingsScreen({ navigation, route }) {
     }
   }, [engagementId, navigation]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
 
   let body;
   if (!state) {
@@ -107,6 +116,13 @@ export default function RevealedRatingsScreen({ navigation, route }) {
           </View>
         )}
 
+        {/* FR-RATE-06: the other party's public response to the rating this person gave. */}
+        {myRating?.publicResponse ? (
+          <Text style={styles.responseText}>
+            {counterpartyName}'s public response — “{myRating.publicResponse}”
+          </Text>
+        ) : null}
+
         {/* The other party's card. When they never rated (the window closed on this person's
             rating alone) the prototype draws nothing for it, so nothing is shown — see report. */}
         {theirRating ? (
@@ -125,13 +141,32 @@ export default function RevealedRatingsScreen({ navigation, route }) {
     );
   }
 
+  // FR-RATE-06: only the rated party responds, and only to a rating they actually received.
+  const canRespond = Boolean(state?.theirRating?.id);
+
   return (
     <View style={styles.root}>
       <StatusBar style="dark" />
       <ScreenHeader title="Ratings" onBack={() => navigation.goBack()} />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[styles.content, canRespond && styles.contentOnBar]}>
         {body}
       </ScrollView>
+      {canRespond ? (
+        // 6.3 / 6.3p ctaBar on the grey screen: the button changes label rather than disappearing.
+        <CtaBar surface="subtle">
+          <Button
+            title={state.theirRating.publicResponse ? "Edit your response" : "Write a public response"}
+            onPress={() =>
+              navigation.navigate("RatingResponse", {
+                ratingId: state.theirRating.id,
+                counterpartyName: state.counterpartyName,
+                score: state.theirRating.score,
+                current: state.theirRating.publicResponse ?? "",
+              })
+            }
+          />
+        </CtaBar>
+      ) : null}
     </View>
   );
 }
@@ -174,6 +209,10 @@ const styles = StyleSheet.create({
   stars: {
     flexDirection: "row",
     gap: 6,
+  },
+  // On 6.3 the content sits on a ctaBar, so its bottom pad is 0.
+  contentOnBar: {
+    paddingBottom: 0,
   },
   echo: {
     ...typography.caption,

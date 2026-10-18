@@ -8,6 +8,7 @@ import DiscoveryScreen from "./DiscoveryScreen";
 import LocationFallbackScreen from "./LocationFallbackScreen";
 import FiltersScreen from "./FiltersScreen";
 import SearchScreen from "./SearchScreen";
+import SavedGigsScreen from "./SavedGigsScreen";
 
 export default [
   {
@@ -32,6 +33,12 @@ export default [
     // 3.7 — keyword search (FR-DISC-04).
     name: "DiscoverySearch",
     component: SearchScreen,
+    options: { headerShown: false },
+  },
+  {
+    // 3.8 — saved gigs (FR-DISC-06).
+    name: "DiscoverySaved",
+    component: SavedGigsScreen,
     options: { headerShown: false },
   },
 ];
