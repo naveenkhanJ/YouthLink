@@ -62,18 +62,38 @@ export function payLine(posting) {
 
 /**
  * What changed, for FR-APPLY-10's notification body. Only the start-time sentence is drawn
- * (3.10x: "The start moved to Sat 29 Aug 2026, 7:00 AM"); the other three follow the same
+ * (3.10x: "The start moved to Sat 29 Aug 2026, 7:00 AM"); the others follow the same
  * pattern for the other material fields FR-POST-11 lists. Several changes are joined with " · ".
  *
+ * A location change (`locationAreaLabel` or `locationAddress`) names only the public area,
+ * never the precise address (FR-POST-08) — a pending applicant has not been selected, and the
+ * same sentence goes on a lock-screen notification to an engaged worker.
+ *
  * @param {object} posting - the posting as it is AFTER the edit
- * @param {string[]} changedFields - e.g. ["startAt", "payAmount"]
+ * @param {string[]} changedFields - stored column names, e.g. ["startAt", "payAmount"]
  */
 export function describeChanges(posting, changedFields = []) {
+  // FR-POST-02's categories, labelled as the prototype's category picker (2.2) writes them.
+  const categoryLabels = {
+    RETAIL: "Retail",
+    DELIVERY: "Delivery",
+    EVENT_SETUP: "Event setup",
+    MOVING: "Moving",
+    FOOD_SERVICE: "Food service",
+    TUTORING: "Tutoring",
+    CLEANING: "Cleaning",
+  };
   const sentences = [];
   if (changedFields.includes("startAt")) sentences.push(`The start moved to ${formatStartFull(posting.startAt)}`);
   if (changedFields.includes("payAmount")) sentences.push(`The pay changed to ${payLine(posting)}`);
   if (changedFields.includes("workersNeeded")) sentences.push(`Workers needed changed to ${posting.workersNeeded}`);
   if (changedFields.includes("schedule")) sentences.push(`The schedule changed to ${posting.schedule}`);
+  if (changedFields.includes("category")) {
+    sentences.push(`The category changed to ${categoryLabels[posting.category] ?? posting.category}`);
+  }
+  if (changedFields.includes("locationAreaLabel") || changedFields.includes("locationAddress")) {
+    sentences.push(`The location changed to ${posting.locationAreaLabel} area`);
+  }
   return sentences.join(" · ");
 }
 

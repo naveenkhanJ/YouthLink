@@ -21,18 +21,24 @@ export function reconfirmDeadline(newStartAt, now = new Date()) {
 }
 
 /**
- * Create one PENDING request per active engagement of the posting.
+ * Create one PENDING request per ACTIVE engagement of the posting — each worker decides
+ * separately (FR-ENG-11), all against the same deadline.
+ *
+ * Only ACTIVE: a completed, ended or disputed engagement has nothing left to re-confirm, and
+ * Engagement settles a request's deadline only for an active one — a request on any other
+ * would stay PENDING for ever and lock the posting against every further edit (FR-ENG-09 rule 3).
  *
  * @param {object} args
  * @param {object} args.posting     the posting as stored BEFORE the edit
- * @param {object} args.changes     `{ field: newValue }` for the material fields that changed
+ * @param {object} args.changes     `{ column: newValue }` for the material fields that changed
+ *                                  (`locationAreaLabel` / `locationAddress` for a location change)
  * @param {Date}   args.newStartAt  the posting's start after the edit
  * @param {object} tx               a Prisma transaction client, so it commits with the edit
  * @returns {Promise<number>} how many requests were created
  */
 export async function requestReconfirmation({ posting, changes, newStartAt }, tx) {
   const engagements = await tx.engagement.findMany({
-    where: { gigPostingId: posting.id, status: { not: 'CANCELLED' } },
+    where: { gigPostingId: posting.id, status: 'ACTIVE' },
     select: { id: true, workerId: true },
   });
 

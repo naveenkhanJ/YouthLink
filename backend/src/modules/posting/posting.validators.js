@@ -1,5 +1,5 @@
 // posting.validators.js
-// Validation chain for POST /api/gig-postings.
+// Validation chains for POST /api/postings (create) and PATCH /api/postings/:id (edit).
 // Keep this independent of @prisma/client so it works with the repo's custom
 // generated Prisma output and avoids the '.prisma/client/default' import error.
 
@@ -151,9 +151,12 @@ export const createGigPostingValidators = [
 ];
 
 // FR-POST-11: PATCH /api/postings/:id. Only the fields the Edit posting screen offers,
-// each optional — a field that isn't sent is left alone. The rules that depend on the
-// stored posting (no pay on an unpaid posting, workers needed not below the fill count,
-// what may change after a fill) are the service's, which has the row.
+// each optional — a field that isn't sent is left alone. "Edit any field" covers every
+// field the employer entered except the arrangement type and the pay kind: those decide
+// what kind of posting it is (FR-POST-03/04 hang the schedule and the pay format off them),
+// so changing them is a different posting, not an edit. They are not read if sent. The
+// rules that depend on the stored posting (no pay on an unpaid posting, workers needed not
+// below the fill count, what may change after a fill) are the service's, which has the row.
 export const updateGigPostingValidators = [
   body('title')
     .optional()
@@ -164,6 +167,41 @@ export const updateGigPostingValidators = [
     .bail()
     .isLength({ max: LIMITS.TITLE_MAX })
     .withMessage(`Title must be ${LIMITS.TITLE_MAX} characters or fewer.`),
+
+  // A minor change (FR-POST-11): never asks anyone to re-confirm.
+  body('description')
+    .optional()
+    .isString().withMessage('Description must be text.')
+    .bail()
+    .trim()
+    .notEmpty().withMessage('Description is required.')
+    .bail()
+    .isLength({ max: LIMITS.DESCRIPTION_MAX })
+    .withMessage(`Description must be ${LIMITS.DESCRIPTION_MAX} characters or fewer.`),
+
+  // FR-POST-02: the same allow-list as creation.
+  body('category')
+    .optional()
+    .isIn(ALLOWED_GIG_CATEGORIES)
+    .withMessage('Category is not a recognized option.'),
+
+  body('locationAddress')
+    .optional()
+    .isString().withMessage('Location address must be text.')
+    .bail()
+    .trim()
+    .notEmpty().withMessage('Location address is required.')
+    .bail()
+    .isLength({ max: ADDRESS_MAX })
+    .withMessage(`Location address must be ${ADDRESS_MAX} characters or fewer.`),
+
+  // FR-POST-08: as at creation, the area is a name from the server's list and the service takes
+  // the label and the coordinates from that entry; locationAreaLabel / locationLat / locationLng
+  // are never read from the request.
+  body('locationArea')
+    .optional()
+    .custom((value) => typeof value === 'string' && findArea(value) !== null)
+    .withMessage(AREA_NOT_LISTED_MESSAGE),
 
   body('payAmount')
     .optional()

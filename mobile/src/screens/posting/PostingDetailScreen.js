@@ -110,8 +110,11 @@ export default function PostingDetailScreen({ route, navigation }) {
   const isOpen = posting.status === 'OPEN';
   const hasFilled = (posting.filledCount ?? 0) > 0;
   const hidden = isHiddenPending(posting); // 2.11g: paused, no actions
-  const awaitingReconfirm = isOpen && Boolean(posting.pendingChangeRequest); // 2.11c
-  const canEdit = isOpen && !hidden && !awaitingReconfirm;
+  const isFilled = posting.status === 'FILLED';
+  // FR-ENG-11 (fixed 2026-10-18): a Filled posting can be edited too, so a material change reaches
+  // every engaged worker for re-confirmation — the 3-of-3 case. Paused the same way while one is open.
+  const awaitingReconfirm = (isOpen || isFilled) && Boolean(posting.pendingChangeRequest); // 2.11c
+  const canEdit = (isOpen || isFilled) && !hidden && !awaitingReconfirm;
   const canWithdraw = canEdit && !hasFilled;
   const waiting = posting.pendingApplicantCount ?? 0;
   const isGig = posting.arrangementType === 'GIG';
@@ -215,7 +218,21 @@ export default function PostingDetailScreen({ route, navigation }) {
         <CtaBar surface="subtle">
           {/* 2.11f → M5 5.3t. One engaged worker: open that engagement. Several (not drawn): the
               Engagements hub, as the note above says ("Manage the work from Engagements"). */}
-          <Button title="See engagement" style="secondary" onPress={() => openEngagement(navigation, posting)} />
+          {/* Not drawn on 2.11f: "Edit posting" beside it, so a Filled posting's material change can
+              reach every engaged worker (FR-ENG-11; decisions.md, 2026-10-18). */}
+          <View style={styles.actions}>
+            <View style={styles.action}>
+              <Button
+                title="Edit posting"
+                style="secondary"
+                disabled={!canEdit}
+                onPress={() => navigation.navigate('PostingEdit', { posting })}
+              />
+            </View>
+            <View style={styles.action}>
+              <Button title="See engagement" style="secondary" onPress={() => openEngagement(navigation, posting)} />
+            </View>
+          </View>
         </CtaBar>
       ) : null}
 

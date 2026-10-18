@@ -8,6 +8,7 @@
  *
  * Pure functions, no React.
  */
+import { GIG_CATEGORIES } from "../posting/posting.constants.js";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -204,6 +205,10 @@ const CHANGE_LABEL = {
   payAmount: "PAY",
   workersNeeded: "WORKERS NEEDED",
   schedule: "SCHEDULE",
+  // FR-POST-11 (2026-10-18): category and location became editable, both material. Not drawn on
+  // 5.11; the same Was/Now rows. The engaged worker may see the address (FR-APPLY-07).
+  category: "CATEGORY",
+  locationAddress: "ADDRESS",
 };
 
 // What a field is called inside a sentence: "the change … made to the start time" (5.11d).
@@ -212,6 +217,8 @@ const CHANGE_NOUN = {
   payAmount: "the pay",
   workersNeeded: "the number of workers",
   schedule: "the schedule",
+  category: "the category",
+  locationAddress: "the location",
 };
 
 /** One side of a change, as text. `changeSummary` holds `{ field: { from, to } }` (posting.reconfirm.js). */
@@ -219,6 +226,7 @@ function changeValue(field, value, posting) {
   if (value === null || value === undefined || value === "") return "—";
   if (field === "startAt") return formatDayTime(value);
   if (field === "payAmount") return payLine({ ...posting, payAmount: value });
+  if (field === "category") return GIG_CATEGORIES.find((c) => c.id === value)?.label ?? String(value);
   return String(value);
 }
 

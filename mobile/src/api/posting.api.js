@@ -40,10 +40,13 @@ export function withdrawGigPosting(id) {
 }
 
 /**
- * Edits a posting (FR-POST-11). Send only the fields that changed: title, payAmount,
- * workersNeeded, startAt, schedule. The server refuses with a 409 and a plain-language
- * reason when the posting can't be edited now (withdrawn, hidden for review, or a
- * material change after a place is filled).
+ * Edits a posting (FR-POST-11). Send only the fields that changed: title, description,
+ * category, payAmount, workersNeeded, startAt, schedule, locationAddress, and locationArea
+ * (the name of an area from getAreas — the server takes the label and coordinates from its
+ * list). Arrangement type and pay kind can't be edited. An Open or Filled posting can be
+ * edited. The server refuses with a 409 and a plain-language reason when it can't be edited
+ * now (withdrawn or expired, hidden for review, a re-confirmation still waiting, or a material
+ * change within 2 hours of the start while a worker is engaged).
  * @param {string} id - Gig posting ID.
  * @param {Object} changes - The changed fields.
  * @returns {Promise<Object>} { posting } — the posting as it now is.

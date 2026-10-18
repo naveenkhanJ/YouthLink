@@ -11,7 +11,7 @@ import { expireDuePostings } from './posting.expiry.js';
 import { requestReconfirmation } from './posting.reconfirm.js';
 import { notifyNewGigPosted } from './posting.notify.js';
 import { findArea } from './posting.areas.js';
-import { AREA_NOT_LISTED_MESSAGE } from './posting.validators.js';
+import { AREA_NOT_LISTED_MESSAGE, MIN_LEAD_TIME_MS } from './posting.validators.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -139,9 +139,10 @@ export async function getGigPostingById(id, viewerUserId = null) {
       // the owner's screen shows for an engaged worker (2.11c, 2.11e2, 2.11f).
       engagements: { select: { id: true, workerId: true, status: true, worker: { select: { legalName: true } } } },
       // FR-ENG-09: an edit waiting on a worker's re-confirmation (prototype 2.11c). Read-only
-      // here — the table belongs to Engagement, which writes and resolves the request.
+      // here — the table belongs to Engagement, which writes and resolves the request. Only a
+      // request on an ACTIVE engagement still waits (see waitingRequestsWhere below).
       materialChangeRequests: {
-        where: { status: 'PENDING' },
+        where: { status: 'PENDING', engagement: { status: 'ACTIVE' } },
         select: { deadline: true, changeSummary: true },
         orderBy: { proposedAt: 'desc' },
         take: 1,
@@ -243,58 +244,114 @@ export async function withdrawGigPosting(employerId, id) {
 // FR-POST-11 — Posting editing
 // ---------------------------------------------------------------------------
 
-// The fields the Edit posting screen (2.11pe / 2.11de / 2.11e) offers. Title is a minor
-// change; pay, timing (start, schedule) and workers needed are material (FR-POST-11).
-const MATERIAL_FIELDS = ['payAmount', 'startAt', 'schedule', 'workersNeeded'];
-const EDITABLE_FIELDS = ['title', ...MATERIAL_FIELDS];
+// What an edit may change, by stored column name. FR-POST-11 says "edit any field": the fields the
+// Edit posting screen draws (2.11pe / 2.11de / 2.11e: title, pay, workers needed, start, schedule)
+// plus description, category and location. The area arrives as `locationArea` (a name from the
+// server's list) and is stored as `locationAreaLabel`, with the coordinates taken from the list.
+// Arrangement type and pay kind are deliberately not editable: they decide what kind of posting it
+// is (posting.validators.js), so they are never read from the request.
+//
+// Minor changes (FR-POST-11, FR-ENG-09): title and description — never re-confirmed.
+// Material changes: pay, timing (start, schedule), location, workers needed and category.
+const MINOR_FIELDS = ['title', 'description'];
+const MATERIAL_FIELDS = [
+  'payAmount',
+  'startAt',
+  'schedule',
+  'workersNeeded',
+  'category',
+  'locationAddress',
+  'locationAreaLabel',
+];
+const TEXT_FIELDS = ['title', 'description', 'schedule', 'locationAddress'];
+
+// A Filled posting stays editable: FR-ENG-11's "3-slot posting with 3 selected workers" is a
+// Filled posting, and FR-POST-12 sends an employer who wants to change the crew size to Edit.
+// Withdrawn and Expired are final.
+const EDITABLE_STATUSES = ['OPEN', 'FILLED'];
+
+// FR-ENG-09 rule 2: no material change within 2 hours of the start (FR-POST-05's lead time).
+const NO_MATERIAL_CHANGE_WINDOW_MS = MIN_LEAD_TIME_MS;
 
 export const EDIT_REFUSED_MESSAGES = {
-  closed: 'Only an open posting can be edited.',
+  closed: "A withdrawn or expired posting can't be edited.",
   hidden: 'YouthLink is reviewing this posting. Editing is paused until the review ends.',
   // One re-confirmation at a time (prototype 2.11c disables Edit while one is waiting).
   reconfirmPending:
     'An earlier change is still waiting for the engaged worker to re-confirm. You can edit again once they respond.',
   changedMeanwhile: 'This posting changed while you were editing. Open it again to see how it is now.',
+  // FR-ENG-09 rule 2 and its criterion "blocked with an explanation". Minor changes stay allowed.
+  tooCloseToStart:
+    'The start is less than 2 hours away or has passed, so only the title and description can be changed now.',
 };
 
-/** The editable values that differ from what is stored, as `{ field: newValue }`. */
+/**
+ * The re-confirmations that still block editing (FR-ENG-09 rule 3): PENDING requests on an
+ * engagement that is still ACTIVE. Engagement settles a request's deadline only for an active
+ * engagement, so a request left on one that has since completed, ended or gone to dispute would
+ * otherwise stay PENDING for ever and lock the posting against every edit.
+ */
+function waitingRequestsWhere(gigPostingId) {
+  return { gigPostingId, status: 'PENDING', engagement: { status: 'ACTIVE' } };
+}
+
+/**
+ * The editable values that differ from what is stored, as `{ column: newValue }`. Text is
+ * trimmed, numbers are numbers, the area is the list's own name for it; a start keeps the
+ * value as sent (the re-confirmation's change summary records it).
+ *
+ * @throws {AppError} 400 when `locationArea` names no listed area
+ */
 function changedEditFields(existing, data) {
+  const requested = {};
+  for (const field of [...MINOR_FIELDS, ...MATERIAL_FIELDS]) {
+    if (field !== 'locationAreaLabel' && data[field] !== undefined) requested[field] = data[field];
+  }
+  if (data.locationArea !== undefined) {
+    // The validator has checked this already; the guard stops a caller that skipped it.
+    const area = findArea(data.locationArea);
+    if (!area) throw AppError.badRequest('Some details need fixing.', { locationArea: AREA_NOT_LISTED_MESSAGE });
+    requested.locationAreaLabel = area.name;
+  }
+
   const changes = {};
-  for (const field of EDITABLE_FIELDS) {
-    if (data[field] === undefined) continue;
-    let next = data[field];
+  for (const [field, value] of Object.entries(requested)) {
+    let next = value;
     let current = existing[field];
-    if (field === 'title' || field === 'schedule') {
-      next = String(next ?? '').trim();
+    if (TEXT_FIELDS.includes(field)) {
+      next = String(value ?? '').trim();
       current = String(current ?? '').trim();
+      if (next !== current) changes[field] = next;
     } else if (field === 'startAt') {
-      next = new Date(next).getTime();
-      current = new Date(current).getTime();
-    } else {
-      next = Number(next);
-      current = Number(current);
+      if (new Date(value).getTime() !== new Date(current).getTime()) changes[field] = value;
+    } else if (field === 'payAmount' || field === 'workersNeeded') {
+      next = Number(value);
+      if (next !== Number(current)) changes[field] = next;
+    } else if (next !== current) {
+      changes[field] = next; // category, locationAreaLabel
     }
-    if (next !== current) changes[field] = data[field];
   }
   return changes;
 }
 
 /**
- * FR-POST-11 — edit a posting's title, pay, workers needed, start or schedule.
- * Assumes `data` has passed updateGigPostingValidators.
+ * FR-POST-11 — edit a posting. Assumes `data` has passed updateGigPostingValidators.
  *
- * Before any slot fills every change applies at once. After a fill a material change
- * (pay, timing, workers needed) is saved together with a re-confirmation request for each
- * engaged worker (posting.reconfirm.js), in ONE transaction: both happen or neither does.
- * Only one re-confirmation can be waiting at a time, and while one is waiting NO edit is
- * accepted — not even a title — because frame 2.11c tells the employer "Editing is paused until
- * the re-confirmation is answered." (round 4, L-7 / POST-E2E-09).
- * Location fields are not editable: anything else in `data` is ignored.
+ * Before any slot fills, every change applies at once. After a fill, a material change (pay,
+ * timing, location, workers needed, category) is saved together with a re-confirmation request
+ * for each ACTIVE engagement (posting.reconfirm.js), in ONE transaction: both happen or neither
+ * does (FR-ENG-09, and FR-ENG-11's independent request per worker). A minor change (title,
+ * description) never asks anyone. Three FR-ENG-09 rules are enforced here:
+ *   - rule 2: with someone engaged, no material change within 2 hours of the current start;
+ *   - rule 3: while a re-confirmation is waiting NO edit is accepted — not even a title —
+ *     because frame 2.11c tells the employer "Editing is paused until the re-confirmation is
+ *     answered." (round 4, L-7 / POST-E2E-09);
+ *   - the window (rule 1) is posting.reconfirm.js's.
  *
- * The write is ONE conditional UPDATE keyed on the fill count that was read: if a
- * selection fills a slot between the read and the write, nothing matches and the edit
- * is refused, never applied as "no re-confirmation needed" to a posting that now has
- * an engaged worker. (Same reasoning as withdrawGigPosting.)
+ * The write is ONE conditional UPDATE keyed on the fill count that was read: if a selection
+ * (or a cancellation) changes it between the read and the write, nothing matches and the edit
+ * is refused — never applied as "no re-confirmation needed" to a posting that now has an
+ * engaged worker. (Same reasoning as withdrawGigPosting.)
  *
  * @throws {AppError} 404 not the caller's posting, 400 a rejected field, 409 it can't be edited now
  */
@@ -304,53 +361,90 @@ export async function updateGigPosting(employerId, id, data) {
   if (!existing || existing.employerId !== employerId) {
     throw AppError.notFound('Posting not found.');
   }
-  if (existing.status !== 'OPEN') throw AppError.conflict(EDIT_REFUSED_MESSAGES.closed);
+  if (!EDITABLE_STATUSES.includes(existing.status)) throw AppError.conflict(EDIT_REFUSED_MESSAGES.closed);
   if (existing.autoHiddenAt) throw AppError.conflict(EDIT_REFUSED_MESSAGES.hidden);
 
   // 2.11c: editing is paused while a re-confirmation is waiting — every edit, title included.
-  const pendingRequests = await prisma.materialChangeRequest.count({ where: { gigPostingId: id, status: 'PENDING' } });
-  if (pendingRequests > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
+  const waiting = await prisma.materialChangeRequest.count({ where: waitingRequestsWhere(id) });
+  if (waiting > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
 
   const changes = changedEditFields(existing, data);
   const changedMaterial = Object.keys(changes).filter((f) => MATERIAL_FIELDS.includes(f));
   if (Object.keys(changes).length === 0) return getGigPostingById(id, employerId);
 
   const update = {};
-  if (changes.title !== undefined) update.title = changes.title.trim();
+  for (const field of ['title', 'description', 'category', 'locationAddress']) {
+    if (changes[field] !== undefined) update[field] = changes[field];
+  }
   if (changes.payAmount !== undefined) {
     // Only a pay kind that carries an amount can have one edited.
     if (existing.payKind === 'UNPAID') throw AppError.badRequest('Some details need fixing.', { payAmount: 'This posting is unpaid, so it has no pay amount.' });
-    update.payAmount = Number(changes.payAmount);
+    update.payAmount = changes.payAmount;
   }
-  if (changes.workersNeeded !== undefined) update.workersNeeded = Number(changes.workersNeeded);
+  if (changes.workersNeeded !== undefined) {
+    // Lowering it to the fill count stops further hiring (FR-POST-12); below that would leave
+    // more engaged workers than places.
+    if (changes.workersNeeded < existing.filledCount) {
+      throw AppError.badRequest('Some details need fixing.', {
+        workersNeeded: `Workers needed can't be fewer than the places already filled (${existing.filledCount}).`,
+      });
+    }
+    update.workersNeeded = changes.workersNeeded;
+  }
   if (changes.schedule !== undefined) {
     if (existing.arrangementType === 'GIG') throw AppError.badRequest('Some details need fixing.', { schedule: 'A one-off gig has no schedule.' });
-    update.schedule = changes.schedule.trim();
+    update.schedule = changes.schedule;
+  }
+  if (changes.locationAreaLabel !== undefined) {
+    // FR-POST-08: the label and the point both come from the list, exactly as at creation.
+    const area = findArea(changes.locationAreaLabel);
+    update.locationAreaLabel = area.name;
+    update.locationLat = area.lat;
+    update.locationLng = area.lng;
   }
   if (changes.startAt !== undefined) {
     update.startAt = new Date(changes.startAt);
-    // FR-POST-07: urgency is re-derived from the new start, never chosen.
+    // FR-POST-07 / FR-ENG-10: urgency is re-derived from the new start, never chosen.
     update.isUrgent = computeIsUrgent(changes.startAt);
     // FR-POST-13: a Gig expires at its start, so moving the start moves the expiry.
     if (existing.arrangementType === 'GIG') update.expiresAt = update.startAt;
   }
 
+  // Someone has to re-confirm only when a material field changed and a worker is actively
+  // engaged — a completed, ended or disputed engagement has nothing left to re-confirm.
+  const activeEngagements =
+    existing.filledCount > 0 && changedMaterial.length > 0
+      ? await prisma.engagement.count({ where: { gigPostingId: id, status: 'ACTIVE' } })
+      : 0;
+  const needsReconfirmation = activeEngagements > 0;
+
+  // FR-ENG-09 rule 2, for every material field — not only a new start time.
+  if (needsReconfirmation && new Date(existing.startAt).getTime() - Date.now() < NO_MATERIAL_CHANGE_WINDOW_MS) {
+    throw AppError.conflict(EDIT_REFUSED_MESSAGES.tooCloseToStart);
+  }
+
   // The conditional write; `db` is the transaction client when a re-confirmation goes with it.
   const applyEdit = async (db) => {
     const { count } = await db.gigPosting.updateMany({
-      where: { id, employerId, status: 'OPEN', autoHiddenAt: null, filledCount: existing.filledCount },
+      where: {
+        id,
+        employerId,
+        status: { in: EDITABLE_STATUSES },
+        autoHiddenAt: null,
+        filledCount: existing.filledCount,
+      },
       data: update,
     });
     if (count === 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.changedMeanwhile);
   };
 
-  if (existing.filledCount > 0 && changedMaterial.length > 0) {
+  if (needsReconfirmation) {
     const materialChanges = Object.fromEntries(changedMaterial.map((f) => [f, changes[f]]));
     await prisma.$transaction(async (tx) => {
       // Checked again inside the transaction: a request created between the check above and
       // this point (a second save racing the first) must still be refused.
-      const waiting = await tx.materialChangeRequest.count({ where: { gigPostingId: id, status: 'PENDING' } });
-      if (waiting > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
+      const stillWaiting = await tx.materialChangeRequest.count({ where: waitingRequestsWhere(id) });
+      if (stillWaiting > 0) throw AppError.conflict(EDIT_REFUSED_MESSAGES.reconfirmPending);
       await applyEdit(tx);
       await requestReconfirmation(
         { posting: existing, changes: materialChanges, newStartAt: update.startAt ?? existing.startAt },
@@ -361,15 +455,16 @@ export async function updateGigPosting(employerId, id, data) {
     await applyEdit(prisma);
   }
 
-  // Lowering Workers needed to the fill count makes the posting Filled (FR-POST-18); a
-  // posting that stops accepting applications resolves its Pending applicants (FR-APPLY-09).
+  // Workers needed moves Open <-> Filled (FR-POST-18): lowering it to the fill count fills the
+  // posting, raising it on a Filled one reopens it. A posting that stops accepting applications
+  // resolves its Pending applicants (FR-APPLY-09).
   if (update.workersNeeded !== undefined) {
     await syncPostingStatus(id);
     if (computeFillStatus(existing.filledCount, update.workersNeeded) === 'FILLED') {
       await resolvePendingApplicants(id, 'FILLED');
     }
   }
-  // Anyone who has applied is told what changed (a no-op until YL-174 — posting.applicants.js).
+  // FR-APPLY-10: anyone still Pending is told what changed, for every material field.
   if (changedMaterial.length > 0) await notifyPendingApplicantsOfChange(id, changedMaterial);
 
   return getGigPostingById(id, employerId);

@@ -44,7 +44,7 @@ describe('requestReconfirmation', () => {
     expect(count).toBe(2);
     expect(tx.engagement.findMany.mock.calls[0][0].where).toEqual({
       gigPostingId: 'p1',
-      status: { not: 'CANCELLED' },
+      status: 'ACTIVE',
     });
     expect(tx.materialChangeRequest.create).toHaveBeenCalledTimes(2);
     expect(tx.materialChangeRequest.create.mock.calls[1][0].data).toMatchObject({
