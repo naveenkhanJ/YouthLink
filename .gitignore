@@ -41,3 +41,5 @@ firebase-adminsdk-*.json
 
 # Per-developer local-only workarounds — never a real fix, never shared.
 *.local.js
+# Dispute evidence images uploaded by users (FR-DISPUTE-05) — user data, never committed
+backend/uploads/
