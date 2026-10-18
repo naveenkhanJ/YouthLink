@@ -23,6 +23,7 @@ import { routeForTab, tabBarRoleFor } from "../components/ShellTabBar";
 import { colors, spacing, typography } from "../theme/tokens";
 import FirstRun from "./firstrun/FirstRun";
 import { readLaunchState, markOnboardingSeen } from "../auth/launchState";
+import PushContextLine from "./notification/PushContextLine";
 import { toLocalDigits } from "./account/phoneFormat";
 
 const FIRST_TAB_BY_ROLE = {
@@ -109,6 +110,7 @@ function SignedInShell({ user, navigation, route }) {
       <View style={styles.hubContent}>
         <Text style={styles.title}>{shellCopy.title}</Text>
         <Text style={styles.subtitle}>{shellCopy.hosts}</Text>
+        <PushContextLine role={tabBarRole} />
       </View>
       <TabBar
         role={tabBarRole}

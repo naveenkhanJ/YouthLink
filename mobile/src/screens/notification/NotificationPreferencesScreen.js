@@ -10,6 +10,10 @@
  *     The stored field is the opt-OUT, so the toggle shows its opposite: On = not opted out.
  * then the cap note, and the row to "How notifications look" (3.13).
  *
+ * 3.11pd (added 2026-10-18): when the phone has push turned off for YouthLink, an Info banner says the
+ * toggles can't alert until it is turned on. The toggles still show what the person chose — stored
+ * preferences are separate from the OS permission (FR-NOTIF-09).
+ *
  * An employer or a verifier has no gig alerts, so nothing to switch: their screens are one
  * `roleNote` each, saying what they are told about and how to silence YouthLink (3.11e, 3.11v).
  */
@@ -27,6 +31,11 @@ import { tabBarRoleFor } from "../../components/ShellTabBar";
 import { colors, radius, spacing, typography, pressed } from "../../theme/tokens";
 import { getNotificationPreferences, updateNotificationPreferences } from "../../api/notification.api";
 import { parseApiError } from "../../api/client";
+import { getPushPermission } from "./push";
+
+// 3.11pd's banner, exactly as drawn.
+const PUSH_DENIED_MESSAGE =
+  "Notifications are turned off for YouthLink on this phone, so these can't alert you. Your choices are kept — turn notifications on in your phone's settings to use them.";
 
 // 3.11e / 3.11v `roleNote`, verbatim.
 const ROLE_NOTE = {
@@ -60,6 +69,11 @@ function JobSeekerPreferences({ navigation }) {
   const [prefs, setPrefs] = useState(null); // { notifyUrgentOptIn, notifyNewGigOptOut }
   const [loadError, setLoadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
+  const [pushDenied, setPushDenied] = useState(false);
+
+  useEffect(() => {
+    getPushPermission().then(({ status }) => setPushDenied(status === "denied"));
+  }, []);
 
   function load() {
     setLoadError(null);
@@ -100,6 +114,7 @@ function JobSeekerPreferences({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
+      {pushDenied ? <FormBanner kind="info" message={PUSH_DENIED_MESSAGE} /> : null}
       {saveError ? <FormBanner kind="error" message={saveError} /> : null}
       <Toggle
         label="Notify me about urgent gigs nearby"

@@ -16,6 +16,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken, setAuthFailureCallback } from "../api/client";
 import { markOnboardingSeen, rememberLastPhone, forgetLastPhone } from "./launchState";
+import { unregisterForPush } from "../screens/notification/push";
 
 const TOKEN_KEY = "youthlink.authToken";
 const USER_KEY = "youthlink.authUser";
@@ -118,6 +119,9 @@ export function AuthProvider({ children }) {
     const phone = userRef.current?.phone;
     if (forget) await forgetLastPhone();
     else if (phone) await rememberLastPhone(phone);
+    // While the token still works: this phone stops getting this account's pushes. (After a
+    // session ended on its own the call simply fails; the next sign-in moves the token anyway.)
+    await unregisterForPush();
     await Promise.all([
       SecureStore.deleteItemAsync(TOKEN_KEY),
       SecureStore.deleteItemAsync(USER_KEY),

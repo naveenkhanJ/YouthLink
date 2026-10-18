@@ -21,6 +21,7 @@ import { useAuth } from "../auth/AuthContext";
 import { readLaunchState } from "../auth/launchState";
 import { toLocalDigits } from "../screens/account/phoneFormat";
 import { TAB_HUB_ROUTES } from "../components/ShellTabBar";
+import PushBridge from "../screens/notification/PushBridge";
 
 import accountScreens from "../screens/account/account.screens";
 import postingScreens from "../screens/posting/posting.screens";
@@ -95,6 +96,8 @@ export default function RootNavigator() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
     <NavigationContainer ref={navigationRef}>
       <SessionEndRedirect />
+      {/* Push notifications: registration, the permission ask and taps (FR-NOTIF-01/02/09/10). */}
+      <PushBridge navigationRef={navigationRef} />
       {/* Moving deeper (a list to its detail, a form step) slides in from the right and back out,
           Android's standard forward motion. The library's default on Android 13+ is a slow (450 ms)
           fade with a small sideways shift, which looked unfinished. */}

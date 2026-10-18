@@ -1,10 +1,9 @@
 /**
  * Notifications — the history on the Notifications tab (prototype 3.10x / 3.10 family) — Pawan.
  *
- * Every role's Notifications tab opens this screen (FR-NOTIF-08: "All actor types"). It is how a
- * gig notification from FR-NOTIF-01 / FR-NOTIF-02 reaches the person in this build: the app has no
- * push delivery yet, so the rows the fan-out writes are read here, which is also what FR-NOTIF-09
- * promises when push is off.
+ * Every role's Notifications tab opens this screen (FR-NOTIF-08: "All actor types"). Every row here
+ * was also sent to the phone as a push (push.js, backend notification.sender.js); the history is
+ * what FR-NOTIF-08 and -09 promise when a push was missed, dismissed or never allowed.
  *
  * Drawn states built here:
  *   3.10x   rows, newest first — "Urgent gig near you" / "New gig near you" open the listing (3.12)
@@ -13,6 +12,8 @@
  * Not drawn, built from design-system.md §5 and FR-NOTIF-01: the urgent digest
  * (Display/NotificationRow {Type=Digest}), which expands in place to the gigs batched into it.
  * A failed load is composed per §8: Feedback/FormBanner with "Try again".
+ *   3.10pd  push denied — FormBanner {Kind=Info} above the title: the settings hint FR-NOTIF-09's
+ *           amendment A10 asks for, never a blocking prompt (added 2026-10-18).
  *
  * How each row is worded is notification.format.js.
  */
@@ -27,14 +28,17 @@ import LoadingState from "../../components/LoadingState";
 import EmptyState from "../../components/EmptyState";
 import FormBanner from "../../components/FormBanner";
 import Button from "../../components/Button";
-import ShellTabBar, { isRouteRegistered, openShellTab, tabBarRoleFor } from "../../components/ShellTabBar";
+import ShellTabBar, { openShellTab, tabBarRoleFor } from "../../components/ShellTabBar";
 import { useAuth } from "../../auth/AuthContext";
 import { getNotifications, markNotificationAsRead } from "../../api/notification.api";
 import { parseApiError } from "../../api/client";
 import { presentRow, timeAgo } from "./notification.format";
+import { openNotificationTarget } from "./notification.open";
+import { getPushPermission } from "./push";
 
-// The listing detail (3.12) belongs to the Applying module.
-const LISTING_DETAIL_SCREEN = "ApplicationListingDetail";
+// 3.10pd's banner, exactly as drawn.
+const PUSH_DENIED_MESSAGE =
+  "Push notifications are off, so we can't alert you. Everything still appears here — check back, or turn notifications on in your phone's settings.";
 
 // 3.10z / 3.10ez / 3.10vz — each role's first-run history: its body copy and its one action
 // (a tab of that role's own bar).
@@ -65,6 +69,7 @@ export default function NotificationHistoryScreen({ navigation }) {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [expanded, setExpanded] = useState({}); // digest id -> true while open
+  const [pushDenied, setPushDenied] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -80,9 +85,11 @@ export default function NotificationHistoryScreen({ navigation }) {
   }, []);
 
   // On open, and every time the tab is returned to.
+  // Permission is re-read too: the person may have just turned notifications on in Settings.
   useFocusEffect(
     useCallback(() => {
       load();
+      getPushPermission().then(({ status }) => setPushDenied(status === "denied"));
     }, [load]),
   );
 
@@ -96,16 +103,7 @@ export default function NotificationHistoryScreen({ navigation }) {
       setExpanded((prev) => ({ ...prev, [row.id]: !prev[row.id] }));
       return;
     }
-    if (view.opens?.gigPostingId && isRouteRegistered(navigation, LISTING_DETAIL_SCREEN)) {
-      // The listing as it stands now, not as it was when the notification was sent.
-      navigation.navigate(LISTING_DETAIL_SCREEN, { gigPostingId: view.opens.gigPostingId });
-      return;
-    }
-    // A11's other targets (the pool, the engagement, the re-confirmation, the ratings…): the screen
-    // as it stands now, opened only when this build has it.
-    if (view.opens?.screen && isRouteRegistered(navigation, view.opens.screen)) {
-      navigation.navigate(view.opens.screen, view.opens.params);
-    }
+    openNotificationTarget(navigation, view);
   }
 
   function renderItem({ item: { row, view } }) {
@@ -155,6 +153,7 @@ export default function NotificationHistoryScreen({ navigation }) {
         }
         ListHeaderComponent={
           <View style={styles.header}>
+            {pushDenied ? <FormBanner kind="info" message={PUSH_DENIED_MESSAGE} /> : null}
             <View style={styles.titleRow}>
               <Text style={styles.screenTitle}>Notifications</Text>
               <Pressable

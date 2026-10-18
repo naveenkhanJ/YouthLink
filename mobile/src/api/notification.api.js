@@ -27,3 +27,13 @@ export function getUnreadNotificationCount() {
 export function markNotificationAsRead(id) {
   return request(`/api/notifications/${id}/read`, { method: "PATCH" });
 }
+
+/** Registers this phone's FCM token for push (FR-NOTIF-01/02/09). */
+export function registerDeviceToken(token) {
+  return request("/api/notifications/device-token", { method: "PUT", body: { token } });
+}
+
+/** Removes this phone's token on sign-out. */
+export function unregisterDeviceToken(token) {
+  return request("/api/notifications/device-token", { method: "DELETE", body: { token } });
+}

@@ -45,6 +45,8 @@ import { getUnreadNotificationCount } from "../../api/notification.api";
 import { parseApiError } from "../../api/client";
 import SearchBar from "./components/SearchBar";
 import * as deviceLocation from "./deviceLocation";
+import { askForPushOnce, shouldAskForPush } from "../notification/push";
+import PushContextLine from "../notification/PushContextLine";
 import {
   activeFilterCount,
   centreParams,
@@ -170,6 +172,12 @@ export default function DiscoveryScreen({ navigation }) {
     askedThisMount.current = true;
 
     (async () => {
+      // 3.9 first (FR-NOTIF-09, A10): after registration the notification ask comes before the
+      // location ask, each with its own line of context, and either answer moves on to 3.3.
+      if (await shouldAskForPush()) {
+        setPhase("askingPush");
+        await askForPushOnce();
+      }
       let permission = await deviceLocation.getPermissionStatus();
       // Ask on first entry (undetermined) and again while the OS would still show its dialogue
       // (refused once, canAskAgain). Only when the OS has stopped showing it — "permanently denied" —
@@ -239,6 +247,7 @@ export default function DiscoveryScreen({ navigation }) {
   const controlsLive = phase === "ready" && !offline;
 
   function renderLine() {
+    if (phase === "askingPush") return <PushContextLine role="worker" />;
     if (phase === "asking") return <Text style={styles.caption}>{LOCATION_CONTEXT_LINE}</Text>;
     if (!shown) return null;
     if (offline) {
@@ -273,8 +282,12 @@ export default function DiscoveryScreen({ navigation }) {
           onPress={controlsLive ? () => navigation.navigate("DiscoveryFilters") : undefined}
         />
         <Chip touch label={`Sort: ${sortLabel(sortBy)}`} onPress={controlsLive ? () => setSortOpen(true) : undefined} />
-        {/* "Saved" opens Saved gigs (3.8, FR-DISC-06), which is not part of this build: drawn, inert. */}
-        <Chip touch label="Saved" />
+        {/* "Saved" opens Saved gigs (3.8, FR-DISC-06). */}
+        <Chip
+          touch
+          label="Saved"
+          onPress={isRouteRegistered(navigation, "DiscoverySaved") ? () => navigation.navigate("DiscoverySaved") : undefined}
+        />
       </View>
       {error ? (
         <>
@@ -299,7 +312,8 @@ export default function DiscoveryScreen({ navigation }) {
       );
     }
     // 3.3 has no results behind the dialogue: until the answer there is nothing true to show.
-    if (phase === "checking" || phase === "asking") return null;
+    // 3.9 and 3.3: nothing below the controls while a permission dialog is up.
+    if (phase === "checking" || phase === "asking" || phase === "askingPush") return null;
     if (phase === "locating" || loading || (!shown && !error)) {
       return (
         <View style={styles.loading}>

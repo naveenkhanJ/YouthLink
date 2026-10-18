@@ -53,6 +53,21 @@
           "imageWidth": 288,
           "resizeMode": "contain"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android-icon-monochrome.png",
+          "color": "#0f3d91"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "YouthLink opens your photos only when you choose to attach evidence to a dispute.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
       ]
     ],
     "backgroundColor": "#ffffff"

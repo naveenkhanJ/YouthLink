@@ -25,6 +25,7 @@ import FormBanner from '../../components/FormBanner';
 import Button from '../../components/Button';
 import ShellTabBar from '../../components/ShellTabBar';
 import { getMyGigPostings } from '../../api/posting.api.js';
+import PushContextLine from "../notification/PushContextLine";
 import { HIDDEN_NOTE_LIST, badgeValue, cardMeta, isHiddenPending } from './posting.format.js';
 
 export default function PostingListScreen({ navigation }) {
@@ -72,6 +73,8 @@ export default function PostingListScreen({ navigation }) {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.screenTitle}>My postings</Text>
+            {/* 3.9-style context line while the notification permission dialog is up (FR-NOTIF-09). */}
+            <PushContextLine role="employer" />
             {error ? <FormBanner kind="error" message={error} /> : null}
             {error && !hasList ? <Button title="Try again" style="secondary" onPress={load} /> : null}
           </View>

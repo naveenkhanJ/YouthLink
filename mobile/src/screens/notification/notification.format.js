@@ -63,11 +63,14 @@ const OTHER_TITLES = {
   MATERIAL_CHANGE: "{title} changed",
   NO_APPLICANT_NUDGE: "No applicants yet on {title}",
   CANCELLATION_REQUEST: "Cancellation requested",
+  END_ENGAGEMENT: "{name} ended the engagement",
   STALLED_ENGAGEMENT_PROMPT: "Did this happen?",
   CLARIFICATION_REQUEST: "Question about your case",
   DISPUTE_OPENED: "A case was opened",
   DISPUTE_RESOLVED: "Your case is resolved",
   FLAGGED_CONTENT_OUTCOME: "Update on your posting",
+  ENDORSEMENT_RECEIVED: "{name} vouched for you",
+  ENDORSEMENT_REVOKED: "{name} revoked their endorsement",
   ENDORSEMENT_PAYOFF: "Your endorsement paid off",
   RATING_WINDOW_OPEN: "Rate your engagement",
   RATING_REVEALED: "Ratings are in",
@@ -89,6 +92,29 @@ function cancellationResolvedTitle(payload) {
     default:
       return `${payload.fromName ?? "The other party"} cancelled`;
   }
+}
+
+/** The person a row is about, whichever field its sending module stored the name in. */
+function nameIn(type, payload) {
+  switch (type) {
+    case "END_ENGAGEMENT":
+      return payload.endedByName;
+    case "ENDORSEMENT_RECEIVED":
+    case "ENDORSEMENT_REVOKED":
+      return payload.endorserName;
+    default:
+      return payload.fromName ?? payload.counterpartName;
+  }
+}
+
+/** "Arrival dispute" / "Completion dispute" — the wording 3.10r's ruling row uses. */
+function disputeLabel(payload) {
+  if (payload.stalled) return "Stalled engagement";
+  const checkpoint = String(payload.checkpoint ?? "").toLowerCase(); // "arrival" | "completion" | "payment"
+  if (checkpoint === "completion") return "Completion dispute";
+  if (checkpoint === "arrival") return "Arrival dispute";
+  if (checkpoint === "payment") return "Payment dispute";
+  return "Dispute";
 }
 
 const lowerFirst = (text) => (text ? text.charAt(0).toLowerCase() + text.slice(1) : text);
@@ -120,6 +146,29 @@ function otherBody(type, payload, postingTitle) {
       return payload.counterpartName
         ? `You and ${payload.counterpartName} have both rated — see the pair.`
         : "Both ratings are now visible — see the pair.";
+    // Added 2026-10-18 with the endorsement, dispute and stalled-engagement flows. Each body is A11's
+    // description in words; the server's push says the same (backend notification.push.js).
+    case "END_ENGAGEMENT":
+      return payload.somethingWentWrong
+        ? `${postingTitle} · a dispute case is open — you can respond`
+        : `${postingTitle} · you can rate the engagement now`;
+    case "STALLED_ENGAGEMENT_PROMPT":
+      return payload.startAt ? `${postingTitle} · started ${formatStartFull(payload.startAt)}` : postingTitle;
+    case "DISPUTE_OPENED":
+      return payload.stalled
+        ? `${disputeLabel(payload)} — ${postingTitle}: sent for review`
+        : `${disputeLabel(payload)} — ${postingTitle} · respond within 48 hours`;
+    case "NO_APPLICANT_NUDGE":
+      // As drawn on 3.10eg.
+      return "Still no applicants after 24 hours. Consider reviewing the pay or details.";
+    case "ENDORSEMENT_RECEIVED":
+      return "Your endorsement badge now shows on your applications";
+    case "ENDORSEMENT_REVOKED":
+      // As specified in M3's "States not drawn".
+      return `${payload.endorserName}'s endorsement no longer shows on your profile · work you already got isn't affected`;
+    case "ENDORSEMENT_PAYOFF":
+      // As drawn on 3.10v.
+      return `${payload.workerName} went on to build a good rating.`;
     default:
       return "";
   }
@@ -147,7 +196,24 @@ function otherTarget(type, payload) {
     case "RATING_REVEALED":
       return { screen: "RatingRevealed", params: { engagementId } };
     case "NO_APPLICANT_NUDGE":
+    case "FLAGGED_CONTENT_OUTCOME":
       return { screen: "PostingDetail", params: { postingId: gigPostingId } };
+    case "END_ENGAGEMENT":
+      // A11 "rating or dispute": the case when something went wrong, otherwise the rating.
+      return payload.somethingWentWrong
+        ? { screen: "DisputeCase", params: { disputeCaseId: payload.disputeCaseId, engagementId } }
+        : { screen: "RatingRate", params: { engagementId } };
+    case "STALLED_ENGAGEMENT_PROMPT":
+      return { screen: "EngagementDetail", params: { engagementId } };
+    case "DISPUTE_OPENED":
+    case "DISPUTE_RESOLVED":
+    case "CLARIFICATION_REQUEST":
+      return { screen: "DisputeCase", params: { disputeCaseId: payload.disputeCaseId, engagementId } };
+    case "ENDORSEMENT_RECEIVED":
+    case "ENDORSEMENT_REVOKED":
+      return { screen: "ProfileOwn", params: {} };
+    case "ENDORSEMENT_PAYOFF":
+      return { screen: "EndorsementMine", params: {} };
     default:
       return null;
   }
@@ -201,8 +267,12 @@ export function presentRow(row) {
       const template = row.type === "CANCELLATION_RESOLVED" ? "" : OTHER_TITLES[row.type];
       if (template === undefined) return null;
       if (template.includes("{title}") && !postingTitle) return null;
+      const name = nameIn(row.type, payload);
+      if (template.includes("{name}") && !name) return null;
       const title =
-        row.type === "CANCELLATION_RESOLVED" ? cancellationResolvedTitle(payload) : template.replace("{title}", postingTitle);
+        row.type === "CANCELLATION_RESOLVED"
+          ? cancellationResolvedTitle(payload)
+          : template.replace("{title}", postingTitle).replace("{name}", name);
       return {
         type: "standard",
         title,
