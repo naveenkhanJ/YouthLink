@@ -7,7 +7,7 @@ import { jest } from "@jest/globals";
 import testConfig from "../../account/test/testConfig.js";
 
 const prismaMock = {
-  user: { findUnique: jest.fn() },
+  user: { findUnique: jest.fn(), count: jest.fn() },
   rating: { aggregate: jest.fn(), count: jest.fn() },
   completionRecord: { groupBy: jest.fn() },
   endorsement: { findMany: jest.fn(), count: jest.fn() },
@@ -36,6 +36,7 @@ beforeEach(() => {
   prismaMock.user.findUnique.mockResolvedValue(WORKER);
   prismaMock.rating.aggregate.mockResolvedValue({ _avg: { score: null }, _count: { _all: 0 } });
   prismaMock.rating.count.mockResolvedValue(0);
+  prismaMock.user.count.mockResolvedValue(1); // eligible for endorsement unless a test says otherwise
   prismaMock.completionRecord.groupBy.mockResolvedValue([]);
   prismaMock.endorsement.findMany.mockResolvedValue([]);
   prismaMock.endorsement.count.mockResolvedValue(0);
@@ -152,9 +153,15 @@ describe("Role-specific parts of the profile", () => {
     expect(profile.endorsedBy).toBe("Sunil Teacher");
   });
 
-  test("worker: the endorsement code closes once any rating has been received (FR-ENDORSE-05)", async () => {
+  test("worker: the endorsement code closes with the endorsement module's eligibility rule (FR-ENDORSE-05)", async () => {
     expect((await service.getOwnProfile({ userId: "w1" })).endorsementCodeClosed).toBe(false);
-    prismaMock.rating.count.mockResolvedValue(1);
+    // The rule is asked of the database once, scoped to this person, and is the shared one:
+    // firstRatingReceivedAt still null and no revealed rating received.
+    const { where } = prismaMock.user.count.mock.calls[0][0];
+    expect(where).toMatchObject({ id: "w1", role: "YOUTH_JOB_SEEKER", firstRatingReceivedAt: null });
+    expect(where.ratingsReceived.none.OR).toBeDefined();
+
+    prismaMock.user.count.mockResolvedValue(0);
     expect((await service.getOwnProfile({ userId: "w1" })).endorsementCodeClosed).toBe(true);
   });
 

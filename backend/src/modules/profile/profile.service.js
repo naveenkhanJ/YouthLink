@@ -8,6 +8,9 @@
  */
 import prisma from "../../lib/prisma.js";
 import AppError from "../../utils/AppError.js";
+// FR-ENDORSE-05: one eligibility rule, owned by the endorsement module, so the profile's
+// "My endorsement code · closed" and the code screen (8.1 / 8.1b) can never disagree.
+import { isEligibleForEndorsement } from "../endorsement/endorsement.service.js";
 
 // Endorsement attribute -> the label the prototype draws on its chips (M8).
 const ATTRIBUTE_LABELS = {
@@ -115,9 +118,10 @@ async function getOwnProfile({ userId }) {
       attributes: e.attributes.map((a) => ATTRIBUTE_LABELS[a]).filter(Boolean),
     }));
     profile.endorsedBy = endorsements.length > 0 ? endorsements[0].endorser.legalName : null;
-    // FR-ENDORSE-05: eligibility for endorsement closes for good when the first rating lands.
-    const received = await prisma.rating.count({ where: { rateeId: userId, removedAt: null } });
-    profile.endorsementCodeClosed = received > 0;
+    // FR-ENDORSE-05: eligibility for endorsement closes for good when the first rating lands —
+    // when it is revealed, so a rating still hidden by the double-blind rule (FR-RATE-02) cannot
+    // show through here before the worker may see it.
+    profile.endorsementCodeClosed = !(await isEligibleForEndorsement(userId));
   } else if (user.role === "COMMUNITY_ENDORSER") {
     profile.verifier = {
       since: user.createdAt,

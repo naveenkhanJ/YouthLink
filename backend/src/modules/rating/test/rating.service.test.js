@@ -14,9 +14,13 @@ const prismaMock = {
     updateMany: jest.fn(),
     findUnique: jest.fn(),
     aggregate: jest.fn(),
+    count: jest.fn(),
   },
   notification: { createMany: jest.fn() },
   completionRecord: { findMany: jest.fn() },
+  // Touched by the endorsement module's reveal hook (FR-ENDORSE-05 / FR-ENDORSE-12).
+  user: { updateMany: jest.fn() },
+  endorsement: { findMany: jest.fn() },
 };
 jest.unstable_mockModule('../../../lib/prisma.js', () => ({ default: prismaMock }));
 
@@ -73,6 +77,10 @@ beforeEach(() => {
   prismaMock.rating.create.mockImplementation(({ data }) =>
     Promise.resolve({ id: 'new-rating', score: data.score, submittedAt: data.submittedAt }),
   );
+  // By default the worker's endorsement window was already closed: the hook does nothing more.
+  prismaMock.user.updateMany.mockResolvedValue({ count: 0 });
+  prismaMock.rating.count.mockResolvedValue(0);
+  prismaMock.endorsement.findMany.mockResolvedValue([]);
 });
 
 describe('FR-RATE-01: isValidScore', () => {
@@ -360,5 +368,62 @@ describe('FR-RATE-03: completion rate', () => {
     });
     // The average counts revealed, non-removed ratings only.
     expect(prismaMock.rating.aggregate.mock.calls[0][0].where).toMatchObject({ rateeId: WORKER, removedAt: null });
+  });
+});
+
+describe('FR-ENDORSE-05 / FR-ENDORSE-12: a reveal tells the endorsement module, in the same transaction', () => {
+  test("the second rating stamps the worker's firstRatingReceivedAt once, at the reveal instant", async () => {
+    prismaMock.engagement.findUnique.mockResolvedValue(engagement({ ratings: [rating(WORKER, 3)] }));
+    await submitRating({ engagementId: ENGAGEMENT_ID, userId: EMPLOYER, score: 5 });
+    const revealedAt = prismaMock.rating.create.mock.calls[0][0].data.revealedAt;
+    expect(prismaMock.user.updateMany).toHaveBeenCalledWith({
+      where: { id: WORKER, role: 'YOUTH_JOB_SEEKER', firstRatingReceivedAt: null },
+      data: { firstRatingReceivedAt: revealedAt },
+    });
+  });
+
+  test('a first rating of 5 tells every active endorser it paid off', async () => {
+    prismaMock.engagement.findUnique.mockResolvedValue(engagement({ ratings: [rating(WORKER, 3)] }));
+    prismaMock.user.updateMany.mockResolvedValue({ count: 1 });
+    prismaMock.endorsement.findMany.mockResolvedValue([{ endorserId: 'v1' }]);
+    await submitRating({ engagementId: ENGAGEMENT_ID, userId: EMPLOYER, score: 5 });
+    const payoff = prismaMock.notification.createMany.mock.calls
+      .map((c) => c[0].data)
+      .flat()
+      .filter((n) => n.type === 'ENDORSEMENT_PAYOFF');
+    expect(payoff).toEqual([
+      { userId: 'v1', type: 'ENDORSEMENT_PAYOFF', payload: { workerId: WORKER, workerName: 'Kavindu Perera' } },
+    ]);
+  });
+
+  test('the first rating only: nothing for endorsement while the pair is still hidden', async () => {
+    prismaMock.engagement.findUnique.mockResolvedValue(engagement());
+    await submitRating({ engagementId: ENGAGEMENT_ID, userId: EMPLOYER, score: 5 });
+    expect(prismaMock.user.updateMany).not.toHaveBeenCalled();
+  });
+
+  test('a 14-day reveal written down later stamps the window closed at the deadline', async () => {
+    const eng = engagement({ openedDaysAgo: 20, ratings: [rating(EMPLOYER, 4)] });
+    prismaMock.engagement.findUnique.mockResolvedValue(eng);
+    prismaMock.rating.updateMany.mockResolvedValue({ count: 1 });
+    await getEngagementRatings({ engagementId: ENGAGEMENT_ID, userId: WORKER });
+    expect(prismaMock.user.updateMany).toHaveBeenCalledWith({
+      where: { id: WORKER, role: 'YOUTH_JOB_SEEKER', firstRatingReceivedAt: null },
+      data: { firstRatingReceivedAt: revealDeadline(eng.ratingOpenedAt) },
+    });
+  });
+});
+
+describe('FR-NOTIF-11: the reveal sweep', () => {
+  test('reveals every engagement whose 14-day window ran out with ratings still hidden, and tells both parties', async () => {
+    const { revealClosedWindows } = await import('../rating.service.js');
+    prismaMock.engagement.findMany = jest.fn().mockResolvedValue([engagement({ openedDaysAgo: 15, ratings: [rating(WORKER, 4)] })]);
+    prismaMock.rating.updateMany.mockResolvedValue({ count: 1 });
+    await expect(revealClosedWindows(new Date())).resolves.toBe(1);
+    const { where } = prismaMock.engagement.findMany.mock.calls[0][0];
+    expect(where.ratings).toEqual({ some: { revealedAt: null } });
+    expect(prismaMock.notification.createMany).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.arrayContaining([expect.objectContaining({ type: 'RATING_REVEALED' })]) }),
+    );
   });
 });

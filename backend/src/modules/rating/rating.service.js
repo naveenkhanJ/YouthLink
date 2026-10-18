@@ -23,6 +23,9 @@
  */
 import prisma from "../../lib/prisma.js";
 import AppError from "../../utils/AppError.js";
+// FR-ENDORSE-05 / FR-ENDORSE-12: what a reveal means for endorsement lives in the endorsement module;
+// this file only says when a reveal happens. (That file imports nothing back from here — no cycle.)
+import { onRatingsRevealed } from "../endorsement/endorsement.hooks.js";
 
 export const REVEAL_WINDOW_DAYS = 14;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -231,7 +234,17 @@ async function recordWindowReveal(engagement, deadline) {
       where: { engagementId: engagement.id, revealedAt: null },
       data: { revealedAt: deadline },
     });
-    if (count > 0) await notifyReveal(tx, engagement);
+    if (count > 0) {
+      await notifyReveal(tx, engagement);
+      await onRatingsRevealed(tx, {
+        engagementId: engagement.id,
+        workerId: engagement.workerId,
+        workerName: engagement.worker.legalName,
+        ratings: engagement.ratings,
+        revealedAt: deadline,
+        revealedWhere: revealedRatingsWhere(),
+      });
+    }
   });
 }
 
@@ -381,6 +394,19 @@ export async function submitRating({ engagementId, userId, score }) {
     if (revealNow) {
       await tx.rating.update({ where: { id: counterpart.id }, data: { revealedAt: now } });
       await notifyReveal(tx, engagement);
+      // FR-ENDORSE-05 closes the worker's endorsement window; FR-ENDORSE-12 may tell their
+      // endorsers it paid off. Same transaction, so a reveal and its consequences commit together.
+      await onRatingsRevealed(tx, {
+        engagementId,
+        workerId: engagement.workerId,
+        workerName: engagement.worker.legalName,
+        ratings: [
+          { rateeId, score },
+          { rateeId: counterpart.rateeId, score: counterpart.score },
+        ],
+        revealedAt: now,
+        revealedWhere: revealedRatingsWhere(now),
+      });
     }
 
     return { rating, revealed: revealNow };
@@ -420,6 +446,39 @@ export async function postPublicResponse({ ratingId, userId, response }) {
     select: { id: true, publicResponse: true },
   });
   return updated;
+}
+
+/**
+ * FR-NOTIF-11 / FR-RATE-02 — the 14-day reveal, written down on a timer as well as on read.
+ * Added 2026-10-18. Without it the "Ratings are in" notification for a window that simply ran out
+ * waited until someone happened to open that engagement's rating screen, and so did what the reveal
+ * sets off (FR-ENDORSE-05's first-rating stamp, FR-ENDORSE-12's payoff). recordWindowReveal's
+ * `revealedAt: null` guard keeps it once-only even if a read gets there first.
+ * @param {Date} [now]
+ * @returns {Promise<number>} how many engagements were revealed
+ */
+export async function revealClosedWindows(now = new Date()) {
+  const openedOnOrBefore = new Date(now.getTime() - REVEAL_WINDOW_DAYS * MS_PER_DAY);
+  const engagements = await prisma.engagement.findMany({
+    where: { ratingOpenedAt: { lte: openedOnOrBefore }, ratings: { some: { revealedAt: null } } },
+    select: ENGAGEMENT_FOR_RATING,
+    take: 100,
+  });
+  for (const engagement of engagements) {
+    await recordWindowReveal(engagement, revealDeadline(engagement.ratingOpenedAt));
+  }
+  return engagements.length;
+}
+
+export const REVEAL_SWEEP_INTERVAL_MS = 15 * 60 * 1000;
+
+/** Runs revealClosedWindows on a timer; unref()'d so it never keeps the process alive. */
+export function startRatingRevealSweep(intervalMs = REVEAL_SWEEP_INTERVAL_MS) {
+  const timer = setInterval(() => {
+    revealClosedWindows().catch((error) => console.error("Rating reveal sweep failed:", error));
+  }, intervalMs);
+  timer.unref();
+  return timer;
 }
 
 export default {
