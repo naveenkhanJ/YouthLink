@@ -4,6 +4,7 @@
  * Epic: FR-NOTIF  ·  Owner: Pawan
  */
 import service from "./notification.service.js";
+import { registerDeviceToken, unregisterDeviceToken } from "./notification.sender.js";
 
 export default {
   // GET /api/notifications/preferences — FR-NOTIF-03 (job-seekers only)
@@ -25,6 +26,18 @@ export default {
   // GET /api/notifications/unread-count — for the tab bar's dot
   async countUnread(req, res) {
     res.json(await service.countUnread({ userId: req.user.id }));
+  },
+
+  // PUT /api/notifications/device-token — body { token } (FR-NOTIF-01/02/09)
+  async registerDeviceToken(req, res) {
+    await registerDeviceToken({ userId: req.user.id, token: req.body?.token });
+    res.json({ status: "ok" });
+  },
+
+  // DELETE /api/notifications/device-token — body { token }, on sign-out
+  async unregisterDeviceToken(req, res) {
+    await unregisterDeviceToken({ userId: req.user.id, token: req.body?.token });
+    res.json({ status: "ok" });
   },
 
   // PATCH /api/notifications/:id/read

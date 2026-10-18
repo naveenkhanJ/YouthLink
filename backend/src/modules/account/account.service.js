@@ -1303,6 +1303,8 @@ async function deleteAccount({ userId, password }) {
     await tx.otpCode.deleteMany({ where: { userId: user.id } });
     await tx.emailVerificationToken.deleteMany({ where: { userId: user.id } });
     await tx.accountRecoveryRequest.deleteMany({ where: { userId: user.id } });
+    // No more pushes to this person's phones (notification.sender.js).
+    await tx.deviceToken.deleteMany({ where: { userId: user.id } });
   });
   return { success: true };
 }

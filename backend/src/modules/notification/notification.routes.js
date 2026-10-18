@@ -17,6 +17,10 @@ router.get("/preferences", asyncHandler(controller.getPreferences));
 router.patch("/preferences", asyncHandler(controller.updatePreferences));
 // Fixed paths before "/:id", so "unread-count" is never read as an id.
 router.get("/unread-count", asyncHandler(controller.countUnread));
+// FR-NOTIF-01/02/09: this phone's FCM token, registered once push permission is granted and
+// removed on sign-out (notification.sender.js).
+router.put("/device-token", asyncHandler(controller.registerDeviceToken));
+router.delete("/device-token", asyncHandler(controller.unregisterDeviceToken));
 router.get("/", asyncHandler(controller.getNotifications));
 router.patch("/:id/read", asyncHandler(controller.markAsRead));
 
