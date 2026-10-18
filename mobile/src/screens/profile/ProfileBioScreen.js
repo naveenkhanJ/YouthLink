@@ -46,7 +46,13 @@ export default function ProfileBioScreen({ navigation }) {
     setLoadError(null);
     getOwnProfile()
       .then((profile) => setBio(profile.bio ?? ""))
-      .catch((err) => setLoadError(parseApiError(err).formError || "Your bio couldn't be loaded."));
+      .catch((err) =>
+        setLoadError(
+          err.offline
+            ? "You're offline, so your bio couldn't be loaded. Try again once you reconnect."
+            : parseApiError(err).formError || "Your bio couldn't be loaded.",
+        ),
+      );
   }, []);
 
   useEffect(load, [load]);

@@ -183,7 +183,7 @@ export default function PostingDetailScreen({ route, navigation }) {
           </Text>
         ) : null}
         {awaitingReconfirm ? <Text style={styles.note}>{PAUSED_NOTE}</Text> : null}
-        {canEdit && hasFilled ? <Text style={styles.note}>{WITHDRAW_NOTE}</Text> : null}
+        {isOpen && canEdit && hasFilled ? <Text style={styles.note}>{WITHDRAW_NOTE}</Text> : null}
         {hidden ? <Text style={styles.note}>{HIDDEN_NOTE_DETAIL}</Text> : null}
         {posting.status === 'EXPIRED' ? <Text style={styles.note}>Expired postings can't be reopened.</Text> : null}
         {posting.status === 'FILLED' ? (
@@ -225,12 +225,13 @@ export default function PostingDetailScreen({ route, navigation }) {
               <Button
                 title="Edit posting"
                 style="secondary"
+                compact
                 disabled={!canEdit}
                 onPress={() => navigation.navigate('PostingEdit', { posting })}
               />
             </View>
             <View style={styles.action}>
-              <Button title="See engagement" style="secondary" onPress={() => openEngagement(navigation, posting)} />
+              <Button title="See engagement" style="secondary" compact onPress={() => openEngagement(navigation, posting)} />
             </View>
           </View>
         </CtaBar>

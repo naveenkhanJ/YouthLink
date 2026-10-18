@@ -48,7 +48,11 @@ export default function SavedGigsScreen({ navigation }) {
       setPostings(result.postings);
       setError(null);
     } catch (err) {
-      setError(parseApiError(err).formError || "Your saved gigs couldn't be loaded.");
+      setError(
+        err.offline
+          ? "You're offline, so your saved gigs couldn't be loaded. Try again once you reconnect."
+          : parseApiError(err).formError || "Your saved gigs couldn't be loaded.",
+      );
     } finally {
       setRefreshing(false);
     }

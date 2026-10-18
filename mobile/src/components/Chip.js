@@ -76,9 +76,11 @@ const styles = StyleSheet.create({
   touchSelected: {
     paddingVertical: 10,
   },
+  // Display (EndorsementRow on 8.5, 1.18, 4.6): Figma pads it 12/14, so it is 44 tall like the touch
+  // instances (corrected 2026-10-18 against 8.5, node 133:84); 11/13 inside the 1px stroke.
   displayChip: {
     paddingHorizontal: 13,
-    paddingVertical: 5,
+    paddingVertical: 11,
     borderWidth: 1,
     borderColor: colors.badge.endorsed,
     color: colors.badge.endorsed,

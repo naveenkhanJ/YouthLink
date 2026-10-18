@@ -89,7 +89,8 @@ export default function ProfileOwnScreen({ navigation }) {
       setProfile(await getOwnProfile());
       setError(null);
     } catch (err) {
-      setError(err.message);
+      // A load, not a submission: the client's default offline sentence says "couldn't be sent".
+      setError(err.offline ? "You're offline, so your profile couldn't be loaded. Try again once you reconnect." : err.message);
     }
   }, []);
 

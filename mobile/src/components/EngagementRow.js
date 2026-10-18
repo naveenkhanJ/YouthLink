@@ -48,12 +48,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.input,
     backgroundColor: colors.bg.default,
   },
+  // Wraps so the status badge drops under a long name at large text sizes instead of running past
+  // the card edge (found at font scale 2.0 on 2026-10-18).
   topRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
     gap: spacing.sm,
   },
   name: {
+    flexShrink: 1,
     ...typography.bodyMedium,
     color: colors.text.primary,
   },

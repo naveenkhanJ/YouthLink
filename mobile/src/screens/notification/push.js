@@ -157,8 +157,13 @@ export async function askForPushOnce() {
   return false;
 }
 
-/** Sign-out: this phone stops getting the account's pushes. Called while still signed in. */
+/**
+ * Sign-out: this phone stops getting the account's pushes, and the ones already in the shade are
+ * cleared — on a shared phone the next person must not read the last one's notifications (found in
+ * the 2026-10-18 end-to-end run). Called while still signed in.
+ */
 export async function unregisterForPush() {
+  Notifications.dismissAllNotificationsAsync().catch(() => {});
   const token = registeredToken;
   registeredToken = null;
   if (!token) return;
