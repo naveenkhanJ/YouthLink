@@ -395,8 +395,8 @@ So, on that branch only, the shared-components owner may change any module and a
 
 ### Second Figma pass (2026-10-18)
 
-- **The Notifications tab's unread dot now shows on every tab screen**, as the frames draw it (5.1es, 8.5, 1.18…); before, only Browse fetched the count. The shared  reads it whenever its screen comes into view.
-- **An endorsement with no reason no longer leaves an empty line** in  (the reason is optional, FR-ENDORSE-04).
+- **The Notifications tab's unread dot now shows on every tab screen**, as the frames draw it (5.1es, 8.5, 1.18…); before, only Browse fetched the count. The shared `ShellTabBar` reads it whenever its screen comes into view.
+- **An endorsement with no reason no longer leaves an empty line** in `EndorsementRow` (the reason is optional, FR-ENDORSE-04).
 - **1.18v draws a bio on the verifier's profile, but nothing lets a verifier write one**: 1.18vz has no "add a bio" link, no frame draws a verifier's bio editor, and FR-PROF-03 names only job-seekers and employers. The profile shows a verifier's bio if the account has one; no editor was invented. Open item for the owner.
 
 ### Blocked
