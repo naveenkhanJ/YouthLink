@@ -314,7 +314,11 @@ export async function getEngagementRatings({ engagementId, userId }) {
     canSubmit: stage === "OPEN",
     ratingOpenedAt: engagement.ratingOpenedAt,
     revealAt: deadline,
-    myRating: mine ? { id: mine.id, score: mine.score, submittedAt: mine.submittedAt } : null,
+    // publicResponse here is the OTHER party's response to the rating the caller gave — FR-RATE-06:
+    // "visible alongside" the rating, so the person who gave it sees the reply next to it.
+    myRating: mine
+      ? { id: mine.id, score: mine.score, submittedAt: mine.submittedAt, publicResponse: revealed ? mine.publicResponse : null }
+      : null,
     theirRating:
       revealed && theirs
         ? { id: theirs.id, score: theirs.score, publicResponse: theirs.publicResponse }
