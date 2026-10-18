@@ -34,8 +34,14 @@ describe('FR-PROF-03: updateBio', () => {
     expect(prismaMock.user.update.mock.calls[0][0].data).toEqual({ bio: null });
   });
 
-  test('an employer or verifier is refused (their description is the business bio)', async () => {
+  test('an employer is refused (its description is the business bio)', async () => {
     await expect(updateBio({ user: { id: 'e', role: 'EMPLOYER' }, bio: 'x' })).rejects.toMatchObject({ status: 403 });
+  });
+
+  test('a Community Verifier can set a bio too (1.18v)', async () => {
+    await expect(updateBio({ user: { id: 'v', role: 'COMMUNITY_ENDORSER' }, bio: 'Retired schoolteacher in Nugegoda.' })).resolves.toEqual({
+      bio: 'Retired schoolteacher in Nugegoda.',
+    });
   });
 
   test('a non-string is refused', async () => {

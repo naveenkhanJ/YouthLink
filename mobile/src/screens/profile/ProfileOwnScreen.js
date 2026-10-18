@@ -12,8 +12,11 @@
  *                  completed"); zero history: "New to YouthLink", with the Endorsed badge and
  *                  "Endorsed by …" when an endorsement exists; a verifier: "Community Verifier" and
  *                  "Vouching since May 2026 · 3 endorsed"
- *   bio            the bio when there is one; for a zero-history worker without one, the link
- *                  "Add a short bio to help employers know you." (the editor is M7 7.1)
+ *   bio            the bio when there is one — tapping it opens the editor (M7 7.1; 1.18bio "leads to
+ *                  7.1 (the bio)"). Without one, the link "Add a short bio to help employers know
+ *                  you." for a worker, and for a verifier "Add a short bio so people know who is
+ *                  vouching." (1.18v draws a verifier's bio; the link is not drawn — decisions.md,
+ *                  2026-10-18). An employer's bio is its business bio, edited in Settings.
  *   worker only    ENDORSEMENTS with the endorsements received, or the empty note
  *   rows           "My endorsement code" (· closed once a rating has landed) / "My endorsements" /
  *                  "Settings", which opens the unified Settings screen
@@ -38,6 +41,8 @@ import Link from "../../components/Link";
 import ShellTabBar from "../../components/ShellTabBar";
 
 const BIO_PROMPT = "Add a short bio to help employers know you.";
+// Not drawn: 1.18v shows a verifier's bio but no way to add one. Same pattern, the verifier's terms.
+const VERIFIER_BIO_PROMPT = "Add a short bio so people know who is vouching.";
 const EMPTY_ENDORSEMENTS = "No endorsements yet. Share your code and someone who knows you can vouch for you.";
 
 // Destinations owned by other modules; opened only once a module has registered them.
@@ -159,10 +164,22 @@ export default function ProfileOwnScreen({ navigation }) {
         )}
 
         {profile.bio ? (
-          <Text style={styles.bio}>{profile.bio}</Text>
-        ) : isWorker && !history ? (
-          <Text style={styles.bioPrompt} onPress={() => open(BIO_EDITOR)}>
-            {BIO_PROMPT}
+          isWorker || isVerifier ? (
+            <Pressable
+              onPress={() => open(BIO_EDITOR)}
+              style={({ pressed: isPressed }) => isPressed && styles.pressedText}
+              accessibilityRole="button"
+              accessibilityLabel={`Your bio: ${profile.bio}`}
+              accessibilityHint="Opens the bio editor"
+            >
+              <Text style={styles.bio}>{profile.bio}</Text>
+            </Pressable>
+          ) : (
+            <Text style={styles.bio}>{profile.bio}</Text>
+          )
+        ) : isWorker || isVerifier ? (
+          <Text style={styles.bioPrompt} onPress={() => open(BIO_EDITOR)} accessibilityRole="link">
+            {isVerifier ? VERIFIER_BIO_PROMPT : BIO_PROMPT}
           </Text>
         ) : null}
 
@@ -232,6 +249,8 @@ const styles = StyleSheet.create({
     ...typography.title,
     color: colors.text.primary,
   },
+  // While a finger is on the bio (theme/tokens.js `pressed`).
+  pressedText: { opacity: pressed.textOpacity },
   bio: {
     ...typography.body,
     color: colors.text.secondary,

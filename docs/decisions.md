@@ -374,7 +374,7 @@ So, on that branch only, the shared-components owner may change any module and a
 ### Other completed requirements
 
 - **Saved gigs (FR-DISC-06):** 3.12 draws no bookmark, so the listing detail's header gains a "Save" / "Saved" text action (ScreenHeader's action slot). The saved list is unfiltered; filled, withdrawn and expired postings stay as 3.8's dead rows. Undrawn empty state: "No saved gigs yet" / "Tap Save on a gig's details to keep it here, so you can come back to it without searching again."
-- **Bio (FR-PROF-03):** the job-seeker's `bio` (an employer's description is its business bio). Over 300 characters is refused, not cut, so nothing typed is lost silently.
+- **Bio (FR-PROF-03):** the job-seeker's `bio` (an employer's description is its business bio; a verifier's was added in the second pass below). Over 300 characters is refused, not cut, so nothing typed is lost silently.
 - **Public rating response (FR-RATE-06, user side):** 6.4 from 6.3/6.3p; the person who gave the rating sees the reply under their own card ("{name}'s public response — …", undrawn). The removal request (6.5) belongs to the Admin half and is not built.
 - **No-applicant nudge (FR-POST-17):** "urgent" is judged at posting time; a withdrawn application still counts as an applicant.
 - **Account recovery retention (FR-ACC-10, E8):** rejected and completed requests have their three identity fields overwritten after 90 days; the row stays as the record that an Admin acted.
@@ -397,7 +397,8 @@ So, on that branch only, the shared-components owner may change any module and a
 
 - **The Notifications tab's unread dot now shows on every tab screen**, as the frames draw it (5.1es, 8.5, 1.18…); before, only Browse fetched the count. The shared `ShellTabBar` reads it whenever its screen comes into view.
 - **An endorsement with no reason no longer leaves an empty line** in `EndorsementRow` (the reason is optional, FR-ENDORSE-04).
-- **1.18v draws a bio on the verifier's profile, but nothing lets a verifier write one**: 1.18vz has no "add a bio" link, no frame draws a verifier's bio editor, and FR-PROF-03 names only job-seekers and employers. The profile shows a verifier's bio if the account has one; no editor was invented. Open item for the owner.
+- **1.18v draws a bio on the verifier's profile, but nothing let a verifier write one**: 1.18vz has no "add a bio" link, no frame draws a verifier's bio editor, and FR-PROF-03 names only job-seekers and employers. **Resolved at the owner's request (same day): a verifier writes a bio with the job-seeker's editor (7.1)**, reached the way 1.18z reaches it. `PATCH /api/profiles/me/bio` accepts a Community Verifier; an employer is still refused (its description is the business bio). Undrawn copy, the youth lines with the application part left out because a verifier makes none: the profile link "Add a short bio so people know who is vouching.", 7.1's helper "Shown on your profile." and 7.1d's "Saved — your bio now shows on your profile."
+- **An existing bio opens the editor** for a job-seeker or a verifier (1.18bio: the bio "leads to 7.1"); before, a job-seeker with a bio had no way back into 7.1. **The "Add a short bio" link shows for a job-seeker at any tier without a bio**, not only at zero history — 1.18z draws it there, and no other frame offered a way to add one later.
 
 ### Blocked
 

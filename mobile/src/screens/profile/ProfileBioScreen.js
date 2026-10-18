@@ -7,8 +7,13 @@
  * with "Save". 7.1d is the same screen after saving: a success line in color/state/success under
  * the helper, and the button reads "Done".
  *
- * Reached from the profile (1.18 / 1.18bio / 1.18z "Add a short bio") and from the one-time bio
- * prompt before a first application (8.6). The 300-character cap is enforced in the field
+ * Reached from the profile (1.18 / 1.18bio / 1.18z "Add a short bio", or the bio itself) and from the
+ * one-time bio prompt before a first application (8.6).
+ *
+ * A Community Verifier uses the same screen (added 2026-10-18; 1.18v draws a verifier's bio). Only
+ * the two lines that are about applications change: a verifier has none, so the helper reads "Shown
+ * on your profile." and the saved line "Saved — your bio now shows on your profile." (undrawn;
+ * decisions.md). The 300-character cap is enforced in the field
  * (maxLength) and on the server, which refuses rather than truncates.
  *
  * States: loading (Feedback/LoadingState while the current bio is read), a load failure or offline
@@ -27,6 +32,7 @@ import FormBanner from "../../components/FormBanner";
 import LoadingState from "../../components/LoadingState";
 import CtaBar from "../../components/CtaBar";
 import { getOwnProfile, updateBio } from "../../api/profile";
+import { useAuth } from "../../auth/AuthContext";
 import { parseApiError } from "../../api/client";
 
 const BIO_CAP = 300;
@@ -34,8 +40,13 @@ const BIO_CAP = 300;
 // 7.1 / 7.1d copy, verbatim.
 const HELPER = "Shown on your profile. It also pre-fills the note on your applications, which you can edit each time.";
 const SAVED_NOTE = "Saved — your bio now shows on your profile and pre-fills your application notes.";
+// A verifier makes no applications, so their two lines leave that part out.
+const VERIFIER_HELPER = "Shown on your profile.";
+const VERIFIER_SAVED_NOTE = "Saved — your bio now shows on your profile.";
 
 export default function ProfileBioScreen({ navigation }) {
+  const { user } = useAuth();
+  const isVerifier = user?.role === "COMMUNITY_ENDORSER";
   const [bio, setBio] = useState(null); // null until the current bio has loaded
   const [loadError, setLoadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
@@ -108,10 +119,10 @@ export default function ProfileBioScreen({ navigation }) {
             <Text style={styles.counter} accessibilityLabel={`${bio.length} of ${BIO_CAP} characters`}>
               {bio.length} / {BIO_CAP}
             </Text>
-            <Text style={styles.helper}>{HELPER}</Text>
+            <Text style={styles.helper}>{isVerifier ? VERIFIER_HELPER : HELPER}</Text>
             {saved ? (
               <Text style={styles.savedNote} accessibilityLiveRegion="polite">
-                {SAVED_NOTE}
+                {isVerifier ? VERIFIER_SAVED_NOTE : SAVED_NOTE}
               </Text>
             ) : null}
           </KeyboardAwareScrollView>

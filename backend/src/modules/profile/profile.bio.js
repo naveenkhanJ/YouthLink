@@ -10,6 +10,9 @@
  * pre-filled from it (applying module) — and FR-ENDORSE-13, whose one-time prompt stops once a bio
  * exists.
  *
+ * A Community Verifier writes one too: Figma 1.18v draws the verifier's profile with a bio ("Retired
+ * schoolteacher in Nugegoda…"). Added 2026-10-18 at the owner's request; decisions.md.
+ *
  * 7.1 enforces the cap in the field (input stops at 300) and "on the server" — here a longer value
  * is refused rather than silently cut, so nothing the worker typed is lost without them seeing it.
  */
@@ -19,13 +22,13 @@ import AppError from "../../utils/AppError.js";
 export const BIO_MAX_LENGTH = 300;
 
 /**
- * Sets (or clears, with an empty string) the signed-in job-seeker's bio.
+ * Sets (or clears, with an empty string) the signed-in job-seeker's or verifier's bio.
  * @param {{ user: { id: string, role: string }, bio: unknown }} input
  * @returns {Promise<{ bio: string|null }>}
  */
 export async function updateBio({ user, bio }) {
-  if (user.role !== "YOUTH_JOB_SEEKER") {
-    throw AppError.forbidden("Only job-seekers have a profile bio. A business describes itself with its business name.");
+  if (user.role !== "YOUTH_JOB_SEEKER" && user.role !== "COMMUNITY_ENDORSER") {
+    throw AppError.forbidden("An employer describes itself with its business name and bio.");
   }
   if (typeof bio !== "string") {
     throw AppError.badRequest("Some details need fixing.", { bio: "Write your bio as text." });
