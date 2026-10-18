@@ -94,6 +94,7 @@ model User {
   emailTokens             EmailVerificationToken[]
   ratingRemovalRequests   RatingRemovalRequest[]
   accountRecoveryRequests AccountRecoveryRequest[]
+  deviceTokens            DeviceToken[]
 
   @@index([accountStatus])
   @@index([deletedAt])
@@ -314,43 +315,48 @@ model Application {
 }
 
 model Engagement {
-  id                       String              @id @default(uuid())
-  applicationId            String              @unique
-  gigPostingId             String
-  workerId                 String
-  employerId               String
-  status                   EngagementStatus    @default(ACTIVE)
-  contactRevealedAt        DateTime            @default(now())
-  arrivalCode              String?             @db.VarChar(6)
-  arrivalStatus            CheckpointStatus    @default(PENDING)
-  arrivalConfirmedAt       DateTime?
-  completionCode           String?             @db.VarChar(6)
-  completionStatus         CheckpointStatus    @default(PENDING)
-  completionConfirmedAt    DateTime?
-  paymentCode              String?             @db.VarChar(6)
-  paymentStatus            CheckpointStatus?
-  paymentConfirmedAt       DateTime?
+  id                           String              @id @default(uuid())
+  applicationId                String              @unique
+  gigPostingId                 String
+  workerId                     String
+  employerId                   String
+  status                       EngagementStatus    @default(ACTIVE)
+  contactRevealedAt            DateTime            @default(now())
+  arrivalCode                  String?             @db.VarChar(6)
+  arrivalStatus                CheckpointStatus    @default(PENDING)
+  arrivalConfirmedAt           DateTime?
+  completionCode               String?             @db.VarChar(6)
+  completionStatus             CheckpointStatus    @default(PENDING)
+  completionConfirmedAt        DateTime?
+  paymentCode                  String?             @db.VarChar(6)
+  paymentStatus                CheckpointStatus?
+  paymentConfirmedAt           DateTime?
   // Batch A17 (2026-08-27), decision D3: wrong checkpoint-code entries are RECORDED, never
   // rate-limited. A worker mistyping at arrival must not brick the checkpoint at the kerb, so
   // there is no lockout; the counters make repeated guessing visible evidence instead, rendered
   // in FR-MOD-01's code-exchange history where Moderators already look (FR-ENG-01).
-  arrivalFailedAttempts    Int                 @default(0)
-  completionFailedAttempts Int                 @default(0)
-  paymentFailedAttempts    Int                 @default(0)
-  startedAt                DateTime?
-  ratingOpenedAt           DateTime?
-  ratingEnforced           Boolean             @default(true)
-  cancelledAt              DateTime?
-  cancelledByUserId        String?
-  cancellationReason       CancellationReason?
-  isLateCancellation       Boolean?
-  endedAt                  DateTime?
-  endedByUserId            String?
-  endIssueFlag             Boolean?
-  stalledPromptSentAt      DateTime?
-  stalledFlaggedAt         DateTime?
-  createdAt                DateTime            @default(now())
-  updatedAt                DateTime            @updatedAt
+  arrivalFailedAttempts        Int                 @default(0)
+  completionFailedAttempts     Int                 @default(0)
+  paymentFailedAttempts        Int                 @default(0)
+  startedAt                    DateTime?
+  ratingOpenedAt               DateTime?
+  ratingEnforced               Boolean             @default(true)
+  cancelledAt                  DateTime?
+  cancelledByUserId            String?
+  cancellationReason           CancellationReason?
+  isLateCancellation           Boolean?
+  endedAt                      DateTime?
+  endedByUserId                String?
+  endIssueFlag                 Boolean?
+  stalledPromptSentAt          DateTime?
+  stalledFlaggedAt             DateTime?
+  // FR-ENG-13 (amended 2026-09-24): "Still running" on the stalled prompt closes it for that party
+  // only and changes nothing else. Kept per party so the dialog does not reappear for whoever
+  // dismissed it. Added 2026-10-18.
+  stalledDismissedByWorkerAt   DateTime?
+  stalledDismissedByEmployerAt DateTime?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
 
   application            Application             @relation(fields: [applicationId], references: [id])
   gigPosting             GigPosting              @relation(fields: [gigPostingId], references: [id])
@@ -507,20 +513,24 @@ model Report {
 }
 
 model DisputeCase {
-  id                 String             @id @default(uuid())
-  engagementId       String?
-  reportId           String?            @unique
-  triggerType        DisputeTriggerType
-  raisedByUserId     String?
-  respondentUserId   String?
-  respondentDeadline DateTime?
-  status             DisputeStatus      @default(AWAITING_RESPONSE)
-  moderatorAccountId String?
-  adminAccountId     String?
-  resolution         DisputeResolution?
-  resolutionNotes    String?            @db.VarChar(1000)
-  resolvedAt         DateTime?
-  createdAt          DateTime           @default(now())
+  id                  String             @id @default(uuid())
+  engagementId        String?
+  reportId            String?            @unique
+  triggerType         DisputeTriggerType
+  raisedByUserId      String?
+  respondentUserId    String?
+  respondentDeadline  DateTime?
+  // FR-DISPUTE-04 / prototype 9.3 (added 2026-10-18): the respondent's side of what happened, up to
+  // 300 characters, and when it arrived. Evidence images stay in DisputeEvidence.
+  respondentStatement String?            @db.VarChar(300)
+  respondedAt         DateTime?
+  status              DisputeStatus      @default(AWAITING_RESPONSE)
+  moderatorAccountId  String?
+  adminAccountId      String?
+  resolution          DisputeResolution?
+  resolutionNotes     String?            @db.VarChar(1000)
+  resolvedAt          DateTime?
+  createdAt           DateTime           @default(now())
 
   engagement Engagement?   @relation(fields: [engagementId], references: [id])
   report     Report?       @relation(fields: [reportId], references: [id])
@@ -608,16 +618,34 @@ model AuditLogEntry {
 // 8. Notifications
 // ---------------------------------------------------------------------------
 
+// FCM registration tokens for push delivery (FR-NOTIF-01/02/09, added 2026-10-18). One row per app
+// install; someone signed in on two phones has two. Removed on sign-out, on account deletion, and
+// when Firebase reports the token is no longer registered.
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
 model Notification {
-  id              String           @id @default(uuid())
-  userId          String?
-  adminAccountId  String?
-  type            NotificationType
-  payload         Json
-  createdAt       DateTime         @default(now())
-  readAt          DateTime?
-  pushSentAt      DateTime?
-  batchedDigestId String?
+  id               String           @id @default(uuid())
+  userId           String?
+  adminAccountId   String?
+  type             NotificationType
+  payload          Json
+  createdAt        DateTime         @default(now())
+  readAt           DateTime?
+  pushSentAt       DateTime?
+  // Real push delivery (FR-NOTIF-01/02, added 2026-10-18): when the push sender processed this row —
+  // sent to the person's devices, or skipped because none were registered. Null = not processed yet.
+  pushDispatchedAt DateTime?
+  batchedDigestId  String?
 
   user          User?          @relation(fields: [userId], references: [id])
   adminAccount  AdminAccount?  @relation(fields: [adminAccountId], references: [id])
