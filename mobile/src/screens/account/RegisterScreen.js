@@ -187,6 +187,19 @@ export default function RegisterScreen({ navigation }) {
     navigation.reset({ index: 0, routes: [{ name: "Home" }] });
   }
 
+  /**
+   * FR-ENDORSE-15: a new Community Verifier goes straight to M8 8.2, "Have a code to enter?" — the
+   * Vouch tab, with the Verifier's tab bar under it — rather than to their first tab. Falls back to
+   * Home in a build without the endorsement module.
+   */
+  function finishToCodeEntry() {
+    if (navigation.getState().routeNames.includes("EndorsementEnterCode")) {
+      navigation.reset({ index: 0, routes: [{ name: "EndorsementEnterCode" }] });
+    } else {
+      finishToHome();
+    }
+  }
+
   function goBackOneStep() {
     if (step === 3) changeNumber();
     setStep((s) => Math.max(1, s - 1));
@@ -277,6 +290,7 @@ export default function RegisterScreen({ navigation }) {
       await signIn(token, user);
       setRegistered(true);
       if (role === "EMPLOYER") setStep(5);
+      else if (role === "COMMUNITY_ENDORSER") finishToCodeEntry();
       else finishToHome();
     } catch (err) {
       if (err.fields) {

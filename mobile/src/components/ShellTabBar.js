@@ -46,7 +46,12 @@ const ROUTE_BY_TAB = {
     notifications: "NotificationHistory",
     profile: "ProfileOwn",
   },
-  verifier: { notifications: "NotificationHistory", profile: "ProfileOwn" },
+  verifier: {
+    endorsements: "EndorsementMine",
+    vouch: "EndorsementEnterCode",
+    notifications: "NotificationHistory",
+    profile: "ProfileOwn",
+  },
 };
 
 /**

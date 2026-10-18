@@ -10,6 +10,12 @@
  * Feedback/FormBanner {Kind=Error} of 4.1bnr, with the note kept; anything else the server refuses
  * (already applied, the posting closed or is under review) → the same banner with its sentence.
  *
+ * FR-ENDORSE-13 (M8 8.6, Afham): when the flow starts, a zero-history worker with no bio who has
+ * never applied and never seen it gets the one-time bio prompt over this screen — "Not now" closes
+ * it, "Add bio" opens the bio editor (M7 7.1), and Back from there returns here. The server decides
+ * whether it is due (GET /api/endorsements/me/prompts) and is told once it has been shown, so it
+ * never recurs. A failed check simply shows nothing: the prompt is a suggestion, never a gate.
+ *
  * Opened from the listing detail with `{ gigPostingId, title, employerName }`.
  */
 import { useEffect, useRef, useState } from "react";
@@ -25,8 +31,15 @@ import CtaBar from "../../components/CtaBar";
 import { applyToPosting } from "../../api/application.api";
 import { getOwnProfile } from "../../api/profile";
 import { parseApiError } from "../../api/client";
+import DialogModal from "../../components/DialogModal";
+import EndorsementPromptCard from "../endorsement/EndorsementPromptCard";
+import { getEndorsementPrompts, markEndorsementPromptsShown } from "../../api/endorsement.api";
 
 const NOTE_MAX_LENGTH = 300;
+
+// 8.6 promptCard, word for word.
+const BIO_PROMPT_TITLE = "Add a short bio?";
+const BIO_PROMPT_BODY = "A line about yourself helps employers pick you. It takes a minute.";
 
 // 4.1bnr `formBanner`, word for word.
 const OFFLINE_MESSAGE =
@@ -40,19 +53,43 @@ export default function ApplyScreen({ route, navigation }) {
   const [sending, setSending] = useState(false);
   // Once the worker types, a late-arriving bio must not overwrite what they wrote.
   const edited = useRef(false);
+  const [bioPrompt, setBioPrompt] = useState(false); // 8.6 open
 
-  // FR-PROF-04: pre-fill from the bio. A failure here is not an error — the note is optional.
+  // FR-ENDORSE-13: the one-time bio prompt, when the server says it is due. Recorded as shown the
+  // moment it opens, so leaving the screen any way at all does not bring it back.
   useEffect(() => {
     let active = true;
-    getOwnProfile()
-      .then((profile) => {
-        if (active && !edited.current && profile?.bio) setNote(profile.bio.slice(0, NOTE_MAX_LENGTH));
+    getEndorsementPrompts()
+      .then(({ showBioPrompt }) => {
+        if (!active || !showBioPrompt) return;
+        setBioPrompt(true);
+        markEndorsementPromptsShown({ bioPromptShown: true }).catch(() => {});
       })
       .catch(() => {});
     return () => {
       active = false;
     };
   }, []);
+
+  // FR-PROF-04: pre-fill from the bio. A failure here is not an error — the note is optional.
+  // Read on every focus, not only on opening: a bio written from 8.6's "Add bio" then fills the
+  // note on the way back here, unless the worker has already typed one.
+  useEffect(() => {
+    let active = true;
+    function prefill() {
+      getOwnProfile()
+        .then((profile) => {
+          if (active && !edited.current && profile?.bio) setNote(profile.bio.slice(0, NOTE_MAX_LENGTH));
+        })
+        .catch(() => {});
+    }
+    prefill();
+    const unsubscribe = navigation.addListener("focus", prefill);
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [navigation]);
 
   async function submit() {
     setFormError(null);
@@ -104,6 +141,20 @@ export default function ApplyScreen({ route, navigation }) {
       <CtaBar>
         <Button title="Submit application" onPress={submit} loading={sending} />
       </CtaBar>
+
+      {/* 8.6: Add a short bio? — over the Apply screen. */}
+      <DialogModal visible={bioPrompt} onRequestClose={() => setBioPrompt(false)}>
+        <EndorsementPromptCard
+          title={BIO_PROMPT_TITLE}
+          body={BIO_PROMPT_BODY}
+          onDismiss={() => setBioPrompt(false)}
+          actionLabel="Add bio"
+          onAction={() => {
+            setBioPrompt(false);
+            navigation.navigate("ProfileBio");
+          }}
+        />
+      </DialogModal>
     </View>
   );
 }

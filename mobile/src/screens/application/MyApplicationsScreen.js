@@ -16,6 +16,12 @@
  *
  * States: loading → three Feedback/LoadingState cards (4.3ldg); nothing yet →
  * Feedback/EmptyState {NoneExist} with "Browse gigs" (4.3z); a failed load → FormBanner + retry.
+ *
+ * FR-ENDORSE-14 (M8 8.7, Afham): once a zero-history, unendorsed worker's third application has
+ * ended Declined or Not selected (withdrawals do not count), the one-time suggestion "No luck yet?"
+ * opens over this list with a direct link to their code (8.1). The server decides whether it is due
+ * (GET /api/endorsements/me/prompts, checked on every focus) and is told the moment it is shown, so
+ * it never recurs. A failed check simply shows nothing.
  */
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, RefreshControl, StyleSheet } from "react-native";
@@ -34,7 +40,14 @@ import DialogModal from "../../components/DialogModal";
 import ShellTabBar, { openShellTab } from "../../components/ShellTabBar";
 import { getMyApplications, withdrawApplication } from "../../api/application.api";
 import { parseApiError } from "../../api/client";
+import EndorsementPromptCard from "../endorsement/EndorsementPromptCard";
+import { getEndorsementPrompts, markEndorsementPromptsShown } from "../../api/endorsement.api";
 import { applicationBadgeValue, pendingMeta, resolvedMeta, ORDER_NOTE } from "./application.format";
+
+// 8.7 promptCard, word for word.
+const SUGGESTION_TITLE = "No luck yet?";
+const SUGGESTION_BODY =
+  "An endorsement from someone who knows you moves you up the list. Your code takes a minute to share.";
 
 function ApplicationRow({ row, onWithdraw, onOpenEngagement }) {
   const pending = row.status === "PENDING";
@@ -84,6 +97,28 @@ export default function MyApplicationsScreen({ navigation }) {
     load();
     return navigation.addListener("focus", load);
   }, [load, navigation]);
+
+  // FR-ENDORSE-14: the one-time endorsement suggestion (8.7), checked whenever the list comes into
+  // view — the third unselected outcome can land while the worker is elsewhere.
+  const [suggestion, setSuggestion] = useState(false);
+  useEffect(() => {
+    let active = true;
+    function check() {
+      getEndorsementPrompts()
+        .then(({ showEndorsementSuggestion }) => {
+          if (!active || !showEndorsementSuggestion) return;
+          setSuggestion(true);
+          markEndorsementPromptsShown({ endorsementSuggestionShown: true }).catch(() => {});
+        })
+        .catch(() => {});
+    }
+    check();
+    const unsubscribe = navigation.addListener("focus", check);
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [navigation]);
 
   async function confirmWithdraw() {
     if (!confirming) return;
@@ -171,6 +206,20 @@ export default function MyApplicationsScreen({ navigation }) {
             onConfirm={withdrawing ? () => {} : confirmWithdraw}
           />
         ) : null}
+      </DialogModal>
+
+      {/* 8.7: No luck yet? — over the list, Worker tab bar beneath. */}
+      <DialogModal visible={suggestion} onRequestClose={() => setSuggestion(false)}>
+        <EndorsementPromptCard
+          title={SUGGESTION_TITLE}
+          body={SUGGESTION_BODY}
+          onDismiss={() => setSuggestion(false)}
+          actionLabel="See my code"
+          onAction={() => {
+            setSuggestion(false);
+            navigation.navigate("EndorsementShareCode");
+          }}
+        />
       </DialogModal>
     </View>
   );

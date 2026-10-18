@@ -41,8 +41,8 @@ const BIO_PROMPT = "Add a short bio to help employers know you.";
 const EMPTY_ENDORSEMENTS = "No endorsements yet. Share your code and someone who knows you can vouch for you.";
 
 // Destinations owned by other modules; opened only once a module has registered them.
-const ENDORSEMENT_CODE = "EndorsementCode"; // M8 8.1 / 8.1b
-const MY_ENDORSEMENTS = "EndorsementList"; // M8 8.5 / 8.5z
+const ENDORSEMENT_CODE = "EndorsementShareCode"; // M8 8.1 / 8.1b (the code, or the closed window)
+const MY_ENDORSEMENTS = "EndorsementMine"; // M8 8.5 / 8.5z (with the private track record)
 const BIO_EDITOR = "ProfileBio"; // M7 7.1
 
 const MONTHS = [
@@ -63,7 +63,7 @@ function verifierLine(verifier) {
 /** A white row with a chevron: 328×52, pad 14, radius 10, the card shadow (Figma row-*). */
 function ProfileRow({ label, onPress }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.row, elevation.card, isPressed && styles.pressedSurface]} accessibilityRole="button">
+    <Pressable onPress={onPress} style={({ pressed: isPressed }) => [styles.row, elevation.card, isPressed && styles.pressedSurface]} accessibilityRole="button" accessibilityLabel={label}>
       <Text style={styles.rowLabel}>{label}</Text>
       <Svg width={6} height={12} viewBox="0 0 6 12" fill="none" overflow="visible">
         <Path
