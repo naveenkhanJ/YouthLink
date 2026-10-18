@@ -26,10 +26,15 @@ import engagementRoutes from "./modules/engagement/engagement.routes.js";
 import ratingRoutes from "./modules/rating/rating.routes.js";
 import profileRoutes from "./modules/profile/profile.routes.js";
 import endorsementRoutes from "./modules/endorsement/endorsement.routes.js";
+import disputeRoutes, { disputeUploadBodyParser } from "./modules/dispute/dispute.routes.js";
 
 const app = express();
 
 app.use(cors());
+// Dispute evidence (FR-DISPUTE-05: up to 3 photos of 5 MB each) arrives as base64 JSON, far over the
+// default 100 kb body limit. This parser handles only the two upload routes, and must run before
+// the global one below, which would otherwise reject the body first.
+app.use("/api/disputes", disputeUploadBodyParser);
 app.use(express.json());
 
 /**
@@ -63,6 +68,7 @@ app.use("/api/engagements", requireAuth, engagementRoutes);
 app.use("/api/ratings", requireAuth, ratingRoutes);
 app.use("/api/profiles", requireAuth, profileRoutes);
 app.use("/api/endorsements", requireAuth, endorsementRoutes);
+app.use("/api/disputes", requireAuth, disputeRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

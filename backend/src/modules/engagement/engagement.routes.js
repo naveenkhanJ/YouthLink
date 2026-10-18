@@ -19,5 +19,7 @@ router.post("/:id/reconfirm", asyncHandler(controller.reconfirm));
 router.post("/:id/checkpoints/unable-to-confirm", asyncHandler(controller.unableToConfirm));
 router.post("/:id/cancel", asyncHandler(controller.cancel));
 router.post("/:id/cancellation/respond", asyncHandler(controller.respondToRequest));
+// FR-ENG-13 (amended 2026-09-24): "Still running" on the stalled prompt (5.14).
+router.post("/:id/stalled/dismiss", asyncHandler(controller.dismissStalled));
 
 export default router;

@@ -13,6 +13,7 @@ const prismaMock = {
   materialChangeRequest: { findFirst: jest.fn(), findMany: jest.fn(), findUnique: jest.fn(), updateMany: jest.fn() },
   cancellationRequest: { create: jest.fn(), findMany: jest.fn(), findFirst: jest.fn(), findUnique: jest.fn(), updateMany: jest.fn() },
   gigPosting: { findUnique: jest.fn(), updateMany: jest.fn() },
+  disputeCase: { findFirst: jest.fn(), create: jest.fn() },
   $transaction: jest.fn(),
   $queryRaw: jest.fn(),
 };
@@ -96,6 +97,9 @@ beforeEach(() => {
     Object.assign(row, data);
     return { count: 1 };
   });
+  // openDisputeCase (dispute.service.js): no case open yet; a created case echoes its data.
+  prismaMock.disputeCase.findFirst.mockResolvedValue(null);
+  prismaMock.disputeCase.create.mockImplementation(async ({ data }) => ({ id: "dc1", ...data }));
 });
 
 async function attempt(promise) {
@@ -321,6 +325,7 @@ describe("FR-ENG-14: the list", () => {
         gigPostingId: "p1",
         hasPendingChange: false,
         nextAction: { kind: "CODE", checkpoint: "arrival", role: "ENTERER" },
+        disputeCaseId: null,
       },
     ]);
     expect(prismaMock.engagement.findMany.mock.calls[0][0].where).toEqual({ workerId: "w1" });
@@ -341,7 +346,7 @@ describe("FR-ENG-12: End Engagement", () => {
 
   test('"no": Ended, rating opens for both, completion recorded, the other party told', async () => {
     const result = await end("w1", false);
-    expect(result).toEqual({ engagementStatus: "ENDED", next: "rating" });
+    expect(result).toEqual({ engagementStatus: "ENDED", next: "rating", disputeCaseId: null });
     expect(row).toMatchObject({ status: "ENDED", endIssueFlag: false, endedByUserId: "w1", ratingOpenedAt: now });
     expect(prismaMock.completionRecord.create).toHaveBeenCalledTimes(1);
     const sent = prismaMock.notification.create.mock.calls.map(([{ data }]) => [data.userId, data.type]);
@@ -351,13 +356,23 @@ describe("FR-ENG-12: End Engagement", () => {
     expect(opened).toEqual([["w1", "RATING_WINDOW_OPEN"], ["m1", "RATING_WINDOW_OPEN"]]);
   });
 
-  test('"yes": the dispute route — Disputed, no rating, no completion record, the other party told', async () => {
+  test('"yes": a dispute case opens before rating — Disputed, no rating, no completion record, the other party told', async () => {
     const result = await end("m1", true);
-    expect(result).toEqual({ engagementStatus: "DISPUTED", next: "dispute" });
+    expect(result).toEqual({ engagementStatus: "DISPUTED", next: "dispute", disputeCaseId: "dc1" });
     expect(row).toMatchObject({ status: "DISPUTED", endIssueFlag: true, ratingOpenedAt: null });
     expect(prismaMock.completionRecord.create).not.toHaveBeenCalled();
+    // FR-DISPUTE-03: END_ENGAGEMENT_ISSUE, raised by the employer, the worker responds within 48 h.
+    expect(prismaMock.disputeCase.create.mock.calls[0][0].data).toMatchObject({
+      engagementId: "e1",
+      triggerType: "END_ENGAGEMENT_ISSUE",
+      raisedByUserId: "m1",
+      respondentUserId: "w1",
+      respondentDeadline: new Date(now.getTime() + 48 * HOUR),
+      status: "AWAITING_RESPONSE",
+    });
+    // FR-NOTIF-05 (END_ENGAGEMENT regardless of answer) and FR-NOTIF-12 (the respondent is told).
     const sent = prismaMock.notification.create.mock.calls.map(([{ data }]) => [data.userId, data.type]);
-    expect(sent).toEqual([["w1", "END_ENGAGEMENT"]]);
+    expect(sent).toEqual([["w1", "END_ENGAGEMENT"], ["w1", "DISPUTE_OPENED"]]);
   });
 
   test("before it has started it routes to cancellation instead", async () => {
@@ -465,10 +480,37 @@ describe("5.12: Change responses (FR-ENG-09 / FR-ENG-11, the employer's side)", 
 describe("FR-ENG-03: unable to confirm", () => {
   test("the live checkpoint → UNABLE_TO_CONFIRM, the engagement Disputed, the other party told", async () => {
     const result = await service.unableToConfirm({ engagementId: "e1", userId: "w1", checkpoint: "arrival", now });
-    expect(result).toEqual({ engagementStatus: "DISPUTED" });
+    expect(result).toEqual({ engagementStatus: "DISPUTED", disputeCaseId: "dc1" });
     expect(row).toMatchObject({ arrivalStatus: "UNABLE_TO_CONFIRM", status: "DISPUTED" });
+    // FR-DISPUTE-03 / 04: a case opens; the employer responds within 48 hours.
+    expect(prismaMock.disputeCase.create.mock.calls[0][0].data).toMatchObject({
+      triggerType: "UNABLE_TO_CONFIRM",
+      raisedByUserId: "w1",
+      respondentUserId: "m1",
+      status: "AWAITING_RESPONSE",
+    });
+    // FR-NOTIF-12: the respondent alone is told, with the case and the deadline.
     const sent = prismaMock.notification.create.mock.calls.map(([{ data }]) => [data.userId, data.type]);
     expect(sent).toEqual([["m1", "DISPUTE_OPENED"]]);
+    expect(prismaMock.notification.create.mock.calls[0][0].data.payload).toMatchObject({
+      disputeCaseId: "dc1",
+      engagementId: "e1",
+      postingTitle: "Shop assistant — weekend",
+      counterpartName: "Kavindu Perera",
+      checkpoint: "arrival",
+      respondBy: new Date(now.getTime() + 48 * HOUR),
+    });
+  });
+
+  test("either party may select it: the code holder (employer) too, and the worker then responds", async () => {
+    const result = await service.unableToConfirm({ engagementId: "e1", userId: "m1", checkpoint: "arrival", now });
+    expect(result.engagementStatus).toBe("DISPUTED");
+    expect(prismaMock.disputeCase.create.mock.calls[0][0].data).toMatchObject({ raisedByUserId: "m1", respondentUserId: "w1" });
+    // The worker is told by the business name the gig was posted under.
+    expect(prismaMock.notification.create.mock.calls[0][0].data).toMatchObject({
+      userId: "w1",
+      payload: { counterpartName: "Saman Stores" },
+    });
   });
 
   test("a checkpoint that is not the live one is refused", async () => {
@@ -490,6 +532,104 @@ describe("FR-ENG-03: unable to confirm", () => {
     row = engagementRow({ gigPosting: { ...gig, startAt: new Date(now.getTime() + 5 * HOUR) } });
     const err = await attempt(service.unableToConfirm({ engagementId: "e1", userId: "w1", checkpoint: "arrival", now }));
     expect(err.status).toBe(409);
+  });
+});
+
+describe("FR-DISPUTE-07 / FR-ENG-14: a disputed engagement on the detail and the list", () => {
+  const openedAt = new Date(now.getTime() - 2 * HOUR);
+  const deadline = new Date(openedAt.getTime() + 48 * HOUR);
+  const disputed = (caseOverrides = {}) =>
+    engagementRow({
+      status: "DISPUTED",
+      arrivalStatus: "UNABLE_TO_CONFIRM",
+      disputeCases: [
+        {
+          id: "dc1",
+          status: "AWAITING_RESPONSE",
+          triggerType: "UNABLE_TO_CONFIRM",
+          raisedByUserId: "w1",
+          respondentUserId: "m1",
+          respondentDeadline: deadline,
+          respondedAt: null,
+          createdAt: openedAt,
+          ...caseOverrides,
+        },
+      ],
+    });
+
+  test("5.2s / 5.3s: both parties see the case — the raiser's and the respondent's view", async () => {
+    row = disputed();
+    const asWorker = await service.getEngagementById({ engagementId: "e1", userId: "w1", now });
+    const asEmployer = await service.getEngagementById({ engagementId: "e1", userId: "m1", now });
+    expect(asWorker.dispute).toEqual({
+      id: "dc1",
+      status: "AWAITING_RESPONSE",
+      triggerType: "UNABLE_TO_CONFIRM",
+      checkpoint: "arrival",
+      viewerRole: "RAISER",
+      openedAt,
+      openedByMe: true,
+      respondentDeadline: deadline,
+      hasResponded: false,
+      canRespond: false,
+    });
+    expect(asEmployer.dispute).toMatchObject({ viewerRole: "RESPONDENT", openedByMe: false, canRespond: true });
+    // The case holds the engagement: no code is live, nothing to enter.
+    expect(asWorker.liveCheckpoint).toBeNull();
+    expect(asEmployer.myCode).toBeNull();
+  });
+
+  test("5.1es: only the respondent owes 'Respond to the dispute', and the row links to the case", async () => {
+    prismaMock.engagement.findMany.mockResolvedValue([disputed()]);
+    const asWorker = await service.listEngagements({ userId: "w1", role: "YOUTH_JOB_SEEKER", now });
+    const asEmployer = await service.listEngagements({ userId: "m1", role: "EMPLOYER", now });
+    expect(asWorker[0]).toMatchObject({ status: "DISPUTED", nextAction: null, disputeCaseId: "dc1" });
+    expect(asEmployer[0]).toMatchObject({
+      status: "DISPUTED",
+      nextAction: { kind: "RESPOND_DISPUTE", deadline, disputeCaseId: "dc1" },
+      disputeCaseId: "dc1",
+    });
+  });
+
+  test("once the window has passed, or after responding, nothing is owed and the case reads Under review", async () => {
+    prismaMock.engagement.findMany.mockResolvedValue([disputed({ respondedAt: now, status: "UNDER_REVIEW" })]);
+    const responded = await service.listEngagements({ userId: "m1", role: "EMPLOYER", now });
+    expect(responded[0].nextAction).toBeNull();
+
+    row = disputed();
+    const later = new Date(deadline.getTime() + 1);
+    const lapsed = await service.getEngagementById({ engagementId: "e1", userId: "m1", now: later });
+    expect(lapsed.dispute).toMatchObject({ status: "UNDER_REVIEW", canRespond: false });
+  });
+
+  test("an engagement that never had a case has no dispute", async () => {
+    const body = await service.getEngagementById({ engagementId: "e1", userId: "w1", now });
+    expect(body.dispute).toBeNull();
+  });
+});
+
+describe("FR-ENG-13: the stalled prompt on the detail", () => {
+  const prompted = (overrides = {}) =>
+    engagementRow({ stalledPromptSentAt: new Date(now.getTime() - HOUR), ...overrides });
+
+  test("shown to both parties once the prompt has fired, until each dismisses it", async () => {
+    row = prompted({ stalledDismissedByWorkerAt: now });
+    const asWorker = await service.getEngagementById({ engagementId: "e1", userId: "w1", now });
+    const asEmployer = await service.getEngagementById({ engagementId: "e1", userId: "m1", now });
+    expect(asWorker.stalledPrompt).toEqual({ show: false });
+    expect(asEmployer.stalledPrompt).toEqual({ show: true });
+  });
+
+  test("not shown before it fires, once completion is confirmed, or after the auto-flag", async () => {
+    for (const r of [
+      engagementRow(),
+      prompted({ arrivalStatus: "CONFIRMED", completionStatus: "CONFIRMED", paymentStatus: "PENDING" }),
+      prompted({ status: "DISPUTED", stalledFlaggedAt: now }),
+    ]) {
+      row = r;
+      const body = await service.getEngagementById({ engagementId: "e1", userId: "w1", now });
+      expect(body.stalledPrompt.show).toBe(false);
+    }
   });
 });
 

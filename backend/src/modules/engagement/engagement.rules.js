@@ -18,7 +18,10 @@
  *   - FR-ENG-14 (amended 2026-09-24): the status and the owed action are separate; the action is
  *     only what the VIEWER owes; a finished engagement stays listed until 30 days after its
  *     rating window closes.
+ *   - FR-DISPUTE-04 / FR-ENG-14 (5.1es): on a Disputed engagement, the respondent owes "Respond
+ *     to the dispute — by …" while their window is open; the raiser owes nothing.
  */
+import { canRespondToCase, currentCase } from "../dispute/dispute.rules.js";
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -152,11 +155,22 @@ export function hasRated(engagement, userId) {
  * @returns {null | { kind: "CODE", checkpoint: string, role: "HOLDER"|"ENTERER" }
  *               | { kind: "RECONFIRM", deadline: Date, changedFields: string[] }
  *               | { kind: "RESPOND_CANCELLATION", deadline: Date|null }
+ *               | { kind: "RESPOND_DISPUTE", deadline: Date, disputeCaseId: string }
  *               | { kind: "RATE" }}
  */
 export function nextActionFor(engagement, posting, userId, now = new Date()) {
   const party = partyOf(engagement, userId);
   if (!party) return null;
+
+  // FR-DISPUTE-04: the case holds the engagement; only its respondent owes anything, and only
+  // while their 48-hour window is open (5.1es "Respond to the dispute — by Wed 2 Sep 2026").
+  if (engagement.status === "DISPUTED") {
+    const disputeCase = currentCase(engagement.disputeCases);
+    if (disputeCase && canRespondToCase(disputeCase, userId, now)) {
+      return { kind: "RESPOND_DISPUTE", deadline: disputeCase.respondentDeadline, disputeCaseId: disputeCase.id };
+    }
+    return null;
+  }
 
   if (engagement.status === "ACTIVE") {
     // FR-ENG-09: a re-confirmation is the worker's to give.

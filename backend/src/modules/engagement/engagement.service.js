@@ -9,11 +9,16 @@
  *   - FR-ENG-01: check-in code checkpoints, in order, with the custody flip at payment
  *   - FR-ENG-02: no payment checkpoint for an unpaid internship
  *   - FR-ENG-04: every code and counter belongs to one Engagement, never to the posting
- *   - FR-ENG-12: Part-time End Engagement ("did something go wrong?": no → rating; yes → the
- *                dispute route, a clearly marked STUB because the Disputes module is not built)
+ *   - FR-ENG-12: Part-time End Engagement ("did something go wrong?": no → rating; yes → a
+ *                dispute case opens, FR-DISPUTE-03)
  *   - FR-ENG-09: the worker's answer to a material change (accept, or decline → cancelled at
  *                once as the employer's change)
- *   - FR-ENG-03: unable to confirm → Disputed (the dispute case itself is the M9 stub)
+ *   - FR-ENG-03: unable to confirm → Disputed, and a dispute case opens (FR-DISPUTE-03)
+ *   - FR-ENG-13: the stalled prompt's visibility on the detail (the sweep and "Still running" live
+ *                in engagement.stalled.js)
+ *
+ * The dispute case itself (who responds, the 48-hour window, the respondent's notification) is the
+ * Disputes module's: openDisputeCase in dispute.service.js.
  *
  * Cancellation (FR-ENG-05..08) and every deadline that ends in one live in
  * engagement.cancellation.js; reads here first settle any window that has closed (resolveOverdue).
@@ -25,6 +30,9 @@
 import prisma from "../../lib/prisma.js";
 import AppError from "../../utils/AppError.js";
 import { cancelForMaterialChange, resolveOverdue } from "./engagement.cancellation.js";
+import { stalledPromptVisible } from "./engagement.stalled.js";
+import { openDisputeCase } from "../dispute/dispute.service.js";
+import { currentCase, engagementDisputeSummary } from "../dispute/dispute.rules.js";
 import {
   CHECKPOINTS,
   CODE_HOLDER,
@@ -96,6 +104,21 @@ const ENGAGEMENT_INCLUDE = {
       respondedAt: true,
     },
     orderBy: { requestedAt: "desc" },
+  },
+  // Every dispute case, newest first: the current one drives the detail's dispute note (5.2s /
+  // 5.3s) and the respondent's owed action (5.1es). Never the statement or the evidence.
+  disputeCases: {
+    select: {
+      id: true,
+      status: true,
+      triggerType: true,
+      raisedByUserId: true,
+      respondentUserId: true,
+      respondentDeadline: true,
+      respondedAt: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
   },
 };
 
@@ -177,6 +200,8 @@ async function listEngagements({ userId, role, now = new Date() }) {
         hasPendingChange: eng.materialChangeRequests.some((r) => r.status === "PENDING"),
         // e.g. { kind: "CODE", checkpoint: "arrival", role: "ENTERER" } — the screen words it.
         nextAction: nextActionFor(eng, eng.gigPosting, userId, now),
+        // The engagement's current dispute case, so the row can open it (FR-DISPUTE-07).
+        disputeCaseId: currentCase(eng.disputeCases)?.id ?? null,
       };
     });
 }
@@ -280,6 +305,10 @@ function presentEngagement(eng, party, userId, now = new Date()) {
     cancelledByMe: Boolean(eng.cancelledByUserId) && eng.cancelledByUserId === userId,
     endedAt: eng.endedAt,
     endedByMe: Boolean(eng.endedByUserId) && eng.endedByUserId === userId,
+    // FR-DISPUTE-07: the current case in short (5.2s / 5.3s note, "Open the dispute case"), or null.
+    dispute: engagementDisputeSummary(eng, userId, now),
+    // FR-ENG-13: whether "Did this happen?" (5.14) opens over the detail for this viewer.
+    stalledPrompt: { show: stalledPromptVisible(eng, posting, party) },
     rating: {
       openedAt: window.openedAt,
       closesAt: window.closesAt,
@@ -433,9 +462,10 @@ async function verifyCheckpointCode({ engagementId, userId, checkpoint, code, no
  *
  *  - "No, nothing went wrong" → Ended, rating opens for both (FR-RATE-01/05), the worker's
  *    completion record is written however short the engagement was (no minimum duration).
- *  - "Yes" → the dispute route. STUB: the Disputes module (M9, FR-DISPUTE-03) is not built, so no
- *    DisputeCase is created. The engagement is set Disputed with endIssueFlag, which keeps rating
- *    closed, and the case can be created from that flag once M9 exists.
+ *  - "Yes" → a dispute case opens (FR-DISPUTE-03, END_ENGAGEMENT_ISSUE) "before anything else
+ *    happens": the engagement is set Disputed with endIssueFlag, which keeps rating closed, and the
+ *    other party becomes the respondent with 48 hours to answer (FR-DISPUTE-04), told by
+ *    DISPUTE_OPENED (FR-NOTIF-12) as well as END_ENGAGEMENT.
  *  - Before the start it is a cancellation instead (code ROUTE_TO_CANCEL).
  *  - The other party is notified either way (END_ENGAGEMENT, FR-NOTIF-05). Only this one
  *    engagement changes, never the posting's other engagements.
@@ -480,7 +510,16 @@ async function endEngagement({ engagementId, userId, somethingWentWrong, now = n
       somethingWentWrong,
     });
 
-    if (!somethingWentWrong) {
+    let disputeCaseId = null;
+    if (somethingWentWrong) {
+      const { disputeCase } = await openDisputeCase(tx, {
+        engagement: eng,
+        triggerType: "END_ENGAGEMENT_ISSUE",
+        raisedByUserId: userId,
+        now,
+      });
+      disputeCaseId = disputeCase.id;
+    } else {
       await tx.completionRecord.create({
         data: { userId: eng.workerId, engagementId, outcome: "COMPLETED", weight: 1.0 },
       });
@@ -490,8 +529,9 @@ async function endEngagement({ engagementId, userId, somethingWentWrong, now = n
 
     return {
       engagementStatus: data.status,
-      // "rating": open the rating step now; "dispute": the dispute route (stubbed, see above).
+      // "rating": open the rating step now; "dispute": open the case (9.2) by disputeCaseId.
       next: somethingWentWrong ? "dispute" : "rating",
+      disputeCaseId,
     };
   });
 }
@@ -597,18 +637,17 @@ async function getChangeResponses({ gigPostingId, userId }) {
 // ---------------------------------------------------------------------------
 
 /**
- * Either party reports that the live checkpoint's code could not be exchanged. The checkpoint is
- * marked UNABLE_TO_CONFIRM and the engagement Disputed, so it is never left stuck; the other
- * party is told a case was opened (DISPUTE_OPENED, FR-NOTIF-12 / A11 "A case was opened").
- *
- * DISPUTE STUB (Afham's ruling E4): the DisputeCase row itself belongs to the Disputes module
- * (M9, FR-DISPUTE-03), which is not built — none is created here.
+ * Either party reports that the live checkpoint's code could not be exchanged (FR-ENG-03 "when
+ * either party selects 'unable to confirm'" — the code holder as well as the one entering it).
+ * The checkpoint is marked UNABLE_TO_CONFIRM and the engagement Disputed, so it is never left
+ * stuck, and a dispute case opens (FR-DISPUTE-03): the other party is its respondent, with 48
+ * hours to answer, and is told (DISPUTE_OPENED, FR-NOTIF-12 / A11 "A case was opened").
  */
 async function unableToConfirm({ engagementId, userId, checkpoint, now = new Date() }) {
   if (!CHECKPOINTS.includes(checkpoint)) throw AppError.badRequest("Unknown checkpoint.");
 
   return prisma.$transaction(async (tx) => {
-    const { eng, party } = await loadForParty(tx, engagementId, userId, {
+    const { eng } = await loadForParty(tx, engagementId, userId, {
       gigPosting: { select: POSTING_SUMMARY },
       worker: { select: PARTY_SELECT },
       employer: { select: PARTY_SELECT },
@@ -625,15 +664,15 @@ async function unableToConfirm({ engagementId, userId, checkpoint, now = new Dat
     });
     if (count === 0) throw AppError.conflict("This engagement is no longer active.");
 
-    const otherUserId = party === "WORKER" ? eng.employerId : eng.workerId;
-    await notify(tx, otherUserId, "DISPUTE_OPENED", {
-      engagementId,
-      gigPostingId: eng.gigPostingId,
-      title: eng.gigPosting.title,
+    // The respondent's DISPUTE_OPENED is written by openDisputeCase, with the case id and deadline.
+    const { disputeCase } = await openDisputeCase(tx, {
+      engagement: eng,
+      triggerType: "UNABLE_TO_CONFIRM",
+      raisedByUserId: userId,
       checkpoint,
-      openedByName: party === "WORKER" ? eng.worker.legalName : employerDisplayName(eng.gigPosting, eng.employer),
+      now,
     });
-    return { engagementStatus: "DISPUTED" };
+    return { engagementStatus: "DISPUTED", disputeCaseId: disputeCase.id };
   });
 }
 

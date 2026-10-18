@@ -10,6 +10,7 @@
 import AppError from "../../utils/AppError.js";
 import service from "./engagement.service.js";
 import { cancelEngagement, respondToCancellation } from "./engagement.cancellation.js";
+import { dismissStalledPrompt } from "./engagement.stalled.js";
 
 // FR-ENG's actors are the Employer and the Youth Job-Seeker; a verifier is never a party.
 const PARTY_ROLES = ["YOUTH_JOB_SEEKER", "EMPLOYER"];
@@ -103,6 +104,13 @@ async function respondToRequest(req, res) {
   res.json(result);
 }
 
+// FR-ENG-13 — "Still running": closes the prompt for the caller, changes nothing else
+async function dismissStalled(req, res) {
+  requireParty(req);
+  const result = await dismissStalledPrompt({ engagementId: req.params.id, userId: req.user.id });
+  res.json(result);
+}
+
 export default {
   list,
   getById,
@@ -113,4 +121,5 @@ export default {
   unableToConfirm,
   cancel,
   respondToRequest,
+  dismissStalled,
 };
