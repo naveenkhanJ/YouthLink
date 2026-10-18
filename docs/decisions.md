@@ -333,3 +333,66 @@ Frame `2.6` draws one Address field and the note "Shown to workers as: Colombo 0
 **The team agreed that the shared-components owner assembles all four members' work on one branch, `integration/viva-demo`, and fixes and completes what each member needs to demonstrate their part end to end.** By 6 October the members' modules were on separate branches and an informal integration branch, several reviews had found work that could not be demonstrated (screens unreachable, flows that needed another module), and the earlier way of fixing it — written briefs sent to each member, one round at a time — was too slow for the time left. The rules said no one edits another member's module, which is right for everyday work but made this impossible.
 
 So, on that branch only, the shared-components owner may change any module and any shared file (`AGENTS.md` core rules item 5; `docs/workflow/agent-protocol.md` §8.4; the pre-commit hook warns instead of blocking). Everything else still holds: the requirements and the prototype are the specification, nothing excluded is built, modules no one owns are touched only as far as a demonstration needs, and work stays within the Sprint 1–4 scope. The branch is never merged into `develop`; each member carries what they accept to their own branch and opens their own pull request, so authorship and review stay as they were. The protocol version went from 1 to 2 with this change.
+
+## Full build of the remaining user-facing requirements (2026-10-18, `integration/viva-demo`)
+
+**On the demo integration branch, every user-facing requirement that was unbuilt or partly built was completed in one run**: community endorsement, reports and disputes (user side), stalled engagements, real push delivery, saved gigs, the bio, the public rating response, the no-applicant nudge, and the partial items found by checking each acceptance criterion against the code. Moderator and Admin functions stayed out of scope, so a dispute case rests at *Under review* — the correct user-side state, not a gap. The authority order for every choice below: requirements, then the Figma file, then `docs/prototype/`, then the other docs. Where a requirement asked for something no frame draws, the requirement won and the UI was composed only from existing components and tokens; each such case is listed here.
+
+### Schema and dependencies
+
+- **One migration, `20261018051552_full_build_push_disputes_stalled`**: `DeviceToken` (FCM tokens), `Notification.pushDispatchedAt`, `DisputeCase.respondentStatement` (300) and `respondedAt` (9.3 draws a written response the schema could not hold), and `Engagement.stalledDismissedByWorkerAt` / `stalledDismissedByEmployerAt` (5.14's "Still running" is per party). See `database-schema.md`.
+- **`expo-notifications`** (not `@react-native-firebase/messaging`): one package gives the FCM token, the Android 13 permission, the two notification channels and tap handling; Firebase messaging would still need a second library for channels. **`expo-image-picker`** for dispute evidence (FR-DISPUTE-05); camera and microphone permissions are switched off. Both need `expo prebuild --clean` and a native rebuild.
+
+### Push delivery (FR-NOTIF-01/02/09/10)
+
+- **An outbox sweep sends every committed user notification** (`notification.sender.js`, every 5 s) and stamps `pushDispatchedAt`. Modules keep writing rows exactly as before, and nothing is pushed from inside a transaction that could still roll back. Push is best effort: a row is stamped before it is sent and never retried; the in-app history is the guarantee (FR-NOTIF-08/09). Rows older than 10 minutes are stamped without sending, so a backlog never arrives as a burst. Inactive, suspended and deleted accounts get nothing; dead tokens are deleted.
+- **What the push says is the history row's wording**, written once more on the server (`notification.push.js`) because the app and server share no code; the two are kept in step by hand. A batched urgent gig is not pushed alone (FR-NOTIF-01); the digest is.
+- **Channels:** `urgent_gigs` (high importance) for urgent gigs and the digest, `updates` for everything else (FR-NOTIF-10; 3.13's "Regular channel" and "Urgent — dedicated channel").
+- **The permission is asked once per install** (A10), behind a context line: for a job-seeker on Browse before the location ask, with 3.9's line; for an employer or verifier on their landing screen, with an undrawn line in each role's own terms (from 3.10ez/3.10vz). It is asked after any sign-in on an install that was never asked, not only after registration — otherwise every existing account on a new phone would never be asked and never get a push.
+- **New history-row bodies** where A11 names only the content: `END_ENGAGEMENT` ("{title} · you can rate the engagement now" / "… a dispute case is open — you can respond"), `STALLED_ENGAGEMENT_PROMPT` ("{title} · started {date}"), `DISPUTE_OPENED` ("Arrival dispute — {title} · respond within 48 hours", 3.10r's pattern), `ENDORSEMENT_RECEIVED` ("Your endorsement badge now shows on your applications").
+
+### Endorsement (FR-ENDORSE)
+
+- **Eligibility is one rule**: a youth with `firstRatingReceivedAt` null and no revealed rating received. The stamp is set once when a first rating is revealed, so a rating removed later does not reopen eligibility (FR-ENDORSE-05: "closes permanently"). The profile and the endorsement module share the rule.
+- **Codes** are 6 characters from 32 symbols (no 0/O/1/I), stored unspaced, shown spaced, generated on first view while eligible and never changed. A code entered for someone the Verifier already vouches for is refused on 8.2; a phone search shows the match without a Vouch button (8.3m).
+- **The generic miss** ("That code didn't work…", "No one to show for that number.") is one response for no account, an ineligible account and a suspended one (FR-ENDORSE-03).
+- **The track record's M** uses the exact average (at least 4.0, not a rounded one); the payoff uses the worker's single first rating.
+- **The bio prompt (8.6) opens in the apply flow**, before a first application (the acceptance criterion), though Figma draws it over the profile after login. **The endorsement suggestion (8.7) opens on My applications** after the third Declined or Not selected outcome. Both are marked shown the moment they appear.
+
+### Reports and disputes (FR-DISPUTE, user side)
+
+- **A report is not a dispute case**: the `Report` row is the moderator's queue entry, and opening a case for a report is a staff act (FR-DISPUTE-03, product-overview §9). Three distinct reporters with queued reports auto-hide a posting or a user, silently (A25). A repeat report by the same person returns the existing one.
+- **`User.autoHiddenAt` is set but not yet read anywhere**: no screen shows another user's profile (1.19 is unbuilt), and hiding an auto-hidden worker's applications before review would be a sanction no requirement states. Open item.
+- **Engagement reports target the engagement only** (the other party is derived from it), and only while it is active ("within an active Engagement").
+- **A response needs a statement or at least one photo**: an empty one would make 9.2ur's "Your response is on record" untrue. **The opener can add photos too** (FR-DISPUTE-05: "either party"), through 9.3's screen in evidence mode, reached from an undrawn "Add photos to this case" link on their case. **Evidence images are served only to the person who submitted them** — FR-DISPUTE-05 makes them visible to staff, not to the other party — and the respondent's statement is not shown to the opener (no frame draws it).
+- **Stalled engagements (FR-ENG-13):** the 7 days of "total silence" run from the latest of the prompt, a confirmed arrival, and any cancellation request or material change; "Still running" does not restart them (the amendment says it changes nothing). Wrong-code attempts are not counted, because the schema does not record when they happened. The auto-flag opens a `STALLED_AUTO_FLAG` case under review and tells both parties.
+- **"Unable to confirm?" is offered to the code holder as well** (FR-ENG-03: "either party"); 5.4/5.4b do not draw it. It matters most for an unpaid worker holding the payment code.
+- **Undrawn case copy** (9.2 family, `dispute.format.js`): "Opened from: something went wrong when the engagement was ended." / "… the engagement stalled, with no update from either side for 7 days." / "… a report."; the outcome lines for a losing side, an inconclusive ruling, a warning and a confirmed no-show; "Resolved {date} by a YouthLink moderator."
+- **9.4 (answering a moderator's question) is not built**: questions are created by staff and there is no answer endpoint. 9.2c shows the question without its button.
+- **5.14's two buttons share the dialog's width** as drawn: `ConfirmDialog` gained a `fillActions` option.
+
+### Other completed requirements
+
+- **Saved gigs (FR-DISC-06):** 3.12 draws no bookmark, so the listing detail's header gains a "Save" / "Saved" text action (ScreenHeader's action slot). The saved list is unfiltered; filled, withdrawn and expired postings stay as 3.8's dead rows. Undrawn empty state: "No saved gigs yet" / "Tap Save on a gig's details to keep it here, so you can come back to it without searching again."
+- **Bio (FR-PROF-03):** the job-seeker's `bio` (an employer's description is its business bio). Over 300 characters is refused, not cut, so nothing typed is lost silently.
+- **Public rating response (FR-RATE-06, user side):** 6.4 from 6.3/6.3p; the person who gave the rating sees the reply under their own card ("{name}'s public response — …", undrawn). The removal request (6.5) belongs to the Admin half and is not built.
+- **No-applicant nudge (FR-POST-17):** "urgent" is judged at posting time; a withdrawn application still counts as an applicant.
+- **Account recovery retention (FR-ACC-10, E8):** rejected and completed requests have their three identity fields overwritten after 90 days; the row stays as the record that an Admin acted.
+- **Evidence photos:** a chosen photo shows as its thumbnail (the drawn glyph is the fallback), and the picker waits for the keyboard to finish closing first — opening it within about a second of the keyboard closing left a keyboard-sized gap at the bottom of the app on return (found on the emulator).
+- **The selected worker's contact and location (FR-APPLY-07, FR-POST-08):** no frame draws the worker's side, so the engagement detail shows the employer's phone and `MapArea {Kind=PrecisePin}` with the address, under "PHONE" / "ADDRESS" caption labels in 4.8's style, while the engagement is active or disputed.
+- **Offline (NFR-USE-01):** a listing loaded earlier in the session opens from memory when offline, as 3.12ofl draws it; like Browse's cached results it lasts as long as the app runs.
+- **Slow search (NFR-PERF-03):** after 10 seconds Browse shows "Still widening the search — this is taking longer than usual." and "Stop and show results so far", which cancels the search and asks for the default 5 km radius without widening.
+- **Listing urgency (FR-APPLY-01)** is worked out from the start time when the listing is read, as Browse does, instead of trusting the flag stored at posting time.
+- **Timers:** 14-day rating reveals (so the reveal notification and the endorsement payoff never wait for someone to open the screen), the dispute response window, stalled engagements, the nudge, the recovery purge and push delivery each run as an unref'd interval started from `backend/index.js`, the existing pattern.
+
+### Posting editing (FR-POST-11, FR-ENG-09/11)
+
+- **"Edit any field" (FR-POST-11) wins over 2.11pe/2.11de, which draw five fields**: description (minor), category and location (material) are editable too, with the create flow's own inputs and labels. **Arrangement type and pay kind stay fixed** — they decide what kind of posting it is (the schedule rule and the pay format depend on them).
+- **A Filled posting is editable**, so FR-ENG-11's "3 of 3 selected" case can happen; 2.11f gains an "Edit posting" button beside "See engagement" (undrawn). Raising workers needed reopens it to Open; workers needed cannot go below the places already filled.
+- **Re-confirmation goes only to ACTIVE engagements**, and rule 3's "one pending re-confirmation at a time" counts only those, so a completed, ended or disputed engagement can never lock a posting.
+- **Rule 2 (no material change within 2 hours of the start) covers every material field** while someone is engaged, and also blocks material changes after the start (a re-confirmation window would be zero). Before any place fills, FR-POST-11's "without restriction" holds.
+- **Pending applicants are told of category and location changes** ("The category changed to Moving", "The location changed to Dehiwala area" — the area only, never the address), and 5.11 shows them as Was/Now rows.
+
+### Blocked
+
+- **Password-reset codes and email links are still written to the server console** (FR-ACC-10, and the email links of FR-ACC-01/11/14): sending them needs an SMS provider and an email service with credentials, which this project does not have. Everything up to the send is built.

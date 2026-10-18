@@ -1,6 +1,6 @@
 # YouthLink — Database Schema
 
-The complete entity-relationship specification for YouthLink: **22 tables, 53 foreign keys**, covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
+The complete entity-relationship specification for YouthLink: **23 tables, 54 foreign keys** (`DeviceToken` added 2026-10-18 on the demo branch), covering every entity the requirements baseline implies. This is the design `prisma/schema.prisma` is built from, and the reference for why the schema looks the way it does.
 
 ## About this document
 
@@ -333,6 +333,7 @@ Spawned the moment an `Application` is selected. Every per-worker mechanism (che
 | `endIssueFlag`            | Boolean                    | nullable                   | "Did something go wrong?" — `true` opens a dispute _before_ rating (FR-ENG-12)                                                                                                                                                                         |
 | `stalledPromptSentAt`     | DateTime                   | nullable                   | +24h past `GigPosting.startAt`; `arrangementType = GIG` only (FR-ENG-13)                                                                                                                                                                               |
 | `stalledFlaggedAt`        | DateTime                   | nullable                   | +7 days of total silence after that prompt → Admin (FR-ENG-13)                                                                                                                                                                                         |
+| `stalledDismissedByWorkerAt` / `stalledDismissedByEmployerAt` | DateTime | nullable | Added 2026-10-18. "Still running" on the stalled prompt (5.14) closes it for that party only; nothing else changes (FR-ENG-13 amendment of 2026-09-24). Dismissing does not restart the 7-day silence clock |
 | `createdAt` / `updatedAt` | DateTime                   |                            |                                                                                                                                                                                                                                                        |
 
 Indexed on (`workerId`, `status`) and (`employerId`, `status`).
@@ -486,6 +487,8 @@ One report queues without hiding anything; the **third report from three distinc
 | `raisedByUserId`     | String                     | FK → `User`, nullable         | Null for system-initiated (`STALLED_AUTO_FLAG`)                 |
 | `respondentUserId`   | String                     | FK → `User`, nullable         | Gets the 48h window (FR-DISPUTE-04)                             |
 | `respondentDeadline` | DateTime                   | nullable                      | `createdAt` + 48h                                               |
+| `respondentStatement` | String(300)              | nullable                      | Added 2026-10-18. The respondent's side of what happened (9.3, FR-DISPUTE-04). Same cap as bio and public response |
+| `respondedAt`        | DateTime                   | nullable                      | Added 2026-10-18. When the response arrived; the case moves to `UNDER_REVIEW` then, or when the window lapses |
 | `status`             | Enum(`DisputeStatus`)      | default `AWAITING_RESPONSE`   |                                                                 |
 | `moderatorAccountId` | String                     | FK → `AdminAccount`, nullable | Stage 1 triage (FR-MOD-01)                                      |
 | `adminAccountId`     | String                     | FK → `AdminAccount`, nullable | Stage 2 ruling (FR-ADM-01)                                      |
@@ -574,10 +577,24 @@ Every Admin **and Moderator** action is logged (NFR-SEC-06). The log is readable
 | `payload`         | Json                     | required                                     |                                                                                                     |
 | `createdAt`       | DateTime                 |                                              |                                                                                                     |
 | `readAt`          | DateTime                 | nullable                                     | Powers the history screen (FR-NOTIF-08)                                                             |
-| `pushSentAt`      | DateTime                 | nullable                                     | Null when OS permission was denied — history still works, nothing breaks (FR-NOTIF-09)              |
+| `pushSentAt`      | DateTime                 | nullable                                     | Set on an URGENT_GIG row that counts toward the 5-a-day cap (and on the digest); null on a gig batched into the digest. Pre-dates real delivery: it marks the row that is pushed, not that a phone received it — `pushDispatchedAt` records the send (FR-NOTIF-01, -09) |
+| `pushDispatchedAt` | DateTime               | nullable                                     | Added 2026-10-18. When the push sender processed the row — sent through FCM to the person's `DeviceToken`s, or skipped (no device, stale, inactive account). Null = not processed yet. An outbox: modules only write rows; one sweep sends them |
 | `batchedDigestId` | String                   | FK → `Notification`, nullable, self-relation | The 6th+ urgent push in a day is rolled into one digest rather than sent individually (FR-NOTIF-01) |
 
 Indexed on (`userId`, `readAt`) and (`adminAccountId`, `readAt`).
+
+### `DeviceToken`
+
+Added 2026-10-18 for real push delivery (FR-NOTIF-01/02/09).
+
+| Field | Type | Constraints | Notes / Traceability |
+| --- | --- | --- | --- |
+| `id` | String | PK | |
+| `userId` | String | FK → `User` | The account signed in on that phone. Indexed |
+| `token` | String | unique | The phone's FCM registration token. Registering a token already held by another account moves it — only whoever is signed in now gets its pushes |
+| `createdAt` / `updatedAt` | DateTime | | |
+
+One row per app install. Rows are removed on sign-out, on account deletion, and when Firebase reports the token is no longer registered. A person who denied push permission has no row, which is FR-NOTIF-09's working state: the history still has everything.
 
 The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counting `type = URGENT_GIG` rows with a non-null `pushSentAt` in the trailing 24 hours — no counter column, so it can't drift out of sync.
 
@@ -585,7 +602,7 @@ The **5-per-user-per-day urgent rate limit** (FR-NOTIF-01) is computed by counti
 
 **Preferences** live on `User` as two booleans, not a separate table — FR-NOTIF-03 defines exactly two toggles.
 
-**Urgent vs. regular channel separation** (FR-NOTIF-10) is a send-time decision driven by `type`; the enum already carries the distinction, so no extra column is needed.
+**Urgent vs. regular channel separation** (FR-NOTIF-10) is a send-time decision driven by `type`; the enum already carries the distinction, so no extra column is needed. Urgent gigs and the digest go to the Android channel `urgent_gigs` (high importance), everything else to `updates`.
 
 ---
 
