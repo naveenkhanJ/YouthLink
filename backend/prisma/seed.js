@@ -1162,6 +1162,250 @@ async function main() {
     engagement: { status: "ACTIVE", arrivalCode: "846102", completionCode: "517386", paymentCode: "203958", paymentStatus: "PENDING", createdAt: at(-3 * DAY) },
   });
 
+  // -------------------------------------------------------------------------
+  // 7. Full-build demonstration data (2026-10-18): endorsement, disputes, stalled engagements and
+  //    saved gigs. Only NEW accounts, so everything above — which the viva demo, the screenshots and
+  //    the members' checklists rely on — is unchanged. Each block is a state the real flows produce.
+  // -------------------------------------------------------------------------
+  console.log("Creating full-build demonstration data...");
+
+  // A Verifier with no endorsements yet: enters a worker's code (8.2) or searches a number (8.3).
+  const chamari = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "COMMUNITY_ENDORSER",
+      phone: "+94770000014",
+      ...nic("197512345678"),
+      legalName: "Chamari Wijesinghe",
+      birthdate: new Date("1975-02-14"),
+    },
+  });
+
+  // A zero-history worker with a pending endorsement code (FR-ENDORSE-02), no bio and no application
+  // yet: the bio prompt (8.6) shows when she starts her first application (FR-ENDORSE-13).
+  // K7XA2B is the prototype's own sample code (M8 8.1).
+  const ishara = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000015",
+      ...nic("200512345678"),
+      legalName: "Ishara Fernando",
+      birthdate: new Date("2005-01-20"),
+      endorsementCode: "K7XA2B",
+      lastBrowseLat: 6.87,
+      lastBrowseLng: 79.89,
+      lastBrowseAt: at(-1 * DAY),
+    },
+  });
+
+  // A zero-history worker Chamari has vouched for (FR-ENDORSE-04/10): the endorsed tier everywhere.
+  const dinuka = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000016",
+      ...nic("200312345679"),
+      legalName: "Dinuka Rajapaksa",
+      birthdate: new Date("2003-08-11"),
+      endorsementCode: "D7NK4R",
+      bio: "Second-year student, free most evenings and weekends. Good with customers.",
+    },
+  });
+  await prisma.endorsement.create({
+    data: {
+      endorserId: chamari.id,
+      workerId: dinuka.id,
+      attributes: ["HONESTY", "LENGTH_OF_ACQUAINTANCE"],
+      reason: "I've known Dinuka since he was in my Sunday school class. Honest and dependable.",
+      entryPoint: "CODE",
+      createdAt: at(-5 * DAY),
+    },
+  });
+
+  // A zero-history, unendorsed worker with three applications that ended Declined or Not selected
+  // (FR-ENDORSE-14): the endorsement-seeking suggestion (8.7) shows on My applications.
+  const sachini = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000017",
+      ...nic("200412345679"),
+      legalName: "Sachini Gunawardena",
+      birthdate: new Date("2004-11-02"),
+      bio: "Looking for weekend work near Maharagama.",
+    },
+  });
+
+  // An employer for the dispute and stalled examples.
+  const mendis = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "EMPLOYER",
+      phone: "+94770000018",
+      ...nic("198212345678"),
+      legalName: "Ravi Mendis",
+      birthdate: new Date("1982-04-09"),
+      postingAsType: "BUSINESS",
+      businessName: "Mendis Bakery",
+      businessBio: "Family bakery in Maharagama since 1998.",
+    },
+  });
+  const mendisFields = {
+    postedAsType: "BUSINESS",
+    postedBusinessName: "Mendis Bakery",
+    postedBusinessBio: "Family bakery in Maharagama since 1998.",
+  };
+
+  // A worker with a dispute already under review, and one still awaiting the bakery's response.
+  const hasini = await prisma.user.create({
+    data: {
+      ...baseUser,
+      role: "YOUTH_JOB_SEEKER",
+      phone: "+94770000019",
+      ...nic("200212345679"),
+      legalName: "Hasini Peris",
+      birthdate: new Date("2002-09-30"),
+    },
+  });
+
+  // Sachini's three unselected outcomes, on postings that have since closed.
+  const sachiniTitles = ["Bakery counter help — Saturday", "Cake delivery helper", "Festival stall — bakery"];
+  for (const [i, outcome] of ["DECLINED", "NOT_SELECTED", "DECLINED"].entries()) {
+    const startAt = at(-(6 - i) * DAY);
+    const closed = await prisma.gigPosting.create({
+      data: {
+        employerId: mendis.id,
+        title: sachiniTitles[i],
+        description: "Help at the bakery for the day.",
+        category: i === 1 ? "DELIVERY" : "FOOD_SERVICE",
+        arrangementType: "GIG",
+        payKind: "FIXED_TOTAL",
+        payAmount: 2500 + i * 500,
+        ...mendisFields,
+        ...place("Maharagama", "Mendis Bakery, High Level Road, Maharagama"),
+        workersNeeded: 1,
+        filledCount: i === 1 ? 0 : 1,
+        startAt,
+        expiresAt: startAt,
+        status: i === 1 ? "EXPIRED" : "FILLED",
+        createdAt: new Date(startAt.getTime() - 3 * DAY),
+      },
+    });
+    await prisma.application.create({
+      data: {
+        gigPostingId: closed.id,
+        workerId: sachini.id,
+        status: outcome,
+        note: "Free all day and happy to help.",
+        appliedAt: new Date(startAt.getTime() - 2 * DAY),
+        decidedAt: new Date(startAt.getTime() - DAY),
+      },
+    });
+  }
+
+  // "Did something go wrong?" (FR-ENG-12): Dinuka's part-time job at the bakery, under way, ready for
+  // either party to End Engagement and answer Yes (opens a dispute) or No (opens rating).
+  await engaged({
+    employerId: mendis.id, fields: mendisFields, workerId: dinuka.id, appliedAgo: 9 * DAY,
+    posting: { arrangementType: "PART_TIME", payKind: "RATE", payAmount: 1600, payRateUnit: "DAY", schedule: "Tue, Thu, Sat — 6 to 11 am", title: "Morning bakery assistant", description: "Pack orders and serve customers during the morning rush.", category: "FOOD_SERVICE", ...place("Maharagama", "Mendis Bakery, High Level Road, Maharagama"), startAt: at(-6 * DAY), expiresAt: at(20 * DAY), createdAt: at(-10 * DAY) },
+    engagement: { status: "ACTIVE", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-6 * DAY), startedAt: at(-6 * DAY) },
+  });
+
+  // A stalled one-off gig (FR-ENG-13): it started 30 hours ago and nobody has entered a code. The
+  // 24-hour "Did this happen?" prompt has gone to both parties, so 5.14 opens over the engagement.
+  const stalledStart = at(-30 * HOUR);
+  const stalled = await engaged({
+    employerId: mendis.id, fields: mendisFields, workerId: dinuka.id, appliedAgo: 4 * DAY,
+    posting: { arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 3000, title: "Wedding cake delivery", description: "Carry and set up a three-tier wedding cake at the venue.", category: "DELIVERY", ...place("Nugegoda", "Mendis Bakery van, Nugegoda"), startAt: stalledStart, expiresAt: stalledStart, createdAt: at(-5 * DAY) },
+    engagement: { status: "ACTIVE", stalledPromptSentAt: at(-6 * HOUR) },
+  });
+  const stalledPayload = {
+    engagementId: stalled.id,
+    gigPostingId: stalled.gigPostingId,
+    postingTitle: "Wedding cake delivery",
+    title: "Wedding cake delivery",
+    startAt: stalledStart.toISOString(),
+  };
+  await prisma.notification.createMany({
+    data: [dinuka.id, mendis.id].map((userId) => ({
+      userId,
+      type: "STALLED_ENGAGEMENT_PROMPT",
+      payload: stalledPayload,
+      createdAt: at(-6 * HOUR),
+    })),
+  });
+
+  // An open dispute case, Under review (FR-DISPUTE-03/04/07): Hasini could not confirm her arrival at
+  // the bakery's stock-take, the bakery responded within its 48 hours, and a moderator now has both
+  // sides. Under review is where a user-side case rests — the staff side is not part of this build.
+  const reviewed = await engaged({
+    employerId: mendis.id, fields: mendisFields, workerId: hasini.id, appliedAgo: 6 * DAY,
+    posting: { arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 3500, title: "Stock-take — Sunday", description: "Count stock in the storeroom before the new month.", category: "RETAIL", ...place("Maharagama", "Mendis Bakery storeroom, Maharagama"), startAt: at(-3 * DAY), expiresAt: at(-3 * DAY), createdAt: at(-7 * DAY) },
+    engagement: { status: "DISPUTED", arrivalStatus: "UNABLE_TO_CONFIRM" },
+  });
+  await prisma.disputeCase.create({
+    data: {
+      engagementId: reviewed.id,
+      triggerType: "UNABLE_TO_CONFIRM",
+      raisedByUserId: hasini.id,
+      respondentUserId: mendis.id,
+      respondentDeadline: at(-3 * DAY + 48 * HOUR),
+      respondentStatement: "We were closed that Sunday for a family event and messaged Hasini the day before.",
+      respondedAt: at(-2 * DAY),
+      status: "UNDER_REVIEW",
+      createdAt: at(-3 * DAY),
+    },
+  });
+
+  // A case still awaiting the bakery's response (9.2 for Hasini, 9.2r → 9.3 for Mendis Bakery):
+  // Hasini could not confirm completion 20 hours ago; the 48-hour window runs until tomorrow.
+  const awaiting = await engaged({
+    employerId: mendis.id, fields: mendisFields, workerId: hasini.id, appliedAgo: 3 * DAY,
+    posting: { arrangementType: "GIG", payKind: "FIXED_TOTAL", payAmount: 2800, title: "Bread delivery round", description: "Deliver morning bread orders around Maharagama.", category: "DELIVERY", ...place("Maharagama", "Mendis Bakery, High Level Road, Maharagama"), startAt: at(-26 * HOUR), expiresAt: at(-26 * HOUR), createdAt: at(-4 * DAY) },
+    engagement: { status: "DISPUTED", arrivalStatus: "CONFIRMED", arrivalConfirmedAt: at(-26 * HOUR), startedAt: at(-26 * HOUR), completionStatus: "UNABLE_TO_CONFIRM" },
+  });
+  const respondBy = at(-20 * HOUR + 48 * HOUR);
+  const awaitingCase = await prisma.disputeCase.create({
+    data: {
+      engagementId: awaiting.id,
+      triggerType: "UNABLE_TO_CONFIRM",
+      raisedByUserId: hasini.id,
+      respondentUserId: mendis.id,
+      respondentDeadline: respondBy,
+      status: "AWAITING_RESPONSE",
+      createdAt: at(-20 * HOUR),
+    },
+  });
+  await prisma.notification.create({
+    data: {
+      userId: mendis.id,
+      type: "DISPUTE_OPENED",
+      payload: {
+        disputeCaseId: awaitingCase.id,
+        engagementId: awaiting.id,
+        gigPostingId: awaiting.gigPostingId,
+        postingTitle: "Bread delivery round",
+        title: "Bread delivery round",
+        triggerType: "UNABLE_TO_CONFIRM",
+        checkpoint: "completion",
+        counterpartName: "Hasini Peris",
+        openedByName: "Hasini Peris",
+        respondBy: respondBy.toISOString(),
+      },
+      createdAt: at(-20 * HOUR),
+    },
+  });
+
+  // Saved gigs (FR-DISC-06, 3.8): Ishara saved one gig that has since filled and one still open.
+  const savedClosed = await prisma.gigPosting.findFirst({ where: { title: sachiniTitles[0] } });
+  const savedOpen = await prisma.gigPosting.findFirst({ where: { title: "Wedding hall setup crew" } });
+  await prisma.savedGig.createMany({
+    data: [savedClosed, savedOpen]
+      .filter(Boolean)
+      .map((p, i) => ({ userId: ishara.id, gigPostingId: p.id, savedAt: at(-(2 - i) * DAY) })),
+  });
+
   console.log("Seed completed successfully!");
   console.log("\n--- Test accounts (password for all: Password123!) ---");
   console.log("Youth Job-Seeker: +94770000001  (Amal Perera, verified email amal@example.com)");
@@ -1200,6 +1444,17 @@ async function main() {
   console.log("CANCEL     Nimali / Ticket desk — weekend shows    Lanka Events asked to cancel; Nimali to answer within 48 h");
   console.log("CANCEL     Amal / Inventory audit — next week      starts in 5 days: a regular request (48 h window)");
   console.log("CANCEL     Amal / Delivery van loader              starts in 12 h, booked 3 days ago: immediate and Late");
+  console.log("\n--- Full-build demonstration data (2026-10-18) ---");
+  console.log("Verifier:         +94770000014  (Chamari Wijesinghe — no endorsements yet; enter K7XA2B or search 077 000 0015)");
+  console.log("Youth Job-Seeker: +94770000015  (Ishara Fernando — zero history, code K7XA2B pending, no bio: bio prompt on first apply; 2 saved gigs)");
+  console.log("Youth Job-Seeker: +94770000016  (Dinuka Rajapaksa — endorsed by Chamari; part-time bakery job and a stalled cake delivery)");
+  console.log("Youth Job-Seeker: +94770000017  (Sachini Gunawardena — 3 declined / not selected: endorsement suggestion on My applications)");
+  console.log("Employer:         +94770000018  (Ravi Mendis, Business 'Mendis Bakery' — a dispute to respond to)");
+  console.log("Youth Job-Seeker: +94770000019  (Hasini Peris — one case Under review, one awaiting the bakery's response)");
+  console.log("END        Dinuka / Morning bakery assistant   part-time under way: End Engagement, 'Did something go wrong?'");
+  console.log("STALLED    Dinuka / Wedding cake delivery      started 30 h ago, no codes: 'Did this happen?' (5.14) for both");
+  console.log("DISPUTE    Hasini / Stock-take — Sunday        Under review (the bakery responded)");
+  console.log("DISPUTE    Hasini / Bread delivery round       awaiting Mendis Bakery's response (48 h window open)");
 }
 
 main()
