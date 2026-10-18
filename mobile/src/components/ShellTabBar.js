@@ -15,9 +15,10 @@
  * Opening a screen that is already in the stack goes back to it (React Navigation's `navigate`),
  * so moving between tabs does not pile screens up.
  */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Keyboard } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { getUnreadNotificationCount } from "../api/notification.api";
 import { useAuth } from "../auth/AuthContext";
 import TabBar from "./TabBar";
 
@@ -91,12 +92,28 @@ export function openShellTab(navigation, role, key) {
 /**
  * @param {object} props
  * @param {string} props.active - key of the tab this screen sits on (TabBar.js TABS_BY_ROLE)
- * @param {boolean} [props.notificationBadge]
+ * @param {boolean} [props.notificationBadge] - Overrides the dot. Left out, the bar reads the unread
+ *   count itself each time its screen comes into view, so every tab screen shows the dot the
+ *   frames draw (MNAV: "Badge on Notifications = unread"), not only Browse (fixed 2026-10-18).
  */
-export default function ShellTabBar({ active, notificationBadge = false }) {
+export default function ShellTabBar({ active, notificationBadge }) {
   const { user } = useAuth();
   const navigation = useNavigation();
   const role = tabBarRoleFor(user);
+
+  const [hasUnread, setHasUnread] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (notificationBadge !== undefined || active === "notifications" || !role) return undefined;
+      let live = true;
+      getUnreadNotificationCount()
+        .then(({ count }) => live && setHasUnread(count > 0))
+        .catch(() => {}); // the dot is a hint; a failed count must not disturb the screen
+      return () => {
+        live = false;
+      };
+    }, [notificationBadge, active, role]),
+  );
 
   // RootNavigator wraps the whole app in a KeyboardAvoidingView so every screen's pinned action
   // bar rides up above the keyboard. This bar is the last child of its screen, so it would ride
@@ -120,7 +137,7 @@ export default function ShellTabBar({ active, notificationBadge = false }) {
     <TabBar
       role={role}
       activeTab={active}
-      notificationBadge={notificationBadge}
+      notificationBadge={notificationBadge ?? (active !== "notifications" && hasUnread)}
       onTabPress={(key) => {
         if (key !== active) openShellTab(navigation, role, key);
       }}

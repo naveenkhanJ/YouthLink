@@ -393,6 +393,12 @@ So, on that branch only, the shared-components owner may change any module and a
 - **Rule 2 (no material change within 2 hours of the start) covers every material field** while someone is engaged, and also blocks material changes after the start (a re-confirmation window would be zero). Before any place fills, FR-POST-11's "without restriction" holds.
 - **Pending applicants are told of category and location changes** ("The category changed to Moving", "The location changed to Dehiwala area" — the area only, never the address), and 5.11 shows them as Was/Now rows.
 
+### Second Figma pass (2026-10-18)
+
+- **The Notifications tab's unread dot now shows on every tab screen**, as the frames draw it (5.1es, 8.5, 1.18…); before, only Browse fetched the count. The shared  reads it whenever its screen comes into view.
+- **An endorsement with no reason no longer leaves an empty line** in  (the reason is optional, FR-ENDORSE-04).
+- **1.18v draws a bio on the verifier's profile, but nothing lets a verifier write one**: 1.18vz has no "add a bio" link, no frame draws a verifier's bio editor, and FR-PROF-03 names only job-seekers and employers. The profile shows a verifier's bio if the account has one; no editor was invented. Open item for the owner.
+
 ### Blocked
 
 - **Password-reset codes and email links are still written to the server console** (FR-ACC-10, and the email links of FR-ACC-01/11/14): sending them needs an SMS provider and an email service with credentials, which this project does not have. Everything up to the send is built.

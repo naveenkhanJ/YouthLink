@@ -19,7 +19,8 @@ import Link from "./Link";
 
 /**
  * @param {string} endorserName
- * @param {string} reason - e.g. "Known him 8 years — neighbour".
+ * @param {string} [reason] - e.g. "Known him 8 years — neighbour". Optional (FR-ENDORSE-04): with none,
+ *   the line is left out rather than drawn empty.
  * @param {string[]} [attributes] - Selected attribute labels only. Ignored when revoked.
  * @param {boolean} [revoked]
  * @param {boolean} [showRevoke] - Shows the "Revoke" link. Ignored when already revoked.
@@ -39,7 +40,7 @@ export default function EndorsementRow({
         <Text style={[styles.name, revoked && styles.textRevoked]}>{endorserName}</Text>
         {revoked ? <Text style={styles.revokedLabel}>Revoked</Text> : null}
       </View>
-      <Text style={[styles.reason, revoked && styles.textRevoked]}>{reason}</Text>
+      {reason ? <Text style={[styles.reason, revoked && styles.textRevoked]}>{reason}</Text> : null}
       {!revoked && attributes.length > 0 ? (
         <View style={styles.attributes}>
           {attributes.map((label) => (
