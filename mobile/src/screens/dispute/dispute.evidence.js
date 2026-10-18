@@ -11,6 +11,7 @@
  * re-encodes at quality 0.7, so the size checked is the size actually sent — the decoded byte
  * count of that base64 — which is also exactly what the server measures.
  */
+import { KeyboardController } from "react-native-keyboard-controller";
 import * as ImagePicker from "expo-image-picker";
 
 export const EVIDENCE_LIMIT = 3;
@@ -49,6 +50,15 @@ function sniffMimeType(base64) {
  */
 export async function pickEvidencePhoto(alreadyChosen) {
   if (alreadyChosen >= EVIDENCE_LIMIT) return { error: MESSAGES.tooMany };
+
+  // Close the keyboard, and let Android finish closing it, before the system picker covers the app.
+  // Found on the emulator (2026-10-18): with the keyboard closed less than ~1 s before the picker
+  // opened, the app came back with a keyboard-sized gap at the bottom — every pinned action bar
+  // stranded mid-screen until the keyboard was next used. Waiting only when it was actually open
+  // keeps the usual tap instant.
+  const keyboardWasOpen = KeyboardController.isVisible();
+  await KeyboardController.dismiss();
+  if (keyboardWasOpen) await new Promise((resolve) => setTimeout(resolve, 1500));
 
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],

@@ -8,8 +8,12 @@
  * limit is reached, rather than letting a caller submit past it. Evidence
  * is optional; its absence never blocks a dispute review — don't wire
  * this as a required field.
+ *
+ * A chosen photo shows as itself, cropped to the 72px tile (added 2026-10-18). The Figma tile draws
+ * a picture glyph only because a prototype holds no one's photos; the glyph remains as the fallback
+ * when a photo has no local address.
  */
-import { Pressable, Text, View, StyleSheet } from "react-native";
+import { Image, Pressable, Text, View, StyleSheet } from "react-native";
 import Svg, { Rect, Path, Circle } from "react-native-svg";
 import { colors, radius, typography } from "../theme/tokens";
 
@@ -26,9 +30,12 @@ export default function PhotoPicker({ photos = [], onAdd }) {
     <View style={styles.container}>
       <View style={styles.tiles}>
         {photos.map((uri, i) => (
-          <View key={i} style={styles.thumb}>
-            {/* Figma `icon-image` (24 x 24): a 20 x 10 mountain outline at (2,8) and
+          <View key={i} style={styles.thumb} accessible accessibilityLabel={`Photo ${i + 1} of ${photos.length}`}>
+            {/* Figma `icon-image` (24 x 24), the fallback: a 20 x 10 mountain outline at (2,8) and
                 a 5px sun ring at (15,3), stroke text/secondary 1.5. */}
+            {uri ? (
+              <Image source={{ uri }} style={styles.thumbImage} resizeMode="cover" />
+            ) : (
             <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
               <Path
                 d="M2 18L9 8L14 14L17 11L22 18L2 18Z"
@@ -38,6 +45,7 @@ export default function PhotoPicker({ photos = [], onAdd }) {
               />
               <Circle cx={17.5} cy={5.5} r={1.75} stroke={colors.text.secondary} strokeWidth={1.5} />
             </Svg>
+            )}
           </View>
         ))}
         {canAddMore ? (
@@ -72,6 +80,10 @@ export default function PhotoPicker({ photos = [], onAdd }) {
 }
 
 const styles = StyleSheet.create({
+  thumbImage: {
+    width: "100%",
+    height: "100%",
+  },
   container: {
     gap: 8,
   },
@@ -92,6 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.subtle,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
   },
   caption: {
     ...typography.caption,
