@@ -255,6 +255,15 @@ export default function EngagementCodeScreen({ route, navigation }) {
             {copy.why ? <Text style={styles.why}>{copy.why}</Text> : null}
           </>
         )}
+        {/* FR-ENG-03: "either party" may select unable to confirm — so the holder of the code has the
+            same fallback as the person entering it (not drawn on 5.4/5.4b; added 2026-10-18,
+            decisions.md). It matters most for an unpaid worker holding the payment code. */}
+        {engagement.codesMissing ? null : (
+          <Link
+            title="Unable to confirm?"
+            onPress={() => navigation.navigate("EngagementUnableToConfirm", { engagementId, checkpoint, mode: "unable" })}
+          />
+        )}
       </ScrollView>
     </View>
   );

@@ -7,10 +7,10 @@
  *     marked unable to confirm and the engagement Disputed; the other party is told.
  *   - "end" (End Engagement → "Did something go wrong?" → Yes): FR-ENG-12's dispute route.
  *
- * DISPUTE STUB: "Open dispute" leads to M9's case screens (9.2 / 9.2k), and the Disputes module
- * is not built. Until it is, the engagement is marked Disputed on the server and this screen
- * returns to the engagement detail, which shows it Disputed (docs/module-ownership.md, YL-66:
- * "leave the dispute route as a clearly marked stub").
+ * "Open dispute" opens the case it created — M9's 9.2 (from arrival) or 9.2k (from completion),
+ * the `DisputeCase` screen with the returned `disputeCaseId` (FR-DISPUTE-03). This screen and the
+ * code entry are taken off the stack first, so the case's back arrow returns to the engagement,
+ * now Disputed (M9 9.2: "Exits back → … after opening the case, → M5 5.2s").
  *
  * "Open dispute" is a single destructive commit, so it stays at the end of the content rather
  * than in a pinned bar (design-system.md §5).
@@ -48,15 +48,22 @@ export default function EngagementUnableToConfirmScreen({ route, navigation }) {
     setSubmitting(true);
     setError(null);
     try {
-      if (mode === "end") {
-        await endEngagement(engagementId, { somethingWentWrong: true });
-      } else {
-        await unableToConfirmCheckpoint(engagementId, { checkpoint });
-      }
-      // STUB: M9's case screen would open here. Back to the engagement, now Disputed.
+      const result =
+        mode === "end"
+          ? await endEngagement(engagementId, { somethingWentWrong: true })
+          : await unableToConfirmCheckpoint(engagementId, { checkpoint });
+      // Back to the engagement (5.2s underneath), then the case on top of it (9.2 / 9.2k).
       navigation.popTo("EngagementDetail", { engagementId });
+      if (result?.disputeCaseId) {
+        navigation.navigate("DisputeCase", { disputeCaseId: result.disputeCaseId, engagementId });
+      }
     } catch (err) {
-      setError(parseApiError(err).formError || "The dispute couldn't be opened.");
+      // Offline: 4.1bnr's pattern (DERIVED wording) — nothing was opened, and nothing is lost.
+      setError(
+        err.offline
+          ? "You're offline, so the dispute couldn't be opened. Try again once you reconnect."
+          : parseApiError(err).formError || "The dispute couldn't be opened.",
+      );
     } finally {
       setSubmitting(false);
     }

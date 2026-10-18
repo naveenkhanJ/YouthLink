@@ -14,11 +14,22 @@
  * States: loading → Feedback/LoadingState; a failed load (or offline) → Feedback/FormBanner with
  * "Try again"; already applied, or the posting closed → Apply {State=Disabled} with a caption
  * saying why (M4 "States not drawn": a duplicate application).
+ *
+ * "Report this listing" (FR-DISPUTE-01) — M3 3.12g's `reportLink`: a caption-size line in
+ * color/brand/primary under the employer block, opening M9 9.1 for this posting. 3.12g is the only
+ * frame that draws it; it is offered on every listing, since FR-DISPUTE-01 puts a Report action on
+ * listings generally. Its touch target is grown to 44 with hitSlop so the 16px line keeps 3.12g's
+ * spacing.
+ *
+ * Save / Saved (FR-DISC-06) — NOT DRAWN on 3.12 (its header is {Action=None}): a text action in the
+ * ScreenHeader's action slot, Action/Link's look (mobile/body, brand, underlined) in a 44px target.
+ * Shown once the saved state is known; a job-seeker only (the saved list is theirs). A failed toggle
+ * reverts and says why in a Toast.
  */
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { colors, spacing, radius, typography } from "../../theme/tokens";
+import { colors, spacing, radius, typography, pressed } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
 import Badge from "../../components/Badge";
 import MapArea from "../../components/MapArea";
@@ -26,7 +37,9 @@ import Button from "../../components/Button";
 import CtaBar from "../../components/CtaBar";
 import LoadingState from "../../components/LoadingState";
 import FormBanner from "../../components/FormBanner";
+import { useToast } from "../../components/Toast";
 import { getListingDetail } from "../../api/application.api";
+import { getSavedState, saveGig, unsaveGig } from "../../api/discovery.api";
 import { parseApiError } from "../../api/client";
 import { payLine, payBasis } from "../posting/posting.format.js";
 import { listingMeta, listingFillStart, employerLine } from "./application.format";
@@ -39,6 +52,9 @@ export default function ListingDetailScreen({ route, navigation }) {
   const gigPostingId = route.params?.gigPostingId;
   const [detail, setDetail] = useState(null);
   const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(null); // null = not known (or not a job-seeker): no action shown
+  const [saving, setSaving] = useState(false);
+  const { show: showToast, toast } = useToast();
 
   const load = useCallback(async () => {
     if (!gigPostingId) return;
@@ -56,6 +72,49 @@ export default function ListingDetailScreen({ route, navigation }) {
     return navigation.addListener("focus", load);
   }, [load, navigation]);
 
+  // FR-DISC-06: is this gig on the saved list? A refusal (not a job-seeker) or a failure leaves the
+  // action out rather than showing a state that may be wrong.
+  useEffect(() => {
+    if (!gigPostingId) return undefined;
+    let active = true;
+    getSavedState(gigPostingId)
+      .then((res) => active && setSaved(Boolean(res?.saved)))
+      .catch(() => active && setSaved(null));
+    return () => {
+      active = false;
+    };
+  }, [gigPostingId]);
+
+  async function toggleSaved() {
+    if (saving || saved === null) return;
+    const next = !saved;
+    setSaving(true);
+    setSaved(next); // shown at once; put back if the server refuses
+    try {
+      const res = next ? await saveGig(gigPostingId) : await unsaveGig(gigPostingId);
+      setSaved(Boolean(res?.saved ?? next));
+    } catch (err) {
+      setSaved(!next);
+      showToast(parseApiError(err).formError || "This gig couldn't be saved. Try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const saveAction =
+    saved === null ? null : (
+      <Pressable
+        onPress={toggleSaved}
+        disabled={saving}
+        accessibilityRole="button"
+        accessibilityLabel={saved ? "Remove from saved" : "Save this gig"}
+        accessibilityState={{ selected: saved, busy: saving }}
+        style={({ pressed: isPressed }) => [styles.saveAction, isPressed && styles.pressedText]}
+      >
+        <Text style={styles.saveLabel}>{saved ? "Saved" : "Save"}</Text>
+      </Pressable>
+    );
+
   const posting = detail?.posting;
   const employer = detail?.employer;
   const applied = Boolean(detail?.myApplication);
@@ -65,7 +124,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   return (
     <View style={styles.root}>
       <StatusBar style="dark" />
-      <ScreenHeader title="Gig" onBack={() => navigation.goBack()} />
+      <ScreenHeader title="Gig" onBack={() => navigation.goBack()} action={saveAction} />
 
       <ScrollView contentContainerStyle={styles.content}>
         {error ? <FormBanner kind="error" message={error} /> : null}
@@ -100,6 +159,19 @@ export default function ListingDetailScreen({ route, navigation }) {
               </View>
               <Text style={styles.businessBio}>{employerLine(employer, posting)}</Text>
             </View>
+
+            {/* 3.12g `reportLink` → 9.1 */}
+            <Pressable
+              onPress={() =>
+                navigation.navigate("DisputeReport", { targetType: "POSTING", targetId: posting.id, context: posting.title })
+              }
+              hitSlop={{ top: 14, bottom: 14 }}
+              accessibilityRole="button"
+              accessibilityLabel="Report this listing"
+              style={({ pressed: isPressed }) => isPressed && styles.pressedText}
+            >
+              <Text style={styles.reportLink}>Report this listing</Text>
+            </Pressable>
           </>
         ) : null}
       </ScrollView>
@@ -122,6 +194,7 @@ export default function ListingDetailScreen({ route, navigation }) {
           ) : null}
         </CtaBar>
       ) : null}
+      {toast}
     </View>
   );
 }
@@ -196,5 +269,26 @@ const styles = StyleSheet.create({
   applyCaption: {
     ...typography.secondary,
     color: colors.text.secondary,
+  },
+  // 3.12g `reportLink`: mobile/caption in color/brand/primary.
+  reportLink: {
+    ...typography.caption,
+    color: colors.brand.primary,
+  },
+  // Save / Saved: Action/Link's look in a 44 x 44 (at least) target inside the header's slot.
+  saveAction: {
+    minWidth: 44,
+    minHeight: 44,
+    paddingHorizontal: spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  saveLabel: {
+    ...typography.body,
+    color: colors.brand.primary,
+    textDecorationLine: "underline",
+  },
+  pressedText: {
+    opacity: pressed.textOpacity,
   },
 });

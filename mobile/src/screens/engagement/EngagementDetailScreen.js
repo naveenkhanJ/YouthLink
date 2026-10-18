@@ -15,8 +15,22 @@
  *   - Rating row: once rating has opened — "Rate now", "View status" or "See ratings".
  *   - End engagement (part-time only, once started — FR-ENG-12): not drawn in the prototype; built
  *     from M5's "States not drawn": a link at the foot of the content → a ConfirmDialog "Did
- *     something go wrong?". No → ended, straight to rating (M6 6.1). Yes → 5.6's pattern, the
- *     dispute route (a STUB until the Disputes module exists).
+ *     something go wrong?". No → ended, straight to rating (M6 6.1). Yes → 5.6's pattern, which
+ *     opens the dispute case (M9 9.2) before anything else.
+ *   - A dispute holding the engagement (5.2s opener, 5.3s respondent — FR-DISPUTE-07): the case in
+ *     one line (`disputeNote`) and the pinned "Open the dispute case" → M9's DisputeCase, in place
+ *     of any checkpoint button.
+ *   - The stalled prompt (5.14, and over 5.3 for the employer — FR-ENG-13 as amended 2026-09-24):
+ *     "Did this happen?" opens over the detail when `stalledPrompt.show`. "Still running" dismisses
+ *     it on the server and changes nothing; "Update status" opens the earliest unresolved
+ *     checkpoint's code screen (where "Unable to confirm?" opens a dispute).
+ *   - Report (FR-DISPUTE-01 "within an active Engagement"): not drawn on any engagement frame; the
+ *     shared Action/Link "Report" at the foot of an ACTIVE engagement, with Cancel / End.
+ *   - Contact and location (FR-APPLY-07, FR-POST-08), worker side: NOT DRAWN on any frame. While the
+ *     engagement is Active or Disputed, the selected worker sees the employer's phone (4.8's "PHONE"
+ *     caption + value) and the precise location as Display/MapArea {Kind=PrecisePin} with the
+ *     address under it, read from the posting (GET /api/postings/:id releases the address only to
+ *     the owner and a selected worker).
  *   - Cancel engagement (before the start, FR-ENG-05/06) → 5.7t / 5.10 / 5.7e; while a request is
  *     open the requester sees 5.2tx's note; a cancelled engagement says how it was cancelled
  *     (5.2nc, 5.2tc, 5.3x, 5.11d — the wording lives in engagement.format.js).
@@ -24,7 +38,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { getEngagement, endEngagement } from "../../api/engagement.api";
+import { getEngagement, endEngagement, dismissStalledPrompt } from "../../api/engagement.api";
+import { getGigPosting } from "../../api/posting.api";
 import { parseApiError } from "../../api/client";
 import ScreenHeader from "../../components/ScreenHeader";
 import Badge from "../../components/Badge";
@@ -35,10 +50,13 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import DialogModal from "../../components/DialogModal";
 import FormBanner from "../../components/FormBanner";
 import LoadingState from "../../components/LoadingState";
+import MapArea from "../../components/MapArea";
+import { formatPhone } from "../application/application.format";
 import { colors, spacing, radius, typography } from "../../theme/tokens";
 import {
   cancellationNote,
   checkpointState,
+  disputeNote,
   liveActionLabel,
   pendingRequestNote,
   postingLine,
@@ -88,6 +106,12 @@ export default function EngagementDetailScreen({ route, navigation }) {
   const [error, setError] = useState(null);
   const [endDialogOpen, setEndDialogOpen] = useState(false);
   const [ending, setEnding] = useState(false);
+  // 5.14: closed for as long as this screen is open once answered, so returning from the code
+  // screen does not put it straight back up (the server keeps it until "Still running").
+  const [stalledClosed, setStalledClosed] = useState(false);
+  const [dismissing, setDismissing] = useState(false);
+  // FR-POST-08: the precise address, released to the selected worker only (null until loaded).
+  const [location, setLocation] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -103,6 +127,25 @@ export default function EngagementDetailScreen({ route, navigation }) {
     load();
     return navigation.addListener("focus", load);
   }, [load, navigation]);
+
+  // FR-APPLY-07 / FR-POST-08: the worker's precise location, from the posting itself. Only the
+  // selected worker of a live engagement asks; a refusal or no address just leaves the map out.
+  const gigPostingId = engagement?.posting?.id;
+  const wantsLocation =
+    engagement?.viewerRole === "WORKER" && (engagement.status === "ACTIVE" || engagement.status === "DISPUTED");
+  useEffect(() => {
+    if (!wantsLocation || !gigPostingId) return undefined;
+    let active = true;
+    getGigPosting(gigPostingId)
+      .then((res) => {
+        const p = res?.posting;
+        if (active && p?.isPreciseLocationReleased && p.locationAddress) setLocation({ address: p.locationAddress });
+      })
+      .catch(() => {}); // the rest of the engagement is still correct without it
+    return () => {
+      active = false;
+    };
+  }, [wantsLocation, gigPostingId]);
 
   const header = <ScreenHeader title="Engagement" onBack={() => navigation.goBack()} />;
 
@@ -128,6 +171,38 @@ export default function EngagementDetailScreen({ route, navigation }) {
   const showsHelpLink = !(engagement.status === "CANCELLED" && isWorker);
   const showsEndLink = engagement.canEnd;
   const ratingRow = ratingRowFor(engagement);
+  // 5.2s / 5.3s: the case holds the engagement, so its button replaces any checkpoint button.
+  const caseNote = disputeNote(engagement);
+  const caseId = caseNote ? engagement.dispute.id : null;
+  // FR-DISPUTE-01: reporting the engagement is offered while it is active.
+  const showsReportLink = engagement.status === "ACTIVE";
+  const showsStalledPrompt = Boolean(engagement.stalledPrompt?.show) && !stalledClosed;
+  const showsContact = wantsLocation && Boolean(engagement.counterparty.phone);
+  const pinnedLabel = caseId ? "Open the dispute case" : liveLabel;
+
+  // 5.14 "Still running": dismissed on the server, nothing else changes (FR-ENG-13 amendment AC 1).
+  async function stillRunning() {
+    if (dismissing) return;
+    setDismissing(true);
+    try {
+      await dismissStalledPrompt(engagementId);
+      setStalledClosed(true);
+      load();
+    } catch (err) {
+      setStalledClosed(true);
+      // "There is no prompt to dismiss." means it is already gone — nothing to tell anyone.
+      if (err.status !== 409) setError(parseApiError(err).formError || "The prompt couldn't be dismissed.");
+      load();
+    } finally {
+      setDismissing(false);
+    }
+  }
+
+  // 5.14 "Update status" → the earliest unresolved checkpoint (5.5a for arrival; AC 2).
+  function updateStatus() {
+    setStalledClosed(true);
+    navigation.navigate("EngagementCode", { engagementId });
+  }
 
   // "No, nothing went wrong" (FR-ENG-12): the engagement ends and rating opens — M6 6.1.
   async function endWithoutIssue() {
@@ -159,7 +234,7 @@ export default function EngagementDetailScreen({ route, navigation }) {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, !liveLabel && styles.contentNoBar]}
+        contentContainerStyle={[styles.content, !pinnedLabel && styles.contentNoBar]}
       >
         {error ? <FormBanner kind="error" message={error} /> : null}
 
@@ -207,6 +282,24 @@ export default function EngagementDetailScreen({ route, navigation }) {
         {/* 5.2nc, 5.2tc, 5.3x, 5.11d: how a cancelled engagement came to be cancelled. */}
         {cancelNote ? <Text style={styles.note}>{cancelNote}</Text> : null}
 
+        {/* 5.2s / 5.3s: the case in one line. */}
+        {caseNote ? <Text style={styles.note}>{caseNote}</Text> : null}
+
+        {/* FR-APPLY-07 / FR-POST-08, worker side — not drawn; 4.8's "PHONE" pattern (see header). */}
+        {showsContact ? (
+          <>
+            <Text style={styles.cpHeader}>PHONE</Text>
+            <Text style={styles.contactValue}>{formatPhone(engagement.counterparty.phone)}</Text>
+          </>
+        ) : null}
+        {showsContact && location ? (
+          <>
+            <Text style={styles.cpHeader}>ADDRESS</Text>
+            <MapArea kind="precisePin" />
+            <Text style={styles.contactValue}>{location.address}</Text>
+          </>
+        ) : null}
+
         {ratingRow ? (
           <View style={[cpRowStyle, !cpStacked && styles.cpRowTop]}>
             <Text style={cpLabelStyle}>Rating</Text>
@@ -226,13 +319,47 @@ export default function EngagementDetailScreen({ route, navigation }) {
           <Link title="Cancel engagement" onPress={() => navigation.navigate("EngagementCancel", { engagementId })} />
         ) : null}
         {showsEndLink ? <Link title="End engagement" onPress={() => setEndDialogOpen(true)} /> : null}
+        {showsReportLink ? (
+          <Link
+            title="Report"
+            onPress={() =>
+              navigation.navigate("DisputeReport", {
+                targetType: "ENGAGEMENT",
+                targetId: engagementId,
+                context: `${engagement.posting.title} · ${engagement.counterparty.name}`,
+              })
+            }
+          />
+        ) : null}
       </ScrollView>
 
-      {liveLabel ? (
+      {pinnedLabel ? (
         <CtaBar surface="subtle">
-          <Button title={liveLabel} onPress={() => navigation.navigate("EngagementCode", { engagementId })} />
+          <Button
+            title={pinnedLabel}
+            onPress={() =>
+              caseId
+                ? navigation.navigate("DisputeCase", { disputeCaseId: caseId, engagementId }) // 5.2s → 9.2, 5.3s → 9.2r
+                : navigation.navigate("EngagementCode", { engagementId })
+            }
+          />
         </CtaBar>
       ) : null}
+
+      {/* 5.14 — "Did this happen?" over the detail. Hardware back closes it without an answer. */}
+      <DialogModal visible={showsStalledPrompt && !endDialogOpen} onRequestClose={() => setStalledClosed(true)}>
+        <ConfirmDialog
+          title="Did this happen?"
+          body={`${engagement.posting.title} started more than a day ago. If it's still running, just dismiss this — nothing changes.`}
+          cancelLabel="Still running"
+          cancelStyle="secondary"
+          onCancel={stillRunning}
+          confirmLabel="Update status"
+          confirmStyle="primary"
+          onConfirm={updateStatus}
+          fillActions
+        />
+      </DialogModal>
 
       {/* FR-ENG-12's prompt. Not drawn: composed per M5 "States not drawn". */}
       <DialogModal visible={endDialogOpen} onRequestClose={() => setEndDialogOpen(false)}>
@@ -349,6 +476,11 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   note: {
+    ...typography.body,
+    color: colors.text.primary,
+  },
+  // The revealed phone and address: 4.8's `phone` value style under a caption label.
+  contactValue: {
     ...typography.body,
     color: colors.text.primary,
   },

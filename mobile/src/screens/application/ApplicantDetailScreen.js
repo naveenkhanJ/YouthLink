@@ -12,12 +12,17 @@
  *
  * Opened from a pending row of the pool with `{ gigPostingId, applicationId }`. It re-reads the
  * pool rather than trusting a copy passed in, so it always shows the applicant as they are now.
+ *
+ * Report (FR-DISPUTE-01, "profiles"): NOT DRAWN on 4.6 — the shared Action/Link "Report" at the foot
+ * of the content opens M9 9.1 about this person. The applicant is never told who reported them
+ * (NFR-PRIV-05).
  */
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { colors, spacing, typography } from "../../theme/tokens";
 import ScreenHeader from "../../components/ScreenHeader";
+import Link from "../../components/Link";
 import Badge from "../../components/Badge";
 import ProfileTrustBlock from "../../components/ProfileTrustBlock";
 import Button from "../../components/Button";
@@ -115,6 +120,16 @@ export default function ApplicantDetailScreen({ route, navigation }) {
                 <Text style={styles.note}>{row.note}</Text>
               </>
             ) : null}
+            <Link
+              title="Report"
+              onPress={() =>
+                navigation.navigate("DisputeReport", {
+                  targetType: "USER",
+                  targetId: row.worker.id,
+                  context: row.worker.displayName,
+                })
+              }
+            />
           </>
         ) : null}
       </ScrollView>

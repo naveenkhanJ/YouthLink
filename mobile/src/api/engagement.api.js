@@ -37,7 +37,8 @@ export function verifyCheckpoint(engagementId, payload) {
  * FR-ENG-12 — end a part-time engagement.
  * @param {string} engagementId
  * @param {{somethingWentWrong: boolean}} payload
- * @returns {Promise<{engagementStatus: string, next: "rating"|"dispute"}>}
+ * @returns {Promise<{engagementStatus: string, next: "rating"|"dispute", disputeCaseId: string|null}>}
+ *   "dispute": the case (M9 9.2) opened by the "yes" answer, by disputeCaseId.
  */
 export function endEngagement(engagementId, payload) {
   return request(`/api/engagements/${engagementId}/end`, { method: "POST", body: payload });
@@ -64,6 +65,7 @@ export function getChangeResponses(gigPostingId) {
  * FR-ENG-03 — unable to confirm a checkpoint (opens the dispute route).
  * @param {string} engagementId
  * @param {{checkpoint: "arrival"|"completion"|"payment"}} payload - the live checkpoint
+ * @returns {Promise<{engagementStatus: "DISPUTED", disputeCaseId: string}>} - the case it opened (M9 9.2)
  */
 export function unableToConfirmCheckpoint(engagementId, payload) {
   return request(`/api/engagements/${engagementId}/checkpoints/unable-to-confirm`, { method: "POST", body: payload });
@@ -88,4 +90,14 @@ export function cancelEngagement(engagementId, payload) {
  */
 export function respondToCancellation(engagementId, payload) {
   return request(`/api/engagements/${engagementId}/cancellation/respond`, { method: "POST", body: payload });
+}
+
+/**
+ * FR-ENG-13 (amended 2026-09-24) — "Still running" on the stalled prompt (5.14): closes the prompt
+ * for this viewer and changes nothing else about the engagement.
+ * @param {string} engagementId
+ * @returns {Promise<{stalledPrompt: {show: false}}>}
+ */
+export function dismissStalledPrompt(engagementId) {
+  return request(`/api/engagements/${engagementId}/stalled/dismiss`, { method: "POST" });
 }

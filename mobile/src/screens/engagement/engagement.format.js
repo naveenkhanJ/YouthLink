@@ -128,6 +128,8 @@ export function nextActionLabel(action, counterpartyName) {
         : `Re-confirm the change — by ${formatDayTime(action.deadline)}`;
     case "RESPOND_CANCELLATION":
       return `Asked to cancel — respond by ${formatDay(action.deadline)}`; // 5.1
+    case "RESPOND_DISPUTE":
+      return `Respond to the dispute — by ${formatDay(action.deadline)}`; // 5.1es
     case "RATE":
       return `Rate ${counterpartyName}`; // 5.1c, 5.1ec
     default:
@@ -421,4 +423,57 @@ export function cancellationNote(engagement) {
     return `Cancelled by you on ${formatDayTime(c.at)}. The start was under 6 hours away, so it is a late cancellation. ${reopened}`; // DERIVED
   }
   return `Cancelled by you on ${formatDayTime(c.at)}. ${reopened}`; // DERIVED
+}
+
+// ---------------------------------------------------------------------------
+// FR-DISPUTE-07 — the detail's dispute note while a case holds the engagement (5.2s, 5.3s)
+// ---------------------------------------------------------------------------
+
+/** What the case is about, as the note's middle clause: "arrival could not be confirmed". */
+function disputeWhat(dispute) {
+  switch (dispute.triggerType) {
+    case "UNABLE_TO_CONFIRM":
+      return dispute.checkpoint ? `${dispute.checkpoint} could not be confirmed` : "a check-in could not be confirmed"; // DERIVED fallback
+    case "END_ENGAGEMENT_ISSUE":
+      return "something went wrong when the engagement was ended"; // DERIVED (FR-ENG-12 "yes")
+    default:
+      return null;
+  }
+}
+
+/**
+ * The `cancelNote` line of 5.2s / 5.3s, or null when the engagement has no open case.
+ * Drawn: the opener's "You opened a dispute on 31 Aug 2026: arrival could not be confirmed. Saman
+ * Stores has until Wed 2 Sep 2026 to respond." (5.2s) and the respondent's "Kavindu Perera opened a
+ * dispute on 31 Aug 2026: arrival could not be confirmed. Respond by Wed 2 Sep 2026 — after that,
+ * review goes ahead without your side." (5.3s). Every later stage is DERIVED and says only what the
+ * case screen says (no timeframe is promised for a review — FR-DISPUTE-07).
+ */
+export function disputeNote(engagement) {
+  const d = engagement.dispute;
+  if (!d || engagement.status !== "DISPUTED") return null;
+  const name = engagement.counterparty.name;
+  const opened = formatDate(d.openedAt);
+  const what = disputeWhat(d);
+
+  let first;
+  if (d.triggerType === "STALLED_AUTO_FLAG") {
+    first = `This engagement was flagged as stalled on ${opened}.`; // DERIVED (FR-ENG-13)
+  } else if (d.openedByMe) {
+    first = `You opened a dispute on ${opened}: ${what}.`; // 5.2s
+  } else {
+    first = `${name} opened a dispute on ${opened}: ${what}.`; // 5.3s
+  }
+
+  let second;
+  if (d.status === "AWAITING_RESPONSE" && d.canRespond) {
+    second = `Respond by ${formatDay(d.respondentDeadline)} — after that, review goes ahead without your side.`; // 5.3s
+  } else if (d.status === "AWAITING_RESPONSE" && d.openedByMe && d.respondentDeadline) {
+    second = `${name} has until ${formatDay(d.respondentDeadline)} to respond.`; // 5.2s
+  } else if (d.status === "RESOLVED") {
+    second = "The case has been decided."; // DERIVED
+  } else {
+    second = "A YouthLink moderator is reviewing the case."; // DERIVED (9.2u's wording, shortened)
+  }
+  return `${first} ${second}`;
 }

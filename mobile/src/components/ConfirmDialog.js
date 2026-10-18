@@ -29,6 +29,8 @@ import Button from "./Button";
  * @param {"text"|"secondary"} [cancelStyle] - Defaults to "text" (1.17-style destructive
  *   dialogs). Sign out (1.10s) is not destructive and draws Secondary + Primary instead.
  * @param {"destructive"|"primary"} [confirmStyle] - Defaults to "destructive".
+ * @param {boolean} [fillActions] - The two buttons share the row equally (5.14 "Still running" /
+ *   "Update status": both FILL). Default: right-aligned at their natural width.
  */
 export default function ConfirmDialog({
   title,
@@ -39,14 +41,21 @@ export default function ConfirmDialog({
   onConfirm,
   cancelStyle = "text",
   confirmStyle = "destructive",
+  fillActions = false,
 }) {
   return (
     <View style={[styles.card, elevation.sheet]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
       <View style={styles.actions}>
-        {onCancel ? <Button title={cancelLabel} onPress={onCancel} style={cancelStyle} /> : null}
-        <Button title={confirmLabel} onPress={onConfirm} style={confirmStyle} />
+        {onCancel ? (
+          <View style={fillActions && styles.fill}>
+            <Button title={cancelLabel} onPress={onCancel} style={cancelStyle} compact={fillActions} />
+          </View>
+        ) : null}
+        <View style={fillActions && styles.fill}>
+          <Button title={confirmLabel} onPress={onConfirm} style={confirmStyle} compact={fillActions} />
+        </View>
       </View>
     </View>
   );
@@ -78,5 +87,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: spacing.sm,
     justifyContent: "flex-end",
+  },
+  // fillActions: two equal halves (5.14 draws both 140 wide), with Button's compact side padding
+  // so the labels fit; at large text sizes a label wraps inside its button, which grows taller.
+  fill: {
+    flexGrow: 1,
+    flexBasis: 0,
+    minWidth: 0,
   },
 });

@@ -33,6 +33,7 @@ import ratingScreens from "../screens/rating/rating.screens";
 import profileScreens from "../screens/profile/profile.screens";
 import endorsementScreens from "../screens/endorsement/endorsement.screens";
 import helpScreens from "../screens/help/help.screens";
+import disputeScreens from "../screens/dispute/dispute.screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,7 @@ const moduleScreens = [
   ...profileScreens,
   ...endorsementScreens,
   ...helpScreens,
+  ...disputeScreens,
 ];
 
 // Fails loudly at startup rather than showing a blank screen later, which is

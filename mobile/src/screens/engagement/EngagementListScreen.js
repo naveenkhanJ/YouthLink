@@ -65,6 +65,9 @@ export default function EngagementListScreen({ navigation }) {
       navigation.navigate("EngagementReconfirm", { engagementId: item.id }); // 5.1w → 5.11
     } else if (item.nextAction?.kind === "RESPOND_CANCELLATION") {
       navigation.navigate("EngagementCancelRequest", { engagementId: item.id }); // 5.1 → 5.9
+    } else if (item.nextAction?.kind === "RESPOND_DISPUTE") {
+      // 5.1es "Leads to 5.3s": the engagement, whose "Open the dispute case" opens 9.2r.
+      navigation.navigate("EngagementDetail", { engagementId: item.id });
     } else if (!isWorker && item.hasPendingChange) {
       navigation.navigate("EngagementChangeResponses", { gigPostingId: item.gigPostingId }); // 5.1e → 5.12
     } else {
